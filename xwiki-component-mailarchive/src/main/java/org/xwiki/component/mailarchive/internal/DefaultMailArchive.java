@@ -29,9 +29,11 @@ import org.xwiki.component.mailarchive.MailArchive;
 import org.xwiki.component.mailarchive.MailArchiveConfiguration;
 import org.xwiki.component.mailarchive.internal.data.ConnectionErrors;
 import org.xwiki.component.mailarchive.internal.data.MailArchiveConfigurationImpl;
+import org.xwiki.component.mailarchive.internal.data.TopicShortItem;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.ObjectReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -64,17 +66,18 @@ public class DefaultMailArchive implements MailArchive, Initializable {
 	private DocumentAccessBridge dab;
 
 	/**
-	 * Secure query manager that performs checks on rights depending on the query being executed.
-	*/
-	@Requirement // TODO : @Requirement("secure") ??
+	 * Secure query manager that performs checks on rights depending on the
+	 * query being executed.
+	 */	
+	// TODO : @Requirement("secure") ??
+	@Inject
 	private QueryManager queryManager;
-	
+
 	@Inject
 	private Logger logger;
 
 	protected Marker marker;
-	protected MailArchiveConfigurationImpl config;
-	
+
 	private HashMap<String, String[]> existingTopics;
 
 	/**
@@ -84,8 +87,7 @@ public class DefaultMailArchive implements MailArchive, Initializable {
 	 */
 	@Override
 	public void initialize() throws InitializationException {
-		this.marker = MarkerFactory.getMarker("MailArchiveComponent");
-		this.config = new MailArchiveConfigurationImpl();
+		this.marker = MarkerFactory.getMarker("MailArchiveComponent");		
 	}
 
 	/**
@@ -99,7 +101,7 @@ public class DefaultMailArchive implements MailArchive, Initializable {
 
 		String server = (String) dab.getProperty(serverPrefsDoc,
 				"MailArchiveCode.ServerSettingsClass", 0, "hostname");
-		int port = Integer.parseInt((String)dab.getProperty(serverPrefsDoc,
+		int port = Integer.parseInt((String) dab.getProperty(serverPrefsDoc,
 				"MailArchiveCode.ServerSettingsClass", 0, "port"));
 		String protocol = (String) dab.getProperty(serverPrefsDoc,
 				"MailArchiveCode.ServerSettingsClass", 0, "protocol");
@@ -142,7 +144,8 @@ public class DefaultMailArchive implements MailArchive, Initializable {
 			try {
 				store.close();
 			} catch (MessagingException e) {
-				logger.debug(marker, "checkMails : Could not close connection", e);
+				logger.debug(marker, "checkMails : Could not close connection",
+						e);
 			}
 		} catch (AuthenticationFailedException e) {
 			logger.warn(marker, "checkMails : ", e);
@@ -160,12 +163,18 @@ public class DefaultMailArchive implements MailArchive, Initializable {
 		} catch (IllegalStateException e) {
 			return ConnectionErrors.ILLEGAL_STATE.getCode();
 		} catch (Throwable t) {
-			logger.warn(marker, "checkMails : " ,t);
+			logger.warn(marker, "checkMails : ", t);
 			return ConnectionErrors.UNEXPECTED_EXCEPTION.getCode();
 		}
-		logger.debug(marker, "checkMails : ${nbMessages} to be read from $server:$port:$protocol:$user:$folder");
+		logger.debug(
+				marker,
+				"checkMails : ${nbMessages} to be read from $server:$port:$protocol:$user:$folder");
 		return nbMessages;
 	}
+	
+	
+	
+	
 
 	/**
 	 * {@inheritDoc}
@@ -173,37 +182,174 @@ public class DefaultMailArchive implements MailArchive, Initializable {
 	 * @see org.xwiki.component.mailarchive.MailArchive#loadMails(int, boolean)
 	 */
 	@Override
-	public boolean loadMails(int nb, boolean withDelete) {
-		// TODO Auto-generated method stub
-		return false;
+	public synchronized boolean loadMails(int maxMailsNb) {
+		try {
+			loadExistingTopics();
+		} catch (QueryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+        try 
+        {
+        	// TODO doc.isNew() ?
+            String loadingUserDoc = dab.getProperty(new DocumentReference("xwiki", spaceName, pageName), classReference, propertyName); // TODO getLoadingUser();
+            
+            if (dab.exists(getLoadingUser()) || !loadingUserDoc.getObject("XWiki.XWikiUsers")) 
+            {
+                addDebug("Default Loading user set in Settings does not exist. Cannot load emails")
+                return false;
+            }
+
+            // Get a session.  Use a blank Properties object.
+            def props = new Properties();
+            // necessary to work with Gmail
+            props.put("mail.imap.partialfetch", "false");
+            props.put("mail.imaps.partialfetch", "false");
+            def session = Session.getInstance(props);
+            // Get a Store object
+            def store = session.getStore(protocol);
+
+            // Connect to the mail account
+            store.connect(server, user, pass) 
+            def fldr = store.getFolder(mailingListFolder)
+            fldr.open(Folder.READ_WRITE)
+
+            // Searches for mails not already read
+            def searchterms = new FlagTerm(new Flags(Flags.Flag.SEEN), false) 
+            def messages = fldr.search(searchterms)
+            def nbMessages = messages.size()
+            addDebug('Messages found : ' + nbMessages)
+
+            if (nbMessages > 0) {
+                // Load existing topics
+                def nbTopics = loadExistingTopics()
+                addDebug("Number of existing TOPICS loaded from db : $nbTopics")
+
+                // Load existing mail ids
+                def nbMails = loadExistingMessages()
+                addDebug("Number of existing EMAILS loaded from db : $nbMails")
+
+                // Load mailing lists settings
+                def nbThreads = loadThreadsMap(threadsMap)
+
+                def currmsg = 1
+                def nbLoaded = 0
+                // Load each message. If needed delete them, and in any case set them as read - only if could be loaded
+                for(mail in messages) 
+                {
+                    def result = true
+                    try 
+                    {
+                        addDebug("Loading mail ${currmsg}")   
+                        try 
+                        {
+                            result = loadMail(mail, true, false, null)
+                        } catch (javax.mail.MessagingException me) 
+                        {
+                            addDebug("Could not load mail normally due to MessagingException, trying to clone original email")
+                            // specific case of unloadable mail
+                            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                            mail.writeTo(bos);
+                            bos.close();
+                            SharedByteArrayInputStream bis = new SharedByteArrayInputStream(bos.toByteArray());
+                            MimeMessage cmail = new MimeMessage(session, bis);
+                            bis.close();
+
+                            result = loadMail(cmail, true, false, null)
+                        }
+
+                        if (result[0]==true) 
+                        {
+                            nbLoaded ++
+                            if (withDelete==true) 
+                            {
+                                mail.setFlag(Flags.Flag.DELETED, true);
+                            }
+                            mail.setFlag(Flags.Flag.SEEN, true);
+                        }
+                    } catch (Exception e) 
+                    {
+                        addDebug("Failed to load mail with exception " + e.class + " " + e.getMessage())
+                        e.printStackTrace()
+                        addDebugStackTrace(e)
+                    }
+                    currmsg ++
+                } // for each message
+                addDebug("Loaded ${nbLoaded} messages over ${nbMessages}")
+                try {
+                  // Update timeline info if needed
+                  if (nbLoaded > 0) {
+                     //@TODO : check an option for time-line generation
+                     addDebug("Refreshing time line information")
+URL url = new URL(xwiki.getDocument("MailArchiveCode.TimeLineFeed").getExternalURL() + "?xpage=plain");
+URLConnection uc = url .openConnection()
+BufferedReader br = new BufferedReader(
+new InputStreamReader(
+uc.getInputStream()))
+String inputLine=null
+
+while ((inputLine = br.readLine()) != null)
+addDebug("\t" + inputLine)
+br.close()
+                     //println """{{include document="MailArchiveCode.TimeLineFeed" context="new" /}}"""
+                     //addDebug(xwiki.getDocument('{{include document="MailArchiveCode.TimeLineFeed" context="new" /}}').getRenderedContent())
+                  }
+                } catch (Throwable t) {
+                  addDebug("Failed to update time-line feed with exception " + t.class + " " + t.getMessage())
+                }
+            } // if there are message
+
+            if (withDelete) 
+            {
+                fldr.close(true);
+            } else 
+            {
+                fldr.close(false);
+            }  
+
+            store.close();
+            return true;
+
+        } catch (Throwable e) 
+        {
+            addDebug("Failed to load emails with exception " + e.class+ " " + e.getMessage())
+            addDebugStackTrace(e)
+        } finally 
+        { 
+            // Release the lock in any case
+            release()
+            System.out.println(getDebug());
+        }
+
+        return false;
+		
+		
+		
+		
 	}
-
-    /**
-     * loadExistingTopics
-     * Loads existing topics information from database.
-     * @throws QueryException 
-    */
-   public int loadExistingTopics() throws QueryException 
-   {
-     String xwql = "select doc.fullName, topic.topicid, topic.subject from Document doc, doc.object(MailArchiveCode.MailTopicClass) as  topic where doc.fullName<>'MailArchiveCode.MailTopicClassTemplate'";
-     List<String[]> topics;
-
-     topics = this.queryManager.createQuery(xwql, Query.XWQL).execute();
-
-     for(String[] topic:topics) {
-    	 existingTopics.put(topic[1], new String[] {topic[0], topic[2]});
-     }
-     return topics.size();
-   }
 
 	/**
-	 * {@inheritDoc}
+	 * Loads existing topics information from database.
 	 * 
-	 * @see org.xwiki.component.mailarchive.MailArchive#getConfiguration()
+	 * @throws QueryException
 	 */
-	@Override
-	public MailArchiveConfiguration getConfiguration() {
-		return this.config;
+	public HashMap<String, TopicShortItem> loadExistingTopics() throws QueryException {
+		final HashMap<String, TopicShortItem> existingTopics = new HashMap<String, TopicShortItem>();
+
+		String xwql = "select doc.fullName, topic.topicid, topic.subject " +
+				"from Document doc, doc.object(MailArchiveCode.MailTopicClass) as  topic " +
+				"where doc.fullName<>'MailArchiveCode.MailTopicClassTemplate'";
+		List<String[]> topics;
+
+		topics = this.queryManager.createQuery(xwql, Query.XWQL).execute();
+
+		for (String[] topic : topics) {
+			// topicId = [fullname, subject]
+			existingTopics.put(topic[1],  new TopicShortItem(topic[0], topic[2]));
+		}
+		return existingTopics;
 	}
+
 
 }

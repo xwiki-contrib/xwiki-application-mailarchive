@@ -39,9 +39,9 @@ public class MailArchiveScriptService implements ScriptService
     @Inject
     private MailArchive mailArchive;
 
-    public boolean load()
+    public boolean load(int maxMailsNb)
     {
-        return this.mailArchive.loadMails(0,false);
+        return this.mailArchive.loadMails(maxMailsNb);
     }
     
     public int check(String serverPrefsDoc) 

@@ -19,11 +19,17 @@
  */
 package org.xwiki.component.mailarchive;
 
-import org.junit.Assert;
+import org.hamcrest.Description;
 import org.junit.Test;
 import org.xwiki.component.mailarchive.internal.DefaultMailArchive;
+import org.xwiki.query.Query;
+import org.xwiki.query.QueryException;
+import org.xwiki.query.QueryManager;
 import org.xwiki.test.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.MockingRequirement;
+import org.jmock.*;
+import org.jmock.api.Expectation;
+import org.jmock.api.Invocation;
 
 /**
  * Tests for the {@link MailArchive} component.
@@ -32,10 +38,19 @@ public class DefaultMailArchiveTest extends AbstractMockingComponentTestCase
 {
     @MockingRequirement
     private DefaultMailArchive ma;
+    
+    @MockingRequirement
+    private QueryManager queryManager;
+    
+    
 
-    @Test
-    public void testSayHello()
+    /*@Test
+    public void testLoadExistingTopics() throws QueryException
     {
-        //Assert.assertEquals("Hello", hw.sayHello());
-    }
+    	Mockery context = new Mockery();
+    	context.checking(new Expectations() {{
+    	    oneOf (queryManager).createQuery(with(any(String.class)), Query.XWQL);
+    	}});
+        ma.loadExistingTopics();   
+    }*/
 }

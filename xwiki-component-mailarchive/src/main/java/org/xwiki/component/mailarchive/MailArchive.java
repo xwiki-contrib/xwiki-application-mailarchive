@@ -41,16 +41,11 @@ public interface MailArchive
     /**
      * Loads mails.
      *
-     * @param nb The maximum number of mails to read
+     * @param maxMailsNb The maximum number of mails to read
      * @param withDelete If true, deletes treated mail, if false, only set them "read" flag
      * @return false if no mails at all could be read
      */
-    public boolean loadMails(int nb, boolean withDelete);
+    public boolean loadMails(int maxMailsNb);
     
-    /**
-     * 
-     * @return
-     */
-    public MailArchiveConfiguration getConfiguration();
 }
 

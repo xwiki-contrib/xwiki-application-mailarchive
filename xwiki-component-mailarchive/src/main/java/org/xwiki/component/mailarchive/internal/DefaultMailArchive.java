@@ -29,7 +29,9 @@ import org.xwiki.component.mailarchive.MailArchive;
 import org.xwiki.component.mailarchive.MailArchiveConfiguration;
 import org.xwiki.component.mailarchive.internal.data.ConnectionErrors;
 import org.xwiki.component.mailarchive.internal.data.MailArchiveConfigurationImpl;
+import org.xwiki.component.mailarchive.internal.data.MailShortItem;
 import org.xwiki.component.mailarchive.internal.data.TopicShortItem;
+import org.xwiki.component.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.component.annotation.Component;
@@ -61,6 +63,12 @@ import javax.mail.search.FlagTerm;
 @Component
 @Singleton
 public class DefaultMailArchive implements MailArchive, Initializable {
+
+	public static final String SPACE_HOME = "MailArchive";
+	public static final String SPACE_CODE = "MailArchiveCode";
+	public static final String SPACE_PREFS = "MailArchivePrefs";
+	public static final String SPACE_ITEMS = "MailArchiveItems";
+
 	/** Provides access to documents. Injected by the Component Manager. */
 	@Inject
 	private DocumentAccessBridge dab;
@@ -68,7 +76,7 @@ public class DefaultMailArchive implements MailArchive, Initializable {
 	/**
 	 * Secure query manager that performs checks on rights depending on the
 	 * query being executed.
-	 */	
+	 */
 	// TODO : @Requirement("secure") ??
 	@Inject
 	private QueryManager queryManager;
@@ -87,7 +95,7 @@ public class DefaultMailArchive implements MailArchive, Initializable {
 	 */
 	@Override
 	public void initialize() throws InitializationException {
-		this.marker = MarkerFactory.getMarker("MailArchiveComponent");		
+		this.marker = MarkerFactory.getMarker("MailArchiveComponent");
 	}
 
 	/**
@@ -171,10 +179,6 @@ public class DefaultMailArchive implements MailArchive, Initializable {
 				"checkMails : ${nbMessages} to be read from $server:$port:$protocol:$user:$folder");
 		return nbMessages;
 	}
-	
-	
-	
-	
 
 	/**
 	 * {@inheritDoc}
@@ -185,171 +189,220 @@ public class DefaultMailArchive implements MailArchive, Initializable {
 	public synchronized boolean loadMails(int maxMailsNb) {
 		try {
 			loadExistingTopics();
-		} catch (QueryException e) {
+			loadExistingMessages();
+		} catch (MailArchiveException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		}
-		
-        try 
-        {
-        	// TODO doc.isNew() ?
-            String loadingUserDoc = dab.getProperty(new DocumentReference("xwiki", spaceName, pageName), classReference, propertyName); // TODO getLoadingUser();
-            
-            if (dab.exists(getLoadingUser()) || !loadingUserDoc.getObject("XWiki.XWikiUsers")) 
-            {
-                addDebug("Default Loading user set in Settings does not exist. Cannot load emails")
-                return false;
-            }
 
-            // Get a session.  Use a blank Properties object.
-            def props = new Properties();
-            // necessary to work with Gmail
-            props.put("mail.imap.partialfetch", "false");
-            props.put("mail.imaps.partialfetch", "false");
-            def session = Session.getInstance(props);
-            // Get a Store object
-            def store = session.getStore(protocol);
+		try {
+			/*
+			 * String loadingUserDoc = dab.getProperty(new
+			 * DocumentReference("xwiki", spaceName, pageName), classReference,
+			 * propertyName); // TODO getLoadingUser();
+			 * 
+			 * if (dab.exists(getLoadingUser()) ||
+			 * !loadingUserDoc.getObject("XWiki.XWikiUsers")) { addDebug(
+			 * "Default Loading user set in Settings does not exist. Cannot load emails"
+			 * ) return false; }
+			 * 
+			 * // Get a session. Use a blank Properties object. def props = new
+			 * Properties(); // necessary to work with Gmail
+			 * props.put("mail.imap.partialfetch", "false");
+			 * props.put("mail.imaps.partialfetch", "false"); def session =
+			 * Session.getInstance(props); // Get a Store object def store =
+			 * session.getStore(protocol);
+			 * 
+			 * // Connect to the mail account store.connect(server, user, pass)
+			 * def fldr = store.getFolder(mailingListFolder)
+			 * fldr.open(Folder.READ_WRITE)
+			 * 
+			 * // Searches for mails not already read def searchterms = new
+			 * FlagTerm(new Flags(Flags.Flag.SEEN), false) def messages =
+			 * fldr.search(searchterms) def nbMessages = messages.size()
+			 * addDebug('Messages found : ' + nbMessages)
+			 * 
+			 * if (nbMessages > 0) { // Load existing topics def nbTopics =
+			 * loadExistingTopics()
+			 * addDebug("Number of existing TOPICS loaded from db : $nbTopics")
+			 * 
+			 * // Load existing mail ids def nbMails = loadExistingMessages()
+			 * addDebug("Number of existing EMAILS loaded from db : $nbMails")
+			 * 
+			 * // Load mailing lists settings def nbThreads =
+			 * loadThreadsMap(threadsMap)
+			 * 
+			 * def currmsg = 1 def nbLoaded = 0 // Load each message. If needed
+			 * delete them, and in any case set them as read - only if could be
+			 * loaded for(mail in messages) { def result = true try {
+			 * addDebug("Loading mail ${currmsg}") try { result = loadMail(mail,
+			 * true, false, null) } catch (javax.mail.MessagingException me) {
+			 * addDebug(
+			 * "Could not load mail normally due to MessagingException, trying to clone original email"
+			 * ) // specific case of unloadable mail ByteArrayOutputStream bos =
+			 * new ByteArrayOutputStream(); mail.writeTo(bos); bos.close();
+			 * SharedByteArrayInputStream bis = new
+			 * SharedByteArrayInputStream(bos.toByteArray()); MimeMessage cmail
+			 * = new MimeMessage(session, bis); bis.close();
+			 * 
+			 * result = loadMail(cmail, true, false, null) }
+			 * 
+			 * if (result[0]==true) { nbLoaded ++ if (withDelete==true) {
+			 * mail.setFlag(Flags.Flag.DELETED, true); }
+			 * mail.setFlag(Flags.Flag.SEEN, true); } } catch (Exception e) {
+			 * addDebug("Failed to load mail with exception " + e.class + " " +
+			 * e.getMessage()) e.printStackTrace() addDebugStackTrace(e) }
+			 * currmsg ++ } // for each message
+			 * addDebug("Loaded ${nbLoaded} messages over ${nbMessages}") try {
+			 * // Update timeline info if needed if (nbLoaded > 0) { //@TODO :
+			 * check an option for time-line generation
+			 * addDebug("Refreshing time line information") URL url = new
+			 * URL(xwiki
+			 * .getDocument("MailArchiveCode.TimeLineFeed").getExternalURL() +
+			 * "?xpage=plain"); URLConnection uc = url .openConnection()
+			 * BufferedReader br = new BufferedReader( new InputStreamReader(
+			 * uc.getInputStream())) String inputLine=null
+			 * 
+			 * while ((inputLine = br.readLine()) != null) addDebug("\t" +
+			 * inputLine) br.close() //println
+			 * """{{include document="MailArchiveCode
+			 * .TimeLineFeed" context="new" /}}"""
+			 * //addDebug(xwiki.getDocument('{{include
+			 * document="MailArchiveCode.TimeLineFeed" context="new"
+			 * /}}').getRenderedContent()) } } catch (Throwable t) {
+			 * addDebug("Failed to update time-line feed with exception " +
+			 * t.class + " " + t.getMessage()) } } // if there are message
+			 * 
+			 * if (withDelete) { fldr.close(true); } else { fldr.close(false); }
+			 * 
+			 * store.close(); return true;
+			 */
 
-            // Connect to the mail account
-            store.connect(server, user, pass) 
-            def fldr = store.getFolder(mailingListFolder)
-            fldr.open(Folder.READ_WRITE)
+		} catch (Throwable e) {
+			/*
+			 * addDebug("Failed to load emails with exception " + e.class+ " " +
+			 * e.getMessage()) addDebugStackTrace(e)
+			 */
+		} finally {
+			// Release the lock in any case
+			/*
+			 * release() System.out.println(getDebug());
+			 */
+		}
 
-            // Searches for mails not already read
-            def searchterms = new FlagTerm(new Flags(Flags.Flag.SEEN), false) 
-            def messages = fldr.search(searchterms)
-            def nbMessages = messages.size()
-            addDebug('Messages found : ' + nbMessages)
+		return false;
 
-            if (nbMessages > 0) {
-                // Load existing topics
-                def nbTopics = loadExistingTopics()
-                addDebug("Number of existing TOPICS loaded from db : $nbTopics")
-
-                // Load existing mail ids
-                def nbMails = loadExistingMessages()
-                addDebug("Number of existing EMAILS loaded from db : $nbMails")
-
-                // Load mailing lists settings
-                def nbThreads = loadThreadsMap(threadsMap)
-
-                def currmsg = 1
-                def nbLoaded = 0
-                // Load each message. If needed delete them, and in any case set them as read - only if could be loaded
-                for(mail in messages) 
-                {
-                    def result = true
-                    try 
-                    {
-                        addDebug("Loading mail ${currmsg}")   
-                        try 
-                        {
-                            result = loadMail(mail, true, false, null)
-                        } catch (javax.mail.MessagingException me) 
-                        {
-                            addDebug("Could not load mail normally due to MessagingException, trying to clone original email")
-                            // specific case of unloadable mail
-                            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                            mail.writeTo(bos);
-                            bos.close();
-                            SharedByteArrayInputStream bis = new SharedByteArrayInputStream(bos.toByteArray());
-                            MimeMessage cmail = new MimeMessage(session, bis);
-                            bis.close();
-
-                            result = loadMail(cmail, true, false, null)
-                        }
-
-                        if (result[0]==true) 
-                        {
-                            nbLoaded ++
-                            if (withDelete==true) 
-                            {
-                                mail.setFlag(Flags.Flag.DELETED, true);
-                            }
-                            mail.setFlag(Flags.Flag.SEEN, true);
-                        }
-                    } catch (Exception e) 
-                    {
-                        addDebug("Failed to load mail with exception " + e.class + " " + e.getMessage())
-                        e.printStackTrace()
-                        addDebugStackTrace(e)
-                    }
-                    currmsg ++
-                } // for each message
-                addDebug("Loaded ${nbLoaded} messages over ${nbMessages}")
-                try {
-                  // Update timeline info if needed
-                  if (nbLoaded > 0) {
-                     //@TODO : check an option for time-line generation
-                     addDebug("Refreshing time line information")
-URL url = new URL(xwiki.getDocument("MailArchiveCode.TimeLineFeed").getExternalURL() + "?xpage=plain");
-URLConnection uc = url .openConnection()
-BufferedReader br = new BufferedReader(
-new InputStreamReader(
-uc.getInputStream()))
-String inputLine=null
-
-while ((inputLine = br.readLine()) != null)
-addDebug("\t" + inputLine)
-br.close()
-                     //println """{{include document="MailArchiveCode.TimeLineFeed" context="new" /}}"""
-                     //addDebug(xwiki.getDocument('{{include document="MailArchiveCode.TimeLineFeed" context="new" /}}').getRenderedContent())
-                  }
-                } catch (Throwable t) {
-                  addDebug("Failed to update time-line feed with exception " + t.class + " " + t.getMessage())
-                }
-            } // if there are message
-
-            if (withDelete) 
-            {
-                fldr.close(true);
-            } else 
-            {
-                fldr.close(false);
-            }  
-
-            store.close();
-            return true;
-
-        } catch (Throwable e) 
-        {
-            addDebug("Failed to load emails with exception " + e.class+ " " + e.getMessage())
-            addDebugStackTrace(e)
-        } finally 
-        { 
-            // Release the lock in any case
-            release()
-            System.out.println(getDebug());
-        }
-
-        return false;
-		
-		
-		
-		
 	}
 
 	/**
-	 * Loads existing topics information from database.
+	 * Loads existing topics minimal information from database.
 	 * 
+	 * @return a map of existing topics, with key = topicId
 	 * @throws QueryException
 	 */
-	public HashMap<String, TopicShortItem> loadExistingTopics() throws QueryException {
-		final HashMap<String, TopicShortItem> existingTopics = new HashMap<String, TopicShortItem>();
+	public HashMap<String, TopicShortItem> loadExistingTopics()
+			throws MailArchiveException {
 
-		String xwql = "select doc.fullName, topic.topicid, topic.subject " +
-				"from Document doc, doc.object(MailArchiveCode.MailTopicClass) as  topic " +
-				"where doc.fullName<>'MailArchiveCode.MailTopicClassTemplate'";
+		final HashMap<String, TopicShortItem> existingTopics = new HashMap<String, TopicShortItem>();
 		List<String[]> topics;
 
-		topics = this.queryManager.createQuery(xwql, Query.XWQL).execute();
+		String xwql = "select doc.fullName, topic.topicid, topic.subject "
+				+ "from Document doc, doc.object(${SPACE_CODE}.MailTopicClass) as  topic "
+				+ "where doc.fullName<>'${SPACE_CODE}.MailTopicClassTemplate'";
 
-		for (String[] topic : topics) {
-			// topicId = [fullname, subject]
-			existingTopics.put(topic[1],  new TopicShortItem(topic[0], topic[2]));
+		try {
+			topics = this.queryManager.createQuery(xwql, Query.XWQL).execute();
+
+			for (String[] topic : topics) {
+				// map[topicId] = [fullname, subject]
+				TopicShortItem shorttopic = new TopicShortItem(topic[0],
+						topic[2]);
+				existingTopics.put(topic[1], shorttopic);
+				logger.debug(marker, "Loaded topic " + topic[0] + " : "
+						+ shorttopic);
+			}
+		} catch (Exception e) {
+			throw new MailArchiveException("Failed to load existing topics", e);
 		}
 		return existingTopics;
 	}
 
+	/**
+	 * Loads existing mails minimal information from database.
+	 * 
+	 * @return a map of existing mails, with key = messageId
+	 * @throws MailArchiveException
+	 */
+	public HashMap<String, MailShortItem> loadExistingMessages()
+			throws MailArchiveException {
+
+		final HashMap<String, MailShortItem> existingMessages = new HashMap<String, MailShortItem>();
+		List<String[]> messages;
+
+		try {
+			String xwql = "select mail.messageid, mail.messagesubject, mail.topicid, doc.fullName "
+					+ "from Document doc, doc.object(${SPACE_CODE}.MailClass) as  mail "
+					+ "where doc.fullName<>'${SPACE_CODE}.MailClassTemplate'";
+
+			messages = this.queryManager.createQuery(xwql, Query.XWQL)
+					.execute();
+
+			if (messages != null) {
+				for (String[] message : messages) {
+					if (message[0] != null && message[0] != "") {
+						// map[messageid] = [subject, topicid, fullName]
+						MailShortItem shortmail = new MailShortItem(message[1],
+								message[2], message[3]);
+						existingMessages.put(message[0], shortmail);
+						logger.debug(marker, "Loaded mail " + message[1] + " : " + shortmail);
+					} else {
+						logger.warn(marker,
+								"Incorrect message object found in db for ${msg[3]}");
+					}
+				}
+
+			}
+
+		} catch (Exception e) {
+			throw new MailArchiveException("Failed to load existing messages",
+					e);
+		}
+
+		return existingMessages;
+
+	}
+	
+	/**
+	 * Loads the mailing-lists
+	 * 
+	 * @return
+	 * @throws MailArchiveException
+	 */
+    public HashMap<String, String[]> loadMailingLists() throws MailArchiveException
+    {
+    	final HashMap<String, String[]> lists = new HashMap<String, String[]>();
+    	
+        String hql = "select str1.value, str2.value, str3.value " +
+        		"from BaseObject as obj, StringProperty as str1, StringProperty as str2, StringProperty as str3 " +
+        		"where obj.className='MailArchiveCode.ListsSettingsClass' " +
+        		"and obj.id=str1.id and str1.name='pattern' " +
+        		"and obj.id=str2.id and str2.name='displayname' " +
+        		"and obj.id=str3.id and str3.name='Tag'";
+        try {
+        	List<String[]> props = this.queryManager.createQuery(hql, Query.HQL).execute();
+
+        	for (String[] prop : props) {
+                if (prop[0] != null && !"".equals(prop[0]))
+                {
+                	// map[pattern] = [displayname, Tag]
+                	lists.put(prop[0], new String[] {prop[1], prop[2]});
+                }
+            }
+        } catch (Exception e) {
+        	throw new MailArchiveException("Failed to load mailing-lists settings", e);
+        }
+        return lists;
+    }
 
 }

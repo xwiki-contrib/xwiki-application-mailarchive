@@ -19,6 +19,7 @@
  */
 package org.xwiki.component.mailarchive;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -28,17 +29,10 @@ import java.util.List;
  */
 public interface MailType
 {
-    public String getDisplayName();
-    
-    public String getValue();
-    
-    public String getPattern();
-    
-    public List<String> getMatchedFields();
-    
-    public String getIcon();
-    
-    public boolean isDefault();
+    String getName();
+
+    String getIcon();
+
+    HashMap<List<String>, String> getPatterns();
 
 }
-

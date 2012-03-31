@@ -6,8 +6,9 @@ import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.component.mailarchive.internal.data.MailItem;
 
 @ComponentRole
-public interface MailParser {
+public interface MailParser
+{
 
-	public MailItem parseMail(Message mail);
-	
+    public MailItem parseMail(Message mail);
+
 }

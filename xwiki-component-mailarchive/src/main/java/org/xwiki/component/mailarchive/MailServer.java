@@ -27,16 +27,15 @@ import org.xwiki.component.annotation.ComponentRole;
 public interface MailServer
 {
     public String getHost();
-    
+
     public String getPort();
-    
+
     public String getProtocol();
-    
+
     public String getFolder();
-    
+
     public String getUsername();
-    
+
     public String getPassword();
 
 }
-

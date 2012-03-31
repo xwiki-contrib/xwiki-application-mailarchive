@@ -27,10 +27,9 @@ import org.xwiki.component.annotation.ComponentRole;
 public interface MailingList
 {
     public String getDisplayName();
-    
+
     public String getPattern();
-    
+
     public String getTag();
 
 }
-

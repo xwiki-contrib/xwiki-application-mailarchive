@@ -43,9 +43,9 @@ public class MailArchiveScriptService implements ScriptService
     {
         return this.mailArchive.loadMails(maxMailsNb);
     }
-    
-    public int check(String serverPrefsDoc) 
+
+    public int check(String serverPrefsDoc)
     {
-    	return this.mailArchive.checkMails(serverPrefsDoc);
+        return this.mailArchive.checkMails(serverPrefsDoc);
     }
 }

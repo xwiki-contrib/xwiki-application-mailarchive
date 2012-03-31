@@ -36,12 +36,15 @@ import org.xwiki.model.reference.ObjectReference;
 public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
 {
     private static final String SPACE_CODE = "MailArchiveCode";
-    
+
     private static final String CLASS_ADMIN = SPACE_CODE + ".AdminClass";
+
     private static final String CLASS_LISTS = SPACE_CODE + ".ListsSettingsClass";
+
     private static final String CLASS_SERVERS = SPACE_CODE + ".ServersSettingsClass";
+
     private static final String CLASS_TYPES = SPACE_CODE + ".TypesSettingsClass";
-    
+
     /** Provides access to documents. Injected by the Component Manager. */
     @Inject
     private static DocumentAccessBridge dab;
@@ -64,7 +67,7 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
     @Override
     public String getLoadingUser()
     {
-        return (String)getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "user");
+        return (String) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "user");
     }
 
     /**
@@ -75,7 +78,8 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
     @Override
     public String getDefaultHomeView()
     {
-        return (String)getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "defaulthomeview");    }
+        return (String) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "defaulthomeview");
+    }
 
     /**
      * {@inheritDoc}
@@ -85,9 +89,8 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
     @Override
     public String getDefaultTopicsView()
     {
-        return (String)getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "defaulttopicsview");    
-    }    
-    
+        return (String) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "defaulttopicsview");
+    }
 
     /**
      * {@inheritDoc}
@@ -97,7 +100,8 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
     @Override
     public String getDefaultMailsOpeningMode()
     {
-        return (String)getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "mailsopeningmode");    }
+        return (String) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "mailsopeningmode");
+    }
 
     /**
      * {@inheritDoc}
@@ -107,7 +111,7 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
     @Override
     public boolean manageTimeline()
     {
-        return (Boolean)getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "timeline");
+        return (Boolean) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "timeline");
     }
 
     /**
@@ -118,7 +122,7 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
     @Override
     public int getMaxTimelineItemsToLoad()
     {
-        return (Integer)getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "timelinemaxload");
+        return (Integer) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "timelinemaxload");
     }
 
     /**
@@ -129,7 +133,7 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
     @Override
     public boolean getMatchProfiles()
     {
-        return (Boolean)getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "matchwikiprofiles");
+        return (Boolean) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "matchwikiprofiles");
     }
 
     /**
@@ -140,7 +144,7 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
     @Override
     public boolean getMatchLdap()
     {
-        return (Boolean)getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "matchldap");
+        return (Boolean) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "matchldap");
     }
 
     /**
@@ -151,7 +155,7 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
     @Override
     public boolean getLdapCreateMissingProfiles()
     {
-        return (Boolean)getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "createmissingprofiles");
+        return (Boolean) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "createmissingprofiles");
     }
 
     /**
@@ -162,7 +166,7 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
     @Override
     public boolean getLdapForcePhotoUpdate()
     {
-        return (Boolean)getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "ldapphotoforceupdate");
+        return (Boolean) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "ldapphotoforceupdate");
     }
 
     /**
@@ -173,7 +177,7 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
     @Override
     public String getLdapPhotoFieldName()
     {
-        return (String)getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "ldapphotofield");
+        return (String) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "ldapphotofield");
     }
 
     /**
@@ -184,7 +188,7 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
     @Override
     public String getLdapPhotoFieldContent()
     {
-        return (String)getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "ldapphototype");
+        return (String) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "ldapphototype");
     }
 
     /**
@@ -195,7 +199,7 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
     @Override
     public List<MailingList> getMailingLists()
     {
-        
+
         return null;
     }
 

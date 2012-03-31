@@ -20,7 +20,6 @@
 package org.xwiki.component.mailarchive.internal.data;
 
 /**
- * 
  * @version $Id$
  */
 public class ServerSettings

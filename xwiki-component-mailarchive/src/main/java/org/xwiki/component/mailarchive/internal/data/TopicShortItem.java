@@ -1,32 +1,35 @@
 package org.xwiki.component.mailarchive.internal.data;
 
-public class TopicShortItem {
+public class TopicShortItem
+{
 
-	private String fullName;
-	private String subject;
+    private String fullName;
 
-	public TopicShortItem(String fullName, String subject) {
-		super();
-		this.fullName = fullName;
-		this.subject = subject;
-	}
+    private String subject;
 
-	public String getFullName() {
-		return fullName;
-	}
+    public TopicShortItem(String fullName, String subject)
+    {
+        super();
+        this.fullName = fullName;
+        this.subject = subject;
+    }
 
-	public String getSubject() {
-		return subject;
-	}
+    public String getFullName()
+    {
+        return fullName;
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("TopicShortItem [fullName=").append(fullName)
-				.append(", subject=").append(subject).append("]");
-		return builder.toString();
-	}
+    public String getSubject()
+    {
+        return subject;
+    }
 
-	
-	
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("TopicShortItem [fullName=").append(fullName).append(", subject=").append(subject).append("]");
+        return builder.toString();
+    }
+
 }

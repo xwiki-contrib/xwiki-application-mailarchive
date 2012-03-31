@@ -29,39 +29,40 @@ import org.xwiki.component.annotation.ComponentRole;
 public interface MailArchiveConfiguration
 {
     String ADMIN_PAGE = "MailArchive.Admin";
+
     String SERVERS_SETTINGS_PAGE = "MailArchive.Settings";
+
     String LISTS_SETTINGS_PAGE = "MailArchive.ListsSettings";
+
     String TYPES_SETTINGS_PAGE = "MailArchive.TypesSettings";
-    
 
     public String getLoadingUser();
-    
+
     public String getDefaultHomeView();
-    
+
     public String getDefaultTopicsView();
-    
+
     public String getDefaultMailsOpeningMode();
-    
+
     public boolean manageTimeline();
-    
+
     public int getMaxTimelineItemsToLoad();
-    
+
     public boolean getMatchProfiles();
-    
+
     public boolean getMatchLdap();
-    
+
     public boolean getLdapCreateMissingProfiles();
-    
+
     public boolean getLdapForcePhotoUpdate();
-    
+
     public String getLdapPhotoFieldName();
-    
+
     public String getLdapPhotoFieldContent();
-    
+
     public List<MailingList> getMailingLists();
-    
+
     public List<MailServer> getServers();
-    
+
     public List<MailType> getMailTypes();
 }
-

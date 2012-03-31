@@ -19,22 +19,56 @@
  */
 package org.xwiki.component.mailarchive.internal.data;
 
+import java.util.HashMap;
+import java.util.List;
+
+import org.xwiki.component.mailarchive.MailType;
+
 /**
+ * Mail Type
+ * 
  * @version $Id$
  */
-public class ListSettings
+public class MailTypeImpl implements MailType
 {
-    private String pagename;
+    private String name;
 
-    public ListSettings(String pagename)
+    private String icon;
+
+    private HashMap<List<String>, String> patterns;
+
+    public String getName()
     {
-        this.pagename = pagename;
+        return name;
     }
 
-    public String getDisplayName()
+    public void setName(String name)
     {
-        return (String) MailArchiveConfigurationImpl.getPropertyValue(pagename, "MailArchiveCode.ListsSettingsClass",
-            "displayname");
+        this.name = name;
     }
 
+    public String getIcon()
+    {
+        return icon;
+    }
+
+    public void setIcon(String icon)
+    {
+        this.icon = icon;
+    }
+
+    public HashMap<List<String>, String> getPatterns()
+    {
+        return patterns;
+    }
+
+    public void setPatterns(HashMap<List<String>, String> patterns)
+    {
+        this.patterns = patterns;
+    }
+
+    public void addPattern(List<String> fields, String expr)
+    {
+        this.patterns.put(fields, expr);
+    }
 }

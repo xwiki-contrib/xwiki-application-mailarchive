@@ -28,24 +28,27 @@ import org.xwiki.component.annotation.ComponentRole;
 public interface MailArchive
 {
     String MA_ADMIN_PAGE = "MailArchive.Admin";
+
     String MA_SERVERS_SETTINGS_PAGE = "MailArchive.Settings";
+
     String MA_LISTS_SETTINGS_PAGE = "MailArchive.ListsSettings";
+
     String MA_TYPES_SETTINGS_PAGE = "MailArchive.TypesSettings";
-    
+
     /**
      * Checks connection to mail server, and presence of mails to be treated.
-     * @return true if connection is ok and there are mails to treat.
+     * 
+     * @return value > 0 is the number of messages to read if connection was ok, negative value indicates connection
+     *         error (codes from ConnectionErrors enum).
      */
     public int checkMails(String serverPrefsDoc);
-    
+
     /**
      * Loads mails.
-     *
+     * 
      * @param maxMailsNb The maximum number of mails to read
-     * @param withDelete If true, deletes treated mail, if false, only set them "read" flag
      * @return false if no mails at all could be read
      */
     public boolean loadMails(int maxMailsNb);
-    
-}
 
+}

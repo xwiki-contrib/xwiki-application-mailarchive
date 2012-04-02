@@ -28,7 +28,6 @@ import org.xwiki.component.mailarchive.MailArchiveConfiguration;
 import org.xwiki.component.mailarchive.MailServer;
 import org.xwiki.component.mailarchive.MailType;
 import org.xwiki.component.mailarchive.MailingList;
-import org.xwiki.model.reference.ObjectReference;
 
 /**
  * @version $Id$

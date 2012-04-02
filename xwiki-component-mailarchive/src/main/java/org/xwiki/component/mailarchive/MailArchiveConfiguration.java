@@ -21,8 +21,6 @@ package org.xwiki.component.mailarchive;
 
 import java.util.List;
 
-import org.xwiki.component.annotation.ComponentRole;
-
 /**
  * Interface (aka Role) of the Component
  */

@@ -19,7 +19,6 @@
  */
 package org.xwiki.component.mailarchive;
 
-import org.xwiki.component.annotation.ComponentRole;
 
 /**
  * Interface (aka Role) of the Component

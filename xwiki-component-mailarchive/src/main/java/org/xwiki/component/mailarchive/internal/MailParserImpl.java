@@ -10,15 +10,14 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeUtility;
 
-import org.xwiki.component.mailarchive.MailParser;
 import org.xwiki.component.mailarchive.internal.data.MailItem;
 
-public class MailParserImpl implements MailParser
+public class MailParserImpl
 {
     /**
      * parseMail Parse mail headers to create a MailItem. Decodes localization and date.
      */
-    public MailItem parseMail(Message mail)
+    public static MailItem parseMail(Message mail)
     {
 
         MailItem m = new MailItem();

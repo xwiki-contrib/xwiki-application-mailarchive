@@ -21,6 +21,7 @@ package org.xwiki.component.mailarchive.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -38,13 +39,13 @@ import javax.mail.Store;
 import javax.mail.search.FlagTerm;
 
 import org.slf4j.Logger;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.mailarchive.MailArchive;
 import org.xwiki.component.mailarchive.MailType;
 import org.xwiki.component.mailarchive.internal.data.ConnectionErrors;
+import org.xwiki.component.mailarchive.internal.data.MailItem;
+import org.xwiki.component.mailarchive.internal.data.MailServer;
 import org.xwiki.component.mailarchive.internal.data.MailShortItem;
 import org.xwiki.component.mailarchive.internal.data.MailTypeImpl;
 import org.xwiki.component.mailarchive.internal.data.TopicShortItem;
@@ -85,8 +86,6 @@ public class DefaultMailArchive implements MailArchive, Initializable
     @Inject
     private Logger logger;
 
-    protected Marker marker;
-
     private HashMap<String, String[]> existingTopics;
 
     private boolean isInitialized = false;
@@ -99,7 +98,6 @@ public class DefaultMailArchive implements MailArchive, Initializable
     @Override
     public void initialize() throws InitializationException
     {
-        this.marker = MarkerFactory.getMarker("MailArchiveComponent");
         try {
             loadMailTypes();
             loadMailingLists();
@@ -118,60 +116,62 @@ public class DefaultMailArchive implements MailArchive, Initializable
     @Override
     public int checkMails(String serverPrefsDoc)
     {
+        // Retrieve connection properties from prefs
+        MailServer server = MailServer.fromPrefs(dab, serverPrefsDoc);
+        if (server == null) {
+            logger.warn("Could not retrieve server information from wiki page " + serverPrefsDoc);
+            return ConnectionErrors.INVALID_PREFERENCES.getCode();
+        }
+
+        return checkMails(server);
+    }
+
+    /**
+     * @param server
+     * @return
+     */
+    public int checkMails(MailServer server)
+    {
+        logger.info("Checking server " + server);
+
         int nbMessages = -1;
-
-        String server = (String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", 0, "hostname");
-        int port =
-            Integer
-                .parseInt((String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", 0, "port"));
-        String protocol =
-            (String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", 0, "protocol");
-        String user = (String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", 0, "user");
-        String password =
-            (String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", 0, "password");
-        String folder = (String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", 0, "folder");
-
+        Store store = null;
         try {
-
             // Get a session. Use a blank Properties object.
             Properties props = new Properties();
             // necessary to work with Gmail
             props.put("mail.imap.partialfetch", "false");
             props.put("mail.imaps.partialfetch", "false");
-            props.put("mail.store.protocol", protocol);
+            props.put("mail.store.protocol", server.getProtocol());
 
             Session session = Session.getDefaultInstance(props, null);
             // Get a Store object
-            Store store = session.getStore(protocol);
+            store = session.getStore(server.getProtocol());
 
             // Connect to the mail account
-            store.connect(server, port, user, password);
+            store.connect(server.getHost(), server.getPort(), server.getUser(), server.getPassword());
             Folder fldr;
             // Specifically for GMAIL ...
-            if (server.endsWith(".gmail.com")) {
+            if (server.getHost().endsWith(".gmail.com")) {
                 fldr = store.getDefaultFolder();
             }
 
-            fldr = store.getFolder(folder);
+            fldr = store.getFolder(server.getFolder());
             fldr.open(Folder.READ_ONLY);
 
             // Searches for mails not already read
             FlagTerm searchterms = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
             Message[] messages = fldr.search(searchterms);
             nbMessages = messages.length;
-            try {
-                store.close();
-            } catch (MessagingException e) {
-                logger.debug(marker, "checkMails : Could not close connection", e);
-            }
+
         } catch (AuthenticationFailedException e) {
-            logger.warn(marker, "checkMails : ", e);
+            logger.warn("checkMails : ", e);
             return ConnectionErrors.AUTHENTICATION_FAILED.getCode();
         } catch (FolderNotFoundException e) {
-            logger.warn(marker, "checkMails : ", e);
+            logger.warn("checkMails : ", e);
             return ConnectionErrors.FOLDER_NOT_FOUND.getCode();
         } catch (MessagingException e) {
-            logger.warn(marker, "checkMails : ", e);
+            logger.warn("checkMails : ", e);
             if (e.getCause() instanceof java.net.UnknownHostException) {
                 return ConnectionErrors.UNKNOWN_HOST.getCode();
             } else {
@@ -180,10 +180,27 @@ public class DefaultMailArchive implements MailArchive, Initializable
         } catch (IllegalStateException e) {
             return ConnectionErrors.ILLEGAL_STATE.getCode();
         } catch (Throwable t) {
-            logger.warn(marker, "checkMails : ", t);
+            logger.warn("checkMails : ", t);
             return ConnectionErrors.UNEXPECTED_EXCEPTION.getCode();
+        } finally {
+            try {
+                store.close();
+            } catch (MessagingException e) {
+                logger.debug("checkMails : Could not close connection", e);
+            }
         }
-        logger.debug(marker, "checkMails : ${nbMessages} to be read from $server:$port:$protocol:$user:$folder");
+        logger.debug("checkMails : " + nbMessages + " messages to be read from " + server);
+
+        // Persis state in db
+
+        try {
+            logger.debug("Updating server state in " + server.getWikiDoc());
+            dab.setProperty(server.getWikiDoc(), SPACE_CODE + ".ServerSettingsClass", "status", nbMessages);
+            dab.setProperty(server.getWikiDoc(), SPACE_CODE + ".ServerSettingsClass", "lasttest", new Date());
+        } catch (Exception e) {
+            logger.info("Failed to persist server connection state", e);
+        }
+
         return nbMessages;
     }
 
@@ -196,10 +213,36 @@ public class DefaultMailArchive implements MailArchive, Initializable
     public synchronized boolean loadMails(int maxMailsNb)
     {
         try {
+            // Init
             if (!this.isInitialized) {
                 initialize();
             }
-            init();
+
+            List<MailServer> servers = loadServers();
+            List<MailType> mailTypes = loadMailTypes();
+            HashMap<String, String[]> mailingLists = loadMailingLists();
+            HashMap<String, TopicShortItem> existingTopics = loadStoredTopics();
+            HashMap<String, MailShortItem> existingMessages = loadStoredMessages();
+
+            for (MailServer server : servers) {
+                try {
+                    Message[] messages = loadMails(server);
+                    int currentMsg = 0;
+                    while (currentMsg < maxMailsNb && currentMsg < messages.length) {
+                        try {
+                            MailItem mail = MailParserImpl.parseMail(messages[currentMsg]);
+                            logger.debug("LOADED MESSAGE  " + currentMsg + " : " + mail);
+                            currentMsg++;
+                        } catch (Exception e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.warn("Could not load emails from server " + server);
+                }
+            }
+
         } catch (MailArchiveException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -267,19 +310,13 @@ public class DefaultMailArchive implements MailArchive, Initializable
 
     }
 
-    protected void init() throws MailArchiveException
-    {
-        loadExistingTopics();
-        loadExistingMessages();
-    }
-
     /**
      * Loads existing topics minimal information from database.
      * 
      * @return a map of existing topics, with key = topicId
      * @throws QueryException
      */
-    public HashMap<String, TopicShortItem> loadExistingTopics() throws MailArchiveException
+    public HashMap<String, TopicShortItem> loadStoredTopics() throws MailArchiveException
     {
 
         final HashMap<String, TopicShortItem> existingTopics = new HashMap<String, TopicShortItem>();
@@ -296,7 +333,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
                 // map[topicId] = [fullname, subject]
                 TopicShortItem shorttopic = new TopicShortItem((String) topic[0], (String) topic[2]);
                 existingTopics.put((String) topic[1], shorttopic);
-                logger.debug(marker, "Loaded topic " + topic[0] + " : " + shorttopic);
+                logger.debug("Loaded topic " + topic[0] + " : " + shorttopic);
             }
         } catch (Exception e) {
             throw new MailArchiveException("Failed to load existing topics", e);
@@ -310,7 +347,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
      * @return a map of existing mails, with key = messageId
      * @throws MailArchiveException
      */
-    public HashMap<String, MailShortItem> loadExistingMessages() throws MailArchiveException
+    public HashMap<String, MailShortItem> loadStoredMessages() throws MailArchiveException
     {
 
         final HashMap<String, MailShortItem> existingMessages = new HashMap<String, MailShortItem>();
@@ -331,9 +368,9 @@ public class DefaultMailArchive implements MailArchive, Initializable
                         MailShortItem shortmail =
                             new MailShortItem((String) message[1], (String) message[2], (String) message[3]);
                         existingMessages.put((String) message[0], shortmail);
-                        logger.debug(marker, "Loaded mail " + message[1] + " : " + shortmail);
+                        logger.debug("Loaded mail " + message[1] + " : " + shortmail);
                     } else {
-                        logger.warn(marker, "Incorrect message object found in db for " + message[3]);
+                        logger.warn("Incorrect message object found in db for " + message[3]);
                     }
                 }
 
@@ -348,9 +385,61 @@ public class DefaultMailArchive implements MailArchive, Initializable
     }
 
     /**
-     * Loads the mailing-lists
-     * 
+     * @param server
      * @return
+     * @throws MailArchiveException
+     */
+    public Message[] loadMails(MailServer server) throws MailArchiveException
+    {
+        assert (server != null);
+
+        Message[] messages = new Message[] {};
+
+        if (checkMails(server) >= 0) {
+
+            try {
+                logger.info("Trying to retrieve mails from server " + server.toString());
+                // Get a session. Use a blank Properties object.
+                Properties props = new Properties();
+                // necessary to work with Gmail
+                props.put("mail.imap.partialfetch", "false");
+                props.put("mail.imaps.partialfetch", "false");
+                Session session = Session.getInstance(props);
+                // Get a Store object
+                Store store = session.getStore(server.getProtocol());
+
+                // Connect to the mail account
+                store.connect(server.getHost(), server.getPort(), server.getUser(), server.getPassword());
+                Folder fldr;
+                // Specifically for GMAIL ...
+                if (server.getHost().endsWith(".gmail.com")) {
+                    fldr = store.getDefaultFolder();
+                }
+                fldr = store.getFolder(server.getFolder());
+
+                fldr.open(Folder.READ_WRITE);
+
+                // Searches for mails not already read
+                FlagTerm searchterms = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
+                messages = fldr.search(searchterms);
+            } catch (Exception e) {
+                throw new MailArchiveException("Could not connect to server " + server, e);
+            }
+        } else {
+            throw new MailArchiveException("Connection to server checked as failed, not trying to load mails");
+        }
+
+        logger.info("Found " + messages.length + " messages");
+
+        return messages;
+
+    }
+
+    /**
+     * Loads the mailing-lists definitions.
+     * 
+     * @return A map of mailing-lists definitions with key being the mailing-list pattern to check, and value an array
+     *         [displayName, Tag]
      * @throws MailArchiveException
      */
     public HashMap<String, String[]> loadMailingLists() throws MailArchiveException
@@ -367,9 +456,9 @@ public class DefaultMailArchive implements MailArchive, Initializable
                 if (prop[0] != null && !"".equals(prop[0])) {
                     // map[pattern] = [displayname, Tag]
                     lists.put((String) prop[0], new String[] {(String) prop[1], (String) prop[2]});
-                    logger.info(marker, "Loaded list " + prop[1] + " / " + prop[2] + " / " + prop[0]);
+                    logger.info("Loaded list " + prop[1] + " / " + prop[2] + " / " + prop[0]);
                 } else {
-                    logger.warn(marker, "Incorrect mailing-list found in db " + prop[1]);
+                    logger.warn("Incorrect mailing-list found in db " + prop[1]);
                 }
             }
         } catch (Exception e) {
@@ -381,7 +470,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
     /**
      * Loads mail types from database.
      * 
-     * @return
+     * @return A list of mail types definitions.
      * @throws MailArchiveException
      */
     public List<MailType> loadMailTypes() throws MailArchiveException
@@ -406,8 +495,8 @@ public class DefaultMailArchive implements MailArchive, Initializable
                     for (int i = 0; i < splittedPatterns.length; i += 2) {
                         List<String> fields = Arrays.asList(splittedPatterns[i].split(",", 0));
                         patterns.put(fields, splittedPatterns[i + 1]);
-                        logger.info(marker, "Loaded mail type " + type[0] + " applying pattern "
-                            + splittedPatterns[i + 1] + " on fields " + fields);
+                        logger.info("Loaded mail type " + type[0] + " applying pattern " + splittedPatterns[i + 1]
+                            + " on fields " + fields);
                     }
                     typeobj.setPatterns(patterns);
 
@@ -423,6 +512,43 @@ public class DefaultMailArchive implements MailArchive, Initializable
         }
 
         return mailTypes;
+    }
+
+    /**
+     * Loads the mailing-lists
+     * 
+     * @return
+     * @throws MailArchiveException
+     */
+    public List<MailServer> loadServers() throws MailArchiveException
+    {
+        final List<MailServer> lists = new ArrayList<MailServer>();
+
+        String xwql =
+            "select doc.fullName from Document doc, doc.object('" + SPACE_CODE
+                + ".ServerSettingsClass') as server where doc.space='" + SPACE_PREFS + "'";
+        try {
+            List<String> props = this.queryManager.createQuery(xwql, Query.XWQL).execute();
+
+            for (String serverPrefsDoc : props) {
+                logger.info("Loading server definition from page " + serverPrefsDoc + " ...");
+                if (serverPrefsDoc != null && !"".equals(serverPrefsDoc)) {
+                    MailServer server = MailServer.fromPrefs(dab, serverPrefsDoc);
+                    if (server != null) {
+                        lists.add(server);
+                        logger.info("Loaded Server connection definition " + server);
+                    } else {
+                        logger.warn("Invalid server definition from document " + serverPrefsDoc);
+                    }
+
+                } else {
+                    logger.info("Incorrect Server preferences doc found in db");
+                }
+            }
+        } catch (Exception e) {
+            throw new MailArchiveException("Failed to load mailing-lists settings", e);
+        }
+        return lists;
     }
 
 }

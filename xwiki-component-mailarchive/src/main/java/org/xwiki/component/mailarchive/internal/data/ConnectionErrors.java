@@ -10,7 +10,8 @@ public enum ConnectionErrors
     UNEXPECTED_EXCEPTION(-4),
     FOLDER_NOT_FOUND(-5),
     UNKNOWN_HOST(-6),
-    OTHER_ERROR(-7);
+    OTHER_ERROR(-7),
+    INVALID_PREFERENCES(-8);
 
     private int code;
 

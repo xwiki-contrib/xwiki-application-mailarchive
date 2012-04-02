@@ -19,14 +19,13 @@
  */
 package org.xwiki.component.mailarchive.internal;
 
-import org.xwiki.component.annotation.Component;
-import org.xwiki.script.service.ScriptService;
-
-import org.xwiki.component.mailarchive.MailArchive;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import org.xwiki.component.annotation.Component;
+import org.xwiki.component.mailarchive.MailArchive;
+import org.xwiki.script.service.ScriptService;
 
 /**
  * Make the MailArchive API available to scripting.

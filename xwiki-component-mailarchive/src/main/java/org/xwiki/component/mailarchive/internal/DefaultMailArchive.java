@@ -19,7 +19,6 @@
  */
 package org.xwiki.component.mailarchive.internal;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -41,7 +40,6 @@ import javax.mail.search.FlagTerm;
 
 import org.slf4j.Logger;
 import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.bridge.DocumentModelBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.mailarchive.MailArchive;
 import org.xwiki.component.mailarchive.MailType;
@@ -55,7 +53,6 @@ import org.xwiki.component.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.context.Execution;
-import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -65,9 +62,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.BaseProperty;
-import com.xpn.xwiki.objects.IntegerProperty;
-import com.xpn.xwiki.objects.NumberProperty;
 
 /**
  * Implementation of a <tt>MailArchive</tt> component.
@@ -117,15 +111,12 @@ public class DefaultMailArchive implements MailArchive, Initializable
     @Override
     public void initialize() throws InitializationException
     {
-        try {
-            loadMailTypesDefinitions();
-            loadMailingListsDefinitions();
-            ExecutionContext context = execution.getContext();
-            this.context = (XWikiContext) context.getProperty("xwikicontext");
-            this.isInitialized = true;
-        } catch (MailArchiveException e) {
-            throw new InitializationException("Could not initiliaze mailarchive component", e);
-        }
+        /*
+         * try { loadMailTypesDefinitions(); loadMailingListsDefinitions(); ExecutionContext context =
+         * execution.getContext(); this.context = (XWikiContext) context.getProperty("xwikicontext"); this.isInitialized
+         * = true; } catch (MailArchiveException e) { throw new
+         * InitializationException("Could not initiliaze mailarchive component", e); }
+         */
 
     }
 
@@ -254,8 +245,8 @@ public class DefaultMailArchive implements MailArchive, Initializable
                     while (currentMsg < maxMailsNb && currentMsg < messages.length) {
                         try {
                             MailItem mail = MailParserImpl.parseMail(messages[currentMsg]);
-                            logger.debug("PARSED MAIL  " + currentMsg + " : " + mail);
-                            loadMail(messages[currentMsg], true, false, null);
+                            logger.debug("SERVER " + server + " PARSED MAIL  " + currentMsg + " : " + mail);
+                            loadMail(existingTopics, existingMessages, messages[currentMsg], true, false, null);
                             currentMsg++;
                         } catch (Exception e) {
                             // TODO Auto-generated catch block
@@ -277,139 +268,53 @@ public class DefaultMailArchive implements MailArchive, Initializable
             return false;
         }
 
-        try {
-            /*
-             * String loadingUserDoc = dab.getProperty(new DocumentReference("xwiki", spaceName, pageName),
-             * classReference, propertyName); // TODO getLoadingUser(); if (dab.exists(getLoadingUser()) ||
-             * !loadingUserDoc.getObject("XWiki.XWikiUsers")) { addDebug(
-             * "Default Loading user set in Settings does not exist. Cannot load emails" ) return false; } // Get a
-             * session. Use a blank Properties object. def props = new Properties(); // necessary to work with Gmail
-             * props.put("mail.imap.partialfetch", "false"); props.put("mail.imaps.partialfetch", "false"); def session
-             * = Session.getInstance(props); // Get a Store object def store = session.getStore(protocol); // Connect to
-             * the mail account store.connect(server, user, pass) def fldr = store.getFolder(mailingListFolder)
-             * fldr.open(Folder.READ_WRITE) // Searches for mails not already read def searchterms = new FlagTerm(new
-             * Flags(Flags.Flag.SEEN), false) def messages = fldr.search(searchterms) def nbMessages = messages.size()
-             * addDebug('Messages found : ' + nbMessages) if (nbMessages > 0) { // Load existing topics def nbTopics =
-             * loadExistingTopics() addDebug("Number of existing TOPICS loaded from db : $nbTopics") // Load existing
-             * mail ids def nbMails = loadExistingMessages()
-             * addDebug("Number of existing EMAILS loaded from db : $nbMails") // Load mailing lists settings def
-             * nbThreads = loadThreadsMap(threadsMap) def currmsg = 1 def nbLoaded = 0 // Load each message. If needed
-             * delete them, and in any case set them as read - only if could be loaded for(mail in messages) { def
-             * result = true try { addDebug("Loading mail ${currmsg}") try { result = loadMail(mail, true, false, null)
-             * } catch (javax.mail.MessagingException me) { addDebug(
-             * "Could not load mail normally due to MessagingException, trying to clone original email" ) // specific
-             * case of unloadable mail ByteArrayOutputStream bos = new ByteArrayOutputStream(); mail.writeTo(bos);
-             * bos.close(); SharedByteArrayInputStream bis = new SharedByteArrayInputStream(bos.toByteArray());
-             * MimeMessage cmail = new MimeMessage(session, bis); bis.close(); result = loadMail(cmail, true, false,
-             * null) } if (result[0]==true) { nbLoaded ++ if (withDelete==true) { mail.setFlag(Flags.Flag.DELETED,
-             * true); } mail.setFlag(Flags.Flag.SEEN, true); } } catch (Exception e) {
-             * addDebug("Failed to load mail with exception " + e.class + " " + e.getMessage()) e.printStackTrace()
-             * addDebugStackTrace(e) } currmsg ++ } // for each message
-             * addDebug("Loaded ${nbLoaded} messages over ${nbMessages}") try { // Update timeline info if needed if
-             * (nbLoaded > 0) { //@TODO : check an option for time-line generation
-             * addDebug("Refreshing time line information") URL url = new URL(xwiki
-             * .getDocument("MailArchiveCode.TimeLineFeed").getExternalURL() + "?xpage=plain"); URLConnection uc = url
-             * .openConnection() BufferedReader br = new BufferedReader( new InputStreamReader( uc.getInputStream()))
-             * String inputLine=null while ((inputLine = br.readLine()) != null) addDebug("\t" + inputLine) br.close()
-             * //println """{{include document="MailArchiveCode .TimeLineFeed" context="new" /}}"""
-             * //addDebug(xwiki.getDocument('{{include document="MailArchiveCode.TimeLineFeed" context="new"
-             * /}}').getRenderedContent()) } } catch (Throwable t) {
-             * addDebug("Failed to update time-line feed with exception " + t.class + " " + t.getMessage()) } } // if
-             * there are message if (withDelete) { fldr.close(true); } else { fldr.close(false); } store.close(); return
-             * true;
-             */
-
-        } catch (Throwable e) {
-            /*
-             * addDebug("Failed to load emails with exception " + e.class+ " " + e.getMessage()) addDebugStackTrace(e)
-             */
-        } finally {
-            // Release the lock in any case
-            /*
-             * release() System.out.println(getDebug());
-             */
-        }
-
         return true;
 
     }
 
-    public void loadMail(HashMap<String, TopicShortItem> existingTopics, HashMap<String, MailShortItem> existingMessages, Message message, boolean confirm, boolean isAttachedMail, String parentMail)
+    public void loadMail(HashMap<String, TopicShortItem> existingTopics,
+        HashMap<String, MailShortItem> existingMessages, Message message, boolean confirm, boolean isAttachedMail,
+        String parentMail)
     {
         DocumentReference topicDoc;
         DocumentReference msgDoc;
-        
-        MailItem m = MailParserImpl.parseMail(message);
-        logger.debug("PARSED MAIL : " + m);
-        
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZZ", m.getLocale());
 
-
-        // Create a new topic if needed
-        String existingTopicId = "";
-        // we don't create new topics for attached emails
-        if (!isAttachedMail) {
-            existingTopicId = existsTopic(existingTopics, existingMessages,m.getTopicId(), m.getTopic(), m.getReplyToId());
-            if (existingTopicId == null)
-            {
-                logger.debug("  did not find existing topic, creating a new one");
-                if (existingTopics.containsKey(m.getTopicId())) {
-                  logger.debug("  new topic but topicId already loaded, with use messageId as new topicId");
-                  m.setTopicId(m.getMessageId())  ;               
-                }
-                existingTopicId = m.getTopicId();
-                topicDoc = createTopicPage(m, dateFormatter, confirm);
-
-                logger.debug("  loaded new topic ${topicDoc}");
-            } else if (similarSubjects(m.getTopic(), existingTopics.get(existingTopicId).getSubject()))
-            {
-                logger.debug("  topic already loaded $m.topicId : ${existingTopics[existingTopicId]}");
-                topicDoc = updateTopicPage(m, existingTopicId, dateFormatter, confirm);
-            } else {
-                logger.debug("  found existing topic but subjects are too different, using new messageid as topicid [${m.messageId}]");
-                m.setTopicId(m.getMessageId());
-                m.setReplyToId("");
-                existingTopicId = existsTopic(existingTopics, existingMessages, m.getTopicId(), m.getTopic(), m.getReplyToId());
-                logger.debug("  creating new topic");
-                topicDoc = createTopicPage(m, dateFormatter, confirm);
-            }
-        } // if not attached email
-
-        // Create a new message if needed
-        if (!existingMessages.containsKey(m.getMessageId()))
-        {
-            logger.debug("creating new message ${m.messageId} ...");     
-            /* Note : use already existing topic id if any, instead of the one from the message, 
-            to keep an easy to parse link between thread messages */
-            if (existingTopicId == "") {
-                existingTopicId = m.getTopicId();
-            }
-            // Note : correction bug of messages linked to same topic but with different topicIds
-            m.setTopicId(existingTopicId);
-            msgDoc = createMailPage (m, existingTopicId, isAttachedMail, parentMail, confirm);           
-       
-            return [true,(topicDoc!=null?topicDoc.fullName:topicDoc),(msgDoc!=null?msgDoc.fullName:msgDoc)];
-        } else 
-        {
-            // message already loaded
-            logger.debug("Mail already loaded - checking for updates ...");
-
-            def msg = existingMessages[m.messageId];
-            logger.debug("TopicId of existing message " + msg[1] + " and of topic " + existingTopicId + " are different ?" + (msg[1]!=existingTopicId));
-            if (msg[1] != existingTopicId)
-            {
-                msgDoc = xwiki.getDocument(existingMessages[m.getMessageId()][2]);
-                def msgObj = msgDoc.getObject("MailArchiveCode.MailClass");
-                msgObj.set("topicid", existingTopicId);
-                if (confirm) 
-                {
-                    logger.debug("saving message ${m.subject}");
-                    saveAsUser(msgDoc, null, getLoadingUser(), "Updated mail with existing topic id found");
-                }
-            }
-          
-            return [true,(topicDoc!=null?topicDoc.fullName:topicDoc),(msgDoc!=null?msgDoc.fullName:msgDoc)];
-        }
+        /*
+         * MailItem m = MailParserImpl.parseMail(message); logger.debug("PARSED MAIL : " + m); SimpleDateFormat
+         * dateFormatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZZ", m.getLocale()); // Create a new topic
+         * if needed String existingTopicId = ""; // we don't create new topics for attached emails if (!isAttachedMail)
+         * { existingTopicId = existsTopic(existingTopics, existingMessages,m.getTopicId(), m.getTopic(),
+         * m.getReplyToId()); if (existingTopicId == null) {
+         * logger.debug("  did not find existing topic, creating a new one"); if
+         * (existingTopics.containsKey(m.getTopicId())) {
+         * logger.debug("  new topic but topicId already loaded, with use messageId as new topicId");
+         * m.setTopicId(m.getMessageId()) ; } existingTopicId = m.getTopicId(); topicDoc = createTopicPage(m,
+         * dateFormatter, confirm); logger.debug("  loaded new topic ${topicDoc}"); } else if
+         * (similarSubjects(m.getTopic(), existingTopics.get(existingTopicId).getSubject())) {
+         * logger.debug("  topic already loaded $m.topicId : ${existingTopics[existingTopicId]}"); topicDoc =
+         * updateTopicPage(m, existingTopicId, dateFormatter, confirm); } else { logger.debug(
+         * "  found existing topic but subjects are too different, using new messageid as topicid [${m.messageId}]");
+         * m.setTopicId(m.getMessageId()); m.setReplyToId(""); existingTopicId = existsTopic(existingTopics,
+         * existingMessages, m.getTopicId(), m.getTopic(), m.getReplyToId()); logger.debug("  creating new topic");
+         * topicDoc = createTopicPage(m, dateFormatter, confirm); } } // if not attached email // Create a new message
+         * if needed if (!existingMessages.containsKey(m.getMessageId())) {
+         * logger.debug("creating new message ${m.messageId} ..."); /* Note : use already existing topic id if any,
+         * instead of the one from the message, to keep an easy to parse link between thread messages
+         */
+        /*
+         * if (existingTopicId == "") { existingTopicId = m.getTopicId(); } // Note : correction bug of messages linked
+         * to same topic but with different topicIds m.setTopicId(existingTopicId); msgDoc = createMailPage (m,
+         * existingTopicId, isAttachedMail, parentMail, confirm); return
+         * [true,(topicDoc!=null?topicDoc.fullName:topicDoc),(msgDoc!=null?msgDoc.fullName:msgDoc)]; } else { // message
+         * already loaded logger.debug("Mail already loaded - checking for updates ..."); def msg =
+         * existingMessages[m.messageId]; logger.debug("TopicId of existing message " + msg[1] + " and of topic " +
+         * existingTopicId + " are different ?" + (msg[1]!=existingTopicId)); if (msg[1] != existingTopicId) { msgDoc =
+         * xwiki.getDocument(existingMessages[m.getMessageId()][2]); def msgObj =
+         * msgDoc.getObject("MailArchiveCode.MailClass"); msgObj.set("topicid", existingTopicId); if (confirm) {
+         * logger.debug("saving message ${m.subject}"); saveAsUser(msgDoc, null, getLoadingUser(),
+         * "Updated mail with existing topic id found"); } } return
+         * [true,(topicDoc!=null?topicDoc.fullName:topicDoc),(msgDoc!=null?msgDoc.fullName:msgDoc)]; }
+         */
     }
 
     /**
@@ -509,8 +414,9 @@ public class DefaultMailArchive implements MailArchive, Initializable
     }
 
     /**
-     * Compare 2 strings for similarity Returns true if strings can be considered similar enough - s1 and s2 have a
-     * levenshtein distance < 25% - s1 or s2 begins with s2 or s1 respectively
+     * Compare 2 strings for similarity Returns true if strings can be considered similar enough<br/>
+     * - s1 and s2 have a levenshtein distance < 25% <br/>
+     * - s1 or s2 begins with s2 or s1 respectively
      * 
      * @param s1
      * @param s2
@@ -526,7 +432,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
             return true;
         }
         try {
-            int d = getLevenshteinDistance(s1, s2);
+            double d = getLevenshteinDistance(s1, s2);
             logger.debug("similarSubjects : Levenshtein distance d=" + d);
             if (d <= 0.25) {
                 logger.debug("similarSubjects : subjects are considered similar because d <= 0.25");
@@ -542,7 +448,12 @@ public class DefaultMailArchive implements MailArchive, Initializable
         return false;
     }
 
-    private int getLevenshteinDistance(String s, String t)
+    /**
+     * @param s
+     * @param t
+     * @return
+     */
+    protected double getLevenshteinDistance(String s, String t)
     {
         if (s == null || t == null) {
             throw new IllegalArgumentException("Strings must not be null");
@@ -602,9 +513,11 @@ public class DefaultMailArchive implements MailArchive, Initializable
             d = _d;
         }
 
+        System.out.println("" + p[n] + " max " + Math.max(s.length(), t.length()));
+
         // our last action in the above loop was to switch d and p, so p now
         // actually has the most recent cost counts
-        return p[n] / Math.max(s.length(), t.length());
+        return (double) (p[n]) / ((double) Math.max(s.length(), t.length()));
     }
 
     /**

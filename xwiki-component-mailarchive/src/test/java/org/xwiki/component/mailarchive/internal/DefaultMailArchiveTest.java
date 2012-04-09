@@ -17,22 +17,25 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.component.mailarchive;
+package org.xwiki.component.mailarchive.internal;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.xwiki.component.mailarchive.MailArchive;
 import org.xwiki.query.QueryException;
 import org.xwiki.test.AbstractMockingComponentTestCase;
+import org.xwiki.test.annotation.MockingRequirement;
 
 /**
  * Tests for the {@link MailArchive} component.
  */
 public class DefaultMailArchiveTest extends AbstractMockingComponentTestCase
 {
-    /*
-     * @MockingRequirement private DefaultMailArchive ma;
-     */
+
+    @MockingRequirement
+    private DefaultMailArchive ma;
 
     @Test
     public void testLoadExistingTopics() throws QueryException
@@ -42,5 +45,14 @@ public class DefaultMailArchiveTest extends AbstractMockingComponentTestCase
          * Mockery context = new Mockery(); context.checking(new Expectations() {{ oneOf
          * (queryManager).createQuery(with(any(String.class)), Query.XWQL); }}); ma.loadExistingTopics();
          */
+    }
+
+    @Test
+    public void testGetLevenshteinDistance()
+    {
+        assertEquals(0, ma.getLevenshteinDistance("toto", "toto"), 0);
+        assertEquals(0.25, ma.getLevenshteinDistance("toto", "tito"), 0);
+        assertEquals(1, ma.getLevenshteinDistance("toto", "uiui"), 0);
+
     }
 }

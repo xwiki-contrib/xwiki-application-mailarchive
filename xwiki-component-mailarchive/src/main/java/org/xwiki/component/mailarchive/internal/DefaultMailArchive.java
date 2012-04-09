@@ -62,6 +62,7 @@ import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseProperty;
@@ -333,7 +334,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
 
     }
 
-    public void loadMail(Message message, boolean confirm, boolean isAttachedMail, String parentMail)
+    public void loadMail(HashMap<String, TopicShortItem> existingTopics, HashMap<String, MailShortItem> existingMessages, Message message, boolean confirm, boolean isAttachedMail, String parentMail)
     {
         DocumentReference topicDoc;
         DocumentReference msgDoc;
@@ -348,7 +349,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
         String existingTopicId = "";
         // we don't create new topics for attached emails
         if (!isAttachedMail) {
-            existingTopicId = existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId());
+            existingTopicId = existsTopic(existingTopics, existingMessages,m.getTopicId(), m.getTopic(), m.getReplyToId());
             if (existingTopicId == null)
             {
                 logger.debug("  did not find existing topic, creating a new one");
@@ -360,7 +361,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
                 topicDoc = createTopicPage(m, dateFormatter, confirm);
 
                 logger.debug("  loaded new topic ${topicDoc}");
-            } else if (similarSubjects(m.getTopic(), existingTopics[existingTopicId][1]))
+            } else if (similarSubjects(m.getTopic(), existingTopics.get(existingTopicId).getSubject()))
             {
                 logger.debug("  topic already loaded $m.topicId : ${existingTopics[existingTopicId]}");
                 topicDoc = updateTopicPage(m, existingTopicId, dateFormatter, confirm);
@@ -368,7 +369,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
                 logger.debug("  found existing topic but subjects are too different, using new messageid as topicid [${m.messageId}]");
                 m.setTopicId(m.getMessageId());
                 m.setReplyToId("");
-                existingTopicId = existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId());
+                existingTopicId = existsTopic(existingTopics, existingMessages, m.getTopicId(), m.getTopic(), m.getReplyToId());
                 logger.debug("  creating new topic");
                 topicDoc = createTopicPage(m, dateFormatter, confirm);
             }
@@ -422,78 +423,188 @@ public class DefaultMailArchive implements MailArchive, Initializable
      * @param inreplyto
      * @return
      */
-    public String existsTopic(HashMap<String, MailShortItem> existingMessages, String topicId, String topicSubject, String inreplyto)
+    public String existsTopic(HashMap<String, TopicShortItem> existingTopics,
+        HashMap<String, MailShortItem> existingMessages, String topicId, String topicSubject, String inreplyto)
     {
         String foundTopicId = null;
         String replyId = inreplyto;
-        String previous = "";     
+        String previous = "";
         String previousSubject = topicSubject;
         boolean quit = false;
- 
-        // Search in existing messages for existing msg id = new reply id, and grab topic id 
+
+        // Search in existing messages for existing msg id = new reply id, and grab topic id
         // search replies until root message
-        while (existingMessages.containsKey(replyId) && existingMessages.get(replyId) != null && !quit) 
-        {
-            XWikiDocument msgDoc = context.getWiki().getDocument(existingMessages.get(replyId).getFullName(), context);
-            if (msgDoc != null) 
-            { 
+        while (existingMessages.containsKey(replyId) && existingMessages.get(replyId) != null && !quit) {
+            XWikiDocument msgDoc = null;
+            try {
+                msgDoc = context.getWiki().getDocument(existingMessages.get(replyId).getFullName(), context);
+            } catch (XWikiException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            if (msgDoc != null) {
                 BaseObject msgObj = msgDoc.getObject(SPACE_CODE + ".MailClass");
-                if (msgObj != null)  
-                {
-                   logger.debug("existsTopic : message " + replyId + " is a reply to " + existingMessages.get(replyId));
-                   if (similarSubjects(previousSubject,msgObj.getStringValue("topicsubject"))) {            
-                     previous = replyId;
-                     replyId = msgObj.getStringValue("inreplyto");
-                     previousSubject = msgObj.getStringValue("topicSubject");
-                   } else {
-                     logger.debug("existsTopic : existing message subject is too different, exiting loop");
-                     quit = true;
-                   }
-                } else { replyId = null; }
-            } else { replyId = null; }
-        } 
-        if (replyId != inreplyto && replyId != null)
-        {
-            logger.debug("existsTopic : found existing message that current message is a reply to, to attach to same topic id");
+                if (msgObj != null) {
+                    logger
+                        .debug("existsTopic : message " + replyId + " is a reply to " + existingMessages.get(replyId));
+                    if (similarSubjects(previousSubject, msgObj.getStringValue("topicsubject"))) {
+                        previous = replyId;
+                        replyId = msgObj.getStringValue("inreplyto");
+                        previousSubject = msgObj.getStringValue("topicSubject");
+                    } else {
+                        logger.debug("existsTopic : existing message subject is too different, exiting loop");
+                        quit = true;
+                    }
+                } else {
+                    replyId = null;
+                }
+            } else {
+                replyId = null;
+            }
+        }
+        if (replyId != inreplyto && replyId != null) {
+            logger
+                .debug("existsTopic : found existing message that current message is a reply to, to attach to same topic id");
             foundTopicId = existingMessages.get(previous).getTopicId();
             logger.debug("existsTopic : Found topic id " + foundTopicId);
-        } else
-        {
+        } else {
             // Search in existing topics with id
-            if (existingTopics.containsKey(topicId))
-            {
+            if (existingTopics.containsKey(topicId)) {
                 logger.debug("existsTopic : found topic id in loaded topics");
-                if (similarSubjects(topicSubject, existingTopics[topicId][1])) {
-                  foundTopicId = topicId
+                if (similarSubjects(topicSubject, existingTopics.get(topicId).getSubject())) {
+                    foundTopicId = topicId;
                 } else {
-                  addDebug("... but subjects are too different")
+                    logger.debug("... but subjects are too different");
                 }
-            } 
-            if (foundTopicId == null) 
-            {
+            }
+            if (foundTopicId == null) {
                 // Search in existing topics with exactly same subject
-                existingTopics.findAll{it.value[1].trim().equalsIgnoreCase(topicSubject.trim())}.each() {
-                  addDebug("existsTopic : found subject in loaded topics")
-                  if (inreplyto != "")
-                  {           
-                    foundTopicId = it.key
-                  } else { 
-                    addDebug("existsTopic : found a topic but it's first message in topic") 
-                    // Note : desperate tentative to attach this message to an existing topic 
-                    //        instead of creating a new one ... Sometimes replyId and refs can be 
-                    //        empty even if this is a reply to something already loaded, in this
-                    //        case we just check if topicId was already loaded once, even if not
-                    //        the same topic ...
-                    if (existingTopics.containsKey(topicId)) {
-                      addDebug("existsTopic : ... but we 'saw' this topicId before, so attach to found topicId ${it.key} with same subject")
-                      foundTopicId = it.key
+                for (String currentTopicId : existingTopics.keySet()) {
+                    TopicShortItem currentTopic = existingTopics.get(currentTopicId);
+                    if (currentTopic.getSubject().trim().equalsIgnoreCase(topicSubject.trim())) {
+                        logger.debug("existsTopic : found subject in loaded topics");
+                        if (!"".equals(inreplyto)) {
+                            foundTopicId = currentTopicId;
+                        } else {
+                            logger.debug("existsTopic : found a topic but it's first message in topic");
+                            // Note : desperate tentative to attach this message to an existing topic
+                            // instead of creating a new one ... Sometimes replyId and refs can be
+                            // empty even if this is a reply to something already loaded, in this
+                            // case we just check if topicId was already loaded once, even if not
+                            // the same topic ...
+                            if (existingTopics.containsKey(topicId)) {
+                                logger
+                                    .debug("existsTopic : ... but we 'saw' this topicId before, so attach to found topicId "
+                                        + currentTopicId + " with same subject");
+                                foundTopicId = currentTopicId;
+                            }
+                        }
+
                     }
-                  }
                 }
             }
         }
-  
-        return foundTopicId
+
+        return foundTopicId;
+    }
+
+    /**
+     * Compare 2 strings for similarity Returns true if strings can be considered similar enough - s1 and s2 have a
+     * levenshtein distance < 25% - s1 or s2 begins with s2 or s1 respectively
+     * 
+     * @param s1
+     * @param s2
+     * @return
+     */
+    private boolean similarSubjects(String s1, String s2)
+    {
+        logger.debug("similarSubjects : comparing [" + s1 + "] and [" + s2 + "]");
+        s1 = s1.replaceAll("^([Rr][Ee]:|[Ff][Ww]:)(.*)$", "$2");
+        s2 = s2.replaceAll("^([Rr][Ee]:|[Ff][Ww]:)(.*)$", "$2");
+        if (s1 == s2) {
+            logger.debug("similarSubjects : subjects are equal");
+            return true;
+        }
+        try {
+            int d = getLevenshteinDistance(s1, s2);
+            logger.debug("similarSubjects : Levenshtein distance d=" + d);
+            if (d <= 0.25) {
+                logger.debug("similarSubjects : subjects are considered similar because d <= 0.25");
+                return true;
+            }
+        } catch (IllegalArgumentException iaE) {
+            return false;
+        }
+        if (s1.startsWith(s2) || s2.startsWith(s1)) {
+            logger.debug("similarSubjects : subjects are considered similar because one start with the other");
+            return true;
+        }
+        return false;
+    }
+
+    private int getLevenshteinDistance(String s, String t)
+    {
+        if (s == null || t == null) {
+            throw new IllegalArgumentException("Strings must not be null");
+        }
+
+        /*
+         * The difference between this impl. and the previous is that, rather than creating and retaining a matrix of
+         * size s.length()+1 by t.length()+1, we maintain two single-dimensional arrays of length s.length()+1. The
+         * first, d, is the 'current working' distance array that maintains the newest distance cost counts as we
+         * iterate through the characters of String s. Each time we increment the index of String t we are comparing, d
+         * is copied to p, the second int[]. Doing so allows us to retain the previous cost counts as required by the
+         * algorithm (taking the minimum of the cost count to the left, up one, and diagonally up and to the left of the
+         * current cost count being calculated). (Note that the arrays aren't really copied anymore, just
+         * switched...this is clearly much better than cloning an array or doing a System.arraycopy() each time through
+         * the outer loop.) Effectively, the difference between the two implementations is this one does not cause an
+         * out of memory condition when calculating the LD over two very large strings.
+         */
+
+        int n = s.length(); // length of s
+        int m = t.length(); // length of t
+
+        if (n == 0) {
+            return m;
+        } else if (m == 0) {
+            return n;
+        }
+
+        int[] p = new int[n + 1]; // 'previous' cost array, horizontally
+        int[] d = new int[n + 1]; // cost array, horizontally
+        int[] _d; // placeholder to assist in swapping p and d
+
+        // indexes into strings s and t
+        int i; // iterates through s
+        int j; // iterates through t
+
+        char t_j; // jth character of t
+
+        int cost; // cost
+
+        for (i = 0; i <= n; i++) {
+            p[i] = i;
+        }
+
+        for (j = 1; j <= m; j++) {
+            t_j = t.charAt(j - 1);
+            d[0] = j;
+
+            for (i = 1; i <= n; i++) {
+                cost = s.charAt(i - 1) == t_j ? 0 : 1;
+                // minimum of cell to the left+1, to the top+1, diagonally left and up +cost
+                d[i] = Math.min(Math.min(d[i - 1] + 1, p[i] + 1), p[i - 1] + cost);
+            }
+
+            // copy current distance counts to 'previous row' distance counts
+            _d = p;
+            p = d;
+            d = _d;
+        }
+
+        // our last action in the above loop was to switch d and p, so p now
+        // actually has the most recent cost counts
+        return p[n] / Math.max(s.length(), t.length());
     }
 
     /**

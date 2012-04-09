@@ -19,8 +19,6 @@
  */
 package org.xwiki.component.mailarchive.internal;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,18 +42,17 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.mailarchive.MailArchive;
 import org.xwiki.component.mailarchive.MailType;
 import org.xwiki.component.mailarchive.internal.data.ConnectionErrors;
+import org.xwiki.component.mailarchive.internal.data.MailArchiveFactory;
 import org.xwiki.component.mailarchive.internal.data.MailItem;
 import org.xwiki.component.mailarchive.internal.data.MailServer;
 import org.xwiki.component.mailarchive.internal.data.MailShortItem;
-import org.xwiki.component.mailarchive.internal.data.MailTypeImpl;
 import org.xwiki.component.mailarchive.internal.data.TopicShortItem;
 import org.xwiki.component.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
 import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.query.Query;
-import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 
 import com.xpn.xwiki.XWikiContext;
@@ -99,7 +96,9 @@ public class DefaultMailArchive implements MailArchive, Initializable
     @Inject
     private Logger logger;
 
-    private HashMap<String, String[]> existingTopics;
+    private MailArchiveStore store;
+
+    private MailArchiveFactory factory;
 
     private boolean isInitialized = false;
 
@@ -111,12 +110,21 @@ public class DefaultMailArchive implements MailArchive, Initializable
     @Override
     public void initialize() throws InitializationException
     {
+
+        // try {
         /*
-         * try { loadMailTypesDefinitions(); loadMailingListsDefinitions(); ExecutionContext context =
-         * execution.getContext(); this.context = (XWikiContext) context.getProperty("xwikicontext"); this.isInitialized
-         * = true; } catch (MailArchiveException e) { throw new
+         * loadMailTypesDefinitions(); loadMailingListsDefinitions();
+         */
+        ExecutionContext context = execution.getContext();
+        this.context = (XWikiContext) context.getProperty("xwikicontext");
+        this.isInitialized = true;
+        /*
+         * } catch (MailArchiveException e) { throw new
          * InitializationException("Could not initiliaze mailarchive component", e); }
          */
+
+        this.factory = new MailArchiveFactory(dab);
+        this.store = new MailArchiveStore(queryManager, logger, factory);
 
     }
 
@@ -129,7 +137,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
     public int checkMails(String serverPrefsDoc)
     {
         // Retrieve connection properties from prefs
-        MailServer server = MailServer.fromPrefs(dab, serverPrefsDoc);
+        MailServer server = factory.createMailServer(serverPrefsDoc);
         if (server == null) {
             logger.warn("Could not retrieve server information from wiki page " + serverPrefsDoc);
             return ConnectionErrors.INVALID_PREFERENCES.getCode();
@@ -207,6 +215,8 @@ public class DefaultMailArchive implements MailArchive, Initializable
 
         try {
             logger.debug("Updating server state in " + server.getWikiDoc());
+            logger.warn("Context.getWiki " + context.getWiki());
+            logger.warn("getWikiDoc " + server.getWikiDoc());
             XWikiDocument serverDoc = context.getWiki().getDocument(server.getWikiDoc(), context);
             BaseObject serverObj = serverDoc.getObject(SPACE_CODE + ".ServerSettingsClass");
             serverObj.set("status", nbMessages, context);
@@ -232,11 +242,11 @@ public class DefaultMailArchive implements MailArchive, Initializable
                 initialize();
             }
 
-            List<MailServer> servers = loadServersDefinitions();
-            List<MailType> mailTypes = loadMailTypesDefinitions();
-            HashMap<String, String[]> mailingLists = loadMailingListsDefinitions();
-            HashMap<String, TopicShortItem> existingTopics = loadStoredTopics();
-            HashMap<String, MailShortItem> existingMessages = loadStoredMessages();
+            List<MailServer> servers = store.loadServersDefinitions();
+            List<MailType> mailTypes = store.loadMailTypesDefinitions();
+            HashMap<String, String[]> mailingLists = store.loadMailingListsDefinitions();
+            HashMap<String, TopicShortItem> existingTopics = store.loadStoredTopics();
+            HashMap<String, MailShortItem> existingMessages = store.loadStoredMessages();
 
             for (MailServer server : servers) {
                 try {
@@ -244,7 +254,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
                     int currentMsg = 0;
                     while (currentMsg < maxMailsNb && currentMsg < messages.length) {
                         try {
-                            MailItem mail = MailParserImpl.parseMail(messages[currentMsg]);
+                            MailItem mail = MailItem.fromMessage(messages[currentMsg]);
                             logger.debug("SERVER " + server + " PARSED MAIL  " + currentMsg + " : " + mail);
                             loadMail(existingTopics, existingMessages, messages[currentMsg], true, false, null);
                             currentMsg++;
@@ -521,80 +531,6 @@ public class DefaultMailArchive implements MailArchive, Initializable
     }
 
     /**
-     * Loads existing topics minimal information from database.
-     * 
-     * @return a map of existing topics, with key = topicId
-     * @throws QueryException
-     */
-    public HashMap<String, TopicShortItem> loadStoredTopics() throws MailArchiveException
-    {
-
-        final HashMap<String, TopicShortItem> existingTopics = new HashMap<String, TopicShortItem>();
-        List<Object[]> topics;
-
-        String xwql =
-            "select doc.fullName, topic.topicid, topic.subject " + "from Document doc, doc.object(" + SPACE_CODE
-                + ".MailTopicClass) as  topic " + "where doc.space='" + SPACE_ITEMS + "'";
-
-        try {
-            topics = this.queryManager.createQuery(xwql, Query.XWQL).execute();
-
-            for (Object[] topic : topics) {
-                // map[topicId] = [fullname, subject]
-                TopicShortItem shorttopic = new TopicShortItem((String) topic[0], (String) topic[2]);
-                existingTopics.put((String) topic[1], shorttopic);
-                logger.debug("Loaded topic " + topic[0] + " : " + shorttopic);
-            }
-        } catch (Exception e) {
-            throw new MailArchiveException("Failed to load existing topics", e);
-        }
-        return existingTopics;
-    }
-
-    /**
-     * Loads existing mails minimal information from database.
-     * 
-     * @return a map of existing mails, with key = messageId
-     * @throws MailArchiveException
-     */
-    public HashMap<String, MailShortItem> loadStoredMessages() throws MailArchiveException
-    {
-
-        final HashMap<String, MailShortItem> existingMessages = new HashMap<String, MailShortItem>();
-        List<Object[]> messages;
-
-        try {
-            String xwql =
-                "select mail.messageid, mail.messagesubject, mail.topicid, doc.fullName "
-                    + "from Document doc, doc.object(" + SPACE_CODE + ".MailClass) as  mail " + "where doc.space='"
-                    + SPACE_ITEMS + "'";
-
-            messages = this.queryManager.createQuery(xwql, Query.XWQL).execute();
-
-            if (messages != null) {
-                for (Object[] message : messages) {
-                    if (message[0] != null && message[0] != "") {
-                        // map[messageid] = [subject, topicid, fullName]
-                        MailShortItem shortmail =
-                            new MailShortItem((String) message[1], (String) message[2], (String) message[3]);
-                        existingMessages.put((String) message[0], shortmail);
-                        logger.debug("Loaded mail " + message[1] + " : " + shortmail);
-                    } else {
-                        logger.warn("Incorrect message object found in db for " + message[3]);
-                    }
-                }
-
-            }
-
-        } catch (Exception e) {
-            throw new MailArchiveException("Failed to load existing messages", e);
-        }
-
-        return existingMessages;
-
-    }
-
-    /**
      * @param server
      * @return
      * @throws MailArchiveException
@@ -643,122 +579,6 @@ public class DefaultMailArchive implements MailArchive, Initializable
 
         return messages;
 
-    }
-
-    /**
-     * Loads the mailing-lists definitions.
-     * 
-     * @return A map of mailing-lists definitions with key being the mailing-list pattern to check, and value an array
-     *         [displayName, Tag]
-     * @throws MailArchiveException
-     */
-    public HashMap<String, String[]> loadMailingListsDefinitions() throws MailArchiveException
-    {
-        final HashMap<String, String[]> lists = new HashMap<String, String[]>();
-
-        String xwql =
-            "select list.pattern, list.displayname, list.Tag from Document doc, doc.object('" + SPACE_CODE
-                + ".ListsSettingsClass') as list where doc.space='" + SPACE_PREFS + "'";
-        try {
-            List<Object[]> props = this.queryManager.createQuery(xwql, Query.XWQL).execute();
-
-            for (Object[] prop : props) {
-                if (prop[0] != null && !"".equals(prop[0])) {
-                    // map[pattern] = [displayname, Tag]
-                    lists.put((String) prop[0], new String[] {(String) prop[1], (String) prop[2]});
-                    logger.info("Loaded list " + prop[1] + " / " + prop[2] + " / " + prop[0]);
-                } else {
-                    logger.warn("Incorrect mailing-list found in db " + prop[1]);
-                }
-            }
-        } catch (Exception e) {
-            throw new MailArchiveException("Failed to load mailing-lists settings", e);
-        }
-        return lists;
-    }
-
-    /**
-     * Loads mail types from database.
-     * 
-     * @return A list of mail types definitions.
-     * @throws MailArchiveException
-     */
-    public List<MailType> loadMailTypesDefinitions() throws MailArchiveException
-    {
-        List<MailType> mailTypes = new ArrayList<MailType>();
-
-        String xwql =
-            "select type.name, type.icon, type.patternList from Document doc, doc.object(" + SPACE_CODE
-                + ".TypesSettingsClass) as type where doc.space='" + SPACE_PREFS + "'";
-        try {
-            List<Object[]> types = this.queryManager.createQuery(xwql, Query.XWQL).execute();
-
-            for (Object[] type : types) {
-                MailTypeImpl typeobj = new MailTypeImpl();
-                typeobj.setName((String) type[0]);
-                typeobj.setIcon((String) type[1]);
-
-                HashMap<List<String>, String> patterns = new HashMap<List<String>, String>();
-                String patternsList = (String) type[2];
-                String[] splittedPatterns = patternsList.split("\n", -1);
-                if (splittedPatterns.length % 2 == 0) {
-                    for (int i = 0; i < splittedPatterns.length; i += 2) {
-                        List<String> fields = Arrays.asList(splittedPatterns[i].split(",", 0));
-                        patterns.put(fields, splittedPatterns[i + 1]);
-                        logger.info("Loaded mail type " + type[0] + " applying pattern " + splittedPatterns[i + 1]
-                            + " on fields " + fields);
-                    }
-                    typeobj.setPatterns(patterns);
-
-                    mailTypes.add(typeobj);
-
-                } else {
-                    logger.warn("Invalid patterns list found for type " + type[0]);
-                }
-            }
-
-        } catch (Exception e) {
-            throw new MailArchiveException("Failed to load mail types settings", e);
-        }
-
-        return mailTypes;
-    }
-
-    /**
-     * Loads the mailing-lists
-     * 
-     * @return
-     * @throws MailArchiveException
-     */
-    public List<MailServer> loadServersDefinitions() throws MailArchiveException
-    {
-        final List<MailServer> lists = new ArrayList<MailServer>();
-
-        String xwql =
-            "select doc.fullName from Document doc, doc.object('" + SPACE_CODE
-                + ".ServerSettingsClass') as server where doc.space='" + SPACE_PREFS + "'";
-        try {
-            List<String> props = this.queryManager.createQuery(xwql, Query.XWQL).execute();
-
-            for (String serverPrefsDoc : props) {
-                logger.info("Loading server definition from page " + serverPrefsDoc + " ...");
-                if (serverPrefsDoc != null && !"".equals(serverPrefsDoc)) {
-                    MailServer server = MailServer.fromPrefs(dab, serverPrefsDoc);
-                    if (server != null) {
-                        lists.add(server);
-                        logger.info("Loaded Server connection definition " + server);
-                    } else {
-                        logger.warn("Invalid server definition from document " + serverPrefsDoc);
-                    }
-
-                } else {
-                    logger.info("Incorrect Server preferences doc found in db");
-                }
-            }
-        } catch (Exception e) {
-            throw new MailArchiveException("Failed to load mailing-lists settings", e);
-        }
-        return lists;
     }
 
 }

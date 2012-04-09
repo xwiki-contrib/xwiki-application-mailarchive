@@ -19,8 +19,6 @@
  */
 package org.xwiki.component.mailarchive.internal.data;
 
-import org.xwiki.bridge.DocumentAccessBridge;
-
 /**
  * @version $Id$
  */
@@ -50,32 +48,6 @@ public class MailServer
     public MailServer()
     {
         super();
-    }
-
-    /**
-     * Creates a MailServer from preferences document.
-     * 
-     * @param serverPrefsDoc wiki page name of preferences document.
-     * @return constructed MailServer object.
-     */
-    public static MailServer fromPrefs(final DocumentAccessBridge dab, final String serverPrefsDoc)
-    {
-        if (!dab.exists(serverPrefsDoc)) {
-            return null;
-        }
-        MailServer server = new MailServer();
-
-        // Retrieve connection properties from prefs
-        server.host = (String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", "hostname");
-        server.port =
-            Integer.parseInt((String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", "port"));
-        server.protocol = (String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", "protocol");
-        server.user = (String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", "user");
-        server.password = (String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", "password");
-        server.folder = (String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", "folder");
-        server.wikiDoc = serverPrefsDoc;
-
-        return server;
     }
 
     public String getHost()
@@ -159,7 +131,7 @@ public class MailServer
     {
         StringBuilder builder = new StringBuilder();
         builder.append("MailServer [host=").append(host).append(", port=").append(port).append(", protocol=")
-            .append(protocol).append(", user=").append(user).append(", password=").append(password).append(", folder=")
+            .append(protocol).append(", user=").append(user).append(", password=").append("*****").append(", folder=")
             .append(folder).append(", wikiDoc=").append(wikiDoc).append("]");
         return builder.toString();
     }

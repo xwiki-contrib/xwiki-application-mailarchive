@@ -20,6 +20,7 @@
 package org.xwiki.component.mailarchive.internal.data;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,6 +29,8 @@ import java.util.Locale;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeUtility;
+
+import org.xwiki.component.mailarchive.internal.Utils;
 
 /**
  * POJO representing a Mail.
@@ -375,17 +378,6 @@ public class MailItem
         String[] headers;
 
         try {
-            String topicId = "";
-            headers = mail.getHeader("Thread-Index");
-            if (headers != null) {
-                topicId = MimeUtility.decodeText(headers[0]);
-                topicId = cropId(topicId);
-            }
-            if (topicId.length() >= 30) {
-                topicId = topicId.substring(0, 29);
-            }
-            m.setTopicId(topicId);
-
             String messageId = "";
             headers = mail.getHeader("Message-ID");
             if (headers != null) {
@@ -418,12 +410,40 @@ public class MailItem
             }
             m.setSubject(subject);
 
+            // If topic is not provided, we use message subject without the beginning junk
+            // If topic header is provided but empty, we use a default subject to indicate that there is none
+            // TODO : why did I cut IDs to 30 chars long ? It's usually longer than that and it would fit in a
+            // StringProperty ????
+            // CAHW2-9EBk1MUoqrC-duqXhth3k9nA-T+7BUQO-qnScNJHvWM4g@mail.gmail.com
             String topic = "[no subject]";
             headers = mail.getHeader("Thread-Topic");
-            if (headers != null && !headers[0].isEmpty()) {
-                topic = MimeUtility.decodeText(headers[0]).replaceAll("\n", " ").replaceAll("\r", " ");
+            if (headers != null) {
+                if (!headers[0].isEmpty()) {
+                    topic = MimeUtility.decodeText(headers[0]).replaceAll("\n", " ").replaceAll("\r", " ");
+                }
+            } else {
+                topic = subject.replaceAll("(?mi)([\\[\\(] *)?(RE|FWD?) *([-:;)\\]][ :;\\])-]*|$)|\\]+ *$", "");
             }
             m.setTopic(topic);
+
+            // Topic Id : if none is provided, we generate a SHA-1 hash of the subject, if we can't we use the message
+            // Id
+            String topicId = "";
+            headers = mail.getHeader("Thread-Index");
+            if (headers != null) {
+                topicId = MimeUtility.decodeText(headers[0]);
+                topicId = cropId(topicId);
+            } else {
+                try {
+                    topicId = Utils.SHA1(topic);
+                } catch (NoSuchAlgorithmException e) {
+                    topicId = messageId;
+                }
+            }
+            if (topicId.length() >= 30) {
+                topicId = topicId.substring(0, 29);
+            }
+            m.setTopicId(topicId);
 
             String from = "";
             headers = mail.getHeader("From");

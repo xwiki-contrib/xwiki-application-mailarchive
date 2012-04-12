@@ -40,8 +40,10 @@ import javax.mail.FolderNotFoundException;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeUtility;
 import javax.mail.search.FlagTerm;
 
@@ -285,10 +287,8 @@ public class DefaultMailArchive implements MailArchive, Initializable
                         int currentMsg = 0;
                         while (currentMsg < maxMailsNb && currentMsg < messages.length) {
                             try {
-                                MailItem mail = MailItem.fromMessage(messages[currentMsg]);
-                                setMailSpecificParts(mail);
-                                logger.warn("SERVER " + server + " PARSED MAIL  " + currentMsg + " : " + mail);
-                                loadMail(mail, true, false, null);
+
+                                loadMail(messages[currentMsg], true, false, null);
                                 currentMsg++;
                             } catch (Exception e) {
                                 // TODO Auto-generated catch block
@@ -385,6 +385,16 @@ public class DefaultMailArchive implements MailArchive, Initializable
         // * String userwiki = parseUser(from); if (userwiki == null || userwiki == "") { userwiki = unknownUser; }
         // */
         m.setWikiuser(null);
+    }
+
+    public MailLoadingResult loadMail(Part mail, boolean confirm, boolean isAttachedMail, String parentMail)
+        throws XWikiException
+    {
+        MailItem m = MailItem.fromMessage(mail);
+        setMailSpecificParts(m);
+        logger.warn("PARSED MAIL  " + mail);
+
+        return loadMail(m, true, false, null);
     }
 
     /**
@@ -655,10 +665,10 @@ public class DefaultMailArchive implements MailArchive, Initializable
         String content = "";
         String htmlcontent = "";
         String zippedhtmlcontent = "";
-        HashMap<String, String> attachedMails = new HashMap<String, String>();
+        ArrayList<String> attachedMails = new ArrayList<String>();
         // a map to store attachment filename = contentId for replacements in HTML retrieved from mails
         HashMap<String, String> attachmentsMap = new HashMap<String, String>();
-        ArrayList<Object> attbodyparts = new ArrayList<Object>();
+        ArrayList<MimeBodyPart> attbodyparts = new ArrayList<MimeBodyPart>();
 
         char prefix = 'M';
         if (isAttachedMail) {
@@ -690,12 +700,12 @@ public class DefaultMailArchive implements MailArchive, Initializable
             logger.debug("Fetching plain text content ...");
             content = getMailContent((Multipart) bodypart);
             logger.debug("Fetching HTML content ...");
-            htmlcontent = getMailContentHtml(bodypart, 0);
+            htmlcontent = getMailContentHtml((Multipart) bodypart, 0);
             logger.debug("Fetching attached mails ...");
-            attachedMails = getMailContentAttachedMails(bodypart, msgDoc.getFullName());
+            attachedMails = getMailContentAttachedMails((Multipart) bodypart, msgDoc.getFullName());
 
             logger.debug("Fetching attachments from mail");
-            int nbatts = getMailAttachments(bodypart, attbodyparts);
+            int nbatts = getMailAttachments((Multipart) bodypart, attbodyparts);
             logger.debug("FOUND " + nbatts + " attachments to add");
             logger.debug("Retrieving contentIds ...");
             fillAttachmentContentIds(attbodyparts, attachmentsMap);
@@ -887,6 +897,214 @@ public class DefaultMailArchive implements MailArchive, Initializable
             logger.warn("Failed to get Mail Content", e);
             return "Failed to get Mail Content";
         }
+    }
+
+    /*
+     * Retrieves HTML parts only from a mail and returns them as String
+     */
+    public String getMailContentHtml(Multipart bodypart, int level)
+    {
+        StringBuffer content = new StringBuffer();
+        try {
+            int mcount = bodypart.getCount();
+            int i = 0;
+            while (i < mcount) {
+                BodyPart newbodypart = bodypart.getBodyPart(i);
+                logger.debug("BODYPART CONTENTTYPE = " + newbodypart.getContentType().toLowerCase() + " FILENAME = "
+                    + newbodypart.getFileName());
+                // we don't treat attachments here
+                if (newbodypart.getFileName() == null) {
+                    // Note : we treat HTML appart
+                    if (newbodypart.getContentType().toLowerCase().startsWith("text/html")) {
+                        String htmlcontent = (String) newbodypart.getContent();
+                        logger.debug("Adding HTML text of length " + htmlcontent.length() + " to content");
+                        content.append(" ").append(htmlcontent);
+                    }
+
+                    if (newbodypart.getContentType().toLowerCase().startsWith("multipart/")) {
+                        logger.debug("Adding multipart to content");
+                        String ncontent = getMailContentHtml((Multipart) newbodypart.getContent(), level + 1);
+                        if (!"".equals(ncontent)) {
+                            content.append(" ").append(ncontent);
+                        }
+                    }
+
+                    if (newbodypart.getContentType().toLowerCase().startsWith("message/rfc822")) {
+                        logger.debug("Adding rfc822 to content");
+                        BodyPart rfcbodypart = (BodyPart) newbodypart.getContent();
+                        logger.debug("BODYPART CONTENTTYPE for RFC822 = " + rfcbodypart.getContentType().toLowerCase()
+                            + " FILENAME = " + rfcbodypart.getFileName());
+                        String from = rfcbodypart.getHeader("From")[0];
+                        // If header is set, it's likely to be an attached mail to the original mail, so we load it
+                        // first
+                        if (from != null && !"".equals(from)) {
+                            logger.debug("Not Html, but attached email");
+                        } else {
+                            String ncontent = getMailContentHtml((Multipart) rfcbodypart.getContent(), level + 1);
+                            if (!"".equals(ncontent)) {
+                                content.append(" ").append(ncontent);
+                            }
+                        }
+                    }
+                } else { // not an attachment
+                    logger.debug("bodypart has a filename " + newbodypart.getFileName() + ", no html to fetch");
+                }
+
+                i++;
+            }
+
+            return content.toString();
+
+        } catch (Exception e) {
+            logger.warn("Failed to get Html Mail Content", e);
+            return "Failed to get Html Mail Content " + e.getClass() + " " + e.getMessage();
+        }
+    }
+
+    /*
+     * Retrieves attached mails parts only from a mail, loads them and returns a String with list of created pages
+     */
+    public ArrayList<String> getMailContentAttachedMails(Multipart bodypart, String parentMail)
+    {
+        try {
+            ArrayList<String> attachedMailsList = new ArrayList<String>();
+            int mcount = bodypart.getCount();
+            int i = 0;
+            ArrayList<String> result;
+            while (i < mcount) {
+                BodyPart newbodypart = bodypart.getBodyPart(i);
+
+                if (newbodypart.getContentType().toLowerCase().startsWith("multipart/")) {
+                    logger.debug("Adding multipart to attached mails");
+                    result = getMailContentAttachedMails((Multipart) newbodypart.getContent(), parentMail);
+                    attachedMailsList.addAll(result);
+                }
+
+                if (newbodypart.getContentType().toLowerCase().startsWith("message/rfc822")) {
+                    logger.debug("Adding rfc822 to content");
+                    BodyPart rfcbodypart = (BodyPart) newbodypart.getContent();
+                    logger.debug("BODYPART CONTENTTYPE for RFC822 = " + rfcbodypart.getContentType().toLowerCase()
+                        + " FILENAME = " + rfcbodypart.getFileName());
+                    String from = rfcbodypart.getHeader("From")[0];
+                    // If header is set, it's likely to be an attached mail to the original mail, so we load it first
+                    if (from != null && !"".equals(from)) {
+                        // Load attached email into the wiki
+                        MailLoadingResult loadresult = loadMail(rfcbodypart, true, true, parentMail);
+                        if (loadresult.isSuccess() && loadresult.getCreatedMailDocumentName() != null) {
+                            attachedMailsList.add(loadresult.getCreatedMailDocumentName()); // the name of created page
+                                                                                            // for this attached mail
+                        }
+                    } else {
+                        result = getMailContentAttachedMails((Multipart) rfcbodypart.getContent(), parentMail);
+                        attachedMailsList.addAll(result);
+                    }
+                }
+
+                i++;
+            }
+
+            return attachedMailsList;
+
+        } catch (Exception e) {
+            logger.debug("Failed to get Attached Mails Content", e);
+            ArrayList<String> returnval = new ArrayList<String>();
+            returnval.add("Failed to get Attached Mails Content");
+            return returnval;
+        }
+    }
+
+    /*
+     * Fills a map (bodyparts) with attachments found recursively in mail (bodypart)
+     */
+    public int getMailAttachments(Multipart bodypart, ArrayList<MimeBodyPart> bodyparts)
+    {
+        int nb = 0;
+        try {
+            int mcount = bodypart.getCount();
+            int i = 0;
+            while (i < mcount) {
+                BodyPart newbodypart = bodypart.getBodyPart(i);
+
+                if (newbodypart.getFileName() != null) {
+                    nb++;
+                    bodyparts.add((MimeBodyPart) newbodypart);
+                    logger.debug("getMailAttachments: found an attachment " + newbodypart.getFileName());
+                } else if (newbodypart.getContentType().toLowerCase().startsWith("application/")
+                    || newbodypart.getContentType().toLowerCase().startsWith("image/")) {
+                    nb++;
+                    bodyparts.add((MimeBodyPart) newbodypart);
+                    logger.debug("getMailAttachments: found an attachment " + newbodypart.getClass());
+                }
+
+                if (newbodypart.getContentType().toLowerCase().startsWith("multipart/")) {
+                    nb += getMailAttachments((Multipart) newbodypart.getContent(), bodyparts);
+                }
+
+                if (newbodypart.getContentType().toLowerCase().startsWith("message/rfc822")) {
+                    nb += getMailAttachments((Multipart) ((BodyPart) newbodypart.getContent()).getContent(), bodyparts);
+                }
+
+                i++;
+            }
+
+        } catch (Exception e) {
+            logger.debug("Failed to retrieve mail attachments", e);
+            nb = 0;
+        }
+
+        return nb;
+    }
+
+    /*
+     * Fills a map with key=contentId, value=filename of attachment
+     */
+    public void fillAttachmentContentIds(ArrayList<MimeBodyPart> bodyparts, HashMap<String, String> attmap)
+    {
+
+        for (MimeBodyPart bodypart : bodyparts) {
+            String fileName = null;
+            String cid = null;
+            try {
+                fileName = bodypart.getFileName();
+                cid = bodypart.getContentID();
+            } catch (MessagingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            if (cid != null && !"".equals(cid) && fileName != null) {
+                logger.debug("fillAttachmentContentIds: Treating attachment: " + fileName + " with contentid " + cid);
+                String name = getAttachmentValidName(fileName);
+                int nb = 1;
+                if (!name.contains(".")) {
+                    name += ".ext";
+                }
+                String newName = name;
+                while (attmap.containsValue(newName)) {
+                    logger.debug("fillAttachmentContentIds: " + newName + " attachment already exists, renaming to "
+                        + name.replaceAll("(.*)\\.([^.]*)", "\\$1-" + nb + ".\\$2"));
+                    newName = name.replaceAll("(.*)\\.([^.]*)", "\\$1-" + nb + ".\\$2");
+                    nb++;
+                }
+                attmap.put(cid, newName);
+            } else {
+                logger.debug("fillAttachmentContentIds: content ID is null, nothing to do");
+            }
+        }
+    }
+
+    /*
+     * Returns a valid name for an attachment from its original name
+     */
+    public String getAttachmentValidName(String afilename)
+    {
+        String fname = afilename;
+        int i = fname.lastIndexOf("\\");
+        if (i == -1) {
+            i = fname.lastIndexOf("/");
+        }
+        String filename = fname.substring(i + 1);
+        filename = filename.replaceAll("\\+", " ");
+        return filename;
     }
 
     /**

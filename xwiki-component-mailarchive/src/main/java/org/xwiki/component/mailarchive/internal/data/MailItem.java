@@ -26,8 +26,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Part;
 import javax.mail.internet.MimeUtility;
 
 import org.xwiki.component.mailarchive.internal.Utils;
@@ -369,7 +369,7 @@ public class MailItem
         this.isFirstInTopic = isFirstInTopic;
     }
 
-    public static MailItem fromMessage(Message mail)
+    public static MailItem fromMessage(Part mail)
     {
         return fromMessage(mail, DEFAULT_MAX_TOPICID_SIZE);
     }
@@ -377,7 +377,7 @@ public class MailItem
     /**
      * parseMail Parse mail headers to create a MailItem. Decodes localization and date.
      */
-    public static MailItem fromMessage(Message mail, int maxTopicIdSize)
+    public static MailItem fromMessage(Part mail, int maxTopicIdSize)
     {
 
         MailItem m = new MailItem();

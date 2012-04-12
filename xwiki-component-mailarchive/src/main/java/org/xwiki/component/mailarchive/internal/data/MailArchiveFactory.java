@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.mailarchive.MailType;
+import org.xwiki.component.mailarchive.internal.DefaultMailArchive;
 
 /**
  * @version $Id$
@@ -52,13 +53,18 @@ public class MailArchiveFactory
         MailServer server = new MailServer();
 
         // Retrieve connection properties from prefs
-        server.setHost((String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", "hostname"));
-        server.setPort(Integer.parseInt((String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass",
-            "port")));
-        server.setProtocol((String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", "protocol"));
-        server.setUser((String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", "user"));
-        server.setPassword((String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", "password"));
-        server.setFolder((String) dab.getProperty(serverPrefsDoc, "MailArchiveCode.ServerSettingsClass", "folder"));
+        server.setHost((String) dab.getProperty(serverPrefsDoc, DefaultMailArchive.SPACE_CODE + ".ServerSettingsClass",
+            "hostname"));
+        server.setPort(Integer.parseInt((String) dab.getProperty(serverPrefsDoc, DefaultMailArchive.SPACE_CODE
+            + ".ServerSettingsClass", "port")));
+        server.setProtocol((String) dab.getProperty(serverPrefsDoc, DefaultMailArchive.SPACE_CODE
+            + "ServerSettingsClass", "protocol"));
+        server.setUser((String) dab.getProperty(serverPrefsDoc, DefaultMailArchive.SPACE_CODE + "ServerSettingsClass",
+            "user"));
+        server.setPassword((String) dab.getProperty(serverPrefsDoc, DefaultMailArchive.SPACE_CODE
+            + "ServerSettingsClass", "password"));
+        server.setFolder((String) dab.getProperty(serverPrefsDoc,
+            DefaultMailArchive.SPACE_CODE + "ServerSettingsClass", "folder"));
         server.setWikiDoc(serverPrefsDoc);
 
         return server;
@@ -69,9 +75,8 @@ public class MailArchiveFactory
      * 
      * @param name
      * @param icon
-     * @param patternsList a list of patterns carriage-return separated patterns : each pattern occupies 2 lines, first
-     *            line being the fields to match against (comma separated), second line is the regular expression to
-     *            match
+     * @param patternsList a list of carriage-return separated patterns : each pattern occupies 2 lines, first line
+     *            being the fields to match against (comma separated), second line is the regular expression to match
      * @return a MailType object or null if patternsList could not be parsed
      */
     public MailType createMailType(final String name, final String displayName, final String icon,
@@ -86,16 +91,13 @@ public class MailArchiveFactory
 
         HashMap<List<String>, String> patterns = new HashMap<List<String>, String>();
         String[] splittedPatterns = patternsList.replaceAll("(?m)^\\s+$", "").split("\n", -1);
-        if (splittedPatterns.length % 2 == 0) {
-            for (int i = 0; i < splittedPatterns.length; i += 2) {
-                List<String> fields = Arrays.asList(splittedPatterns[i].split(",", 0));
-                patterns.put(fields, splittedPatterns[i + 1]);
-            }
-            typeobj.setPatterns(patterns);
+        int nbPatterns = splittedPatterns.length % 2;
 
-        } else {
-            return null;
+        for (int i = 0; i < nbPatterns; i += 2) {
+            List<String> fields = Arrays.asList(splittedPatterns[i].split(",", 0));
+            patterns.put(fields, splittedPatterns[i + 1]);
         }
+        typeobj.setPatterns(patterns);
 
         return typeobj;
     }

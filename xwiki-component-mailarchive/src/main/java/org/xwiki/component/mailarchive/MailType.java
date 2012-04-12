@@ -29,6 +29,10 @@ import java.util.List;
  */
 public interface MailType
 {
+    final String TYPE_MAIL = "mail";
+
+    final String TYPE_CALENDAR = "calendar";
+
     String getName();
 
     String getDisplayName();

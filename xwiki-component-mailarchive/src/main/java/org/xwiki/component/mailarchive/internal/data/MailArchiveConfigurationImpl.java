@@ -28,21 +28,21 @@ import org.xwiki.component.mailarchive.MailArchiveConfiguration;
 import org.xwiki.component.mailarchive.MailServer;
 import org.xwiki.component.mailarchive.MailType;
 import org.xwiki.component.mailarchive.MailingList;
+import org.xwiki.component.mailarchive.internal.DefaultMailArchive;
+import org.xwiki.component.mailarchive.internal.exceptions.MailArchiveException;
+
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
 
 /**
  * @version $Id$
  */
 public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
 {
-    private static final String SPACE_CODE = "MailArchiveCode";
-
-    private static final String CLASS_ADMIN = SPACE_CODE + ".AdminClass";
-
-    private static final String CLASS_LISTS = SPACE_CODE + ".ListsSettingsClass";
-
-    private static final String CLASS_SERVERS = SPACE_CODE + ".ServersSettingsClass";
-
-    private static final String CLASS_TYPES = SPACE_CODE + ".TypesSettingsClass";
+    private static final String CLASS_ADMIN = DefaultMailArchive.SPACE_CODE + ".AdminClass";
 
     /** Provides access to documents. Injected by the Component Manager. */
     @Inject
@@ -54,140 +54,121 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
 
     private List<MailType> types;
 
-    public MailArchiveConfigurationImpl()
+    private String adminPrefsPage;
+
+    /* ***** GLOBAL PARAMETERS ***** */
+
+    private String loadingUser;
+
+    private String defaultHomeView;
+
+    private String defaultTopicsView;
+
+    private String defaultMailsOpeningMode;
+
+    private boolean manageTimeline;
+
+    private int maxTimelineItemsToLoad;
+
+    private boolean matchProfiles;
+
+    private boolean matchLdap;
+
+    private boolean ldapCreateMissingProfiles;
+
+    private boolean ldapForcePhotoUpdate;
+
+    private String ldapPhotoFieldName;
+
+    private String ldapPhotoFieldContent;
+
+    public MailArchiveConfigurationImpl(String adminPrefsPage, XWikiContext context) throws MailArchiveException
     {
+        try {
+            this.adminPrefsPage = adminPrefsPage;
+            XWiki xwiki = context.getWiki();
+            if (!xwiki.exists(adminPrefsPage, context)) {
+                throw new MailArchiveException("Preferences page does not exist");
+            } else {
+                XWikiDocument prefsdoc = xwiki.getDocument(adminPrefsPage, context);
+                BaseObject prefsobj = prefsdoc.getObject(CLASS_ADMIN);
+                this.loadingUser = prefsobj.getStringValue("user");
+                this.defaultHomeView = prefsobj.getStringValue("defaulthomeview");
+                this.defaultTopicsView = prefsobj.getStringValue("defaulttopicsview");
+                this.defaultMailsOpeningMode = prefsobj.getStringValue("mailsopeningmode");
+                this.manageTimeline = prefsobj.getIntValue("timeline") != 0;
+                this.maxTimelineItemsToLoad = prefsobj.getIntValue("timelinemaxload");
+                this.matchProfiles = prefsobj.getIntValue("matchwikiprofiles") != 0;
+                this.matchLdap = prefsobj.getIntValue("matchldap") != 0;
+                this.ldapCreateMissingProfiles = prefsobj.getIntValue("createmissingprofiles") != 0;
+                this.ldapForcePhotoUpdate = prefsobj.getIntValue("ldapphotoforceupdate") != 0;
+                this.ldapPhotoFieldName = prefsobj.getStringValue("ldapphotofield");
+                this.ldapPhotoFieldContent = prefsobj.getStringValue("ldapphototype");
+            }
+        } catch (XWikiException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.mailarchive.MailArchiveConfiguration#getLoadingUser()
-     */
-    @Override
     public String getLoadingUser()
     {
-        return (String) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "user");
+        return loadingUser;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.mailarchive.MailArchiveConfiguration#getDefaultHomeView()
-     */
-    @Override
     public String getDefaultHomeView()
     {
-        return (String) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "defaulthomeview");
+        return defaultHomeView;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.mailarchive.MailArchiveConfiguration#getDefaultTopicsView()
-     */
-    @Override
     public String getDefaultTopicsView()
     {
-        return (String) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "defaulttopicsview");
+        return defaultTopicsView;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.mailarchive.MailArchiveConfiguration#getDefaultMailsOpeningMode()
-     */
-    @Override
     public String getDefaultMailsOpeningMode()
     {
-        return (String) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "mailsopeningmode");
+        return defaultMailsOpeningMode;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.mailarchive.MailArchiveConfiguration#manageTimeline()
-     */
-    @Override
-    public boolean manageTimeline()
+    public boolean isManageTimeline()
     {
-        return (Boolean) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "timeline");
+        return manageTimeline;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.mailarchive.MailArchiveConfiguration#getMaxTimelineItemsToLoad()
-     */
-    @Override
     public int getMaxTimelineItemsToLoad()
     {
-        return (Integer) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "timelinemaxload");
+        return maxTimelineItemsToLoad;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.mailarchive.MailArchiveConfiguration#getMatchProfiles()
-     */
-    @Override
-    public boolean getMatchProfiles()
+    public boolean isMatchProfiles()
     {
-        return (Boolean) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "matchwikiprofiles");
+        return matchProfiles;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.mailarchive.MailArchiveConfiguration#getMatchLdap()
-     */
-    @Override
-    public boolean getMatchLdap()
+    public boolean isMatchLdap()
     {
-        return (Boolean) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "matchldap");
+        return matchLdap;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.mailarchive.MailArchiveConfiguration#getLdapCreateMissingProfiles()
-     */
-    @Override
-    public boolean getLdapCreateMissingProfiles()
+    public boolean isLdapCreateMissingProfiles()
     {
-        return (Boolean) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "createmissingprofiles");
+        return ldapCreateMissingProfiles;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.mailarchive.MailArchiveConfiguration#getLdapForcePhotoUpdate()
-     */
-    @Override
-    public boolean getLdapForcePhotoUpdate()
+    public boolean isLdapForcePhotoUpdate()
     {
-        return (Boolean) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "ldapphotoforceupdate");
+        return ldapForcePhotoUpdate;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.mailarchive.MailArchiveConfiguration#getLdapPhotoFieldName()
-     */
-    @Override
     public String getLdapPhotoFieldName()
     {
-        return (String) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "ldapphotofield");
+        return ldapPhotoFieldName;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.component.mailarchive.MailArchiveConfiguration#getLdapPhotoFieldContent()
-     */
-    @Override
     public String getLdapPhotoFieldContent()
     {
-        return (String) getPropertyValue(MailArchiveConfiguration.ADMIN_PAGE, CLASS_ADMIN, "ldapphototype");
+        return ldapPhotoFieldContent;
     }
 
     /**
@@ -229,6 +210,21 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
     public static Object getPropertyValue(String docname, String classname, String propname)
     {
         return dab.getProperty(docname, classname, 0, propname);
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("MailArchiveConfigurationImpl [loadingUser=").append(loadingUser).append(", defaultHomeView=")
+            .append(defaultHomeView).append(", defaultTopicsView=").append(defaultTopicsView)
+            .append(", defaultMailsOpeningMode=").append(defaultMailsOpeningMode).append(", manageTimeline=")
+            .append(manageTimeline).append(", maxTimeLineItemsToLoad=").append(maxTimelineItemsToLoad)
+            .append(", matchProfiles=").append(matchProfiles).append(", matchLdap=").append(matchLdap)
+            .append(", ldapCreateMissingProfiles=").append(ldapCreateMissingProfiles).append(", ldapForcePhotoUpdate=")
+            .append(ldapForcePhotoUpdate).append(", ldapPhotoFieldName=").append(ldapPhotoFieldName)
+            .append(", ldapPhotoFieldContent=").append(ldapPhotoFieldContent).append("]");
+        return builder.toString();
     }
 
 }

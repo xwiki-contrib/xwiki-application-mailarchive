@@ -29,7 +29,7 @@ import java.security.NoSuchAlgorithmException;
 public class Utils
 {
 
-    private static String convertToHex(byte[] data)
+    public static String byte2hex(byte[] data)
     {
         StringBuffer buf = new StringBuffer();
         for (int i = 0; i < data.length; i++) {
@@ -53,7 +53,7 @@ public class Utils
         byte[] sha1hash = new byte[40];
         md.update(text.getBytes("iso-8859-1"), 0, text.length());
         sha1hash = md.digest();
-        return convertToHex(sha1hash);
+        return byte2hex(sha1hash);
     }
 
 }

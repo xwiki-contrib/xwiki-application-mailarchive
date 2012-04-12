@@ -26,14 +26,6 @@ import java.util.List;
  */
 public interface MailArchiveConfiguration
 {
-    String ADMIN_PAGE = "MailArchive.Admin";
-
-    String SERVERS_SETTINGS_PAGE = "MailArchive.Settings";
-
-    String LISTS_SETTINGS_PAGE = "MailArchive.ListsSettings";
-
-    String TYPES_SETTINGS_PAGE = "MailArchive.TypesSettings";
-
     public String getLoadingUser();
 
     public String getDefaultHomeView();
@@ -42,17 +34,17 @@ public interface MailArchiveConfiguration
 
     public String getDefaultMailsOpeningMode();
 
-    public boolean manageTimeline();
+    public boolean isManageTimeline();
 
     public int getMaxTimelineItemsToLoad();
 
-    public boolean getMatchProfiles();
+    public boolean isMatchProfiles();
 
-    public boolean getMatchLdap();
+    public boolean isMatchLdap();
 
-    public boolean getLdapCreateMissingProfiles();
+    public boolean isLdapCreateMissingProfiles();
 
-    public boolean getLdapForcePhotoUpdate();
+    public boolean isLdapForcePhotoUpdate();
 
     public String getLdapPhotoFieldName();
 

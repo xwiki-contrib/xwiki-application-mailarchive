@@ -19,7 +19,15 @@
  */
 package org.xwiki.component.mailarchive.internal;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,6 +37,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPOutputStream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -51,8 +60,10 @@ import org.slf4j.Logger;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.mailarchive.MailArchive;
+import org.xwiki.component.mailarchive.MailArchiveConfiguration;
 import org.xwiki.component.mailarchive.MailType;
 import org.xwiki.component.mailarchive.internal.data.ConnectionErrors;
+import org.xwiki.component.mailarchive.internal.data.MailArchiveConfigurationImpl;
 import org.xwiki.component.mailarchive.internal.data.MailArchiveFactory;
 import org.xwiki.component.mailarchive.internal.data.MailItem;
 import org.xwiki.component.mailarchive.internal.data.MailServer;
@@ -63,6 +74,8 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
+import org.xwiki.query.Query;
+import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.rendering.converter.Converter;
 import org.xwiki.rendering.parser.Parser;
@@ -72,6 +85,7 @@ import org.xwiki.rendering.syntax.Syntax;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiAttachment;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -90,6 +104,8 @@ public class DefaultMailArchive implements MailArchive, Initializable
     public static final String SPACE_PREFS = "MailArchivePrefs";
 
     public static final String SPACE_ITEMS = "MailArchiveItems";
+
+    public static final String unknownUser = "XWiki.UserDoesNotExist";
 
     /** Provides access to the request context. Injected by the Component Manager. */
     @Inject
@@ -123,6 +139,8 @@ public class DefaultMailArchive implements MailArchive, Initializable
 
     private MailArchiveFactory factory;
 
+    private MailArchiveConfiguration config;
+
     private boolean isInitialized = false;
 
     private static boolean inProgress = false;
@@ -147,11 +165,18 @@ public class DefaultMailArchive implements MailArchive, Initializable
     @Override
     public void initialize() throws InitializationException
     {
-        ExecutionContext context = execution.getContext();
-        this.context = (XWikiContext) context.getProperty("xwikicontext");
-        this.xwiki = this.context.getWiki();
-        this.factory = new MailArchiveFactory(dab);
-        this.store = new MailArchiveStore(queryManager, logger, factory);
+        try {
+            ExecutionContext context = execution.getContext();
+            this.context = (XWikiContext) context.getProperty("xwikicontext");
+            this.xwiki = this.context.getWiki();
+            this.factory = new MailArchiveFactory(dab);
+            this.store = new MailArchiveStore(queryManager, logger, factory);
+            logger.error("Mail archive initiliazed !");
+        } catch (Throwable e) {
+            // TODO Auto-generated catch block
+            logger.error("Could not initiliaze mailarchive ", e);
+            e.printStackTrace();
+        }
 
         this.isInitialized = true;
     }
@@ -279,6 +304,8 @@ public class DefaultMailArchive implements MailArchive, Initializable
                 existingTopics = store.loadStoredTopics();
                 existingMessages = store.loadStoredMessages();
 
+                config = new MailArchiveConfigurationImpl(SPACE_PREFS + ".GlobalParameters", this.context);
+
                 for (MailServer server : servers) {
                     logger.info("Loading mails from server " + server);
                     try {
@@ -291,8 +318,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
                                 loadMail(messages[currentMsg], true, false, null);
                                 currentMsg++;
                             } catch (Exception e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
+                                logger.warn("Failed to load mail", e);
                             }
                         }
                     } catch (Exception e) {
@@ -365,7 +391,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
                 }
                 matched = matched && fieldMatch;
             }
-            if (matched && !"mail".equals(type.getName())) {
+            if (matched && !MailType.TYPE_MAIL.equals(type.getName())) {
                 logger.info("Matched type " + type);
                 foundType = type;
                 break;
@@ -374,7 +400,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
         if (foundType != null) {
             m.setType(foundType.getName());
         } else {
-            m.setType("mail");
+            m.setType(MailType.TYPE_MAIL);
         }
 
         // set wiki user
@@ -387,8 +413,17 @@ public class DefaultMailArchive implements MailArchive, Initializable
         m.setWikiuser(null);
     }
 
+    /**
+     * @param mail
+     * @param confirm
+     * @param isAttachedMail
+     * @param parentMail
+     * @return
+     * @throws XWikiException
+     * @throws ParseException
+     */
     public MailLoadingResult loadMail(Part mail, boolean confirm, boolean isAttachedMail, String parentMail)
-        throws XWikiException
+        throws XWikiException, ParseException
     {
         MailItem m = MailItem.fromMessage(mail);
         setMailSpecificParts(m);
@@ -405,9 +440,10 @@ public class DefaultMailArchive implements MailArchive, Initializable
      * @param isAttachedMail
      * @param parentMail
      * @throws XWikiException
+     * @throws ParseException
      */
     public MailLoadingResult loadMail(MailItem m, boolean confirm, boolean isAttachedMail, String parentMail)
-        throws XWikiException
+        throws XWikiException, ParseException
     {
         XWikiDocument msgDoc = null;
         XWikiDocument topicDoc = null;
@@ -415,8 +451,8 @@ public class DefaultMailArchive implements MailArchive, Initializable
         logger.debug("Loading mail content into wiki objects");
 
         // set loading user for rights - loading user must have edit rights on MailArchive and MailArchiveCode spaces
-        context.setUser(getLoadingUser());
-        logger.debug("Loading user " + getLoadingUser() + " set in context");
+        context.setUser(config.getLoadingUser());
+        logger.debug("Loading user " + config.getLoadingUser() + " set in context");
 
         // Retrieve information for mailing-list from headers
         /*
@@ -470,7 +506,12 @@ public class DefaultMailArchive implements MailArchive, Initializable
             }
             // Note : correction bug of messages linked to same topic but with different topicIds
             m.setTopicId(existingTopicId);
-            msgDoc = createMailPage(m, existingTopicId, isAttachedMail, parentMail, confirm);
+            try {
+                msgDoc = createMailPage(m, existingTopicId, isAttachedMail, parentMail, confirm);
+            } catch (Exception e) {
+                logger.error("Could not create mail page for " + m.getMessageId(), e);
+                return new MailLoadingResult(false, topicDoc != null ? topicDoc.getFullName() : null, null);
+            }
 
             return new MailLoadingResult(true, topicDoc != null ? topicDoc.getFullName() : null, msgDoc != null
                 ? msgDoc.getFullName() : null);
@@ -487,22 +528,13 @@ public class DefaultMailArchive implements MailArchive, Initializable
                 msgObj.set("topicid", existingTopicId, context);
                 if (confirm) {
                     logger.debug("saving message " + m.getSubject());
-                    saveAsUser(msgDoc, null, getLoadingUser(), "Updated mail with existing topic id found");
+                    saveAsUser(msgDoc, null, config.getLoadingUser(), "Updated mail with existing topic id found");
                 }
             }
 
             return new MailLoadingResult(true, topicDoc != null ? topicDoc.getFullName() : null, msgDoc != null
                 ? msgDoc.getFullName() : null);
         }
-    }
-
-    /**
-     * @return
-     */
-    public String getLoadingUser()
-    {
-        // TODO : retrieve loading user from prefs
-        return "XWiki.Admin";
     }
 
     /**
@@ -575,80 +607,86 @@ public class DefaultMailArchive implements MailArchive, Initializable
      * @param dateFormatter
      * @param create
      * @return
+     * @throws XWikiException
+     * @throws ParseException
      */
     protected XWikiDocument updateTopicPage(MailItem m, String existingTopicId, SimpleDateFormat dateFormatter,
-        boolean create)
+        boolean create) throws XWikiException, ParseException
     {
-        // addDebug("updateTopicPage(${existingTopicId})")
-        //
-        // def newuser = null
-        // def topicDoc = xwiki.getDocument(existingTopics[existingTopicId][0])
-        // addDebug("Existing topic ${topicDoc}")
-        // def topicObj = topicDoc.getObject("MailArchiveCode.MailTopicClass")
-        // def lastupdatedate = topicObj.lastupdatedate
-        // def startdate = topicObj.startdate
-        // def originalAuthor = topicObj.author
-        // if (lastupdatedate == null || lastupdatedate == "") { lastupdatedate = m.date } // note : this should never
-        // occur
-        // if (startdate == null || startdate == "") { startdate = m.date }
-        // def decodedlastupdatedate = dateFormatter.parse(lastupdatedate)
-        // def decodedstartdate = dateFormatter.parse(startdate)
-        //
-        // def isMoreRecent = (m.decodedDate.getTime() > decodedlastupdatedate.getTime())
-        // def isMoreAncient = (m.decodedDate.getTime() < decodedstartdate.getTime())
-        // addDebug("decodedDate = ${m.decodedDate.getTime()}, lastupdatedate = ${decodedlastupdatedate.getTime()}, is more recent = ${isMoreRecent}, first in topic = ${m.isFirstInTopic}")
-        // addDebug("lastupdatedate $decodedlastupdatedate")
-        // addDebug("current mail date $m.decodedDate")
-        //
-        // // If the first one, we add the startdate to existing topic
-        // if (m.isFirstInTopic || isMoreRecent)
-        // {
-        // def dirty = false
-        // addDebug("Checking if existing topic has to be updated ...")
-        // def comment = ""
-        // // if (m.isFirstInTopic) {
-        // if ((originalAuthor != m.from && isMoreAncient) || originalAuthor == "")
-        // {
-        // addDebug("     updating author from ${originalAuthor} to ${m.from}")
-        // topicDoc.set("author", m.from)
-        // comment += " Updated author "
-        // newuser = parseUser(m.from)
-        // if (newuser == null || newuser == "") {
-        // newuser = unknownUser
-        // }
-        // dirty = true
-        // }
-        // addDebug("     existing startdate $topicObj.startdate")
-        // if ((topicObj.startdate == null || topicObj.startdate == "") || isMoreAncient)
-        // {
-        // addDebug("     checked startdate not already added to topic")
-        // topicDoc.set("startdate", dateFormatter.format(m.decodedDate), topicObj)
-        // topicDoc.document.setCreationDate(m.decodedDate)
-        // comment += " Updated start date "
-        // dirty = true
-        // }
-        // // }
-        // if (isMoreRecent) {
-        // addDebug("     updating lastupdatedate from $topicObj.lastupdatedate to " +
-        // dateFormatter.format(m.decodedDate))
-        // topicDoc.set("lastupdatedate", dateFormatter.format(m.decodedDate), topicObj)
-        // topicDoc.document.setDate(m.decodedDate)
-        // topicDoc.document.setContentUpdateDate(m.decodedDate)
-        // newuser = parseUser(m.from)
-        // comment += " Updated last update date "
-        // dirty = true
-        // }
-        // topicDoc.setComment(comment)
-        //
-        // if (create && dirty) {
-        // addDebug("     Updated existing topic")
-        // saveAsUser(topicDoc, newuser, getLoadingUser(), comment)
-        // }
-        // existingTopics[m.topicId] = [topicDoc.fullName, topicObj.subject]
-        // } else
-        // {
-        // addDebug("     Nothing to update in topic")
-        // }
+        logger.debug("updateTopicPage(" + existingTopicId + ")");
+
+        String newuser = null;
+        XWikiDocument topicDoc = xwiki.getDocument(existingTopics.get(existingTopicId).getFullName(), context);
+        logger.debug("Existing topic " + topicDoc);
+        BaseObject topicObj = topicDoc.getObject(SPACE_CODE + ".MailTopicClass");
+        String lastupdatedate = topicObj.getStringValue("lastupdatedate");
+        String startdate = topicObj.getStringValue("startdate");
+        String originalAuthor = topicObj.getStringValue("author");
+        if (lastupdatedate == null || "".equals(lastupdatedate)) {
+            lastupdatedate = m.getDate();
+        } // note : this should never occur
+        if (startdate == null || "".equals(startdate)) {
+            startdate = m.getDate();
+        }
+        Date decodedlastupdatedate = dateFormatter.parse(lastupdatedate);
+        Date decodedstartdate = dateFormatter.parse(startdate);
+
+        boolean isMoreRecent = (m.getDecodedDate().getTime() > decodedlastupdatedate.getTime());
+        boolean isMoreAncient = (m.getDecodedDate().getTime() < decodedstartdate.getTime());
+        logger.debug("decodedDate = " + m.getDecodedDate().getTime() + ", lastupdatedate = "
+            + decodedlastupdatedate.getTime() + ", is more recent = " + isMoreRecent + ", first in topic = "
+            + m.isFirstInTopic());
+        logger.debug("lastupdatedate " + decodedlastupdatedate);
+        logger.debug("current mail date " + m.getDecodedDate());
+
+        // If the first one, we add the startdate to existing topic
+        if (m.isFirstInTopic() || isMoreRecent) {
+            boolean dirty = false;
+            logger.debug("Checking if existing topic has to be updated ...");
+            String comment = "";
+            // if (m.isFirstInTopic) {
+            if ((!originalAuthor.equals(m.getFrom()) && isMoreAncient) || "".equals(originalAuthor)) {
+                logger.debug("     updating author from " + originalAuthor + " to " + m.getFrom());
+                topicObj.set("author", m.getFrom(), context);
+                comment += " Updated author ";
+                newuser = parseUser(m.getFrom());
+                if (newuser == null || "".equals(newuser)) {
+                    newuser = unknownUser;
+                }
+                dirty = true;
+            }
+            logger.debug("     existing startdate $topicObj.startdate");
+            if ((topicObj.getStringValue("startdate") == null || "".equals(topicObj.getStringValue("startdate")))
+                || isMoreAncient) {
+                logger.debug("     checked startdate not already added to topic");
+                topicObj.set("startdate", dateFormatter.format(m.getDecodedDate()), context);
+                topicDoc.setCreationDate(m.getDecodedDate());
+                comment += " Updated start date ";
+                dirty = true;
+            }
+            // }
+            if (isMoreRecent) {
+                logger.debug("     updating lastupdatedate from " + lastupdatedate + " to "
+                    + dateFormatter.format(m.getDecodedDate()));
+                topicObj.set("lastupdatedate", dateFormatter.format(m.getDecodedDate()), context);
+                topicDoc.setDate(m.getDecodedDate());
+                topicDoc.setContentUpdateDate(m.getDecodedDate());
+                newuser = parseUser(m.getFrom());
+                comment += " Updated last update date ";
+                dirty = true;
+            }
+            topicDoc.setComment(comment);
+
+            if (create && dirty) {
+                logger.debug("     Updated existing topic");
+                saveAsUser(topicDoc, newuser, config.getLoadingUser(), comment);
+            }
+            // TODO if already added, update the map
+            existingTopics.put(m.getTopicId(),
+                new TopicShortItem(topicDoc.getFullName(), topicObj.getStringValue("subject")));
+        } else {
+            logger.debug("     Nothing to update in topic");
+        }
 
         // return topicDoc
 
@@ -656,10 +694,75 @@ public class DefaultMailArchive implements MailArchive, Initializable
     }
 
     /**
+     * parseUser Parses a user string of the form "user <usermail@com>" - extract mail and if matched in xwiki user
+     * profiles, returns page name for this profile - returns null string if no match is found - tries to return profile
+     * of a user that's authenticated from LDAP, if any, or else first profile found
+     */
+    protected String parseUser(String user)
+    {
+        if (config.isMatchProfiles()) {
+            String parsedUser = null;
+            int start = user.indexOf('<');
+            int end = user.indexOf('>');
+            String mail = "";
+            if (start != -1 && end != -1) {
+                mail = user.substring(start + 1, end).toLowerCase();
+            }
+            if (!"".equals(mail)) {
+                // to match "-external" emails and old mails with '@gemplus.com'...
+                mail = mail.toLowerCase();
+                mail = mail.replace("-external", "").replaceAll("^(.*)@.*[.]com$", "$1%@%.com");
+                // Try to find a wiki profile with this email as parameter.
+                // TBD : do this in the loading phase, and only try to search db if it was not found ?
+                String hql =
+                    "select obj.name from BaseObject as obj, StringProperty as prop where obj.className='XWiki.XWikiUsers' and obj.id=prop.id and prop.name='email' and LOWER(prop.value) like '"
+                        + mail + "'";
+
+                List<String> wikiuser = null;
+                try {
+                    wikiuser = this.queryManager.createQuery(hql, Query.HQL).execute();
+                } catch (QueryException e) {
+                    wikiuser = null;
+                }
+                if (wikiuser == null || wikiuser.size() == 0) {
+                    return null;
+                } else {
+                    // If there exists one, we prefer the user that's been authenticated through LDAP
+                    for (String usr : wikiuser) {
+                        try {
+                            if (xwiki.getDocument(usr, context).getObject("XWiki.LDAPProfileClass") != null) {
+                                parsedUser = usr;
+                            }
+                        } catch (XWikiException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                if (parsedUser != null) {
+                    return parsedUser;
+                } else {
+                    // If none has authenticated from LDAP, we return the first user found
+                    return wikiuser.get(0);
+                }
+            } else {
+                return null;
+            }
+        } else {
+            return config.getLoadingUser();
+        }
+
+    }
+
+    /**
      * createMailPage Creates a wiki page for a Mail.
+     * 
+     * @throws XWikiException
+     * @throws IOException
+     * @throws MessagingException
      */
     protected XWikiDocument createMailPage(MailItem m, String existingTopicId, boolean isAttachedMail,
-        String parentMail, boolean create)
+        String parentMail, boolean create) throws XWikiException, MessagingException, IOException
     {
         XWikiDocument msgDoc;
         String content = "";
@@ -799,7 +902,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
             if (m.isFirstInTopic()) {
                 msgObj.set("type", m.getType(), context);
             } else {
-                msgObj.set("type", "Mail", context);
+                msgObj.set("type", MailType.TYPE_MAIL, context);
             }
         } else {
             msgObj.set("type", "Attached Mail", context);
@@ -824,7 +927,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
 
         if (create && !checkMsgIdExistence(m.getMessageId())) {
             logger.debug("saving message " + m.getSubject());
-            saveAsUser(msgDoc, m.getWikiuser(), getLoadingUser(), "Created message from mailing-list");
+            saveAsUser(msgDoc, m.getWikiuser(), config.getLoadingUser(), "Created message from mailing-list");
         }
         existingMessages
             .put(m.getMessageId(), new MailShortItem(m.getSubject(), existingTopicId, msgDoc.getFullName()));
@@ -832,9 +935,198 @@ public class DefaultMailArchive implements MailArchive, Initializable
             .debug("  mail loaded and saved with id $m.messageId, subject=$m.subject topicid=$m.topicId topicsubject=$m.topic replyto=$m.replyToId references=$m.refs date=$m.decodedDate from=$m.from");
 
         logger.debug("adding attachments to document");
-        addAttachmentsFromMail(msgDoc, attbodyparts, attachmentsMap, context);
+        addAttachmentsFromMail(msgDoc, attbodyparts, attachmentsMap);
 
         return msgDoc;
+    }
+
+    /*
+     * Cleans up HTML content and treat it to replace cid tags with correct image urls (targeting attachments)
+     */
+    String treatHtml(XWikiDocument msgdoc, String htmlcontent, HashMap<String, String> attachmentsMap)
+        throws IOException
+    {
+        if (htmlcontent != null && !"".equals(htmlcontent) && htmlcontent.length() != 0) {
+            // Try to clean HTML with JTidy to decrease its length and complexity
+            logger.debug("Original HTML length " + htmlcontent.length());
+
+            // Replace "&nbsp;" to avoid issue of "Â" characters displayed (???)
+            htmlcontent = htmlcontent.replaceAll("&Acirc;", " ");
+
+            // Replace attachment URLs in HTML content for images to be shown
+            for (Entry<String, String> att : attachmentsMap.entrySet()) {
+                // remove starting "<" and finishing ">"
+                String pattern = att.getKey().substring(1, att.getKey().length() - 2);
+                pattern = "cid:" + pattern;
+
+                logger.debug("Testing for pattern " + context.getUtil().encodeURI(pattern, context) + " " + pattern);
+                String replacement = msgdoc.getAttachmentURL(att.getValue(), context);
+                logger.debug("To be replaced by " + replacement);
+                htmlcontent = htmlcontent.replaceAll(pattern, replacement);
+            }
+
+            logger.debug("Zipping HTML part ...");
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            GZIPOutputStream zos = new GZIPOutputStream(bos);
+            byte[] bytes = htmlcontent.getBytes("UTF8");
+            zos.write(bytes, 0, bytes.length);
+            zos.finish();
+            zos.close();
+
+            byte[] compbytes = bos.toByteArray();
+            htmlcontent = Utils.byte2hex(compbytes);
+            bos.close();
+
+            if (htmlcontent.length() > 65534) {
+                logger.debug("Failed to have HTML fit in target field");
+                htmlcontent = "";
+            }
+
+        } else {
+            logger.debug("No HTML to treat");
+        }
+
+        logger.debug("Html Zipped length : " + htmlcontent.length());
+        return htmlcontent;
+    }
+
+    // Truncate a string "s" to obtain less than a certain number of bytes "maxBytes", starting with "maxChars"
+    // characters.
+    public String truncateStringForBytes(String s, int maxChars, int maxBytes)
+    {
+
+        String substring = s;
+        if (s.length() > maxChars) {
+            substring = s.substring(0, maxChars);
+        }
+
+        byte[] bytes = new byte[] {};
+        try {
+            bytes = substring.getBytes("UTF8");
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        if (bytes.length > maxBytes) {
+
+            logger.debug("Truncate string to " + substring.length() + " characters, result in " + bytes.length
+                + " bytes array");
+            return truncateStringForBytes(s, maxChars - (bytes.length - maxChars) / 4, maxBytes);
+
+        } else {
+
+            logger.debug("String truncated to " + substring.length() + " characters, resulting in " + bytes.length
+                + " bytes array");
+            return substring;
+        }
+
+    }
+
+    // ****** Check existence of wiki object with same value as 'messageid', from database
+    public boolean checkMsgIdExistence(String msgid)
+    {
+        boolean exists = false;
+        String hql =
+            "select count(*) from StringProperty as prop where prop.name='messageid' and prop.value='" + msgid + "')";
+
+        try {
+            List<Object> result = queryManager.createQuery(hql, Query.HQL).execute();
+            exists = !"0".equals(result.get(0));
+        } catch (QueryException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        if (!exists) {
+            logger.debug("Message with id " + msgid + " does not exist in database");
+            return false;
+        } else {
+            logger.debug("Message with id " + msgid + " already loaded in database");
+            return true;
+        }
+
+    }
+
+    /*
+     * Add map of attachments (bodyparts) to a document (doc1)
+     */
+    public int addAttachmentsFromMail(XWikiDocument doc1, ArrayList<MimeBodyPart> bodyparts,
+        HashMap<String, String> attachmentsMap) throws MessagingException, IOException, XWikiException
+    {
+        int nb = 0;
+        for (MimeBodyPart bodypart : bodyparts) {
+            String fileName = bodypart.getFileName();
+            String cid = bodypart.getContentID();
+
+            try {
+                // replace by correct name if filename was renamed (multiple attachments with same name)
+                if (attachmentsMap.containsKey(cid)) {
+                    fileName = attachmentsMap.get(cid);
+                }
+                logger.debug("Treating attachment: " + fileName + " with contentid " + cid);
+                if (fileName == null) {
+                    fileName = "fichier.doc";
+                }
+                if (fileName.equals("oledata.mso") || fileName.endsWith(".wmz") || fileName.endsWith(".emz")) {
+                    logger.debug("Not treating Microsoft crap !");
+                } else {
+                    String disposition = bodypart.getDisposition();
+                    String contentType = bodypart.getContentType().toLowerCase();
+
+                    logger.debug("Treating attachment of type: " + bodypart.getContentType());
+
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    OutputStream out = new BufferedOutputStream(baos);
+                    // We can't just use p.writeTo() here because it doesn't
+                    // decode the attachment. Instead we copy the input stream
+                    // onto the output stream which does automatically decode
+                    // Base-64, quoted printable, and a variety of other formats.
+                    InputStream ins = new BufferedInputStream(bodypart.getInputStream());
+                    int b = ins.read();
+                    while (b != -1) {
+                        out.write(b);
+                        b = ins.read();
+                    }
+                    out.flush();
+                    out.close();
+                    ins.close();
+
+                    logger.debug("Treating attachment step 3: " + fileName);
+
+                    byte[] data = baos.toByteArray();
+                    logger.debug("Ready to attach attachment: " + fileName);
+                    nb += addAttachmentFromMail(doc1, fileName, data);
+                } // end if
+            } catch (Exception e) {
+                logger.warn("Attachment " + fileName + " could not be treated", e);
+            }
+        } // end for all attachments
+        return nb;
+    }
+
+    /*
+     * Add to document (doc1) an attached file (afilename) with its content (adata), and fills a map (adata) with
+     * relation between contentId (cid) and (afilename)
+     */
+    public int addAttachmentFromMail(XWikiDocument doc, String afilename, byte[] adata) throws XWikiException
+    {
+        String filename = getAttachmentValidName(afilename);
+        logger.debug("adding attachment: " + filename);
+
+        XWikiAttachment attachment = new XWikiAttachment();
+        doc.getAttachmentList().add(attachment);
+        attachment.setContent(adata);
+        attachment.setFilename(filename);
+        // TODO: handle Author
+        attachment.setAuthor(context.getUser());
+        // Add the attachment to the document
+        attachment.setDoc(doc);
+        logger.debug("saving attachment: " + filename);
+        doc.setComment("Added attachment " + filename);
+        doc.saveAttachmentContent(attachment, context);
+
+        return 1;
     }
 
     /*
@@ -1081,8 +1373,8 @@ public class DefaultMailArchive implements MailArchive, Initializable
                 String newName = name;
                 while (attmap.containsValue(newName)) {
                     logger.debug("fillAttachmentContentIds: " + newName + " attachment already exists, renaming to "
-                        + name.replaceAll("(.*)\\.([^.]*)", "\\$1-" + nb + ".\\$2"));
-                    newName = name.replaceAll("(.*)\\.([^.]*)", "\\$1-" + nb + ".\\$2");
+                        + name.replaceAll("(.*)\\.([^.]*)", "$1-" + nb + ".$2"));
+                    newName = name.replaceAll("(.*)\\.([^.]*)", "$1-" + nb + ".$2");
                     nb++;
                 }
                 attmap.put(cid, newName);

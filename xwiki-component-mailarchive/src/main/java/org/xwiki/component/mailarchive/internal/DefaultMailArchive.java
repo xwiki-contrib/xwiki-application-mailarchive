@@ -19,23 +19,30 @@
  */
 package org.xwiki.component.mailarchive.internal;
 
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.mail.AuthenticationFailedException;
+import javax.mail.BodyPart;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.FolderNotFoundException;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.internet.MimeUtility;
 import javax.mail.search.FlagTerm;
 
 import org.slf4j.Logger;
@@ -55,6 +62,10 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.query.QueryManager;
+import org.xwiki.rendering.converter.Converter;
+import org.xwiki.rendering.parser.Parser;
+import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
+import org.xwiki.rendering.syntax.Syntax;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -99,6 +110,12 @@ public class DefaultMailArchive implements MailArchive, Initializable
 
     @Inject
     private Logger logger;
+
+    @Inject
+    private Parser parser;
+
+    @Inject
+    private Converter converter;
 
     private MailArchiveStore store;
 
@@ -269,6 +286,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
                         while (currentMsg < maxMailsNb && currentMsg < messages.length) {
                             try {
                                 MailItem mail = MailItem.fromMessage(messages[currentMsg]);
+                                setMailSpecificParts(mail);
                                 logger.warn("SERVER " + server + " PARSED MAIL  " + currentMsg + " : " + mail);
                                 loadMail(mail, true, false, null);
                                 currentMsg++;
@@ -298,6 +316,75 @@ public class DefaultMailArchive implements MailArchive, Initializable
             return false;
         }
 
+    }
+
+    /**
+     * @param m
+     */
+    public void setMailSpecificParts(final MailItem m)
+    {
+        // set Type
+        // TODO : severely bugged, logs to be added ...
+        MailType foundType = null;
+        for (MailType type : mailTypes) {
+            logger.info("Treating mailType " + type);
+            boolean matched = true;
+            for (Entry<List<String>, String> entry : type.getPatterns().entrySet()) {
+                logger.info("Treating entry " + entry);
+                List<String> fields = entry.getKey();
+                String regexp = entry.getValue();
+                Pattern pattern = null;
+                try {
+                    pattern = Pattern.compile(regexp);
+                } catch (Exception e) {
+                    logger.warn("Invalid Pattern " + regexp + "can't be compiled, skipping this mail type");
+                    break;
+                }
+                Matcher matcher = null;
+                boolean fieldMatch = false;
+                for (String field : fields) {
+                    logger.info("Treating field " + field);
+                    String fieldValue = "";
+                    if ("from".equals(field)) {
+                        fieldValue = m.getFrom();
+                    } else if ("to".equals(field)) {
+                        fieldValue = m.getTo();
+                    } else if ("cc".equals(field)) {
+                        fieldValue = m.getCc();
+                    } else if ("subject".equals(field)) {
+                        fieldValue = m.getSubject();
+                    }
+                    matcher = pattern.matcher(fieldValue);
+                    if (matcher != null) {
+                        fieldMatch = matcher.find();
+                    }
+                    if (fieldMatch) {
+                        logger.info("Field " + field + " value [" + fieldValue + "] matches pattern [" + regexp + "]");
+                        break;
+                    }
+                }
+                matched = matched && fieldMatch;
+            }
+            if (matched && !"mail".equals(type.getName())) {
+                logger.info("Matched type " + type);
+                foundType = type;
+                break;
+            }
+        }
+        if (foundType != null) {
+            m.setType(foundType.getName());
+        } else {
+            m.setType("mail");
+        }
+
+        // set wiki user
+        // // @TODO Try to retrieve wiki user
+        // // @TODO : here, or after ? (link with ldap and xwiki profiles
+        // // options to be checked ...)
+        // /*
+        // * String userwiki = parseUser(from); if (userwiki == null || userwiki == "") { userwiki = unknownUser; }
+        // */
+        m.setWikiuser(null);
     }
 
     /**
@@ -564,162 +651,242 @@ public class DefaultMailArchive implements MailArchive, Initializable
     protected XWikiDocument createMailPage(MailItem m, String existingTopicId, boolean isAttachedMail,
         String parentMail, boolean create)
     {
-        // def msgDoc
-        // def content = ""
-        // def htmlcontent = ""
-        // def zippedhtmlcontent = ""
-        // def attachedMails = [:]
-        // // a map to store attachment filename = contentId for replacements in HTML retrieved from mails
-        // def attachmentsMap = [:]
-        // def attbodyparts = []
-        //
-        // def prefix = 'M'
-        // if (isAttachedMail) {
-        // prefix = 'A'
-        // }
-        // def msgwikiname = xwiki.clearName(prefix + m.topic.replaceAll(" ",""))
-        // if (msgwikiname.length() >= 30) {
-        // msgwikiname = msgwikiname.substring(0,30)
-        // }
-        // def pagename = xwiki.getUniquePageName("MailArchive", msgwikiname )
-        // msgDoc = xwiki.getDocument("MailArchive.${pagename}")
-        // addDebug("NEW MSG msgwikiname=$msgwikiname pagename=$pagename")
-        //
-        // def bodypart = m.bodypart
-        // addDebug("bodypart class " + bodypart.class)
-        // // addDebug("mail content type " + m.contentType)
-        // // Retrieve mail body(ies)
-        // if (m.contentType.contains("pkcs7-mime")
-        // || m.contentType.contains("multipart/encrypted")) {
-        // content =
-        // "<<<This e-mail was encrypted. Text Content and attachments of encrypted e-mails are not publshed in Mail Archiver to avoid disclosure of restricted or confidential information.>>>"
-        // htmlcontent =
-        // "<i>&lt;&lt;&lt;This e-mail was encrypted. Text Content and attachments of encrypted e-mails are not publshed in Mail Archiver to avoid disclosure of restricted or confidential information.&gt;&gt;&gt;</i>"
-        // attachedMails = []
-        // m.sensitivity = "encrypted"
-        // } else if (bodypart instanceof String)
-        // {
-        // content = MimeUtility.decodeText(bodypart)
-        //
-        // } else
-        // {
-        // addDebug("Fetching plain text content ...")
-        // content = getMailContent(bodypart)
-        // addDebug("Fetching HTML content ...")
-        // htmlcontent = getMailContentHtml(bodypart, 0)
-        // addDebug("Fetching attached mails ...")
-        // attachedMails = getMailContentAttachedMails(bodypart, msgDoc.fullName)
-        //
-        // addDebug("Fetching attachments from mail")
-        // def nbatts = getMailAttachments(bodypart, attbodyparts)
-        // addDebug("FOUND $nbatts attachments to add")
-        // addDebug("Retrieving contentIds ...")
-        // fillAttachmentContentIds (attbodyparts, attachmentsMap)
-        // }
-        //
-        // // Truncate body
-        // content = truncateStringForBytes(content, 65500, 65500)
-        //
-        // /* Treat HTML parts ... */
-        // zippedhtmlcontent = treatHtml(msgDoc, htmlcontent, attachmentsMap)
-        //
-        // // Treat lengths
-        // if (m.messageId.length()>255) { m.messageId = m.messageId[0..254] }
-        // if (m.subject.length()>255) { m.subject= m.subject[0..254] }
-        // if (existingTopicId.length()>255) { existingTopicId= existingTopicId[0..254] }
-        // if (m.topicId.length()>255) { m.topicId= m.topicId[0..254] }
-        // if (m.topic.length()>255) { m.topic= m.topic[0..254] }
-        // // largestrings : normally 65535, but we don't know the size of the largestring itself
-        // if (m.replyToId.length()>65500) { m.replyToId= m.replyToId[0..65499] }
-        // if (m.refs.length()>65500) { m.refs= m.refs[0..65499] }
-        // if (m.from.length()>65500) { m.from= m.from[0..65499] }
-        // if (m.to.length()>65500) { m.to= m.to[0..65499] }
-        // if (m.cc.length()>65500) { m.cc= m.cc[0..65499] }
-        //
-        // if ((content == null || content == "") && (htmlcontent != null && htmlcontent != "")) {
-        // def converted = null
-        // try {
-        // def xdom = services.rendering.parse(htmlcontent, "html/4.01")
-        // converted = services.rendering.render(xdom, "plain/1.0")
-        // } catch (Throwable t) {
-        // addDebug("Conversion from HTML to plain text thrown exception ${t}")
-        // t.printStackTrace()
-        // converted = null
-        // }
-        // if (converted != null && converted != "") {
-        // // replace content with value (remove excessive whitespace also)
-        // content = converted.replaceAll(~/[\s]{2,}/, "\n")
-        // addDebug("Text body now contains converted html content")
-        // } else {
-        // addDebug("Conversion from HTML to Plain Text returned empty or null string")
-        // }
-        // }
-        //
-        // // Fill all new object's fields
-        // def msgObj = msgDoc.newObject("MailArchiveCode.MailClass")
-        // msgObj.set("messageid", m.messageId)
-        // msgObj.set("messagesubject", m.subject)
-        //
-        // msgObj.set("topicid", existingTopicId)
-        // msgObj.set("topicsubject", m.topic)
-        // msgObj.set("inreplyto", m.replyToId)
-        // msgObj.set("references", m.refs)
-        // msgObj.set("date", m.decodedDate)
-        // msgDoc.document.setCreationDate(m.decodedDate)
-        // msgDoc.document.setDate(m.decodedDate)
-        // msgDoc.document.setContentUpdateDate(m.decodedDate)
-        // msgObj.set("from", m.from)
-        // msgObj.set("to", m.to)
-        // msgObj.set("cc", m.cc)
-        // msgObj.set("body", content)
-        // msgObj.set("bodyhtml", zippedhtmlcontent)
-        // msgObj.set("sensitivity", m.sensitivity)
-        // if (attachedMails.size() != 0) {
-        // msgObj.set("attachedMails", attachedMails.grep(~/^MailArchive\..*$/).join(','))
-        // }
-        // if (!isAttachedMail) {
-        // if (m.isFirstInTopic)
-        // {
-        // msgObj.set("type", m.type)
-        // } else
-        // {
-        // msgObj.set("type", "Mail")
-        // }
-        // } else {
-        // msgObj.set("type", "Attached Mail")
-        // }
-        // if (parentMail != null) {
-        // msgDoc.setParent(parentMail)
-        // } else if (existingTopics[m.topicId] != null) {
-        // msgDoc.setParent(existingTopics[m.topicId][0])
-        // }
-        // //msgDoc.setContent(xwiki.getDocument("MailArchiveCode.MailClassTemplate").getContent())
-        // msgDoc.setTitle("Message ${m.subject}")
-        // if (!isAttachedMail) {
-        // msgDoc.setComment("Created message from mailing-list from folder ${mailingListFolder}")
-        // } else {
-        // msgDoc.setComment("Attached mail created")
-        // }
-        // def tag = parseTags(m, threadsMap)
-        // if (tag != "")
-        // {
-        // msgDoc.use(msgDoc.newObject("XWiki.TagClass"))
-        // msgDoc.set("tags", tag.replaceAll(" ", "_") )
-        // }
-        //
-        // if (create && !checkMsgIdExistence(m.messageId)) {
-        // addDebug("saving message ${m.subject}")
-        // saveAsUser(msgDoc, m.wikiuser, getLoadingUser(),
-        // "Created message from mailing-list from folder ${mailingListFolder}")
-        // }
-        // existingMessages[m.messageId] = [m.subject, existingTopicId, msgDoc.fullName]
-        // addDebug("  mail loaded and saved with id $m.messageId, subject=$m.subject topicid=$m.topicId topicsubject=$m.topic replyto=$m.replyToId references=$m.refs date=$m.decodedDate from=$m.from")
-        //
-        // addDebug("adding attachments to document")
-        // addAttachmentsFromMail(msgDoc, attbodyparts, attachmentsMap, context)
-        //
-        // return msgDoc
-        return null;
+        XWikiDocument msgDoc;
+        String content = "";
+        String htmlcontent = "";
+        String zippedhtmlcontent = "";
+        HashMap<String, String> attachedMails = new HashMap<String, String>();
+        // a map to store attachment filename = contentId for replacements in HTML retrieved from mails
+        HashMap<String, String> attachmentsMap = new HashMap<String, String>();
+        ArrayList<Object> attbodyparts = new ArrayList<Object>();
+
+        char prefix = 'M';
+        if (isAttachedMail) {
+            prefix = 'A';
+        }
+        String msgwikiname = xwiki.clearName(prefix + m.getTopic().replaceAll(" ", ""), context);
+        if (msgwikiname.length() >= 30) {
+            msgwikiname = msgwikiname.substring(0, 30);
+        }
+        String pagename = xwiki.getUniquePageName("MailArchive", msgwikiname, context);
+        msgDoc = xwiki.getDocument("MailArchive" + pagename, context);
+        logger.debug("NEW MSG msgwikiname=" + msgwikiname + " pagename=" + pagename);
+
+        Object bodypart = m.getBodypart();
+        logger.debug("bodypart class " + bodypart.getClass());
+        // addDebug("mail content type " + m.contentType)
+        // Retrieve mail body(ies)
+        if (m.getContentType().contains("pkcs7-mime") || m.getContentType().contains("multipart/encrypted")) {
+            content =
+                "<<<This e-mail was encrypted. Text Content and attachments of encrypted e-mails are not publshed in Mail Archiver to avoid disclosure of restricted or confidential information.>>>";
+            htmlcontent =
+                "<i>&lt;&lt;&lt;This e-mail was encrypted. Text Content and attachments of encrypted e-mails are not publshed in Mail Archiver to avoid disclosure of restricted or confidential information.&gt;&gt;&gt;</i>";
+
+            m.setSensitivity("encrypted");
+        } else if (bodypart instanceof String) {
+            content = MimeUtility.decodeText((String) bodypart);
+
+        } else {
+            logger.debug("Fetching plain text content ...");
+            content = getMailContent((Multipart) bodypart);
+            logger.debug("Fetching HTML content ...");
+            htmlcontent = getMailContentHtml(bodypart, 0);
+            logger.debug("Fetching attached mails ...");
+            attachedMails = getMailContentAttachedMails(bodypart, msgDoc.getFullName());
+
+            logger.debug("Fetching attachments from mail");
+            int nbatts = getMailAttachments(bodypart, attbodyparts);
+            logger.debug("FOUND " + nbatts + " attachments to add");
+            logger.debug("Retrieving contentIds ...");
+            fillAttachmentContentIds(attbodyparts, attachmentsMap);
+        }
+
+        // Truncate body
+        content = truncateStringForBytes(content, 65500, 65500);
+
+        /* Treat HTML parts ... */
+        zippedhtmlcontent = treatHtml(msgDoc, htmlcontent, attachmentsMap);
+
+        // Treat lengths
+        if (m.getMessageId().length() > 255) {
+            m.setMessageId(m.getMessageId().substring(0, 254));
+        }
+        if (m.getSubject().length() > 255) {
+            m.setSubject(m.getSubject().substring(0, 254));
+        }
+        if (existingTopicId.length() > 255) {
+            existingTopicId = existingTopicId.substring(0, 254);
+        }
+        if (m.getTopicId().length() > 255) {
+            m.setTopicId(m.getTopicId().substring(0, 254));
+        }
+        if (m.getTopic().length() > 255) {
+            m.setTopic(m.getTopic().substring(0, 254));
+        }
+        // largestrings : normally 65535, but we don't know the size of the largestring itself
+        if (m.getReplyToId().length() > 65500) {
+            m.setReplyToId(m.getReplyToId().substring(0, 65499));
+        }
+        if (m.getRefs().length() > 65500) {
+            m.setRefs(m.getRefs().substring(0, 65499));
+        }
+        if (m.getFrom().length() > 65500) {
+            m.setFrom(m.getFrom().substring(0, 65499));
+        }
+        if (m.getTo().length() > 65500) {
+            m.setTo(m.getTo().substring(0, 65499));
+        }
+        if (m.getCc().length() > 65500) {
+            m.setCc(m.getCc().substring(0, 65499));
+        }
+
+        if ((content == null || "".equals(content)) && (htmlcontent != null && !"".equals(htmlcontent))) {
+            String converted = null;
+            try {
+                StringBuffer writerString = new StringBuffer();
+                DefaultWikiPrinter printer = new DefaultWikiPrinter();
+                converter.convert(new StringReader(htmlcontent), Syntax.HTML_4_01, Syntax.PLAIN_1_0, printer);
+                converted = writerString.toString();
+                // XDOM xdom = parser.parse(new StringReader(htmlcontent));
+                // def xdom = services.rendering.parse(htmlcontent, "html/4.01")
+                // converted = services.rendering.render(xdom, "plain/1.0")
+            } catch (Throwable t) {
+                logger.warn("Conversion from HTML to plain text thrown exception", t);
+                converted = null;
+            }
+            if (converted != null && !"".equals(converted)) {
+                // replace content with value (remove excessive whitespace also)
+                content = converted.replaceAll("[\\s]{2,}", "\n");
+                logger.debug("Text body now contains converted html content");
+            } else {
+                logger.debug("Conversion from HTML to Plain Text returned empty or null string");
+            }
+        }
+
+        // Fill all new object's fields
+        BaseObject msgObj = msgDoc.newObject(SPACE_CODE + ".MailClass", context);
+        msgObj.set("messageid", m.getMessageId(), context);
+        msgObj.set("messagesubject", m.getSubject(), context);
+
+        msgObj.set("topicid", existingTopicId, context);
+        msgObj.set("topicsubject", m.getTopic(), context);
+        msgObj.set("inreplyto", m.getReplyToId(), context);
+        msgObj.set("references", m.getRefs(), context);
+        msgObj.set("date", m.getDecodedDate(), context);
+        msgDoc.setCreationDate(m.getDecodedDate());
+        msgDoc.setDate(m.getDecodedDate());
+        msgDoc.setContentUpdateDate(m.getDecodedDate());
+        msgObj.set("from", m.getFrom(), context);
+        msgObj.set("to", m.getTo(), context);
+        msgObj.set("cc", m.getCc(), context);
+        msgObj.set("body", content, context);
+        msgObj.set("bodyhtml", zippedhtmlcontent, context);
+        msgObj.set("sensitivity", m.getSensitivity(), context);
+        if (attachedMails.size() != 0) {
+            msgObj.set("attachedMails", attachedMails/* TODO .grep("^MailArchive\\..*$").join(',') */, context);
+        }
+        if (!isAttachedMail) {
+            if (m.isFirstInTopic()) {
+                msgObj.set("type", m.getType(), context);
+            } else {
+                msgObj.set("type", "Mail", context);
+            }
+        } else {
+            msgObj.set("type", "Attached Mail", context);
+        }
+        if (parentMail != null) {
+            msgDoc.setParent(parentMail);
+        } else if (existingTopics.get(m.getTopicId()) != null) {
+            msgDoc.setParent(existingTopics.get(m.getTopicId()).getFullName());
+        }
+        // msgDoc.setContent(xwiki.getDocument("MailArchiveCode.MailClassTemplate").getContent())
+        msgDoc.setTitle("Message ${m.subject}");
+        if (!isAttachedMail) {
+            msgDoc.setComment("Created message from mailing-list from folder ${mailingListFolder}");
+        } else {
+            msgDoc.setComment("Attached mail created");
+        }
+        String tag = parseTags(m);
+        if (tag != "") {
+            BaseObject tagobj = msgDoc.newObject("XWiki.TagClass", context);
+            tagobj.set("tags", tag.replaceAll(" ", "_"), context);
+        }
+
+        if (create && !checkMsgIdExistence(m.getMessageId())) {
+            logger.debug("saving message " + m.getSubject());
+            saveAsUser(msgDoc, m.getWikiuser(), getLoadingUser(), "Created message from mailing-list");
+        }
+        existingMessages
+            .put(m.getMessageId(), new MailShortItem(m.getSubject(), existingTopicId, msgDoc.getFullName()));
+        logger
+            .debug("  mail loaded and saved with id $m.messageId, subject=$m.subject topicid=$m.topicId topicsubject=$m.topic replyto=$m.replyToId references=$m.refs date=$m.decodedDate from=$m.from");
+
+        logger.debug("adding attachments to document");
+        addAttachmentsFromMail(msgDoc, attbodyparts, attachmentsMap, context);
+
+        return msgDoc;
+    }
+
+    /*
+     * Retrieves body parts for content from mail, and returns them as a String
+     */
+    public String getMailContent(Multipart bodypart)
+    {
+        StringBuilder content = new StringBuilder();
+        String is;
+        String str;
+        try {
+            int mcount = bodypart.getCount();
+            int i = 0;
+            while (i < mcount) {
+                BodyPart newbodypart = bodypart.getBodyPart(i);
+                logger.debug("BODYPART CONTENTTYPE = " + newbodypart.getContentType().toLowerCase() + " FILENAME = "
+                    + newbodypart.getFileName());
+                // We don't treat attachments here
+                if (newbodypart.getFileName() != null) {
+                    if (newbodypart.getContentType().toLowerCase().contains("vcard")) {
+                        logger.debug("Adding vcard to content");
+                        if (!content.toString().toLowerCase().contains("xwiki")) {
+                            str = (String) newbodypart.getContent();
+                            content.append(" ").append(str);
+                        }
+                    }
+                    // Note : we treat HTML or XML appart
+                    else if (newbodypart.getContentType().toLowerCase().startsWith("text/")
+                        && !(newbodypart.getContentType().toLowerCase().startsWith("text/html"))
+                        && !(newbodypart.getContentType().toLowerCase().startsWith("text/xml"))) {
+                        logger.debug("Adding text to content");
+                        str = (String) newbodypart.getContent();
+                        content.append(" ").append(str);
+                    }
+
+                    if (newbodypart.getContentType().toLowerCase().startsWith("multipart/")) {
+                        logger.debug("Adding multipart to content");
+                        String ncontent = getMailContent((Multipart) newbodypart.getContent());
+                        if (!"".equals(ncontent)) {
+                            content.append(" ").append(ncontent);
+                        }
+                    }
+
+                    if (newbodypart.getContentType().toLowerCase().startsWith("message/rfc822")) {
+                        logger.debug("Adding rfc822 to content");
+                        String ncontent =
+                            getMailContent((Multipart) ((BodyPart) newbodypart.getContent()).getContent());
+                        if (!"".equals(ncontent)) {
+                            content.append(" ").append(ncontent);
+                        }
+                    }
+                } // not an attachment
+
+                i++;
+            }
+
+            return content.toString();
+
+        } catch (Exception e) {
+            logger.warn("Failed to get Mail Content", e);
+            return "Failed to get Mail Content";
+        }
     }
 
     /**

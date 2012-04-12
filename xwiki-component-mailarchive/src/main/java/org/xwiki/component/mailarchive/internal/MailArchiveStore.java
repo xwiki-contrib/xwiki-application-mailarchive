@@ -174,7 +174,7 @@ public class MailArchiveStore
         List<MailType> mailTypes = new ArrayList<MailType>();
 
         String xwql =
-            "select type.name, type.icon, type.patternList from Document doc, doc.object("
+            "select type.name, type.displayName, type.icon, type.patternList from Document doc, doc.object("
                 + DefaultMailArchive.SPACE_CODE + ".TypesSettingsClass) as type where doc.space='"
                 + DefaultMailArchive.SPACE_PREFS + "'";
         try {
@@ -182,7 +182,8 @@ public class MailArchiveStore
 
             for (Object[] type : types) {
 
-                MailType typeobj = factory.createMailType((String) type[0], (String) type[1], (String) type[2]);
+                MailType typeobj =
+                    factory.createMailType((String) type[0], (String) type[1], (String) type[2], (String) type[3]);
                 if (typeobj != null) {
                     mailTypes.add(typeobj);
                     logger.info("Loaded mail type " + typeobj);

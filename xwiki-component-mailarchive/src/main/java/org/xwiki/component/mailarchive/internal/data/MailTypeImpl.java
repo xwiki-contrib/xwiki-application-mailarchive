@@ -33,6 +33,8 @@ public class MailTypeImpl implements MailType
 {
     private String name;
 
+    private String displayName;
+
     private String icon;
 
     private HashMap<List<String>, String> patterns;
@@ -70,5 +72,22 @@ public class MailTypeImpl implements MailType
     public void addPattern(List<String> fields, String expr)
     {
         this.patterns.put(fields, expr);
+    }
+
+    public void setDisplayName(String displayName)
+    {
+        this.displayName = displayName;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.component.mailarchive.MailType#getDisplayName()
+     */
+    @Override
+    public String getDisplayName()
+    {
+        // TODO Auto-generated method stub
+        return this.displayName;
     }
 }

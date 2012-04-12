@@ -39,6 +39,8 @@ import org.xwiki.component.mailarchive.internal.Utils;
  */
 public class MailItem
 {
+    private static final int DEFAULT_MAX_TOPICID_SIZE = 255;
+
     private String date;
 
     private String subject;
@@ -367,10 +369,15 @@ public class MailItem
         this.isFirstInTopic = isFirstInTopic;
     }
 
+    public static MailItem fromMessage(Message mail)
+    {
+        return fromMessage(mail, DEFAULT_MAX_TOPICID_SIZE);
+    }
+
     /**
      * parseMail Parse mail headers to create a MailItem. Decodes localization and date.
      */
-    public static MailItem fromMessage(Message mail)
+    public static MailItem fromMessage(Message mail, int maxTopicIdSize)
     {
 
         MailItem m = new MailItem();
@@ -411,7 +418,7 @@ public class MailItem
             m.setSubject(subject);
 
             // If topic is not provided, we use message subject without the beginning junk
-            // If topic header is provided but empty, we use a default subject to indicate that there is none
+            // If topic header is provided but empty, we use a default subject
             // TODO : why did I cut IDs to 30 chars long ? It's usually longer than that and it would fit in a
             // StringProperty ????
             // CAHW2-9EBk1MUoqrC-duqXhth3k9nA-T+7BUQO-qnScNJHvWM4g@mail.gmail.com
@@ -440,8 +447,10 @@ public class MailItem
                     topicId = messageId;
                 }
             }
-            if (topicId.length() >= 30) {
-                topicId = topicId.substring(0, 29);
+            // This is only for compatibility purpose with old version of this app
+            // Most of the time, leaving this size to default is ok
+            if (topicId.length() >= DEFAULT_MAX_TOPICID_SIZE) {
+                topicId = topicId.substring(0, DEFAULT_MAX_TOPICID_SIZE - 1);
             }
             m.setTopicId(topicId);
 
@@ -504,33 +513,34 @@ public class MailItem
             m.setDate(date);
             m.setDecodedDate(decodedDate);
 
-            // @TODO : not generic part
-            boolean isNewsletter = (subject.toUpperCase().contains("COMMUNITY NEWSLETTER"));
-            boolean isProductRelease =
-                ((from.toUpperCase().contains("DONOTREPLY@GEMALTO.COM") || from.toUpperCase().contains("DOWNLOADZONE")) && (subject
-                    .toUpperCase().startsWith("DELIVERY OF")));
-            // end of not generic part
-            String type = "Mail";
-            // @TODO : not generic part
-            if (isNewsletter) {
-                type = "Newsletter";
-            }
-            if (isProductRelease) {
-                type = "Product Release";
-            }
-            // end of not generic part
-            m.setType(type);
+            // // @TODO : not generic part
+            // boolean isNewsletter = (subject.toUpperCase().contains("COMMUNITY NEWSLETTER"));
+            // boolean isProductRelease =
+            // ((from.toUpperCase().contains("DONOTREPLY@GEMALTO.COM") || from.toUpperCase().contains("DOWNLOADZONE"))
+            // && (subject
+            // .toUpperCase().startsWith("DELIVERY OF")));
+            // // end of not generic part
+            // String type = "Mail";
+            // // @TODO : not generic part
+            // if (isNewsletter) {
+            // type = "Newsletter";
+            // }
+            // if (isProductRelease) {
+            // type = "Product Release";
+            // }
+            // // end of not generic part
+            // m.setType(type);
 
             boolean firstInTopic = ("".equals(replyToId));
             m.setFirstInTopic(firstInTopic);
 
-            // @TODO Try to retrieve wiki user
-            // @TODO : here, or after ? (link with ldap and xwiki profiles
-            // options to be checked ...)
-            /*
-             * String userwiki = parseUser(from); if (userwiki == null || userwiki == "") { userwiki = unknownUser; }
-             */
-            m.setWikiuser(null);
+            // // @TODO Try to retrieve wiki user
+            // // @TODO : here, or after ? (link with ldap and xwiki profiles
+            // // options to be checked ...)
+            // /*
+            // * String userwiki = parseUser(from); if (userwiki == null || userwiki == "") { userwiki = unknownUser; }
+            // */
+            // m.setWikiuser(null);
 
             m.setBodypart(mail.getContent());
             m.setContentType(mail.getContentType().toLowerCase());

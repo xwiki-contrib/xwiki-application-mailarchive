@@ -74,16 +74,18 @@ public class MailArchiveFactory
      *            match
      * @return a MailType object or null if patternsList could not be parsed
      */
-    public MailType createMailType(final String name, final String icon, final String patternsList)
+    public MailType createMailType(final String name, final String displayName, final String icon,
+        final String patternsList)
     {
 
         MailTypeImpl typeobj = new MailTypeImpl();
 
         typeobj.setName(name);
+        typeobj.setDisplayName(displayName);
         typeobj.setIcon(icon);
 
         HashMap<List<String>, String> patterns = new HashMap<List<String>, String>();
-        String[] splittedPatterns = patternsList.split("\n", -1);
+        String[] splittedPatterns = patternsList.replaceAll("(?m)^\\s+$", "").split("\n", -1);
         if (splittedPatterns.length % 2 == 0) {
             for (int i = 0; i < splittedPatterns.length; i += 2) {
                 List<String> fields = Arrays.asList(splittedPatterns[i].split(",", 0));

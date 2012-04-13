@@ -58,13 +58,13 @@ public class MailArchiveFactory
         server.setPort(Integer.parseInt((String) dab.getProperty(serverPrefsDoc, DefaultMailArchive.SPACE_CODE
             + ".ServerSettingsClass", "port")));
         server.setProtocol((String) dab.getProperty(serverPrefsDoc, DefaultMailArchive.SPACE_CODE
-            + "ServerSettingsClass", "protocol"));
-        server.setUser((String) dab.getProperty(serverPrefsDoc, DefaultMailArchive.SPACE_CODE + "ServerSettingsClass",
+            + ".ServerSettingsClass", "protocol"));
+        server.setUser((String) dab.getProperty(serverPrefsDoc, DefaultMailArchive.SPACE_CODE + ".ServerSettingsClass",
             "user"));
         server.setPassword((String) dab.getProperty(serverPrefsDoc, DefaultMailArchive.SPACE_CODE
-            + "ServerSettingsClass", "password"));
-        server.setFolder((String) dab.getProperty(serverPrefsDoc,
-            DefaultMailArchive.SPACE_CODE + "ServerSettingsClass", "folder"));
+            + ".ServerSettingsClass", "password"));
+        server.setFolder((String) dab.getProperty(serverPrefsDoc, DefaultMailArchive.SPACE_CODE
+            + ".ServerSettingsClass", "folder"));
         server.setWikiDoc(serverPrefsDoc);
 
         return server;

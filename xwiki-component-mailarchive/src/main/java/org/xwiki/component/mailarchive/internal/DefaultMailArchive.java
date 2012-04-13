@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.mail.AuthenticationFailedException;
 import javax.mail.BodyPart;
@@ -70,6 +71,7 @@ import org.xwiki.component.mailarchive.internal.data.MailServer;
 import org.xwiki.component.mailarchive.internal.data.MailShortItem;
 import org.xwiki.component.mailarchive.internal.data.TopicShortItem;
 import org.xwiki.component.mailarchive.internal.exceptions.MailArchiveException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.context.Execution;
@@ -77,9 +79,10 @@ import org.xwiki.context.ExecutionContext;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
-import org.xwiki.rendering.converter.Converter;
-import org.xwiki.rendering.parser.Parser;
+import org.xwiki.rendering.parser.StreamParser;
+import org.xwiki.rendering.renderer.PrintRendererFactory;
 import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
+import org.xwiki.rendering.renderer.printer.WikiPrinter;
 import org.xwiki.rendering.syntax.Syntax;
 
 import com.xpn.xwiki.XWiki;
@@ -129,11 +132,19 @@ public class DefaultMailArchive implements MailArchive, Initializable
     @Inject
     private Logger logger;
 
+    /**
+     * The component used to parse the XHTML obtained after cleaning, when transformations are not executed.
+     */
     @Inject
-    private Parser parser;
+    @Named("html/4.01")
+    private StreamParser htmlStreamParser;
 
+    /**
+     * The component manager. We need it because we have to access some components dynamically based on the input
+     * syntax.
+     */
     @Inject
-    private Converter converter;
+    private ComponentManager componentManager;
 
     private MailArchiveStore store;
 
@@ -427,7 +438,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
     {
         MailItem m = MailItem.fromMessage(mail);
         setMailSpecificParts(m);
-        logger.warn("PARSED MAIL  " + mail);
+        logger.warn("PARSED MAIL  " + m);
 
         return loadMail(m, true, false, null);
     }
@@ -782,7 +793,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
             msgwikiname = msgwikiname.substring(0, 30);
         }
         String pagename = xwiki.getUniquePageName("MailArchive", msgwikiname, context);
-        msgDoc = xwiki.getDocument("MailArchive" + pagename, context);
+        msgDoc = xwiki.getDocument(SPACE_ITEMS + '.' + pagename, context);
         logger.debug("NEW MSG msgwikiname=" + msgwikiname + " pagename=" + pagename);
 
         Object bodypart = m.getBodypart();
@@ -853,16 +864,18 @@ public class DefaultMailArchive implements MailArchive, Initializable
             m.setCc(m.getCc().substring(0, 65499));
         }
 
+        // Assign text body converted from html content if there is no pure-text content
         if ((content == null || "".equals(content)) && (htmlcontent != null && !"".equals(htmlcontent))) {
             String converted = null;
             try {
-                StringBuffer writerString = new StringBuffer();
-                DefaultWikiPrinter printer = new DefaultWikiPrinter();
-                converter.convert(new StringReader(htmlcontent), Syntax.HTML_4_01, Syntax.PLAIN_1_0, printer);
-                converted = writerString.toString();
-                // XDOM xdom = parser.parse(new StringReader(htmlcontent));
-                // def xdom = services.rendering.parse(htmlcontent, "html/4.01")
-                // converted = services.rendering.render(xdom, "plain/1.0")
+
+                WikiPrinter printer = new DefaultWikiPrinter();
+                PrintRendererFactory printRendererFactory =
+                    componentManager.lookup(PrintRendererFactory.class, Syntax.PLAIN_1_0.toIdString());
+                htmlStreamParser.parse(new StringReader(htmlcontent), printRendererFactory.createRenderer(printer));
+
+                converted = printer.toString();
+
             } catch (Throwable t) {
                 logger.warn("Conversion from HTML to plain text thrown exception", t);
                 converted = null;

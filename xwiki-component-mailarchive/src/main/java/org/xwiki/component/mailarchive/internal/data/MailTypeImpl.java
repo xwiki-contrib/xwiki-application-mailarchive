@@ -90,4 +90,14 @@ public class MailTypeImpl implements MailType
         // TODO Auto-generated method stub
         return this.displayName;
     }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("MailTypeImpl [name=").append(name).append(", displayName=").append(displayName)
+            .append(", icon=").append(icon).append(", patterns=").append(patterns).append("]");
+        return builder.toString();
+    }
+
 }

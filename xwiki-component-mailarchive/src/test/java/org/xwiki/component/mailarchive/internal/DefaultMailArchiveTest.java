@@ -22,9 +22,13 @@ package org.xwiki.component.mailarchive.internal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.jmock.Expectations;
+import org.jmock.Mockery;
 import org.junit.Test;
 import org.xwiki.component.mailarchive.MailArchive;
-import org.xwiki.query.QueryException;
+import org.xwiki.component.mailarchive.internal.data.MailServer;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.context.Execution;
 import org.xwiki.test.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.MockingRequirement;
 
@@ -37,14 +41,45 @@ public class DefaultMailArchiveTest extends AbstractMockingComponentTestCase
     @MockingRequirement
     private DefaultMailArchive ma;
 
-    @Test
-    public void testLoadExistingTopics() throws QueryException
+    /**
+     * @see org.xwiki.test.AbstractMockingComponentTestCase#configure()
+     */
+    @Override
+    public void configure() throws Exception
     {
-        assertTrue(true);
-        /*
-         * Mockery context = new Mockery(); context.checking(new Expectations() {{ oneOf
-         * (queryManager).createQuery(with(any(String.class)), Query.XWQL); }}); ma.loadExistingTopics();
-         */
+        try {
+            final Execution execution = getComponentManager().lookup(Execution.class);
+            Mockery context = new Mockery();
+            context.checking(new Expectations()
+            {
+                {
+                    oneOf(execution).getContext();
+                }
+            });
+
+        } catch (ComponentLookupException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testLoadExistingTopics() throws ComponentLookupException, Exception
+    {
+
+        MailServer server = new MailServer();
+        server.setFolder("WIKI");
+        server.setHost("imap.gmail.com");
+        server.setPort(993);
+        server.setProtocol("imaps");
+        server.setUser("jbousque");
+        server.setPassword("gwada15");
+        int result = ma.checkMails(server);
+        System.out.println(result);
+        assertTrue(result > 0);
     }
 
     @Test

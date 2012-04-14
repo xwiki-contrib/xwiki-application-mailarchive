@@ -944,9 +944,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
         }
         existingMessages
             .put(m.getMessageId(), new MailShortItem(m.getSubject(), existingTopicId, msgDoc.getFullName()));
-        logger
-            .debug("  mail loaded and saved with id $m.messageId, subject=$m.subject topicid=$m.topicId topicsubject=$m.topic replyto=$m.replyToId references=$m.refs date=$m.decodedDate from=$m.from");
-
+        logger.debug("  mail loaded and saved :" + msgDoc.getFullName());
         logger.debug("adding attachments to document");
         addAttachmentsFromMail(msgDoc, attbodyparts, attachmentsMap);
 
@@ -1045,7 +1043,8 @@ public class DefaultMailArchive implements MailArchive, Initializable
 
         try {
             List<Object> result = queryManager.createQuery(hql, Query.HQL).execute();
-            exists = !"0".equals(result.get(0));
+            logger.debug("CheckMsgIdExistence result " + result);
+            exists = (Long) result.get(0) != 0;
         } catch (QueryException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

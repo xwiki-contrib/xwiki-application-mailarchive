@@ -77,6 +77,18 @@ public class MailItem
 
     private boolean isFirstInTopic;
 
+    private String importance;
+
+    public String getImportance()
+    {
+        return importance;
+    }
+
+    public void setImportance(String importance)
+    {
+        this.importance = importance;
+    }
+
     public MailItem()
     {
     }
@@ -459,7 +471,7 @@ public class MailItem
             if (headers != null) {
                 from = MimeUtility.decodeText(headers[0]);
             }
-            from = from.replaceAll("\"", "");
+            from = from.replaceAll("\"", "").replaceAll("[\n\r]", "");
             m.setFrom(from);
 
             String to = "";
@@ -467,7 +479,7 @@ public class MailItem
             if (headers != null) {
                 to = MimeUtility.decodeText(headers[0]);
             }
-            to = to.replaceAll("\"", "");
+            to = to.replaceAll("\"", "").replaceAll("[\n\r]", "");
             m.setTo(to);
 
             String cc = "";
@@ -475,7 +487,7 @@ public class MailItem
             if (headers != null) {
                 cc = MimeUtility.decodeText(headers[0]);
             }
-            cc = cc.replaceAll("\"", "");
+            cc = cc.replaceAll("\"", "").replaceAll("[\n\r]", "");
             m.setCc(cc);
 
             // process the language
@@ -550,7 +562,14 @@ public class MailItem
             if (headers != null && !headers[0].isEmpty()) {
                 sensitivity = "normal";
             }
-            m.setSensitivity(sensitivity);
+            m.setSensitivity(sensitivity.toLowerCase());
+
+            String importance = "normal";
+            headers = mail.getHeader("Importance");
+            if (importance == null || importance == "") {
+                importance = "normal";
+            }
+            m.setImportance(importance.toLowerCase());
         } catch (MessagingException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

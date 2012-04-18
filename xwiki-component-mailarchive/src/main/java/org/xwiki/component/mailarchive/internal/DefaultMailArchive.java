@@ -71,6 +71,9 @@ import org.xwiki.component.mailarchive.internal.data.MailServer;
 import org.xwiki.component.mailarchive.internal.data.MailShortItem;
 import org.xwiki.component.mailarchive.internal.data.TopicShortItem;
 import org.xwiki.component.mailarchive.internal.exceptions.MailArchiveException;
+import org.xwiki.component.mailarchive.internal.threads.NewMessagesThreading;
+import org.xwiki.component.mailarchive.internal.threads.ThreadableMessage;
+import org.xwiki.component.mailarchive.internal.timeline.TimeLine;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -106,7 +109,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
 
     public static final String SPACE_PREFS = "MailArchivePrefs";
 
-    public static final String SPACE_ITEMS = "MailArchiveItems";
+    public static String SPACE_ITEMS = "MailArchiveItems";
 
     public static final String unknownUser = "XWiki.UserDoesNotExist";
 
@@ -151,6 +154,8 @@ public class DefaultMailArchive implements MailArchive, Initializable
     private MailArchiveFactory factory;
 
     private MailArchiveConfiguration config;
+
+    private MailUtils mailutils;
 
     private boolean isInitialized = false;
 
@@ -292,37 +297,41 @@ public class DefaultMailArchive implements MailArchive, Initializable
         return nbMessages;
     }
 
+    public ThreadableMessage computeThreads(String topicId)
+    {
+        NewMessagesThreading threads = new NewMessagesThreading(context, xwiki, queryManager, logger, mailutils);
+
+        try {
+            return threads.thread(topicId);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /**
      * {@inheritDoc}
      * 
      * @see org.xwiki.component.mailarchive.MailArchive#loadMails(int, boolean)
      */
     @Override
-    public boolean loadMails(int maxMailsNb)
+    public int loadMails(int maxMailsNb)
     {
         logger.info("Starting new MAIL loading session...");
+        int nbMessages = 0;
+        int currentMsg = 0;
         if (!inProgress) {
             inProgress = true;
             try {
-                // Init
-                if (!this.isInitialized) {
-                    initialize();
-                }
-
-                servers = store.loadServersDefinitions();
-                mailTypes = store.loadMailTypesDefinitions();
-                mailingLists = store.loadMailingListsDefinitions();
-                existingTopics = store.loadStoredTopics();
-                existingMessages = store.loadStoredMessages();
-
-                config = new MailArchiveConfigurationImpl(SPACE_PREFS + ".GlobalParameters", this.context);
+                init();
 
                 for (MailServer server : servers) {
                     logger.info("Loading mails from server " + server);
                     try {
                         Message[] messages = loadMailsFromServer(server);
                         logger.warn("Returned number of messages to treat : " + messages.length);
-                        int currentMsg = 0;
+                        currentMsg = 0;
                         while (currentMsg < maxMailsNb && currentMsg < messages.length) {
                             try {
 
@@ -335,24 +344,59 @@ public class DefaultMailArchive implements MailArchive, Initializable
                     } catch (Exception e) {
                         logger.warn("Could not load emails from server " + server);
                     }
+                    nbMessages += currentMsg;
+                }
+
+                try {
+                    // Compute timeline
+                    if (config.isManageTimeline() && nbMessages > 0) {
+                        TimeLine timeline = new TimeLine(config, xwiki, context, queryManager, logger);
+                        timeline.compute();
+                    }
+                } catch (XWikiException e) {
+                    logger.warn("Could not compute timeline date", e);
                 }
 
             } catch (MailArchiveException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                return false;
+                logger.warn("EXCEPTION ", e);
+                return -1;
             } catch (InitializationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                return false;
+                logger.warn("EXCEPTION ", e);
+                return -1;
             }
 
-            return true;
+            inProgress = false;
+            return nbMessages;
         } else {
-            logger.info("Loading process already in progress ...");
-            return false;
+            logger.warn("Loading process already in progress ...");
+            return -1;
         }
 
+    }
+
+    /**
+     * @throws InitializationException
+     * @throws MailArchiveException
+     */
+    protected void init() throws InitializationException, MailArchiveException
+    {
+        // Init
+        if (!this.isInitialized) {
+            initialize();
+        }
+
+        config = new MailArchiveConfigurationImpl(SPACE_PREFS + ".GlobalParameters", this.context);
+
+        if (config.getItemsSpaceName() != null && !"".equals(config.getItemsSpaceName())) {
+            SPACE_ITEMS = config.getItemsSpaceName();
+        }
+
+        mailutils = new MailUtils(xwiki, context, logger, queryManager);
+        servers = store.loadServersDefinitions();
+        mailTypes = store.loadMailTypesDefinitions();
+        mailingLists = store.loadMailingListsDefinitions();
+        existingTopics = store.loadStoredTopics();
+        existingMessages = store.loadStoredMessages();
     }
 
     /**
@@ -438,6 +482,10 @@ public class DefaultMailArchive implements MailArchive, Initializable
     {
         MailItem m = MailItem.fromMessage(mail);
         setMailSpecificParts(m);
+        // Compatibility option with old version of the mail archive
+        if (config.isCropTopicIds() && m.getTopicId().length() > 30) {
+            m.setTopicId(m.getTopicId().substring(0, 29));
+        }
         logger.warn("PARSED MAIL  " + m);
 
         return loadMail(m, true, false, null);
@@ -535,7 +583,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
                 + " are different ?" + (!msg.getTopicId().equals(existingTopicId)));
             if (!msg.getTopicId().equals(existingTopicId)) {
                 msgDoc = xwiki.getDocument(existingMessages.get(m.getMessageId()).getFullName(), context);
-                BaseObject msgObj = msgDoc.getObject("MailArchiveCode.MailClass");
+                BaseObject msgObj = msgDoc.getObject(SPACE_CODE + ".MailClass");
                 msgObj.set("topicid", existingTopicId, context);
                 if (confirm) {
                     logger.debug("saving message " + m.getSubject());
@@ -563,9 +611,9 @@ public class DefaultMailArchive implements MailArchive, Initializable
         if (topicwikiname.length() >= 30) {
             topicwikiname = topicwikiname.substring(0, 30);
         }
-        String pagename = context.getWiki().getUniquePageName("MailArchive", topicwikiname, context);
-        topicDoc = xwiki.getDocument("MailArchive." + pagename, context);
-        BaseObject topicObj = topicDoc.newObject("MailArchiveCode.MailTopicClass", context);
+        String pagename = context.getWiki().getUniquePageName(SPACE_ITEMS, topicwikiname, context);
+        topicDoc = xwiki.getDocument(SPACE_ITEMS + "." + pagename, context);
+        BaseObject topicObj = topicDoc.newObject(SPACE_CODE + ".MailTopicClass", context);
 
         topicObj.set("topicid", m.getTopicId(), context);
         topicObj.set("subject", m.getTopic(), context);
@@ -581,9 +629,11 @@ public class DefaultMailArchive implements MailArchive, Initializable
         topicDoc.setCreationDate(m.getDecodedDate());
         topicDoc.setDate(m.getDecodedDate());
         topicDoc.setContentUpdateDate(m.getDecodedDate());
+        topicObj.set("sensitivity", m.getSensitivity(), context);
+        topicObj.set("importance", m.getImportance(), context);
 
         topicObj.set("type", m.getType(), context);
-        topicDoc.setParent("MailArchive.WebHome");
+        topicDoc.setParent(SPACE_HOME + ".WebHome");
         topicDoc.setTitle("Topic " + m.getTopic());
         topicDoc.setComment("Created topic from mail [" + m.getMessageId() + "]");
 
@@ -600,7 +650,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
         }
 
         if (create) {
-            saveAsUser(topicDoc, m.getWikiuser(), null /* TODO getLoadingUser() */,
+            saveAsUser(topicDoc, m.getWikiuser(), config.getLoadingUser(),
                 "Created topic from mail [" + m.getMessageId() + "]");
         }
         // add the existing topic created to the map
@@ -660,7 +710,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
                 logger.debug("     updating author from " + originalAuthor + " to " + m.getFrom());
                 topicObj.set("author", m.getFrom(), context);
                 comment += " Updated author ";
-                newuser = parseUser(m.getFrom());
+                newuser = mailutils.parseUser(m.getFrom(), config.isMatchProfiles(), config.getLoadingUser());
                 if (newuser == null || "".equals(newuser)) {
                     newuser = unknownUser;
                 }
@@ -682,7 +732,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
                 topicObj.set("lastupdatedate", dateFormatter.format(m.getDecodedDate()), context);
                 topicDoc.setDate(m.getDecodedDate());
                 topicDoc.setContentUpdateDate(m.getDecodedDate());
-                newuser = parseUser(m.getFrom());
+                newuser = mailutils.parseUser(m.getFrom(), config.isMatchProfiles(), config.getLoadingUser());
                 comment += " Updated last update date ";
                 dirty = true;
             }
@@ -702,67 +752,6 @@ public class DefaultMailArchive implements MailArchive, Initializable
         // return topicDoc
 
         return null;
-    }
-
-    /**
-     * parseUser Parses a user string of the form "user <usermail@com>" - extract mail and if matched in xwiki user
-     * profiles, returns page name for this profile - returns null string if no match is found - tries to return profile
-     * of a user that's authenticated from LDAP, if any, or else first profile found
-     */
-    protected String parseUser(String user)
-    {
-        if (config.isMatchProfiles()) {
-            String parsedUser = null;
-            int start = user.indexOf('<');
-            int end = user.indexOf('>');
-            String mail = "";
-            if (start != -1 && end != -1) {
-                mail = user.substring(start + 1, end).toLowerCase();
-            }
-            if (!"".equals(mail)) {
-                // to match "-external" emails and old mails with '@gemplus.com'...
-                mail = mail.toLowerCase();
-                mail = mail.replace("-external", "").replaceAll("^(.*)@.*[.]com$", "$1%@%.com");
-                // Try to find a wiki profile with this email as parameter.
-                // TBD : do this in the loading phase, and only try to search db if it was not found ?
-                String hql =
-                    "select obj.name from BaseObject as obj, StringProperty as prop where obj.className='XWiki.XWikiUsers' and obj.id=prop.id and prop.name='email' and LOWER(prop.value) like '"
-                        + mail + "'";
-
-                List<String> wikiuser = null;
-                try {
-                    wikiuser = this.queryManager.createQuery(hql, Query.HQL).execute();
-                } catch (QueryException e) {
-                    wikiuser = null;
-                }
-                if (wikiuser == null || wikiuser.size() == 0) {
-                    return null;
-                } else {
-                    // If there exists one, we prefer the user that's been authenticated through LDAP
-                    for (String usr : wikiuser) {
-                        try {
-                            if (xwiki.getDocument(usr, context).getObject("XWiki.LDAPProfileClass") != null) {
-                                parsedUser = usr;
-                            }
-                        } catch (XWikiException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                if (parsedUser != null) {
-                    return parsedUser;
-                } else {
-                    // If none has authenticated from LDAP, we return the first user found
-                    return wikiuser.get(0);
-                }
-            } else {
-                return null;
-            }
-        } else {
-            return config.getLoadingUser();
-        }
-
     }
 
     /**
@@ -792,7 +781,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
         if (msgwikiname.length() >= 30) {
             msgwikiname = msgwikiname.substring(0, 30);
         }
-        String pagename = xwiki.getUniquePageName("MailArchive", msgwikiname, context);
+        String pagename = xwiki.getUniquePageName(SPACE_ITEMS, msgwikiname, context);
         msgDoc = xwiki.getDocument(SPACE_ITEMS + '.' + pagename, context);
         logger.debug("NEW MSG msgwikiname=" + msgwikiname + " pagename=" + pagename);
 
@@ -1568,9 +1557,18 @@ public class DefaultMailArchive implements MailArchive, Initializable
         logger.debug("similarSubjects : comparing [" + s1 + "] and [" + s2 + "]");
         s1 = s1.replaceAll("^([Rr][Ee]:|[Ff][Ww]:)(.*)$", "$2");
         s2 = s2.replaceAll("^([Rr][Ee]:|[Ff][Ww]:)(.*)$", "$2");
+        logger.debug("similarSubjects : comparing [" + s1 + "] and [" + s2 + "]");
         if (s1 == s2) {
             logger.debug("similarSubjects : subjects are equal");
             return true;
+        }
+        if (s1 != null && s1.equals(s2)) {
+            logger.debug("similarSubjects : subjects are the equal");
+            return true;
+        }
+        if (s1.length() == 0 || s2.length() == 0) {
+            logger.debug("similarSubjects : one subject is empty, we consider them different");
+            return false;
         }
         try {
             double d = getLevenshteinDistance(s1, s2);
@@ -1582,7 +1580,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
         } catch (IllegalArgumentException iaE) {
             return false;
         }
-        if (s1.startsWith(s2) || s2.startsWith(s1)) {
+        if ((s1.startsWith(s2) || s2.startsWith(s1))) {
             logger.debug("similarSubjects : subjects are considered similar because one start with the other");
             return true;
         }

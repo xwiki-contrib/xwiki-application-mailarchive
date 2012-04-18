@@ -28,7 +28,6 @@ import java.security.NoSuchAlgorithmException;
  */
 public class Utils
 {
-
     public static String byte2hex(byte[] data)
     {
         StringBuffer buf = new StringBuffer();
@@ -55,5 +54,4 @@ public class Utils
         sha1hash = md.digest();
         return byte2hex(sha1hash);
     }
-
 }

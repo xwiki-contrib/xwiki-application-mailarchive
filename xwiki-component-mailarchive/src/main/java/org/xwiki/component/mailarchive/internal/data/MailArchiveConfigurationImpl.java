@@ -82,6 +82,10 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
 
     private String ldapPhotoFieldContent;
 
+    private boolean cropTopicIds;
+
+    private String itemsSpaceName;
+
     public MailArchiveConfigurationImpl(String adminPrefsPage, XWikiContext context) throws MailArchiveException
     {
         try {
@@ -104,6 +108,8 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
                 this.ldapForcePhotoUpdate = prefsobj.getIntValue("ldapphotoforceupdate") != 0;
                 this.ldapPhotoFieldName = prefsobj.getStringValue("ldapphotofield");
                 this.ldapPhotoFieldContent = prefsobj.getStringValue("ldapphototype");
+                this.cropTopicIds = prefsobj.getIntValue("adv_croptopicid") != 0;
+                this.itemsSpaceName = prefsobj.getStringValue("adv_itemsspace");
             }
         } catch (XWikiException e) {
             // TODO Auto-generated catch block
@@ -169,6 +175,30 @@ public class MailArchiveConfigurationImpl implements MailArchiveConfiguration
     public String getLdapPhotoFieldContent()
     {
         return ldapPhotoFieldContent;
+    }
+
+    @Override
+    public boolean isCropTopicIds()
+    {
+        return cropTopicIds;
+    }
+
+    @Override
+    public void setCropTopicIds(boolean cropTopicIds)
+    {
+        this.cropTopicIds = cropTopicIds;
+    }
+
+    @Override
+    public String getItemsSpaceName()
+    {
+        return itemsSpaceName;
+    }
+
+    @Override
+    public void setItemsSpaceName(String itemsSpaceName)
+    {
+        this.itemsSpaceName = itemsSpaceName;
     }
 
     /**

@@ -20,6 +20,7 @@
 package org.xwiki.component.mailarchive;
 
 import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.mailarchive.internal.threads.ThreadableMessage;
 
 /**
  * Interface (aka Role) of the Component
@@ -49,6 +50,8 @@ public interface MailArchive
      * @param maxMailsNb The maximum number of mails to read
      * @return false if no mails at all could be read
      */
-    public boolean loadMails(int maxMailsNb);
+    public int loadMails(int maxMailsNb);
+
+    public ThreadableMessage computeThreads(String topicId);
 
 }

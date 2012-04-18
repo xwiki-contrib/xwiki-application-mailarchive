@@ -55,4 +55,12 @@ public interface MailArchiveConfiguration
     public List<MailServer> getServers();
 
     public List<MailType> getMailTypes();
+
+    public void setItemsSpaceName(String itemsSpaceName);
+
+    public String getItemsSpaceName();
+
+    public void setCropTopicIds(boolean cropTopicIds);
+
+    public boolean isCropTopicIds();
 }

@@ -19,12 +19,15 @@
  */
 package org.xwiki.component.mailarchive.internal;
 
+import java.util.ArrayList;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.mailarchive.MailArchive;
+import org.xwiki.component.mailarchive.internal.threads.ThreadMessageBean;
 import org.xwiki.script.service.ScriptService;
 
 /**
@@ -38,7 +41,7 @@ public class MailArchiveScriptService implements ScriptService
     @Inject
     private MailArchive mailArchive;
 
-    public boolean load(int maxMailsNb)
+    public int load(int maxMailsNb)
     {
         return this.mailArchive.loadMails(maxMailsNb);
     }
@@ -46,5 +49,17 @@ public class MailArchiveScriptService implements ScriptService
     public int check(String serverPrefsDoc)
     {
         return this.mailArchive.checkMails(serverPrefsDoc);
+    }
+
+    public ArrayList<ThreadMessageBean> thread(String topicid)
+    {
+        try {
+            return this.mailArchive.computeThreads(topicid).flatten();
+        } catch (Throwable t) {
+            // TODO Auto-generated catch block
+            System.out.println("Failed to thread ");
+            t.printStackTrace();
+        }
+        return null;
     }
 }

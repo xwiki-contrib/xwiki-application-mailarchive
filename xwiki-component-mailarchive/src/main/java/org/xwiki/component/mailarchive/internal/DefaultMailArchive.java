@@ -332,7 +332,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
                         Message[] messages = loadMailsFromServer(server);
                         logger.warn("Returned number of messages to treat : " + messages.length);
                         currentMsg = 0;
-                        while (currentMsg < maxMailsNb && currentMsg < messages.length) {
+                        while ((currentMsg < maxMailsNb || maxMailsNb < 0) && currentMsg < messages.length) {
                             try {
 
                                 loadMail(messages[currentMsg], true, false, null);
@@ -528,7 +528,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
         String existingTopicId = "";
         // we don't create new topics for attached emails
         if (!isAttachedMail) {
-            existingTopicId = existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId());
+            existingTopicId = existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId(), m.getMessageId());
             if (existingTopicId == null) {
                 logger.debug("  did not find existing topic, creating a new one");
                 if (existingTopics.containsKey(m.getTopicId())) {
@@ -543,11 +543,18 @@ public class DefaultMailArchive implements MailArchive, Initializable
                 logger.debug("  topic already loaded " + m.getTopicId() + " : " + existingTopics.get(existingTopicId));
                 topicDoc = updateTopicPage(m, existingTopicId, dateFormatter, confirm);
             } else {
+                // We consider this was a topic hack : someone replied to an existing thread, but to start on another
+                // subject.
+                // In this case, we split, use messageId as a new topic Id, and set replyToId to empty string in order
+                // to treat this as a new topic to create.
+                // In order for this new thread to be correctly threaded, we search for existing topic with this new
+                // topicId,
+                // so now all new mails in this case will be attached to this new topic.
                 logger.debug("  found existing topic but subjects are too different, using new messageid as topicid ["
                     + m.getMessageId() + "]");
                 m.setTopicId(m.getMessageId());
                 m.setReplyToId("");
-                existingTopicId = existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId());
+                existingTopicId = existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId(), m.getMessageId());
                 logger.debug("  creating new topic");
                 topicDoc = createTopicPage(m, dateFormatter, confirm);
             }
@@ -1446,6 +1453,119 @@ public class DefaultMailArchive implements MailArchive, Initializable
         doc.setContentDirty(false);
         doc.setMetaDataDirty(false);
         xwiki.getXWiki(context).saveDocument(doc, comment, context);
+    }
+
+    /**
+     * Returns the topicId of already existing topic for this topic id or subject. If no topic with this id or subject
+     * is found, try to search for a message for wich msgid = replyid of new msg, then attach this new msg to the same
+     * topic. If there is no existing topic, returns null. Search topic with same subject only if inreplyto is not
+     * empty, meaning it's not supposed to be the first message of another topic.
+     * 
+     * @param topicId
+     * @param topicSubject
+     * @param inreplyto
+     * @return
+     */
+    public String existsTopic(String topicId, String topicSubject, String inreplyto, String messageid)
+    {
+        String foundTopicId = null;
+        String replyId = inreplyto;
+        String previous = "";
+        String previousSubject = topicSubject;
+        boolean quit = false;
+
+        // Search in existing messages for existing msg id = new reply id, and grab topic id
+        // search replies until root message
+        while (existingMessages.containsKey(replyId) && existingMessages.get(replyId) != null && !quit) {
+            XWikiDocument msgDoc = null;
+            try {
+                msgDoc = context.getWiki().getDocument(existingMessages.get(replyId).getFullName(), context);
+            } catch (XWikiException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            if (msgDoc != null) {
+                BaseObject msgObj = msgDoc.getObject(SPACE_CODE + ".MailClass");
+                if (msgObj != null) {
+                    logger
+                        .debug("existsTopic : message " + replyId + " is a reply to " + existingMessages.get(replyId));
+                    if (similarSubjects(previousSubject, msgObj.getStringValue("topicsubject"))) {
+                        previous = replyId;
+                        replyId = msgObj.getStringValue("inreplyto");
+                        previousSubject = msgObj.getStringValue("topicSubject");
+                    } else {
+                        logger.debug("existsTopic : existing message subject is too different, exiting loop");
+                        quit = true;
+                    }
+                } else {
+                    replyId = null;
+                }
+            } else {
+                replyId = null;
+            }
+        }
+        if (replyId != inreplyto && replyId != null) {
+            logger
+                .debug("existsTopic : found existing message that current message is a reply to, to attach to same topic id");
+            foundTopicId = existingMessages.get(previous).getTopicId();
+            logger.debug("existsTopic : Found topic id " + foundTopicId);
+        }
+        // Search in existing topics with id
+        if (foundTopicId == null) {
+            if (!"".equals(topicId) && existingTopics.containsKey(topicId)) {
+                logger.debug("existsTopic : found topic id in loaded topics");
+                if (similarSubjects(topicSubject, existingTopics.get(topicId).getSubject())) {
+                    foundTopicId = topicId;
+                } else {
+                    logger.debug("... but subjects are too different");
+                }
+            }
+        }
+        // Search with references
+        if (foundTopicId == null) {
+            String xwql =
+                "select distinct mail.topicid from Document doc, doc.object(" + SPACE_CODE
+                    + ".MailClass) as mail where mail.references like '%" + messageid + "%'";
+            try {
+                List<String> topicIds = queryManager.createQuery(xwql, Query.XWQL).execute();
+                // We're not supposed to find several topics related to messages having this id in references ...
+                if (topicIds.size() == 1) {
+                    foundTopicId = topicIds.get(0);
+                }
+                logger.warn("We should have found only one topicId instead of this list : " + topicIds
+                    + ", using the first found");
+            } catch (QueryException e) {
+                logger.warn("Issue while searching for references", e);
+            }
+        }
+        // Search in existing topics with exactly same subject
+        if (foundTopicId == null) {
+            for (String currentTopicId : existingTopics.keySet()) {
+                TopicShortItem currentTopic = existingTopics.get(currentTopicId);
+                if (currentTopic.getSubject().trim().equalsIgnoreCase(topicSubject.trim())) {
+                    logger.debug("existsTopic : found subject in loaded topics");
+                    if (!"".equals(inreplyto)) {
+                        foundTopicId = currentTopicId;
+                    } else {
+                        logger.debug("existsTopic : found a topic but it's first message in topic");
+                        // Note : desperate tentative to attach this message to an existing topic
+                        // instead of creating a new one ... Sometimes replyId and refs can be
+                        // empty even if this is a reply to something already loaded, in this
+                        // case we just check if topicId was already loaded once, even if not
+                        // the same topic ...
+                        if (existingTopics.containsKey(topicId)) {
+                            logger
+                                .debug("existsTopic : ... but we 'saw' this topicId before, so attach to found topicId "
+                                    + currentTopicId + " with same subject");
+                            foundTopicId = currentTopicId;
+                        }
+                    }
+
+                }
+            }
+        }
+
+        return foundTopicId;
     }
 
     /**

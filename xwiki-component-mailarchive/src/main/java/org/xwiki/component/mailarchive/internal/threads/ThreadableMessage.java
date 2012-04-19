@@ -143,21 +143,26 @@ public class ThreadableMessage
     public ArrayList<ThreadMessageBean> flatten(int i)
     {
         ArrayList<ThreadMessageBean> flatMap = new ArrayList<ThreadMessageBean>();
-        ThreadableMessage message, prev, next;
 
-        for (prev = null, message = this.child, next = message.next; message != null; prev = message, message = next, next =
-            (message == null ? null : message.next)) {
-            ThreadMessageBean bean = new ThreadMessageBean();
-            bean.setDate(message.date); // TODO set date in thread
-            bean.setSubject(message.subject);
-            bean.setPage(message.wikidoc);
-            bean.setUser(""); // TODO set user in thread
-            bean.setLevel(i);
-            flatMap.add(bean);
-            if (message.child != null) {
-                flatMap.addAll(message.flatten(i + 1));
+        ThreadMessageBean bean = new ThreadMessageBean();
+        bean.setDate(date);
+        bean.setSubject(subject);
+        bean.setPage(wikidoc);
+        bean.setUser(""); // TODO set user in thread
+        bean.setLevel(i);
+        flatMap.add(bean);
+
+        if (child != null) {
+            flatMap.addAll(child.flatten(i + 1));
+        }
+
+        if (next != null) {
+            flatMap.addAll(next.flatten(i));
+            if (i == 0) {
+                System.out.println("flatten : root node should not have a next !");
             }
         }
+
         return flatMap;
     }
 

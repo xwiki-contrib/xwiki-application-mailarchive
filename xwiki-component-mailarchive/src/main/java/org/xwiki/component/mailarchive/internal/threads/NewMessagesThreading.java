@@ -37,6 +37,8 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 
 /**
+ * TODO logs !
+ * 
  * @version $Id$
  */
 public class NewMessagesThreading
@@ -98,7 +100,7 @@ public class NewMessagesThreading
                 ThreadableMessage message = new ThreadableMessage();
                 message.id = "dummy";
                 message.isReply = false;
-                message.subject = r.child.message.topicsubject;
+                message.subject = r.child.message.topicsubject + "(not loaded)";
                 message.wikidoc = null;
                 message.topicsubject = r.child.message.topicsubject;
                 message.date = new Date();
@@ -135,7 +137,17 @@ public class NewMessagesThreading
             message.subject = (String) msg[2];
             message.isReply = !message.subject.equals(message.topicsubject);
             message.id = (String) msg[3];
-            message.references = new ArrayList(Arrays.asList(((String) msg[4]).split(",")));
+            message.references = new ArrayList<String>(Arrays.asList(((String) msg[4]).split("[,\n\r]", -2)));
+            for (int i = 0; i < message.references.size(); i++) {
+                String ref = message.references.get(i).trim();
+                if (ref.startsWith("<")) {
+                    ref = ref.substring(1);
+                }
+                if (ref.endsWith(">")) {
+                    ref = ref.substring(0, ref.length() - 2);
+                }
+                message.references.set(i, ref);
+            }
             String inreplyto = (String) msg[5];
             if (inreplyto != null && !"".equals(inreplyto)) {
                 message.references.add(inreplyto);
@@ -521,8 +533,8 @@ public class NewMessagesThreading
         }
 
         // Copy the ThreadContainer tree structure down into the underlying
-        // IThreadable objects (that is, make the IThreadable tree look like
-        // the ThreadContainer tree.)
+        // IThreadable objects (that is, make the ThreadableMessage tree look like
+        // the Container tree.)
         //
         void flush()
         {

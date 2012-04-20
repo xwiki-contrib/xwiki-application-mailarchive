@@ -71,7 +71,7 @@ import org.xwiki.component.mailarchive.internal.data.MailServer;
 import org.xwiki.component.mailarchive.internal.data.MailShortItem;
 import org.xwiki.component.mailarchive.internal.data.TopicShortItem;
 import org.xwiki.component.mailarchive.internal.exceptions.MailArchiveException;
-import org.xwiki.component.mailarchive.internal.threads.NewMessagesThreading;
+import org.xwiki.component.mailarchive.internal.threads.MessagesThreader;
 import org.xwiki.component.mailarchive.internal.threads.ThreadableMessage;
 import org.xwiki.component.mailarchive.internal.timeline.TimeLine;
 import org.xwiki.component.manager.ComponentManager;
@@ -299,10 +299,14 @@ public class DefaultMailArchive implements MailArchive, Initializable
 
     public ThreadableMessage computeThreads(String topicId)
     {
-        NewMessagesThreading threads = new NewMessagesThreading(context, xwiki, queryManager, logger, mailutils);
+        MessagesThreader threads = new MessagesThreader(context, xwiki, queryManager, logger, mailutils);
 
         try {
-            return threads.thread(topicId);
+            if (topicId == null) {
+                return threads.thread();
+            } else {
+                return threads.thread(topicId);
+            }
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -687,24 +691,21 @@ public class DefaultMailArchive implements MailArchive, Initializable
         XWikiDocument topicDoc = xwiki.getDocument(existingTopics.get(existingTopicId).getFullName(), context);
         logger.debug("Existing topic " + topicDoc);
         BaseObject topicObj = topicDoc.getObject(SPACE_CODE + ".MailTopicClass");
-        String lastupdatedate = topicObj.getStringValue("lastupdatedate");
-        String startdate = topicObj.getStringValue("startdate");
+        Date lastupdatedate = topicObj.getDateValue("lastupdatedate");
+        Date startdate = topicObj.getDateValue("startdate");
         String originalAuthor = topicObj.getStringValue("author");
         if (lastupdatedate == null || "".equals(lastupdatedate)) {
-            lastupdatedate = m.getDate();
+            lastupdatedate = m.getDecodedDate();
         } // note : this should never occur
         if (startdate == null || "".equals(startdate)) {
-            startdate = m.getDate();
+            startdate = m.getDecodedDate();
         }
-        Date decodedlastupdatedate = dateFormatter.parse(lastupdatedate);
-        Date decodedstartdate = dateFormatter.parse(startdate);
 
-        boolean isMoreRecent = (m.getDecodedDate().getTime() > decodedlastupdatedate.getTime());
-        boolean isMoreAncient = (m.getDecodedDate().getTime() < decodedstartdate.getTime());
-        logger.debug("decodedDate = " + m.getDecodedDate().getTime() + ", lastupdatedate = "
-            + decodedlastupdatedate.getTime() + ", is more recent = " + isMoreRecent + ", first in topic = "
-            + m.isFirstInTopic());
-        logger.debug("lastupdatedate " + decodedlastupdatedate);
+        boolean isMoreRecent = (m.getDecodedDate().getTime() > lastupdatedate.getTime());
+        boolean isMoreAncient = (m.getDecodedDate().getTime() < startdate.getTime());
+        logger.debug("decodedDate = " + m.getDecodedDate().getTime() + ", lastupdatedate = " + lastupdatedate.getTime()
+            + ", is more recent = " + isMoreRecent + ", first in topic = " + m.isFirstInTopic());
+        logger.debug("lastupdatedate " + lastupdatedate);
         logger.debug("current mail date " + m.getDecodedDate());
 
         // If the first one, we add the startdate to existing topic
@@ -727,7 +728,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
             if ((topicObj.getStringValue("startdate") == null || "".equals(topicObj.getStringValue("startdate")))
                 || isMoreAncient) {
                 logger.debug("     checked startdate not already added to topic");
-                topicObj.set("startdate", dateFormatter.format(m.getDecodedDate()), context);
+                topicObj.set("startdate", m.getDecodedDate(), context);
                 topicDoc.setCreationDate(m.getDecodedDate());
                 comment += " Updated start date ";
                 dirty = true;
@@ -736,7 +737,7 @@ public class DefaultMailArchive implements MailArchive, Initializable
             if (isMoreRecent) {
                 logger.debug("     updating lastupdatedate from " + lastupdatedate + " to "
                     + dateFormatter.format(m.getDecodedDate()));
-                topicObj.set("lastupdatedate", dateFormatter.format(m.getDecodedDate()), context);
+                topicObj.set("lastupdatedate", m.getDecodedDate(), context);
                 topicDoc.setDate(m.getDecodedDate());
                 topicDoc.setContentUpdateDate(m.getDecodedDate());
                 newuser = mailutils.parseUser(m.getFrom(), config.isMatchProfiles(), config.getLoadingUser());

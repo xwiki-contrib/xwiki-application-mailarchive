@@ -193,4 +193,15 @@ public class ThreadableMessage
         return true;
     }
 
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ThreadableMessage [topicsubject=").append(topicsubject).append(", subject=").append(subject)
+            .append(", id=").append(id).append(", references=").append(references).append(", wikidoc=").append(wikidoc)
+            .append(", isReply=").append(isReply).append(", date=").append(date).append(", child=").append(child)
+            .append(", next=").append(next).append("]");
+        return builder.toString();
+    }
+
 }

@@ -69,8 +69,8 @@ public class MessagesThreading
     {
         String xwql =
             "select doc.fullName from Document doc, doc.object(" + DefaultMailArchive.SPACE_CODE
-                + ".MailClass) as  mail where  mail.topicid='" + topicId + "' and doc.fullName<>'"
-                + DefaultMailArchive.SPACE_CODE + ".MailClassTemplate'";
+                + ".MailClass) as  mail where  mail.topicid='" + topicId + "' and doc.space='"
+                + DefaultMailArchive.SPACE_ITEMS + "'";
 
         // formatter for parsing dates
         SimpleDateFormat parser = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZZ");

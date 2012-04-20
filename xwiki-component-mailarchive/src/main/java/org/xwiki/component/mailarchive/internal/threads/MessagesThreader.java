@@ -41,7 +41,7 @@ import com.xpn.xwiki.XWikiContext;
  * 
  * @version $Id$
  */
-public class NewMessagesThreading
+public class MessagesThreader
 {
     private XWikiContext context;
 
@@ -53,7 +53,7 @@ public class NewMessagesThreading
 
     private MailUtils mailutils;
 
-    public NewMessagesThreading(XWikiContext context, XWiki xwiki, QueryManager queryManager, Logger logger,
+    public MessagesThreader(XWikiContext context, XWiki xwiki, QueryManager queryManager, Logger logger,
         MailUtils mailutils)
     {
         super();
@@ -64,20 +64,44 @@ public class NewMessagesThreading
         this.mailutils = mailutils;
     }
 
+    public ThreadableMessage thread() throws Exception
+    {
+        String xwql =
+            "select doc.fullName, mail.topicsubject, mail.messagesubject, mail.messageid, mail.references, mail.inreplyto, mail.date from Document doc, doc.object("
+                + DefaultMailArchive.SPACE_CODE
+                + ".MailClass) as  mail where doc.space='"
+                + DefaultMailArchive.SPACE_ITEMS + "'";
+
+        List<Object[]> msgs = queryManager.createQuery(xwql, Query.XWQL).execute();
+
+        List<ThreadableMessage> messages = getThreadableMessages(msgs);
+
+        return thread(messages);
+    }
+
     public ThreadableMessage thread(String topicId) throws Exception
     {
-        HashMap<String, Container> id_table = new HashMap<String, NewMessagesThreading.Container>();
-
         String xwql =
             "select doc.fullName, mail.topicsubject, mail.messagesubject, mail.messageid, mail.references, mail.inreplyto, mail.date from Document doc, doc.object("
                 + DefaultMailArchive.SPACE_CODE
                 + ".MailClass) as  mail where  mail.topicid='"
                 + topicId
-                + "' and doc.fullName<>'" + DefaultMailArchive.SPACE_CODE + ".MailClassTemplate'";
+                + "' and doc.space='" + DefaultMailArchive.SPACE_ITEMS + "'";
 
         List<Object[]> msgs = queryManager.createQuery(xwql, Query.XWQL).execute();
 
-        id_table = fillIdTable(msgs);
+        List<ThreadableMessage> messages = getThreadableMessages(msgs);
+
+        return thread(messages);
+
+    }
+
+    public ThreadableMessage thread(List<ThreadableMessage> messages) throws Exception
+    {
+
+        HashMap<String, Container> id_table = new HashMap<String, MessagesThreader.Container>();
+
+        id_table = fillIdTable(messages);
 
         Container root = findRoot(id_table);
         id_table.clear();
@@ -114,22 +138,26 @@ public class NewMessagesThreading
         // their underlying threadables.
         root.flush();
         root = null;
+
+        logger.debug("thread() return " + result.toString());
+
         return result;
 
     }
 
     /**
-     * Parses all messages to fill id_table with linked Containers.
+     * Convert raw data retrieved from database to an array of ThreadableMessage
      * 
-     * @param id_table
-     * @param msgs
+     * @param fromdb
+     * @return
      */
-    private HashMap<String, Container> fillIdTable(List<Object[]> msgs) throws Exception
+    private List<ThreadableMessage> getThreadableMessages(List<Object[]> fromdb)
     {
-        HashMap<String, Container> id_table = new HashMap<String, NewMessagesThreading.Container>();
 
-        for (Object[] msg : msgs) {
-            Container container = null;
+        ArrayList<ThreadableMessage> messages = new ArrayList<ThreadableMessage>();
+
+        for (Object[] msg : fromdb) {
+
             // Prepare the Message info
             ThreadableMessage message = new ThreadableMessage();
             message.wikidoc = (String) msg[0];
@@ -153,6 +181,25 @@ public class NewMessagesThreading
                 message.references.add(inreplyto);
             }
             message.date = (Date) msg[6];
+
+            messages.add(message);
+        }
+
+        return messages;
+    }
+
+    /**
+     * Parses all messages to fill id_table with linked Containers.
+     * 
+     * @param id_table
+     * @param msgs
+     */
+    private HashMap<String, Container> fillIdTable(List<ThreadableMessage> msgs) throws Exception
+    {
+        HashMap<String, Container> id_table = new HashMap<String, MessagesThreader.Container>();
+
+        for (ThreadableMessage message : msgs) {
+            Container container = null;
 
             // 1.
             // A - initialize container for this message in id_table
@@ -588,6 +635,15 @@ public class NewMessagesThreading
             } else if (!message.equals(other.message))
                 return false;
             return true;
+        }
+
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append("Container [messageid=").append(message != null ? message.id : null).append(", parent=")
+                .append(parent).append(", child=").append(child).append(", next=").append(next).append("]");
+            return builder.toString();
         }
 
     }

@@ -62,4 +62,16 @@ public class MailArchiveScriptService implements ScriptService
         }
         return null;
     }
+
+    public ArrayList<ThreadMessageBean> thread()
+    {
+        try {
+            return this.mailArchive.computeThreads(null).flatten();
+        } catch (Throwable t) {
+            // TODO Auto-generated catch block
+            System.out.println("Failed to thread ");
+            t.printStackTrace();
+        }
+        return null;
+    }
 }

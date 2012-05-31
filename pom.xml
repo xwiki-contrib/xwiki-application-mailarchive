@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- * * See the NOTICE file distributed with this work for additional * 
+	information regarding copyright ownership. * * This is free software; you 
+	can redistribute it and/or modify it * under the terms of the GNU Lesser 
+	General Public License as * published by the Free Software Foundation; either 
+	version 2.1 of * the License, or (at your option) any later version. * * 
+	This software is distributed in the hope that it will be useful, * but WITHOUT 
+	ANY WARRANTY; without even the implied warranty of * MERCHANTABILITY or FITNESS 
+	FOR A PARTICULAR PURPOSE. See the GNU * Lesser General Public License for 
+	more details. * * You should have received a copy of the GNU Lesser General 
+	Public * License along with this software; if not, write to the Free * Software 
+	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA * 02110-1301 USA, 
+	or see the FSF site: http://www.fsf.org. * -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.xwiki.platform.applications</groupId>
+    <artifactId>xwiki-applications</artifactId>
+    <version>36</version>
+  </parent>
+	<groupId>org.xwiki.contrib</groupId>
+	<artifactId>xwiki-contrib-mailarchive-parent</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Mail Archive Application - Aggregator pom</name>
+	<description>${project.name}</description>
+	<properties>
+		<platform.core.version>3.5.1</platform.core.version>
+	</properties>
+	
+	<modules>
+		<module>xwiki-component-mail</module>
+		<module>xwiki-component-mailarchive</module>
+		<module>xwiki-component-mailarchive-ui</module>
+	</modules>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencyManagement>
+	
+		<dependencies>
+		
+		<dependency>
+			<groupId>org.xwiki.contrib</groupId>
+			<artifactId>xwiki-component-mail</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.xwiki.commons</groupId>
+			<artifactId>xwiki-commons-component-default</artifactId>
+			<version>${platform.core.version}</version>
+		</dependency>
+		<!-- Only needed if some of the component's APIs must be made visible to 
+			scripting in wiki pages -->
+		<dependency>
+			<groupId>org.xwiki.commons</groupId>
+			<artifactId>xwiki-commons-script</artifactId>
+			<version>${platform.core.version}</version>
+		</dependency>
+		<!-- Needed to access some core features -->
+		<dependency>
+			<groupId>org.xwiki.platform</groupId>
+			<artifactId>xwiki-platform-bridge</artifactId>
+			<version>${platform.core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.xwiki.platform</groupId>
+			<artifactId>xwiki-platform-oldcore</artifactId>
+			<version>${platform.core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>6.0.33</version>
+		</dependency>
+
+		<!-- For Query Manager -->
+		<dependency>
+			<groupId>org.xwiki.platform</groupId>
+			<artifactId>xwiki-core-query-manager</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-component-annotations</artifactId>
+			<version>1.5.5</version>
+		</dependency>
+		
+		<!-- To manage emails -->
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mailapi</artifactId>
+			<version>1.4.3</version>
+		</dependency>	
+		<!-- Might be used for replies - or use xwiki mail sender plugin ... ? -->
+		<dependency>
+  			<groupId>org.apache.commons</groupId>
+  			<artifactId>commons-email</artifactId>
+  			<version>1.2</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>1.4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>backport-util-concurrent</groupId>
+			<artifactId>backport-util-concurrent</artifactId>
+			<version>3.1</version>
+		</dependency>
+
+		<!-- Testing dependencies -->
+		<dependency>
+			<groupId>org.xwiki.commons</groupId>
+			<artifactId>xwiki-commons-test</artifactId>
+			<version>${platform.core.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	
+	</dependencyManagement>
+
+	<profiles>
+		<profile>
+			<id>xwiki</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<repositories>
+				<repository>
+					<id>xwiki-snapshots</id>
+					<name>XWiki Nexus Snapshot Repository Proxy</name>
+					<url>http://nexus.xwiki.org/nexus/content/groups/public-snapshots</url>
+					<releases>
+						<enabled>false</enabled>
+					</releases>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>xwiki-releases</id>
+					<name>XWiki Nexus Releases Repository Proxy</name>
+					<url>http://nexus.xwiki.org/nexus/content/groups/public</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>xwiki-plugins-snapshots</id>
+					<name>XWiki Nexus Plugin Snapshot Repository Proxy</name>
+					<url>http://nexus.xwiki.org/nexus/content/groups/public-snapshots</url>
+					<releases>
+						<enabled>false</enabled>
+					</releases>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</pluginRepository>
+				<pluginRepository>
+					<id>xwiki-plugins-releases</id>
+					<name>XWiki Nexus Plugin Releases Repository Proxy</name>
+					<url>http://nexus.xwiki.org/nexus/content/groups/public</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</pluginRepository>
+			</pluginRepositories>
+		</profile>
+
+	</profiles>
+</project>

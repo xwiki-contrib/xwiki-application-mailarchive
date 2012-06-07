@@ -19,29 +19,16 @@
  */
 package org.xwiki.contrib.mailarchive;
 
-import java.util.Properties;
 
 /**
  * Interface (aka Role) of the Component
  */
-public interface MailServer
+public interface IMailingList
 {
-    public String getId();
+    public String getDisplayName();
 
-    public String getHost();
+    public String getPattern();
 
-    public int getPort();
-
-    public String getProtocol();
-
-    public String getFolder();
-
-    public String getUser();
-
-    public String getPassword();
-
-    public Properties getAdditionalProperties();
-
-    public String getWikiDoc();
+    public String getTag();
 
 }

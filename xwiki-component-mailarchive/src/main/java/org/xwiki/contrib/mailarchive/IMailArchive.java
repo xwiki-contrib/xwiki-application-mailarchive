@@ -27,7 +27,7 @@ import org.xwiki.contrib.mailarchive.internal.threads.ThreadableMessage;
  * Interface (aka Role) of the Component
  */
 @ComponentRole
-public interface MailArchive
+public interface IMailArchive
 {
     /**
      * Checks connection to mail server, and count available (UNREAD) emails.
@@ -42,9 +42,12 @@ public interface MailArchive
      * persists new Topic and Mail objects (or update existing ones) into XWiki appropriately.
      * 
      * @param maxMailsNb The maximum number of mails to read
-     * @return false if no mails at all could be read
+     * @param debug use debug mode during this loading session.
+     * @param simulation does everything except creating pages, updating mails states, and putting mails to store.
+     * @param delete mark loaded emails for deletion instead of just setting SEEN flag (caution).
+     * @return The number of emails really loaded during this session.
      */
-    public int loadMails(int maxMailsNb);
+    public int loadMails(int maxMailsNb, boolean debug, boolean simulation, boolean delete);
 
     /**
      * Threads messages related to a topic, given its ID.<br/>
@@ -65,4 +68,6 @@ public interface MailArchive
      * @return a wiki user profile if one was found.
      */
     public String parseUser(String internetAddress);
+
+    public IType getType(String name);
 }

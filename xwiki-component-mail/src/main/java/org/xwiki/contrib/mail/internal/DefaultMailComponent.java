@@ -19,7 +19,9 @@
  */
 package org.xwiki.contrib.mail.internal;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,11 +41,16 @@ import javax.mail.Store;
 import javax.mail.URLName;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.mail.search.FlagTerm;
 import javax.mail.search.MessageIDTerm;
 import javax.mail.search.SearchTerm;
+import javax.mail.util.SharedByteArrayInputStream;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mail.ConnectionErrors;
 import org.xwiki.contrib.mail.MailComponent;
 import org.xwiki.contrib.mail.MailItem;
@@ -53,17 +60,30 @@ import com.xpn.xwiki.api.Attachment;
 /**
  * @version $Id$
  */
-public class DefaultMailComponent implements MailComponent
+public class DefaultMailComponent implements MailComponent, Initializable
 {
     private String storeLocation = "storage";
 
     private String storeProvider = "mstor";
+
+    private JavamailMessageParser parser;
 
     // TODO manage topics max length for compatibility
     private static final int MAIL_HEADER_MAX_LENGTH = 255;
 
     @Inject
     private Logger logger;
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.component.phase.Initializable#initialize()
+     */
+    @Override
+    public void initialize() throws InitializationException
+    {
+        this.parser = new JavamailMessageParser(logger);
+    }
 
     /**
      * {@inheritDoc}
@@ -95,25 +115,16 @@ public class DefaultMailComponent implements MailComponent
         assert (hostname != null);
 
         List<Message> messages = new ArrayList<Message>();
+        boolean isGmail = hostname != null && hostname.endsWith(".gmail.com");
+
         // try {
 
         logger.info("Trying to retrieve mails from server " + hostname);
-        // Get a session. Use a blank Properties object.
-        Properties props = new Properties();
-        // necessary to work with Gmail
-        props.put("mail.imap.partialfetch", "false");
-        props.put("mail.imaps.partialfetch", "false");
-        // TODO set this as an option (auto-trust certificates for SSL)
-        props.put("mail.imap.ssl.checkserveridentity", "false");
-        props.put("mail.imaps.ssl.trust", "*");
-        /*
-         * MailSSLSocketFactory socketFactory = new MailSSLSocketFactory(); socketFactory.setTrustAllHosts(true);
-         * props.put("mail.imaps.ssl.socketFactory", socketFactory);
-         */
 
-        Session session = Session.getInstance(props);
+        Session session = createSession(protocol, isGmail);
+
         // Get a Store object
-        Store store = session.getStore(protocol);
+        Store store = session.getStore();
 
         // Connect to the mail account
         store.connect(hostname, port, username, password);
@@ -129,6 +140,11 @@ public class DefaultMailComponent implements MailComponent
         // Searches for mails not already read
         FlagTerm searchterms = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
         Message[] msgsArray = fldr.search(searchterms);
+        if (max > 0 && msgsArray.length > max) {
+            for (int index = max - 1; index < msgsArray.length - 1; index++) {
+                ArrayUtils.remove(msgsArray, max - 1);
+            }
+        }
         messages = new ArrayList<Message>(Arrays.asList(msgsArray));
         /*
          * } catch (GeneralSecurityException e) { // TODO Auto-generated catch block e.printStackTrace(); }
@@ -157,30 +173,23 @@ public class DefaultMailComponent implements MailComponent
     {
         int nbMessages;
         Store store = null;
-        try {
-            // Get a session. Use a blank Properties object.
-            Properties props = new Properties();
-            // necessary to work with Gmail
-            props.put("mail.imap.partialfetch", "false");
-            props.put("mail.imaps.partialfetch", "false");
-            props.put("mail.store.protocol", protocol);
-            // TODO set this as an option (auto-trust certificates for SSL)
-            props.put("mail.imap.ssl.checkserveridentity", "false");
-            props.put("mail.imaps.ssl.trust", "*");
-            /*
-             * MailSSLSocketFactory socketFactory = new MailSSLSocketFactory(); socketFactory.setTrustAllHosts(true);
-             * props.put("mail.imaps.ssl.socketFactory", socketFactory);
-             */
+        boolean isGmail = hostname != null && hostname.endsWith(".gmail.com");
 
-            Session session = Session.getDefaultInstance(props, null);
+        try {
+            // Create the session
+            Session session = createSession(protocol, isGmail);
+
             // Get a Store object
-            store = session.getStore(protocol);
+            store = session.getStore();
 
             // Connect to the mail account
+            if (store.isConnected()) {
+                store.close();
+            }
             store.connect(hostname, port, username, password);
             Folder fldr;
             // Specifically for GMAIL ...
-            if (hostname.endsWith(".gmail.com")) {
+            if (isGmail) {
                 fldr = store.getDefaultFolder();
             }
 
@@ -192,8 +201,14 @@ public class DefaultMailComponent implements MailComponent
             fldr.open(Folder.READ_ONLY);
 
             // Searches for mails not already read
-            FlagTerm searchterms = new FlagTerm(new Flags(Flags.Flag.SEEN), !onlyUnread);
-            Message[] messages = fldr.search(searchterms);
+            Message[] messages;
+            if (onlyUnread) {
+                FlagTerm searchterms = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
+                messages = fldr.search(searchterms);
+            } else {
+                messages = fldr.getMessages();
+            }
+
             nbMessages = messages.length;
 
         } catch (AuthenticationFailedException e) {
@@ -221,20 +236,45 @@ public class DefaultMailComponent implements MailComponent
                 logger.debug("checkMails : Could not close connection", e);
             }
         }
-        logger.debug("checkMails : " + nbMessages + " messages to be read from " + hostname);
+        logger.debug("checkMails : " + nbMessages + " available from " + hostname);
 
         return nbMessages;
+    }
+
+    private Session createSession(String protocol, boolean isGmail)
+    {
+        // Get a session. Use a blank Properties object.
+        Properties props = new Properties();
+        // necessary to work with Gmail
+        if (isGmail) {
+            props.put("mail.imap.partialfetch", "false");
+            props.put("mail.imaps.partialfetch", "false");
+        }
+        props.put("mail.store.protocol", protocol);
+        // TODO set this as an option (auto-trust certificates for SSL)
+        props.put("mail.imap.ssl.checkserveridentity", "false");
+        props.put("mail.imaps.ssl.trust", "*");
+        /*
+         * MailSSLSocketFactory socketFactory = new MailSSLSocketFactory(); socketFactory.setTrustAllHosts(true);
+         * props.put("mail.imaps.ssl.socketFactory", socketFactory);
+         */
+
+        Session session = Session.getInstance(props, null);
+
+        return session;
     }
 
     /**
      * {@inheritDoc}
      * 
+     * @throws IOException
+     * @throws MessagingException
      * @see org.xwiki.contrib.mail.MailComponent#parse(javax.mail.Message)
      */
     @Override
-    public MailItem parseHeaders(Part mail)
+    public MailItem parseHeaders(Part mail) throws MessagingException, IOException
     {
-        return new JavamailMessageParser(logger).parseHeaders(mail);
+        return parser.parseHeaders(mail);
     }
 
     /**
@@ -495,6 +535,25 @@ public class DefaultMailComponent implements MailComponent
             logger.error("Could not parse " + header, e);
             return "";
         }
+    }
+
+    public MimeMessage cloneEmail(Message mail, String protocol, String hostname)
+    {
+        MimeMessage cmail;
+        try {
+            boolean isGmail = hostname != null && hostname.endsWith(".gmail.com");
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            mail.writeTo(bos);
+            bos.close();
+            SharedByteArrayInputStream bis = new SharedByteArrayInputStream(bos.toByteArray());
+            cmail = new MimeMessage(createSession(protocol, isGmail), bis);
+            bis.close();
+        } catch (Exception e) {
+            logger.warn("Could not clone email", e);
+            return null;
+        }
+
+        return cmail;
     }
 
     protected static String removeCRLF(String str)

@@ -20,13 +20,13 @@
 		<groupId>org.xwiki.contrib</groupId>
 		<artifactId>xwiki-contrib-mailarchive-parent</artifactId>
 		<version>1.0-SNAPSHOT</version>
-	</parent>	
+	</parent>
 	<artifactId>xwiki-component-mailarchive-ui</artifactId>
 	<name>XWiki - MailArchive UI Extension</name>
 	<description>${project.name} - Navigation and administration of the Mail archive.</description>
 	<packaging>xar</packaging>
 
-		<dependencies>
+	<dependencies>
 
 	</dependencies>
 

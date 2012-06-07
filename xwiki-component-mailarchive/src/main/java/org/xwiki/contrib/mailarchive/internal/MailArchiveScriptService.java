@@ -26,12 +26,12 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.contrib.mailarchive.MailArchive;
+import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadMessageBean;
 import org.xwiki.script.service.ScriptService;
 
 /**
- * Make the MailArchive API available to scripting.
+ * Make the IMailArchive API available to scripting.
  */
 @Component
 @Named("mailarchive")
@@ -39,11 +39,16 @@ import org.xwiki.script.service.ScriptService;
 public class MailArchiveScriptService implements ScriptService
 {
     @Inject
-    private MailArchive mailArchive;
+    private IMailArchive mailArchive;
 
     public int load(int maxMailsNb)
     {
-        return this.mailArchive.loadMails(maxMailsNb);
+        return this.mailArchive.loadMails(maxMailsNb, false, false, false);
+    }
+
+    public int load(int maxMailsNb, boolean debug, boolean simulation, boolean delete)
+    {
+        return this.mailArchive.loadMails(maxMailsNb, debug, simulation, delete);
     }
 
     public int check(String serverPrefsDoc)

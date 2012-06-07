@@ -74,6 +74,6 @@ public class Utils
 
     public static String removeCRLF(String str)
     {
-        return str == null ? null : str.replaceAll("\n", " ").replaceAll("\r", " ");
+        return str == null ? null : str.replaceAll("[\n\r]", "");
     }
 }

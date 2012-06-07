@@ -22,14 +22,14 @@ package org.xwiki.contrib.mailarchive.internal.data;
 import java.util.HashMap;
 import java.util.List;
 
-import org.xwiki.contrib.mailarchive.MailType;
+import org.xwiki.contrib.mailarchive.IType;
 
 /**
- * Mail Type
+ * Mail IType
  * 
  * @version $Id$
  */
-public class MailTypeImpl implements MailType
+public class MailTypeImpl implements IType
 {
     private String name;
 
@@ -82,7 +82,7 @@ public class MailTypeImpl implements MailType
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.MailType#getDisplayName()
+     * @see org.xwiki.contrib.mailarchive.IType#getDisplayName()
      */
     @Override
     public String getDisplayName()

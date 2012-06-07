@@ -25,10 +25,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
-import org.xwiki.contrib.mailarchive.MailArchiveConfiguration;
+import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -45,7 +48,7 @@ import com.xpn.xwiki.objects.BaseObject;
  */
 public class TimeLine
 {
-    private MailArchiveConfiguration config;
+    private IMailArchiveConfiguration config;
 
     private XWiki xwiki;
 
@@ -55,7 +58,7 @@ public class TimeLine
 
     private QueryManager queryManager;
 
-    public TimeLine(MailArchiveConfiguration config, XWiki xwiki, XWikiContext context, QueryManager queryManager,
+    public TimeLine(IMailArchiveConfiguration config, XWiki xwiki, XWikiContext context, QueryManager queryManager,
         Logger logger)
     {
         this.config = config;
@@ -70,10 +73,7 @@ public class TimeLine
 
         int count = 200;
         XWikiDocument curdoc = xwiki.getDocument("", context);
-        TreeMap<Long, String> sortedEvents = new TreeMap();
-        int maxstrlenght = 150;
-        String skinurl = "http://r-wikiggs.gemalto.com/xwiki/bin/download/XWiki/GSESkin"; // TODO hard-coded gse skin
-                                                                                          // url ...
+        TreeMap<Long, String> sortedEvents = new TreeMap<Long, String>();
 
         // Utility class for mail archive
         // def tools = xwiki.parseGroovyFromPage('MailArchiveCode.ToolsGroovyClass');
@@ -85,7 +85,7 @@ public class TimeLine
         try {
             // Add Topics durations
             String xwql =
-                "select topic.name from Document doc, doc.object(" + DefaultMailArchive.SPACE_CODE
+                "select doc.fullName from Document doc, doc.object(" + DefaultMailArchive.SPACE_CODE
                     + ".MailTopicClass) as topic order by topic.lastupdatedate desc";
             List<String> result = queryManager.createQuery(xwql, Query.XWQL).setLimit(count).execute();
 
@@ -117,10 +117,15 @@ public class TimeLine
                             tags = "GGS_WW";
                         }
                         for (String tag : doc.getTagsList(context))/* TODO .grep("^Community.*$").each() */{
-                            if (tags == "GGS_WW") {
-                                tags = "";
+                            Pattern pattern = Pattern.compile("^Community.*$");
+                            Matcher matcher = pattern.matcher(tag);
+                            if (matcher.matches()) {
+                                if (tags == "GGS_WW") {
+                                    tags = "";
+                                }
+
+                                tags += tag + ' ';
                             }
-                            tags += tag + ' ';
                         }
 
                         if (type == "Mail") {
@@ -169,7 +174,7 @@ public class TimeLine
                                 icon = "http://r-wikiggs.gemalto.com/xwiki/resources/icons/silk/cd.gif";
                             }
                             link =
-                                xwiki.getDocument("MailArchive.M" + doc.getName().substring(1, doc.getName().length()),
+                                xwiki.getDocument("IMailArchive.M" + doc.getName().substring(1, doc.getName().length()),
                                     context).getURL("view", context);
                             sortedEvents.put(
                                 date.getTime(),
@@ -235,7 +240,9 @@ public class TimeLine
         String returnVal = "";
         boolean first = true;
         String xwql_topic =
-            "select doc.fullName,doc.author,mail.date,mail.messagesubject,mail.from from Document doc, doc.object(MailArchiveCode.MailClass) as  mail where  mail.topicid='${topicid}' and doc.fullName<>'MailArchiveCode.MailClassTemplate' order by mail.date asc";
+            "select doc.fullName, doc.author, mail.date, mail.messagesubject ,mail.from from Document doc, "
+                + "doc.object(MailArchiveCode.MailClass) as  mail where  mail.topicid='" + topicid
+                + "' and doc.fullName<>'MailArchiveCode.MailClassTemplate' order by mail.date asc";
         List<Object[]> msgs = queryManager.createQuery(xwql_topic, Query.XWQL).execute();
         for (Object[] msg : msgs) {
             String docfullname = (String) msg[0];
@@ -264,8 +271,8 @@ public class TimeLine
             String subject = topicsubject;
             if (!first) {
                 subject = mailmessagesubject.replace(topicsubject, "...");
-            } else if (topicsubject.length() > 20) {
-                subject = topicsubject.substring(0, 19) + "...";
+            } else {
+                subject = StringUtils.abbreviate(topicsubject, 23);
             }
             returnVal +=
                 "<a href=\"javascript:centerTimeline(" + maildate.getTime() + ");\">" + formatter.format(maildate)

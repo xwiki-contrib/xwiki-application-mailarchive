@@ -21,7 +21,7 @@ package org.xwiki.contrib.mailarchive.internal.data;
 
 import java.util.Properties;
 
-import org.xwiki.contrib.mailarchive.MailServer;
+import org.xwiki.contrib.mailarchive.IServer;
 
 /**
  * @version $Id$
@@ -33,7 +33,7 @@ import org.xwiki.contrib.mailarchive.MailServer;
 /**
  * @version $Id$
  */
-public class MailServerImpl implements MailServer
+public class MailServerImpl implements IServer
 {
     private String id;
 
@@ -152,7 +152,7 @@ public class MailServerImpl implements MailServer
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.MailServer#getAdditionalProperties()
+     * @see org.xwiki.contrib.mailarchive.IServer#getAdditionalProperties()
      */
     @Override
     public Properties getAdditionalProperties()
@@ -164,7 +164,7 @@ public class MailServerImpl implements MailServer
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("MailServer [host=").append(host).append(", port=").append(port).append(", protocol=")
+        builder.append("IServer [host=").append(host).append(", port=").append(port).append(", protocol=")
             .append(protocol).append(", user=").append(user).append(", password=").append("*****").append(", folder=")
             .append(folder).append(", wikiDoc=").append(wikiDoc).append(", additionalProperties=")
             .append(additionalProperties).append("]");

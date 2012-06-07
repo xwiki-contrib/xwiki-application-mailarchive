@@ -19,46 +19,31 @@
  */
 package org.xwiki.contrib.mailarchive;
 
-import java.util.List;
+import java.util.Properties;
 
 /**
  * Interface (aka Role) of the Component
  */
-public interface MailArchiveConfiguration
+public interface IServer
 {
-    public String getLoadingUser();
+    public static final int DEFAULT_PORT = 993;
 
-    public String getDefaultHomeView();
+    public String getId();
 
-    public String getDefaultTopicsView();
+    public String getHost();
 
-    public String getDefaultMailsOpeningMode();
+    public int getPort();
 
-    public boolean isManageTimeline();
+    public String getProtocol();
 
-    public int getMaxTimelineItemsToLoad();
+    public String getFolder();
 
-    public boolean isMatchProfiles();
+    public String getUser();
 
-    public boolean isMatchLdap();
+    public String getPassword();
 
-    public boolean isLdapCreateMissingProfiles();
+    public Properties getAdditionalProperties();
 
-    public boolean isLdapForcePhotoUpdate();
+    public String getWikiDoc();
 
-    public String getLdapPhotoFieldName();
-
-    public String getLdapPhotoFieldContent();
-
-    public List<MailingList> getMailingLists();
-
-    public List<MailServer> getServers();
-
-    public List<MailType> getMailTypes();
-
-    public String getItemsSpaceName();
-
-    public boolean isCropTopicIds();
-
-    public boolean isUseStore();
 }

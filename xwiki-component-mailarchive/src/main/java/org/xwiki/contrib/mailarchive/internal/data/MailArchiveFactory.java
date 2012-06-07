@@ -19,12 +19,18 @@
  */
 package org.xwiki.contrib.mailarchive.internal.data;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 
 import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.contrib.mailarchive.MailType;
+import org.xwiki.contrib.mailarchive.IServer;
+import org.xwiki.contrib.mailarchive.IType;
+import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 
 /**
@@ -40,10 +46,10 @@ public class MailArchiveFactory
     }
 
     /**
-     * Creates a MailServer from preferences document.
+     * Creates a IServer from preferences document.
      * 
      * @param serverPrefsDoc wiki page name of preferences document.
-     * @return a MailServer object, or null if preferences document does not exist
+     * @return a IServer object, or null if preferences document does not exist
      */
     public MailServerImpl createMailServer(final String serverPrefsDoc)
     {
@@ -56,26 +62,43 @@ public class MailArchiveFactory
         String className = DefaultMailArchive.SPACE_CODE + ".ServerSettingsClass";
         server.setId((String) dab.getProperty(serverPrefsDoc, className, "id"));
         server.setHost((String) dab.getProperty(serverPrefsDoc, className, "hostname"));
-        server.setPort(Integer.parseInt((String) dab.getProperty(serverPrefsDoc, className, "port")));
+        try {
+            server.setPort(Integer.parseInt((String) dab.getProperty(serverPrefsDoc, className, "port")));
+        } catch (NumberFormatException e1) {
+            server.setPort(IServer.DEFAULT_PORT);
+        }
         server.setProtocol((String) dab.getProperty(serverPrefsDoc, className, "protocol"));
         server.setUser((String) dab.getProperty(serverPrefsDoc, className, "user"));
         server.setPassword((String) dab.getProperty(serverPrefsDoc, className, "password"));
         server.setFolder((String) dab.getProperty(serverPrefsDoc, className, "folder"));
+        String additionalProperties = (String) dab.getProperty(serverPrefsDoc, className, "additionalProperties");
+        InputStream is = new ByteArrayInputStream(additionalProperties.getBytes());
+        Properties props = new Properties();
+        try {
+            props.load(is);
+        } catch (IOException e) {
+            // TODO ?
+        }
+        server.setAdditionalProperties(props);
         server.setWikiDoc(serverPrefsDoc);
 
-        return server;
+        if (server.getId() == null || server.getHost() == null || server.getProtocol() == null) {
+            return null;
+        } else {
+            return server;
+        }
     }
 
     /**
-     * Creates a MailType from name, icon and patterns list
+     * Creates a IType from name, icon and patterns list
      * 
      * @param name
      * @param icon
      * @param patternsList a list of carriage-return separated patterns : each pattern occupies 2 lines, first line
      *            being the fields to match against (comma separated), second line is the regular expression to match
-     * @return a MailType object or null if patternsList could not be parsed
+     * @return a IType object or null if patternsList could not be parsed
      */
-    public MailType createMailType(final String name, final String displayName, final String icon,
+    public IType createMailType(final String name, final String displayName, final String icon,
         final String patternsList)
     {
 
@@ -100,5 +123,18 @@ public class MailArchiveFactory
         typeobj.setPatterns(patterns);
 
         return typeobj;
+    }
+
+    public IMailingList createMailingList(final String pattern, final String displayName, final String tag,
+        final String color)
+    {
+        MailingListImpl list = new MailingListImpl();
+
+        list.setPattern(pattern);
+        list.setTag(tag);
+        list.setDisplayName(displayName);
+        list.setColor(color);
+
+        return list;
     }
 }

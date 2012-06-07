@@ -84,7 +84,7 @@ public class MessagesThreader
     public ThreadableMessage thread() throws QueryException, MailArchiveException
     {
         String xwql =
-            "select doc.fullName, mail.topicsubject, mail.messagesubject, mail.messageid, mail.references, mail.inreplyto, mail.date from Document doc, doc.object("
+            "select mail.name, mail.topicsubject, mail.messagesubject, mail.messageid, mail.references, mail.inreplyto, mail.date from Document doc, doc.object("
                 + DefaultMailArchive.SPACE_CODE
                 + ".MailClass) as  mail where doc.space='"
                 + DefaultMailArchive.SPACE_ITEMS + "'";
@@ -107,7 +107,7 @@ public class MessagesThreader
     public ThreadableMessage thread(String topicId) throws QueryException, MailArchiveException
     {
         String xwql =
-            "select doc.fullName, mail.topicsubject, mail.messagesubject, mail.messageid, mail.references, mail.inreplyto, mail.date, mail.from from Document doc, doc.object("
+            "select mail.name, mail.topicsubject, mail.messagesubject, mail.messageid, mail.references, mail.inreplyto, mail.date, mail.from from Document doc, doc.object("
                 + DefaultMailArchive.SPACE_CODE
                 + ".MailClass) as  mail where  mail.topicid='"
                 + topicId

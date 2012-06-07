@@ -21,12 +21,14 @@ package org.xwiki.contrib.mail;
  */
 //package org.xwiki.contrib.mail;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Part;
+import javax.mail.internet.MimeMessage;
 import javax.mail.search.SearchTerm;
 
 import org.xwiki.component.annotation.ComponentRole;
@@ -64,7 +66,17 @@ public interface MailComponent
     int check(String hostname, int port, String protocol, String folder, String username, String password,
         boolean onlyUnread);
 
-    MailItem parseHeaders(Part message);
+    /**
+     * Clones an email.
+     * 
+     * @param mail the message to clone.
+     * @param protocol the protocol used to connect to the mail server.
+     * @param hostname the hostname to connect to.
+     * @return
+     */
+    MimeMessage cloneEmail(Message mail, String protocol, String hostname);
+
+    MailItem parseHeaders(Part message) throws MessagingException, IOException;
 
     String extractText(Message message);
 

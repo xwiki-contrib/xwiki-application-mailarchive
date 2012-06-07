@@ -19,26 +19,47 @@
  */
 package org.xwiki.contrib.mailarchive;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Interface for mails types.
- * 
- * @author jbousque
+ * Interface (aka Role) of the Component
  */
-public interface MailType
+public interface IMailArchiveConfiguration
 {
-    final String TYPE_MAIL = "mail";
+    public String getLoadingUser();
 
-    final String TYPE_CALENDAR = "calendar";
+    public String getDefaultHomeView();
 
-    String getName();
+    public String getDefaultTopicsView();
 
-    String getDisplayName();
+    public String getDefaultMailsOpeningMode();
 
-    String getIcon();
+    public boolean isManageTimeline();
 
-    HashMap<List<String>, String> getPatterns();
+    public int getMaxTimelineItemsToLoad();
 
+    public boolean isMatchProfiles();
+
+    public boolean isMatchLdap();
+
+    public boolean isLdapCreateMissingProfiles();
+
+    public boolean isLdapForcePhotoUpdate();
+
+    public String getLdapPhotoFieldName();
+
+    public String getLdapPhotoFieldContent();
+
+    public Map<String, IMailingList> getMailingLists();
+
+    public List<IServer> getServers();
+
+    public Map<String, IType> getMailTypes();
+
+    public String getItemsSpaceName();
+
+    public boolean isCropTopicIds();
+
+    public boolean isUseStore();
 }

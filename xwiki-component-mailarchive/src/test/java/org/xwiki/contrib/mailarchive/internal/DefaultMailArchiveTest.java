@@ -28,14 +28,14 @@ import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
-import org.xwiki.contrib.mailarchive.MailArchive;
+import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 import org.xwiki.contrib.mailarchive.internal.data.MailServerImpl;
 import org.xwiki.test.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.MockingRequirement;
 
 /**
- * Tests for the {@link MailArchive} component.
+ * Tests for the {@link IMailArchive} component.
  */
 public class DefaultMailArchiveTest extends AbstractMockingComponentTestCase
 {
@@ -83,9 +83,9 @@ public class DefaultMailArchiveTest extends AbstractMockingComponentTestCase
     @Test
     public void testGetLevenshteinDistance()
     {
-        assertEquals(0, ma.getLevenshteinDistance("toto", "toto"), 0);
-        assertEquals(0.25, ma.getLevenshteinDistance("toto", "tito"), 0);
-        assertEquals(1, ma.getLevenshteinDistance("toto", "uiui"), 0);
+        assertEquals(0, ma.mailutils.getAveragedLevenshteinDistance("toto", "toto"), 0);
+        assertEquals(0.25, ma.mailutils.getAveragedLevenshteinDistance("toto", "tito"), 0);
+        assertEquals(1, ma.mailutils.getAveragedLevenshteinDistance("toto", "uiui"), 0);
 
     }
 }

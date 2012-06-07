@@ -19,16 +19,26 @@
  */
 package org.xwiki.contrib.mailarchive;
 
+import java.util.HashMap;
+import java.util.List;
 
 /**
- * Interface (aka Role) of the Component
+ * Interface for mails types.
+ * 
+ * @author jbousque
  */
-public interface MailingList
+public interface IType
 {
-    public String getDisplayName();
+    final String TYPE_MAIL = "mail";
 
-    public String getPattern();
+    final String TYPE_CALENDAR = "calendar";
 
-    public String getTag();
+    String getName();
+
+    String getDisplayName();
+
+    String getIcon();
+
+    HashMap<List<String>, String> getPatterns();
 
 }

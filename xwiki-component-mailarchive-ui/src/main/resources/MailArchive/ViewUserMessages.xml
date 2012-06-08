@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xwikidoc>
+<web>MailArchive</web>
+<name>ViewUserMessages</name>
+<language></language>
+<defaultLanguage>en</defaultLanguage>
+<translation>0</translation>
+<parent>MailArchive.WebHome</parent>
+<creator>XWiki.jbousque</creator>
+<author>XWiki.Admin</author>
+<customClass></customClass>
+<contentAuthor>XWiki.Admin</contentAuthor>
+<creationDate>1335520840000</creationDate>
+<date>1337612476000</date>
+<contentUpdateDate>1337612476000</contentUpdateDate>
+<version>14.25</version>
+<title>$!{request.user}</title>
+<template></template>
+<defaultTemplate></defaultTemplate>
+<validationScript></validationScript>
+<comment></comment>
+<minorEdit>true</minorEdit>
+<syntaxId>xwiki/2.1</syntaxId>
+<hidden>false</hidden>
+<object>
+<class>
+<name>XWiki.StyleSheetExtension</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<cache>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>cache</name>
+<number>5</number>
+<prettyName>Caching policy</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>long|short|default|forbid</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</cache>
+<code>
+<disabled>0</disabled>
+<name>code</name>
+<number>2</number>
+<prettyName>Code</prettyName>
+<rows>20</rows>
+<size>50</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+</code>
+<name>
+<disabled>0</disabled>
+<name>name</name>
+<number>1</number>
+<prettyName>Name</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</name>
+<parse>
+<disabled>0</disabled>
+<displayFormType>select</displayFormType>
+<displayType>yesno</displayType>
+<name>parse</name>
+<number>4</number>
+<prettyName>Parse content</prettyName>
+<unmodifiable>0</unmodifiable>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</parse>
+<use>
+<cache>0</cache>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>use</name>
+<number>3</number>
+<prettyName>Use this extension</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<unmodifiable>0</unmodifiable>
+<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</use>
+</class>
+<name>MailArchive.ViewUserMessages</name>
+<number>0</number>
+<className>XWiki.StyleSheetExtension</className>
+<guid>06bff659-d4c6-44f6-b912-303ba6d58bf4</guid>
+<property>
+<cache>long</cache>
+</property>
+<property>
+<code>.stat-graph-container {
+  width:100%;
+  height:240px;
+}
+.stat-graph-container img {
+  width:100%;
+  height:100%;
+}
+
+.statEntry {
+    margin: 0.5em 0;
+}
+.statCounter, .statMedalionCounter {
+    float: left;
+    font-size: 1.75em;
+    font-weight: 700;
+    line-height: 100%;
+    text-align: right;
+    vertical-align: top;
+    width: 1.4em;
+}
+.statMedalionCounter {
+    color: #636B75;
+    float: none;
+    width: auto;
+}
+.statCounter, .edits {
+    color: #336699;
+}
+.last-column .statCounter {
+    color: #636B75;
+}
+.first-column .statCounter, .views {
+    color: #CC3333;
+}
+.statContent {
+    margin-left: 3.3em;
+}
+.statPageTitle {
+    color: #636B75;
+    font-weight: 700;
+}
+.statPagelocation {
+    color: #9F9F9F;
+    font-size: 0.85em;
+    font-style: italic;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.statCategory {
+    font-size: 1.2em;
+}
+.statCategory .statCounter, .statCategory .statContent, .statMedalionContent, .rangeFilter {
+    color: #9F9F9F;
+    font-size: 0.7em;
+    font-weight: 400;
+    line-height: normal;
+    text-transform: uppercase;
+    vertical-align: baseline;
+}
+.statMedalionContent {
+    font-size: 0.85em;
+}
+.statCategory .statContent {
+    margin-left: 4em;
+}
+.statCategory .statCounter {
+    text-align: right;
+    width: 3em;
+}
+.statPeriod {
+    background: url("/xwiki/resources/icons/datamodel/calendar.png") no-repeat scroll 0 center transparent;
+    color: #9F9F9F;
+    padding-left: 20px;
+}
+.statHeader {
+    background-color: #EEEEEE;
+    margin: 0 0 0.5em;
+    padding: 0.5em;
+}
+.statHeader.container-columns .first-column {
+    border-right: 1px dashed #CCCCCC;
+    width: 55%;
+}
+.statGraphDetails, .statGraph {
+    float: left;
+}
+.statGraph {
+    width: 85%;
+}
+.statGraphDetails {
+    width: 15%;
+}
+.statGraph img {
+    width: 100%;
+}
+.statGraph img, .statGraph {
+    max-width: 550px;
+}
+.statMedalion {
+    display: table;
+    margin: 1.5em 0 0.5em;
+}
+.statMedalionEntry {
+    display: table-cell;
+    float: left;
+    margin: 0 0 1em;
+    min-width: 7em;
+    text-align: right;
+}
+.statGraphDetails .statMedalionEntry {
+    min-width: 4em;
+}
+.statFilters {
+    background-color: #F3F3F3;
+    border: 1px dotted transparent;
+    margin: 1em 0 0.4em;
+    padding: 0.5em 0.5em 0.4em 0;
+}
+.statFilters, .statHeader {
+    border-radius: 5px 5px 5px 5px;
+}
+.x-theme-create {
+    background: url("/xwiki/resources/icons/silk/calendar.gif") no-repeat scroll 4px center transparent;
+    display: inline-block;
+    float: left;
+    padding-left: 24px;
+    width: 51%;
+}
+.x-theme-create label {
+    color: #9F9F9F;
+    font-weight: 400;
+}
+.x-theme-create input {
+    padding-right: 2px;
+    text-align: right;
+}
+.spacer {
+    margin: 0 0 0 1em;
+}
+.statFilters .rangeFilters {
+    float: right;
+    margin: 0;
+    width: 45%;
+}
+.rangeFilter {
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: inline-block;
+    float: right;
+    font-size: 0.85em;
+    list-style-type: none;
+    margin: 0.2em 0.1em;
+    min-width: 6.5em;
+    text-align: center;
+}
+.rangeFilter.active, .rangeFilter:hover {
+    background-color: #FFFFFF;
+    border: 1px solid #E8E8E8;
+    color: #636B75;
+}
+</code></property><property><name>statsstyles</name>
+</property>
+<property>
+<parse>0</parse>
+</property>
+<property>
+<use>currentPage</use>
+</property>
+</object>
+<content>{{velocity}}
+$xwiki.linkx.use("$xwiki.getSkinFile('uicomponents/container/columns.css', true)?columns=3", {'rel': 'stylesheet', 'type': 'text/css'})
+$xwiki.ssx.use('MailArchive.ViewUserMessages')
+#if("$!request.user" != "")
+== Statistics ==
+  #set($Q="\n")
+  ## Number of Topics
+  #set($xwql = "select count(doc) from Document doc, doc.object(MailArchiveCode.MailTopicClass) as topic where topic.author='${request.user}'")
+  #set($nbTopics = $services.query.xwql($xwql).execute())
+  #if($nbTopics.size() &gt; 0) 
+    #set($nbTopics = $nbTopics[0])
+  #else
+    #set($nbTopics = 0)
+  #end
+  ## Number of Mails
+  #set($xwql = "select count(doc) from Document doc, doc.object(MailArchiveCode.MailClass) as mail where mail.from='${request.user}'")
+  #set($nbMails = $services.query.xwql($xwql).execute())
+  #if($nbMails.size() &gt; 0) 
+    #set($nbMails = $nbMails[0])
+  #else
+    #set($nbMails = 0)
+  #end
+  ## List of tags to check for
+  #set($xwql = "select list.Tag, list.displayname, list.color from Document doc, doc.object(MailArchiveCode.ListsSettingsClass) as list where doc.name not like '%Sheet' and doc.name not like '%Template' order by list.displayname asc")
+  #set($tagslist = $services.query.xwql($xwql).execute())
+  ## Distribution of topics per mailing-list
+  #set($topicsdist = [])
+  #foreach($tagitem in $tagslist)
+    #set($listtag = $tagitem[0])
+    #set($listdisplay = $tagitem[1])
+    #set($listcolor = $tagitem[2])
+$listtag $listdisplay $listcolor
+    #if("$!listtag" != "")
+      #set($xwql = "select count(topic.author) from Document doc, doc.object(XWiki.TagClass) as tag, doc.object(MailArchiveCode.MailTopicClass) as topic where tag.name=topic.name and topic.author = '${request.user}' and :tagvalue MEMBER OF tag.tags group by topic.author")
+      #set($nbTopicsForTag = $services.query.xwql($xwql).bindValue("tagvalue", $listtag).execute())
+      #if($nbTopicsForTag.size()&gt;0)
+        #set($nbTopicsForTag = $nbTopicsForTag[0])
+      #else
+        #set($nbTopicsForTag = 0)
+      #end
+      #if($nbTopicsForTag &gt; 0)
+        #set($discard = $topicsdist.add([$listdisplay, $nbTopicsForTag, $listcolor]))
+      #end
+    #end
+  #end
+  #set($nbtopicsdist = $topicsdist.size())
+  ## Distribution of mails per mailing-list
+  #set($mailsdist = [])
+  #foreach($tagitem in $tagslist)
+    #set($listtag = $tagitem[0])
+    #set($listdisplay = $tagitem[1])
+    #set($listcolor = $tagitem[2])
+    #if("$!listtag" != "")
+      #set($xwql = "select count(mail.from) from Document doc, doc.object(XWiki.TagClass) as tag, doc.object(MailArchiveCode.MailClass) as mail where tag.name=mail.name and mail.from = '${request.user}' and :tagvalue MEMBER OF tag.tags group by mail.from")
+      #set($nbMailsForTag = $services.query.xwql($xwql).bindValue("tagvalue", $listtag).execute())
+      #if($nbMailsForTag.size()&gt;0)
+        #set($nbMailsForTag = $nbMailsForTag[0])
+      #else
+        #set($nbMailsForTag = 0)
+      #end
+      #if($nbMailsForTag &gt; 0)
+        #set($discard = $mailsdist.add([$listdisplay, $nbMailsForTag, $listcolor ]))
+      #end
+    #end
+  #end
+  #set($nbmailsdist = $mailsdist.size())
+  ## **** Distribution of Mails over types *****
+  #set($xwql = "select mail.type, count(mail.type), type.icon from Document doc, Document doc2, doc.object(MailArchiveCode.MailClass) as mail, doc2.object(MailArchiveCode.TypesSettingsClass) as type where mail.from='${request.user}' and mail.type=type.name group by mail.type, type.icon")
+  #set($mailsdistbytype = $services.query.xwql($xwql).execute())
+  #set($nbmailsdistbytype = $mailsdistbytype.size())
+  ## **** Number of starred items ****
+  #set($xwql = "select count(mail.from) from Document doc, doc.object(XWiki.AverageRatingsClass) as avgrating, doc.object(MailArchiveCode.MailClass) as mail where avgrating.name=mail.name and mail.from='${request.user}'")
+  #set($nbStarredItems = $services.query.xwql($xwql).execute())
+  #if($nbStarredItems.size()&gt;0)
+    #set($nbStarredItems = $nbStarredItems[0])
+  #else
+    #set($nbStarredItems = 0)
+  #end
+
+{{html wiki="true"}}
+ &lt;div class="statHeader container-columns"&gt;
+   &lt;div class="gadget-container column first-column"&gt;
+     &lt;div class="statGraph"&gt;
+       #displayAllTimeActivity()
+     &lt;/div&gt;
+     &lt;div class="statGraphDetails"&gt;
+       &lt;div class="statMedalion"&gt;
+         &lt;div class="statMedalionEntry"&gt;
+           &lt;div class="statMedalionCounter views"&gt;
+             $nbTopics
+           &lt;/div&gt;
+           &lt;div class="statMedalionContent"&gt;
+             topics
+           &lt;/div&gt;
+         &lt;/div&gt;
+         &lt;div class="statMedalionEntry"&gt;
+           &lt;div class="statMedalionCounter edits"&gt;
+             $nbMails
+           &lt;/div&gt;
+           &lt;div class="statMedalionContent"&gt;
+             mails
+           &lt;/div&gt;
+         &lt;/div&gt;
+       &lt;/div&gt;
+     &lt;/div&gt;
+   &lt;/div&gt;
+   &lt;div class="gadget-container column last-column" style="width:40% !important;"&gt;
+   &lt;div class="statMedalion"&gt;
+  #foreach($entry in $mailsdistbytype)
+      &lt;div class="statMedalionEntry"&gt;
+        &lt;div class="statMedalionCounter"&gt;
+          $entry[1]
+        &lt;/div&gt;
+        &lt;div class="statMedalionContent"&gt;
+          [[image:icon:${entry[2]}]] $entry[0]
+        &lt;/div&gt;
+      &lt;/div&gt;
+  #end
+  #foreach($entry in $mailsdist)
+    #if($entry[0].length() &gt; 13) #set($display = $entry[0].substring(0,13)) #else #set($display = $entry[0]) #end
+      &lt;div class="statMedalionEntry"&gt;
+        &lt;div class="statMedalionCounter"&gt;
+          $entry[1]
+        &lt;/div&gt;
+        &lt;div class="statMedalionContent"&gt;
+          &lt;span title="${entry[0]}" style="color:#9F9F9F;text-shadow: 1px 1px 1px ${entry[2]};"&gt;$display&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+  #end
+      &lt;div class="statMedalionEntry"&gt;
+        &lt;div class="statMedalionCounter"&gt;
+          $nbStarredItems
+        &lt;/div&gt;
+        &lt;div class="statMedalionContent"&gt;
+          starred items
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+   &lt;/div&gt;
+   &lt;div class="clearfloats"/&gt;
+ &lt;/div&gt;
+{{/html}}
+
+{{container layoutStyle="columns"}}
+(((
+{{html wiki="true"}}
+&lt;div class="stat-graph-container"&gt;
+{{chart source="inline" type="pie" params="range:B1-B${nbmailsdistbytype};series:columns;" title="Mail Types" height="600" width="800"}}
+  #foreach($result in $mailsdistbytype) 
+|${result[0]}|${result[1]}
+  #end
+{{/chart}}
+&lt;/div&gt;
+{{/html}}
+)))
+(((
+{{html wiki="true"}}
+&lt;div class="stat-graph-container"&gt;
+{{chart source="inline" type="pie" params="range:B1-B${nbtopicsdist};series:columns;" title="Topics" height="600" width="800"}}
+  #foreach($result in $topicsdist) 
+|${result[0]}=${result[1]}|${result[1]}
+  #end
+{{/chart}}
+&lt;/div&gt;
+{{/html}}
+)))
+(((
+{{html wiki="true"}}
+&lt;div class="stat-graph-container"&gt;
+{{chart source="inline" type="pie" params="range:B1-B${nbmailsdist};series:columns;" title="Mails" height="600" width="800"}}
+  #foreach($result in $mailsdist) 
+|${result[0]}=${result[1]}|${result[1]}
+  #end
+{{/chart}}
+&lt;/div&gt;
+{{/html}}
+)))
+{{/container}}
+
+##
+## ***** ALL TIME ACTIVITY ***** ##
+##
+#macro(displayAllTimeActivity )
+  ## ***** Query info from database *****
+  #set($hql = "select year(dateprop.value), month(dateprop.value), count(mailobj) from BaseObject as mailobj, DateProperty as dateprop, LargeStringProperty as fromprop where mailobj.className='MailArchiveCode.MailClass' and mailobj.id=dateprop.id and dateprop.name='date' and mailobj.id=fromprop.id and fromprop.name='from' and fromprop.value='${request.user}' group by year(dateprop.value), month(dateprop.value) order by year(dateprop.value), month(dateprop.value)")
+  #set($alltimemails = $services.query.hql($hql).execute())
+  #set($nballtimemails = $alltimemails.size())
+  #set($hql = "select year(dateprop.value), month(dateprop.value), count(topicobj) from BaseObject as topicobj, DateProperty as dateprop, StringProperty as fromprop where topicobj.className='MailArchiveCode.MailTopicClass' and topicobj.id=dateprop.id and dateprop.name='startdate' and topicobj.id=fromprop.id and fromprop.name='author' and fromprop.value='${request.user}' group by year(dateprop.value), month(dateprop.value) order by year(dateprop.value), month(dateprop.value)")
+  #set($alltimetopics = $services.query.hql($hql).execute())
+  #set($nballtimetopics = $alltimetopics.size())
+
+  #set($allmails = {})
+  #foreach($result in $alltimemails)
+    #set($discard = $allmails.put("${result[0]}-${result[1]}", "$result[2]"))
+  #end
+  #set($alltopics = {})
+  #foreach($result in $alltimetopics)
+    #set($discard = $alltopics.put("${result[0]}-${result[1]}", "$result[2]"))
+  #end
+  ## ***** Compute number of months that will be displayed ****
+  #set($now = $xwiki.jodatime.dateTime)
+  #set($yearStart = $alltimemails[0][0])
+  #set($last = $alltimemails.size() - 1)
+  #set($yearEnd = $alltimemails[$last][0])
+  #set($count=0)
+  #foreach ($year in [$yearStart..$yearEnd])
+    #if($year == $yearStart)
+      #set($monthStart = $alltimemails[0][1])
+    #else
+      #set($monthStart = 1)
+    #end
+    #if($year == $yearEnd)
+      #set($monthEnd = $alltimemails[$last][1])
+    #else
+      #set($monthEnd = 12)
+    #end
+    #foreach ($month in [$monthStart..$monthEnd])
+      #set($count = $count + 1)
+    #end
+  #end
+  #set($count = $count + 1)
+
+  ## ***** Display chart *****
+{{chart source="inline" type="line" params="range:B2-C${count};series:columns;" title="Activity : ${yearStart}/$alltimemails[0][1] - ${yearEnd}/$alltimemails[$last][1]" height="500" width="800"}}
+|=Date|=Topics Count|=Mails Count
+  #foreach ($year in [$yearStart..$yearEnd])
+    #if($year == $yearStart)
+      #set($monthStart = $alltimemails[0][1])
+    #else
+      #set($monthStart = 1)
+    #end
+    #if($year == $yearEnd)
+      #set($monthEnd = $alltimemails[$last][1])
+    #else
+      #set($monthEnd = 12)
+    #end
+    #foreach ($month in [$monthStart..$monthEnd])
+      #if($allmails.get("${year}-${month}"))
+        #set($nbmail = $allmails.get("${year}-${month}"))
+      #else
+        #set($nbmail = 0)
+      #end
+      #if($alltopics.get("${year}-${month}"))
+        #set($nbtopic = $alltopics.get("${year}-${month}"))
+      #else
+        #set($nbtopic = 0)
+      #end
+|${year}-${month}|${nbtopic}|${nbmail}
+    #end
+  #end
+{{/chart}}
+#end
+
+#end
+
+{{/velocity}}
+
+{{velocity}}
+#if("$!request.user" != "")
+  #set($discard = $xwiki.ssx.use("MailArchiveCode.TopicsLiveTableResults"))
+  #set($discard = $xwiki.jsx.use("MailArchiveCode.TopicsLiveTableResults"))
+  #set($discard = $xwiki.jsx.use('MailArchive.LiveTable'))
+  #if("$!request.wikiuser" != "")
+    #set($prof = $xwiki.getDocument($request.wikiuser))
+    #set($profobj = $prof.getObject('XWiki.XWikiUsers'))
+    #if($profobj)
+      #set($display = "${profobj.first_name} ${profobj.last_name}")
+      #set($userlink = "[[$display&gt;&gt;$request.wikiuser]]")
+    #else
+      #set($userlink = "$request.user")
+    #end
+  #else
+    #set($userlink = "$request.user")
+  #end 
+== Topics from $userlink ==
+  #set($collist = [ "subject", "_ratings", "startdate"])
+  #set($colprops = { 
+   "subject" : { "displayName":"Subject", "type" : "text", "link" : "view", "sortable":"false", "filterable":"false", "html":"true" },
+                   
+   "_ratings" : { "sortable" : "false" },
+   "startdate" : { "displayName":"Date", "type" : "date", "link" : "view" }
+                 } )
+  #set($options = { "className":"MailArchiveCode.MailTopicClass",
+                  "url":"${xwiki.getDocument('MailArchiveCode.TopicsLiveTableResults').getExternalURL('view')}?topicsfrom=${request.user}&amp;collist=subject,_ratings,startdate&amp;classname=MailArchiveCode.MailTopicClass&amp;outputSyntax=plain&amp;xpage=plain",
+                  "selectedColumn":"startdate",
+                  "tagCloud":"false",
+                  "defaultOrder":"desc",
+                  "translationPrefix" : "xe.mailarchive.",
+                  "rowCount": 10 })
+  #livetable("topicsfromuser" $collist $colprops $options)
+== Mails from $userlink ==
+  #set($collist = [ "messagesubject", "_ratings", "date"])
+  #set($colprops = { 
+   "messagesubject" : { "displayName":"Subject", "type" : "text", "link" : "view", "sortable":"false", "filterable":"false", "html":"true" },
+   "_ratings" : { "sortable" : "false" },
+   "date" : { "displayName":"Date", "type" : "date", "link" : "view" }
+                 } )
+  #set($options = { "className":"MailArchiveCode.MailClass",
+                  "url":"${xwiki.getDocument('MailArchiveCode.TopicsLiveTableResults').getExternalURL('view')}?mailsfrom=${request.user}&amp;collist=messagesubject,_ratings,date&amp;classname=MailArchiveCode.MailClass&amp;outputSyntax=plain&amp;xpage=plain",
+                  "selectedColumn":"date",
+                  "tagCloud":"false",
+                  "defaultOrder":"desc",
+                  "translationPrefix" : "xe.mailarchive.",
+                  "rowCount": 20 })
+  #livetable("mailsfromuser" $collist $colprops $options)
+
+#else
+  User not specified.
+#end
+{{/velocity}}</content></xwikidoc>

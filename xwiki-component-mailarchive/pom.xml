@@ -20,7 +20,7 @@
 		<groupId>org.xwiki.contrib</groupId>
 		<artifactId>xwiki-contrib-mailarchive-parent</artifactId>
 		<version>1.0-SNAPSHOT</version>
-	</parent>	
+	</parent>
 	<artifactId>xwiki-component-mailarchive</artifactId>
 	<name>XWiki - MailArchive Component</name>
 	<description>${project.name} - Fetch and persist emails in XWiki data model.</description>
@@ -28,12 +28,12 @@
 		<platform.core.version>3.5.1</platform.core.version>
 	</properties>
 
-		<dependencies>
-			<dependency>
-				<groupId>org.xwiki.contrib</groupId>
-				<artifactId>xwiki-component-mail</artifactId>			
-			</dependency>
-	
+	<dependencies>
+		<dependency>
+			<groupId>org.xwiki.contrib</groupId>
+			<artifactId>xwiki-component-mail</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.xwiki.commons</groupId>
 			<artifactId>xwiki-commons-component-default</artifactId>
@@ -71,6 +71,13 @@
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mailapi</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.0.0</version>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- Testing dependencies -->

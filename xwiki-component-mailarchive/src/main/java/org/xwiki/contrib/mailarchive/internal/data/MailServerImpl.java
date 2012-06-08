@@ -21,6 +21,8 @@ package org.xwiki.contrib.mailarchive.internal.data;
 
 import java.util.Properties;
 
+import javax.mail.Session;
+
 import org.xwiki.contrib.mailarchive.IServer;
 
 /**
@@ -52,6 +54,8 @@ public class MailServerImpl implements IServer
     private String wikiDoc;
 
     private Properties additionalProperties;
+
+    private Session session = null;
 
     public MailServerImpl()
     {
@@ -160,6 +164,27 @@ public class MailServerImpl implements IServer
         return additionalProperties;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.IServer#getSession()
+     */
+    @Override
+    public Session getSession()
+    {
+        return session;
+    }
+
+    public void setSession(final Session session)
+    {
+        this.session = session;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.IServer#getSession()
+     */
     @Override
     public String toString()
     {

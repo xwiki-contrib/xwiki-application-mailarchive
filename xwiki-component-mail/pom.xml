@@ -72,14 +72,6 @@
 			<artifactId>mailapi</artifactId>
 		</dependency>
 
-		<!-- For PST import -->
-		<dependency>
-			<groupId>com.pff</groupId>
-			<artifactId>java-libpst</artifactId>
-			<version>0.7</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/src/main/lib/java-libpst.0.7.jar</systemPath>
-		</dependency>
 		<!-- For Local Store : MSTOR -->
 		<dependency>
 			<groupId>org.mnode.mstor</groupId>

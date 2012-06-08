@@ -1724,6 +1724,9 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
     }
 
+    // FIXME: is that absolutely needed ? triggering an dependency on log implementation is pretty bad since it make
+    // impossible to switch it to something else. If that's really needed you could add this feature to
+    // xwiki-commons-log module maybe.
     public void enterDebugMode()
     {
         // Logs level

@@ -22,52 +22,72 @@ package org.xwiki.contrib.mailarchive.internal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+
+import javax.servlet.ServletContext;
+
 import org.jmock.Expectations;
-import org.jmock.Mockery;
+import org.junit.Before;
 import org.junit.Test;
-import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.context.Execution;
-import org.xwiki.context.ExecutionContext;
 import org.xwiki.contrib.mailarchive.IMailArchive;
-import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 import org.xwiki.contrib.mailarchive.internal.data.MailServerImpl;
-import org.xwiki.test.AbstractMockingComponentTestCase;
-import org.xwiki.test.annotation.MockingRequirement;
+import org.xwiki.environment.Environment;
+import org.xwiki.environment.internal.ServletEnvironment;
+
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.test.AbstractBridgedComponentTestCase;
 
 /**
  * Tests for the {@link IMailArchive} component.
  */
-public class DefaultMailArchiveTest extends AbstractMockingComponentTestCase
+public class DefaultMailArchiveTest extends AbstractBridgedComponentTestCase
 {
-
-    @MockingRequirement
     private DefaultMailArchive ma;
 
-    Mockery context = new Mockery();
+    private XWiki mockXWiki;
 
-    /**
-     * @see org.xwiki.test.AbstractMockingComponentTestCase#configure()
-     */
     @Override
-    public void configure() throws Exception
+    @Before
+    public void setUp() throws Exception
     {
+        super.setUp();
+
+        setupEnvironment();
+        
         final Execution execution = getComponentManager().lookup(Execution.class);
         System.out.println("Execution tu " + execution.hashCode());
 
-        context.checking(new Expectations()
+        this.mockXWiki = getMockery().mock(XWiki.class);
+
+        getContext().setWiki(this.mockXWiki);
+
+        this.ma = (DefaultMailArchive) getComponentManager().lookup(IMailArchive.class);
+    }
+
+    // FIXME: this is supposed to be done by AbstractBridgedComponentTestCase already but it seems to be buggy in 3.5.1.
+    // Note: works well in 4.1 so it should be removed when upgrading.
+    protected void setupEnvironment() throws Exception
+    {
+        // Since the oldcore module draws the Servlet Environment in its dependencies we need to ensure it's set up
+        // correctly with a Servlet Context.
+        ServletEnvironment environment = (ServletEnvironment) getComponentManager().lookup(Environment.class);
+        final ServletContext mockServletContext = environment.getServletContext();
+        getMockery().checking(new Expectations()
         {
             {
-                allowing(execution).getContext();
-                will(returnValue(new ExecutionContext()));
+                allowing(mockServletContext).getResourceAsStream("/WEB-INF/cache/infinispan/config.xml");
+                will(returnValue(null));
+                allowing(mockServletContext).getAttribute("javax.servlet.context.tempdir");
+                will(returnValue(new File(System.getProperty("java.io.tmpdir"))));
             }
         });
-
     }
 
     @Test
-    public void testLoadExistingTopics() throws ComponentLookupException, Exception
+    public void testLoadExistingTopics() throws Exception
     {
-
         MailServerImpl server = new MailServerImpl();
         server.setFolder("WIKI");
         server.setHost("imap.gmail.com");
@@ -86,6 +106,5 @@ public class DefaultMailArchiveTest extends AbstractMockingComponentTestCase
         assertEquals(0, ma.mailutils.getAveragedLevenshteinDistance("toto", "toto"), 0);
         assertEquals(0.25, ma.mailutils.getAveragedLevenshteinDistance("toto", "tito"), 0);
         assertEquals(1, ma.mailutils.getAveragedLevenshteinDistance("toto", "uiui"), 0);
-
     }
 }

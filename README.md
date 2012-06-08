@@ -1,4 +1,5 @@
 Mail Archive application repository.
+====================================
 
 * xwiki-component-mail: API (jar) based on Javamail used to parse and extract content from an email.
 * xwiki-component-mailarchive: The core Mail Archive component (jar), loads emails from servers and stores them as wiki pages.
@@ -7,6 +8,7 @@ Mail Archive application repository.
 
 For testing
 -----------
+
 1. Push xwiki-component-mail-*.jar and xwiki-component-mailarchive-*.jar to WEB-INF/lib of your xwiki container
 
 2. Import the .xar

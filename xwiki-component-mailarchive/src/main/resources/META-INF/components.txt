@@ -1,2 +1,0 @@
-org.xwiki.contrib.mailarchive.internal.DefaultMailArchive
-org.xwiki.contrib.mailarchive.internal.MailArchiveScriptService

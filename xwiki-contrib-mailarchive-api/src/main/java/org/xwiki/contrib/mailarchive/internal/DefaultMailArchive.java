@@ -30,9 +30,11 @@ import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -284,18 +286,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
         try {
             logger.debug("Updating server state in " + server.getWikiDoc());
-            logger.warn("Context.getWiki " + context.getWiki());
-            logger.warn("getWikiDoc " + server.getWikiDoc());
-            SpaceReference prefsSpaceRef = new SpaceReference(new EntityReference(SPACE_PREFS, EntityType.SPACE));
-            DocumentReference prefsDocRef = new DocumentReference(server.getWikiDoc(), prefsSpaceRef);
-            SpaceReference codeSpaceRef = new SpaceReference(new EntityReference(SPACE_CODE, EntityType.SPACE));
-            DocumentReference classDocRef = new DocumentReference("ServerSettingsClass", codeSpaceRef);
-
-            dab.setProperty(prefsDocRef, classDocRef, "status", nbMessages);
-            dab.setProperty(prefsDocRef, classDocRef, "lasttest", new Date());
-
-            dab.setProperty(SPACE_PREFS + server.getWikiDoc(), SPACE_CODE + ".ServerSettingsClass", "status",
-                nbMessages);
             XWikiDocument serverDoc = context.getWiki().getDocument(server.getWikiDoc(), context);
             BaseObject serverObj = serverDoc.getObject(SPACE_CODE + ".ServerSettingsClass");
             serverObj.set("status", nbMessages, context);
@@ -461,6 +451,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         }
 
         mailutils = new MailUtils(xwiki, context, logger, queryManager);
+        MailArchiveStringUtils.setLogger(this.logger);
     }
 
     protected void loadItems() throws MailArchiveException
@@ -479,11 +470,41 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      */
     public void setMailSpecificParts(final MailItem m)
     {
-        // set IType
-        // TODO : severely bugged, logs to be added ...
-        IType foundType = null;
-        for (Entry<String, IType> typeentry : config.getMailTypes().entrySet()) {
-            IType type = typeentry.getValue();
+        List<IType> foundTypes = extractTypes(config.getMailTypes().values(), m);
+        if (foundTypes.size()>0) {
+        	m.setType(foundTypes.get(0).getName());
+        } else {
+        	m.setType(IType.TYPE_MAIL);
+        }
+        
+
+        // set wiki user
+        // // @TODO Try to retrieve wiki user
+        // // @TODO : here, or after ? (link with ldap and xwiki profiles
+        // // options to be checked ...)
+
+        String userwiki = mailutils.parseUser(m.getFrom(), config.isMatchLdap());
+        if (userwiki == null || "".equals(userwiki)) {
+            userwiki = UNKNOWN_USER;
+        }
+        m.setWikiuser(userwiki);
+    }
+
+    /**
+     * Find matching types for this mail.
+     * 
+     * @param m
+     */
+	public List<IType> extractTypes(final Collection<IType> types, final MailItem m) {
+		List<IType> result = new ArrayList<IType>();
+		
+		if (types == null || m == null) {
+			throw new IllegalArgumentException("extractTypes: Types and mailitem can't be null");
+		}
+		
+		// set IType
+        // FIXME : severely bugged, logs to be added ...
+        for (IType type : types) {            
             logger.info("Checking for type " + type);
             boolean matched = true;
             for (Entry<List<String>, String> entry : type.getPatterns().entrySet()) {
@@ -522,29 +543,14 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 }
                 matched = matched && fieldMatch;
             }
-            if (matched && !IType.TYPE_MAIL.equals(type.getName())) {
+            if (matched) {
                 logger.info("Matched type " + type.getDisplayName());
-                foundType = type;
-                break;
+                result.add(type);
+                matched = true;
             }
         }
-        if (foundType != null) {
-            m.setType(foundType.getName());
-        } else {
-            m.setType(IType.TYPE_MAIL);
-        }
-
-        // set wiki user
-        // // @TODO Try to retrieve wiki user
-        // // @TODO : here, or after ? (link with ldap and xwiki profiles
-        // // options to be checked ...)
-
-        String userwiki = mailutils.parseUser(m.getFrom(), config.isMatchLdap());
-        if (userwiki == null || "".equals(userwiki)) {
-            userwiki = UNKNOWN_USER;
-        }
-        m.setWikiuser(userwiki);
-    }
+        return result;
+	}
 
     @Override
     public String parseUser(String internetAddress)
@@ -634,7 +640,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 topicDoc = createTopicPage(m, dateFormatter, confirm);
 
                 logger.debug("  loaded new topic " + topicDoc);
-            } else if (mailutils.similarSubjects(this, m.getTopic(), existingTopics.get(existingTopicId).getSubject())) {
+            } else if (MailArchiveStringUtils.similarSubjects(this, m.getTopic(), existingTopics.get(existingTopicId).getSubject())) {
                 logger.debug("  topic already loaded " + m.getTopicId() + " : " + existingTopics.get(existingTopicId));
                 topicDoc = updateTopicPage(m, existingTopicId, dateFormatter, confirm);
             } else {
@@ -919,7 +925,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         }
 
         // Truncate body
-        content = mailutils.truncateStringForBytes(content, 65500, 65500);
+        content = MailArchiveStringUtils.truncateStringForBytes(content, 65500, 65500);
 
         // Treat Html part
         zippedhtmlcontent = treatHtml(msgDoc, htmlcontent, attachmentsMap);
@@ -1612,7 +1618,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 if (msgObj != null) {
                     logger
                         .debug("existsTopic : message " + replyId + " is a reply to " + existingMessages.get(replyId));
-                    if (mailutils.similarSubjects(this, previousSubject, msgObj.getStringValue("topicsubject"))) {
+                    if (MailArchiveStringUtils.similarSubjects(this, previousSubject, msgObj.getStringValue("topicsubject"))) {
                         previous = replyId;
                         replyId = msgObj.getStringValue("inreplyto");
                         previousSubject = msgObj.getStringValue("topicSubject");
@@ -1637,7 +1643,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         if (foundTopicId == null) {
             if (!StringUtils.isBlank(topicId) && existingTopics.containsKey(topicId)) {
                 logger.debug("existsTopic : found topic id in loaded topics");
-                if (mailutils.similarSubjects(this, topicSubject, existingTopics.get(topicId).getSubject())) {
+                if (MailArchiveStringUtils.similarSubjects(this, topicSubject, existingTopics.get(topicId).getSubject())) {
                     foundTopicId = topicId;
                 } else {
                     logger.debug("... but subjects are too different");

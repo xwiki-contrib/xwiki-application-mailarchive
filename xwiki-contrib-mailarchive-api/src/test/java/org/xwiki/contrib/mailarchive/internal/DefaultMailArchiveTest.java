@@ -20,19 +20,24 @@
 package org.xwiki.contrib.mailarchive.internal;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 
 import org.jmock.Expectations;
 import org.junit.Before;
 import org.junit.Test;
-import org.xwiki.component.descriptor.DefaultComponentDescriptor;
 import org.xwiki.context.Execution;
+import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mailarchive.IMailArchive;
-import org.xwiki.contrib.mailarchive.internal.data.MailServerImpl;
+import org.xwiki.contrib.mailarchive.IType;
+import org.xwiki.contrib.mailarchive.internal.data.MailTypeImpl;
 import org.xwiki.environment.Environment;
 import org.xwiki.environment.internal.ServletEnvironment;
 
@@ -55,7 +60,7 @@ public class DefaultMailArchiveTest extends AbstractBridgedComponentTestCase
         super.setUp();
 
         setupEnvironment();
-        
+
         final Execution execution = getComponentManager().lookup(Execution.class);
         System.out.println("Execution tu " + execution.hashCode());
 
@@ -86,25 +91,176 @@ public class DefaultMailArchiveTest extends AbstractBridgedComponentTestCase
     }
 
     @Test
-    public void testLoadExistingTopics() throws Exception
+    public void extractTypesWithLimitValues()
     {
-        MailServerImpl server = new MailServerImpl();
-        server.setFolder("WIKI");
-        server.setHost("imap.gmail.com");
-        server.setPort(993);
-        server.setProtocol("imaps");
-        server.setUser("jbousque");
-        server.setPassword("gwada15");
-        int result = ma.queryServerInfo(server);
-        System.out.println(result);
-        assertTrue(result > 0);
+        try {
+            ma.extractTypes(null, null);
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+
+        try {
+            List<IType> types = new ArrayList<IType>();
+            ma.extractTypes(types, null);
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+
+        try {
+            MailItem mail = new MailItem();
+            ma.extractTypes(null, mail);
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+
+    }
+
+    public void extractTypesForNominalCases_MailType()
+    {
+        // Check with a unique "mail" type
+        List<IType> types = new ArrayList<IType>();
+
+        MailTypeImpl typeMail = new MailTypeImpl();
+        typeMail.setName(IType.TYPE_MAIL);
+        typeMail.setDisplayName("Mail");
+        HashMap<List<String>, String> patterns = new HashMap<List<String>, String>();
+        List<String> fields = new ArrayList<String>();
+        fields.add("subject");
+        patterns.put(fields, "^.*$");
+        typeMail.setPatterns(patterns);
+        typeMail.setIcon("email");
+        types.add(typeMail);
+
+        MailItem m = new MailItem();
+        m.setSubject("lorem ipsum");
+
+        List<IType> foundTypes;
+        foundTypes = ma.extractTypes(types, m);
+        assertNotNull(foundTypes);
+        assertEquals(1, foundTypes.size());
+        assertEquals(typeMail, foundTypes.get(0));
+
     }
 
     @Test
-    public void testGetLevenshteinDistance()
+    public void extractTypesForNominalCases_OtherType()
     {
-        assertEquals(0, ma.mailutils.getAveragedLevenshteinDistance("toto", "toto"), 0);
-        assertEquals(0.25, ma.mailutils.getAveragedLevenshteinDistance("toto", "tito"), 0);
-        assertEquals(1, ma.mailutils.getAveragedLevenshteinDistance("toto", "uiui"), 0);
+        // Check with a unique "mail" type
+        List<IType> types = new ArrayList<IType>();
+
+        MailTypeImpl typeProposal = new MailTypeImpl();
+        typeProposal.setName("proposal");
+        typeProposal.setDisplayName("Proposal");
+        HashMap<List<String>, String> patterns = new HashMap<List<String>, String>();
+        List<String> fields = new ArrayList<String>();
+        fields.add("subject");
+        patterns.put(fields, "(?mi)^.*\\[proposal\\].*$");
+        typeProposal.setPatterns(patterns);
+        typeProposal.setIcon("proposal");
+        types.add(typeProposal);
+
+        List<IType> foundTypes;
+
+        // Non-matching test
+        MailItem m = new MailItem();
+        m.setSubject("lorem ipsum");
+
+        foundTypes = ma.extractTypes(types, m);
+        assertNotNull(foundTypes);
+        assertEquals(0, foundTypes.size());
+
+        // Matching test
+        m.setSubject("[xwiki-user][Proposal] Add more unitary tests");
+        foundTypes = ma.extractTypes(types, m);
+        assertNotNull(foundTypes);
+        assertEquals(1, foundTypes.size());
+        assertEquals(typeProposal, foundTypes.get(0));
+
+        // With pattern at line start - non-matching test
+        patterns.put(fields, "(?mi)^\\[proposal\\].*$");
+        foundTypes = ma.extractTypes(types, m);
+        assertNotNull(foundTypes);
+        assertEquals(0, foundTypes.size());
+
+        // With pattern at line start - matching test
+        m.setSubject("[prOposaL] Too low");
+
+        foundTypes = ma.extractTypes(types, m);
+        assertNotNull(foundTypes);
+        assertEquals(1, foundTypes.size());
+        assertEquals(typeProposal, foundTypes.get(0));
+
     }
+
+    @Test
+    public void extractTypesForMultiplePatternsAndTypes()
+    {
+        // Check with a unique "mail" type
+        List<IType> types = new ArrayList<IType>();
+
+        // First setup a type "proposal" that matches subject field
+        MailTypeImpl typeProposal = new MailTypeImpl();
+        typeProposal.setName("proposal");
+        typeProposal.setDisplayName("Proposal");
+        HashMap<List<String>, String> patterns = new HashMap<List<String>, String>();
+        List<String> fields = new ArrayList<String>();
+        fields.add("subject");
+        patterns.put(fields, "(?mi)^.*\\[proposal\\].*$");
+        typeProposal.setPatterns(patterns);
+        typeProposal.setIcon("proposal");
+        types.add(typeProposal);
+
+        // Type release : matches subject for a token, and a specific originating from
+        MailTypeImpl typeRelease = new MailTypeImpl();
+        typeRelease.setName("release");
+        typeRelease.setDisplayName("Release");
+        HashMap<List<String>, String> patternsRelease = new HashMap<List<String>, String>();
+        List<String> fieldsReleaseSubject = new ArrayList<String>();
+        fieldsReleaseSubject.add("subject");
+        patternsRelease.put(fieldsReleaseSubject, "(?mi)^\\[release\\].*$");
+        List<String> fieldsReleaseFrom = new ArrayList<String>();
+        fieldsReleaseFrom.add("from");
+        patternsRelease.put(fieldsReleaseFrom, "(?mi)^.*vmassol.*$");
+        typeRelease.setPatterns(patternsRelease);
+        typeRelease.setIcon("release");
+        types.add(typeRelease);
+
+        List<IType> foundTypes;
+
+        // Non-matching test
+        MailItem m = new MailItem();
+        m.setSubject("lorem ipsum");
+        m.setFrom("toto");
+
+        foundTypes = ma.extractTypes(types, m);
+        assertNotNull(foundTypes);
+        assertEquals(0, foundTypes.size());
+
+        // Match only proposal type
+        m.setSubject("[Proposal] This is a proposal");
+        m.setFrom("vmassol");
+        foundTypes = ma.extractTypes(types, m);
+        assertNotNull(foundTypes);
+        assertEquals(1, foundTypes.size());
+        assertEquals(typeProposal, foundTypes.get(0));
+
+        // Match only release type
+        m.setSubject("[Release] This is a release");
+        m.setFrom("Vincent Massol <vmassol@mailarchive.net");
+        foundTypes = ma.extractTypes(types, m);
+        assertNotNull(foundTypes);
+        assertEquals(1, foundTypes.size());
+        assertEquals(typeRelease, foundTypes.get(0));
+
+        // Match both types
+        m.setSubject("[Release] [PROPOSAL] A new released proposal, whatever it could mean");
+        m.setFrom("vmassol@xwiki.xwiki");
+        foundTypes = ma.extractTypes(types, m);
+        assertEquals(2, foundTypes.size());
+        if ((!typeProposal.equals(foundTypes.get(0)) && !typeRelease.equals(foundTypes.get(0)))
+            || (!typeProposal.equals(foundTypes.get(1)) && !typeRelease.equals(foundTypes.get(1)))) {
+            fail("Invalid types found");
+        }
+    }
+
 }

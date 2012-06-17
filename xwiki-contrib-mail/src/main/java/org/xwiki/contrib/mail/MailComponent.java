@@ -78,6 +78,8 @@ public interface MailComponent
 
     MailItem parseHeaders(Part message) throws MessagingException, IOException;
 
+    MailContent parseContent(Part message) throws MessagingException, IOException;
+
     String extractText(Message message);
 
     String extractHtml(Message message);

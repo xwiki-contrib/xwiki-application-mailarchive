@@ -17,10 +17,14 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive;
+package org.xwiki.contrib.mailarchive.internal;
 
 import java.util.List;
 import java.util.Map;
+
+import org.xwiki.contrib.mailarchive.IMailingList;
+import org.xwiki.contrib.mailarchive.IServer;
+import org.xwiki.contrib.mailarchive.IType;
 
 /**
  * Interface (aka Role) of the Component

@@ -34,7 +34,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,14 +43,11 @@ import java.util.zip.GZIPOutputStream;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.mail.BodyPart;
 import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -64,14 +60,13 @@ import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.contrib.mail.ConnectionErrors;
 import org.xwiki.contrib.mail.MailComponent;
+import org.xwiki.contrib.mail.MailContent;
 import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mail.Utils;
 import org.xwiki.contrib.mailarchive.IMailArchive;
-import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IServer;
 import org.xwiki.contrib.mailarchive.IType;
-import org.xwiki.contrib.mailarchive.MailContent;
 import org.xwiki.contrib.mailarchive.internal.data.MailArchiveConfigurationImpl;
 import org.xwiki.contrib.mailarchive.internal.data.MailArchiveFactory;
 import org.xwiki.contrib.mailarchive.internal.data.MailShortItem;
@@ -81,10 +76,6 @@ import org.xwiki.contrib.mailarchive.internal.threads.MessagesThreader;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadableMessage;
 import org.xwiki.contrib.mailarchive.internal.timeline.TimeLine;
 import org.xwiki.environment.Environment;
-import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.DocumentReference;
-import org.xwiki.model.reference.EntityReference;
-import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -471,12 +462,12 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     public void setMailSpecificParts(final MailItem m)
     {
         List<IType> foundTypes = extractTypes(config.getMailTypes().values(), m);
-        if (foundTypes.size()>0) {
-        	m.setType(foundTypes.get(0).getName());
+        foundTypes.remove(getType(IType.TYPE_MAIL));
+        if (foundTypes.size() > 0) {
+            m.setType(foundTypes.get(0).getName());
         } else {
-        	m.setType(IType.TYPE_MAIL);
+            m.setType(IType.TYPE_MAIL);
         }
-        
 
         // set wiki user
         // // @TODO Try to retrieve wiki user
@@ -495,16 +486,16 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * 
      * @param m
      */
-	public List<IType> extractTypes(final Collection<IType> types, final MailItem m) {
-		List<IType> result = new ArrayList<IType>();
-		
-		if (types == null || m == null) {
-			throw new IllegalArgumentException("extractTypes: Types and mailitem can't be null");
-		}
-		
-		// set IType
-        // FIXME : severely bugged, logs to be added ...
-        for (IType type : types) {            
+    protected List<IType> extractTypes(final Collection<IType> types, final MailItem m)
+    {
+        List<IType> result = new ArrayList<IType>();
+
+        if (types == null || m == null) {
+            throw new IllegalArgumentException("extractTypes: Types and mailitem can't be null");
+        }
+
+        // set IType
+        for (IType type : types) {
             logger.info("Checking for type " + type);
             boolean matched = true;
             for (Entry<List<String>, String> entry : type.getPatterns().entrySet()) {
@@ -550,16 +541,14 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             }
         }
         return result;
-	}
+    }
 
     @Override
     public String parseUser(String internetAddress)
     {
         try {
             configure();
-        } catch (InitializationException e) {
-            return null;
-        } catch (MailArchiveException e) {
+        } catch (Exception e) {
             return null;
         }
         return mailutils.parseUser(internetAddress, config.isMatchLdap());
@@ -589,7 +578,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         }
         logger.warn("PARSED MAIL  " + m);
 
-        return loadMail(m, true, false, null);
+        return loadMail(m, confirm, isAttachedMail, parentMail);
     }
 
     /**
@@ -640,7 +629,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 topicDoc = createTopicPage(m, dateFormatter, confirm);
 
                 logger.debug("  loaded new topic " + topicDoc);
-            } else if (MailArchiveStringUtils.similarSubjects(this, m.getTopic(), existingTopics.get(existingTopicId).getSubject())) {
+            } else if (MailArchiveStringUtils.similarSubjects(this, m.getTopic(), existingTopics.get(existingTopicId)
+                .getSubject())) {
                 logger.debug("  topic already loaded " + m.getTopicId() + " : " + existingTopics.get(existingTopicId));
                 topicDoc = updateTopicPage(m, existingTopicId, dateFormatter, confirm);
             } else {
@@ -870,7 +860,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         String content = "";
         String htmlcontent = "";
         String zippedhtmlcontent = "";
-        ArrayList<String> attachedMails = new ArrayList<String>();
+        List<Message> attachedMails = new ArrayList<Message>();
+        List<String> attachedMailsPages = new ArrayList<String>();
         // a map to store attachment filename = contentId for replacements in HTML retrieved from mails
         HashMap<String, String> attachmentsMap = new HashMap<String, String>();
         ArrayList<MimeBodyPart> attbodyparts = new ArrayList<MimeBodyPart>();
@@ -891,44 +882,31 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         logger.debug("bodypart class " + bodypart.getClass());
         // addDebug("mail content type " + m.contentType)
         // Retrieve mail body(ies)
-        if (m.getContentType().contains("pkcs7-mime") || m.getContentType().contains("multipart/encrypted")) {
-            content =
-                "<<<This e-mail was encrypted. Text Content and attachments of encrypted e-mails are not publshed in Mail Archiver to avoid disclosure of restricted or confidential information.>>>";
-            htmlcontent =
-                "<i>&lt;&lt;&lt;This e-mail was encrypted. Text Content and attachments of encrypted e-mails are not publshed in Mail Archiver to avoid disclosure of restricted or confidential information.&gt;&gt;&gt;</i>";
+        logger.debug("Fetching mail content");
+        MailContent mailContent = mailManager.parseContent(m.getOriginalMessage());
 
-            m.setSensitivity("encrypted");
-        } else if (bodypart instanceof String) {
-            content = MimeUtility.decodeText((String) bodypart);
-
-        } else {
-            // TODO refactor these methods, to extract plain text, html, attachments and load attached emails in a same
-            // method
-            // This to allow parsing the mail parts only once
-            // TODO improve parsing of multiparts in an email body, take into account the subtypes (related, mixed, ...)
-
-            logger.debug("Fetching mail content");
-            MailContent mailContent = extractMailContent((Multipart) bodypart);
-
-            // logger.debug("Fetching plain text content ...");
-            // content = getMailContent((Multipart) bodypart);
-            // logger.debug("Fetching HTML content ...");
-            // htmlcontent = getMailContentHtml((Multipart) bodypart, 0);
-            logger.debug("Fetching attached mails ...");
-            attachedMails = getMailContentAttachedMails((Multipart) bodypart, msgDoc.getFullName());
-
-            // logger.debug("Fetching attachments from mail");
-            // attbodyparts = getMailAttachments((Multipart) bodypart);
-            // logger.debug("FOUND " + attbodyparts.size() + " attachments to add");
-            // logger.debug("Retrieving contentIds ...");
-            // attachmentsMap = fillAttachmentContentIds(attbodyparts);
+        logger.debug("Loading attached mails ...");
+        attachedMails = mailContent.getAttachedMails();
+        for (Message message : attachedMails) {
+            try {
+                MailLoadingResult result = loadMail(message, create, true, msgDoc.getFullName());
+                if (result.isSuccess()) {
+                    attachedMailsPages.add(result.getCreatedMailDocumentName());
+                }
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
+
+        content = mailContent.getText();
+        htmlcontent = mailContent.getHtml();
 
         // Truncate body
         content = MailArchiveStringUtils.truncateStringForBytes(content, 65500, 65500);
 
         // Treat Html part
-        zippedhtmlcontent = treatHtml(msgDoc, htmlcontent, attachmentsMap);
+        zippedhtmlcontent = treatHtml(msgDoc, htmlcontent, mailContent.getWikiAttachments());
 
         // Treat lengths
         m.setMessageId(truncateForString(m.getMessageId()));
@@ -943,7 +921,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         m.setCc(truncateForLargeString(m.getCc()));
 
         // Assign text body converted from html content if there is no pure-text content
-        if ((content == null || "".equals(content)) && (htmlcontent != null && !"".equals(htmlcontent))) {
+        if (StringUtils.isBlank(content) && !StringUtils.isBlank(htmlcontent)) {
             String converted = null;
             try {
 
@@ -987,17 +965,10 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         msgObj.set("bodyhtml", zippedhtmlcontent, context);
         msgObj.set("sensitivity", m.getSensitivity(), context);
         if (attachedMails.size() != 0) {
-            msgObj.set("attachedMails", StringUtils.join(attachedMails, ',')/*
-                                                                             * TODO
-                                                                             * .grep("^IMailArchive\\..*$").join(',')
-                                                                             */, context);
+            msgObj.set("attachedMails", StringUtils.join(attachedMailsPages, ','), context);
         }
         if (!isAttachedMail) {
-            if (m.isFirstInTopic()) {
-                msgObj.set("type", m.getType(), context);
-            } else {
-                msgObj.set("type", IType.TYPE_MAIL, context);
-            }
+            msgObj.set("type", m.getType(), context);
         } else {
             msgObj.set("type", "Attached Mail", context);
         }
@@ -1006,7 +977,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         } else if (existingTopics.get(m.getTopicId()) != null) {
             msgDoc.setParent(existingTopics.get(m.getTopicId()).getFullName());
         }
-        // msgDoc.setContent(xwiki.getDocument("MailArchiveCode.MailClassTemplate").getContent())
         msgDoc.setTitle("Message " + m.getSubject());
         if (!isAttachedMail) {
             msgDoc.setComment("Created message");
@@ -1037,7 +1007,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * Cleans up HTML content and treat it to replace cid tags with correct image urls (targeting attachments), then zip
      * it.
      */
-    String treatHtml(XWikiDocument msgdoc, String htmlcontent, HashMap<String, String> attachmentsMap)
+    String treatHtml(XWikiDocument msgdoc, String htmlcontent, HashMap<String, XWikiAttachment> attachmentsMap)
         throws IOException
     {
         if (!StringUtils.isBlank(htmlcontent)) {
@@ -1047,13 +1017,13 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             htmlcontent = htmlcontent.replaceAll("&Acirc;", " ");
 
             // Replace attachment URLs in HTML content for images to be shown
-            for (Entry<String, String> att : attachmentsMap.entrySet()) {
+            for (Entry<String, XWikiAttachment> att : attachmentsMap.entrySet()) {
                 // remove starting "<" and finishing ">"
                 String pattern = att.getKey().substring(1, att.getKey().length() - 2);
                 pattern = "cid:" + pattern;
 
-                logger.debug("Testing for pattern " + Util.encodeURI(pattern, context) + " " + pattern);
-                String replacement = msgdoc.getAttachmentURL(att.getValue(), context);
+                logger.debug("Testing for CID pattern " + Util.encodeURI(pattern, context) + " " + pattern);
+                String replacement = msgdoc.getAttachmentURL(att.getValue().getFilename(), context);
                 logger.debug("To be replaced by " + replacement);
                 htmlcontent = htmlcontent.replaceAll(pattern, replacement);
             }
@@ -1071,8 +1041,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             bos.close();
 
             if (htmlcontent.length() > LONG_STRINGS_MAX_LENGTH) {
-                logger.debug("Failed to have HTML fit in target field");
-                htmlcontent = "";
+                logger.debug("Failed to have HTML fit in target field, truncating");
+                htmlcontent = truncateForLargeString(htmlcontent);
             }
 
         } else {
@@ -1207,319 +1177,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     }
 
     /*
-     * Retrieves body parts for content from mail, and returns them as a String
-     */
-    public String getMailContent(Multipart bodypart)
-    {
-        StringBuilder content = new StringBuilder();
-        String is;
-        String str;
-        try {
-            int mcount = bodypart.getCount();
-            int i = 0;
-            while (i < mcount) {
-                BodyPart newbodypart = bodypart.getBodyPart(i);
-                logger.debug("BODYPART CONTENTTYPE = " + newbodypart.getContentType().toLowerCase() + " FILENAME = "
-                    + newbodypart.getFileName());
-                // We don't treat attachments here
-                if (newbodypart.getFileName() != null) {
-                    if (newbodypart.getContentType().toLowerCase().contains("vcard")) {
-                        logger.debug("Adding vcard to content");
-                        if (!content.toString().toLowerCase().contains("xwiki")) {
-                            str = (String) newbodypart.getContent();
-                            content.append(" ").append(str);
-                        }
-                    }
-                    // Note : we treat HTML or XML appart
-                    else if (newbodypart.getContentType().toLowerCase().startsWith("text/")
-                        && !(newbodypart.isMimeType("text/html")) && !(newbodypart.isMimeType("text/xml"))) {
-                        logger.debug("Adding text to content");
-                        str = (String) newbodypart.getContent();
-                        content.append(" ").append(str);
-                    }
-
-                    if (newbodypart.getContentType().toLowerCase().startsWith("multipart/")) {
-                        logger.debug("Adding multipart to content");
-                        String ncontent = getMailContent((Multipart) newbodypart.getContent());
-                        if (!"".equals(ncontent)) {
-                            content.append(" ").append(ncontent);
-                        }
-                    }
-
-                    if (newbodypart.getContentType().toLowerCase().startsWith("message/rfc822")) {
-                        logger.debug("Adding rfc822 to content");
-                        String ncontent =
-                            getMailContent((Multipart) ((BodyPart) newbodypart.getContent()).getContent());
-                        if (!"".equals(ncontent)) {
-                            content.append(" ").append(ncontent);
-                        }
-                    }
-                } // not an attachment
-
-                i++;
-            }
-
-            return content.toString();
-
-        } catch (Exception e) {
-            logger.warn("Failed to get Mail Content", e);
-            return "Failed to get Mail Content";
-        }
-    }
-
-    /*
-     * Retrieves HTML parts only from a mail and returns them as String
-     */
-    public String getMailContentHtml(Multipart bodypart, int level)
-    {
-        StringBuffer content = new StringBuffer();
-        try {
-            int mcount = bodypart.getCount();
-            int i = 0;
-            while (i < mcount) {
-                BodyPart newbodypart = bodypart.getBodyPart(i);
-                logger.debug("BODYPART CONTENTTYPE = " + newbodypart.getContentType().toLowerCase() + " FILENAME = "
-                    + newbodypart.getFileName());
-                // we don't treat attachments here
-                if (newbodypart.getFileName() == null) {
-                    // Note : we treat HTML appart
-                    if (newbodypart.getContentType().toLowerCase().startsWith("text/html")) {
-                        String htmlcontent = (String) newbodypart.getContent();
-                        logger.debug("Adding HTML text of length " + htmlcontent.length() + " to content");
-                        content.append(" ").append(htmlcontent);
-                    }
-
-                    if (newbodypart.getContentType().toLowerCase().startsWith("multipart/")) {
-                        logger.debug("Adding multipart to content");
-                        String ncontent = getMailContentHtml((Multipart) newbodypart.getContent(), level + 1);
-                        if (!"".equals(ncontent)) {
-                            content.append(" ").append(ncontent);
-                        }
-                    }
-
-                    if (newbodypart.getContentType().toLowerCase().startsWith("message/rfc822")) {
-                        logger.debug("Adding rfc822 to content");
-                        BodyPart rfcbodypart = (BodyPart) newbodypart.getContent();
-                        logger.debug("BODYPART CONTENTTYPE for RFC822 = " + rfcbodypart.getContentType().toLowerCase()
-                            + " FILENAME = " + rfcbodypart.getFileName());
-                        String from = rfcbodypart.getHeader("From")[0];
-                        // If header is set, it's likely to be an attached mail to the original mail, so we load it
-                        // first
-                        if (from != null && !"".equals(from)) {
-                            logger.debug("Not Html, but attached email");
-                        } else {
-                            String ncontent = getMailContentHtml((Multipart) rfcbodypart.getContent(), level + 1);
-                            if (!"".equals(ncontent)) {
-                                content.append(" ").append(ncontent);
-                            }
-                        }
-                    }
-                } else { // not an attachment
-                    logger.debug("bodypart has a filename " + newbodypart.getFileName() + ", no html to fetch");
-                }
-
-                i++;
-            }
-
-            return content.toString();
-
-        } catch (Exception e) {
-            logger.warn("Failed to get Html Mail Content", e);
-            return "Failed to get Html Mail Content " + e.getClass() + " " + e.getMessage();
-        }
-    }
-
-    /*
-     * Retrieves attached mails parts only from a mail, loads them and returns a String with list of created pages
-     */
-    public ArrayList<String> getMailContentAttachedMails(Multipart bodypart, String parentMail)
-    {
-        try {
-            ArrayList<String> attachedMailsList = new ArrayList<String>();
-            int mcount = bodypart.getCount();
-            int i = 0;
-            ArrayList<String> result;
-            while (i < mcount) {
-                BodyPart newbodypart = bodypart.getBodyPart(i);
-
-                if (newbodypart.getContentType().toLowerCase().startsWith("multipart/")) {
-                    logger.debug("Adding multipart to attached mails");
-                    result = getMailContentAttachedMails((Multipart) newbodypart.getContent(), parentMail);
-                    attachedMailsList.addAll(result);
-                }
-
-                if (newbodypart.getContentType().toLowerCase().startsWith("message/rfc822")) {
-                    logger.debug("Adding rfc822 to content");
-                    BodyPart rfcbodypart = (BodyPart) newbodypart.getContent();
-                    logger.debug("BODYPART CONTENTTYPE for RFC822 = " + rfcbodypart.getContentType().toLowerCase()
-                        + " FILENAME = " + rfcbodypart.getFileName());
-                    String[] froms = rfcbodypart.getHeader("From");
-                    String from = null;
-                    if (froms != null) {
-                        from = froms[0];
-                    }
-                    // If header is set, it's likely to be an attached mail to the original mail, so we load it first
-                    if (!StringUtils.isBlank(from)) {
-                        // Load attached email into the wiki
-                        MailLoadingResult loadresult = loadMail(rfcbodypart, true, true, parentMail);
-                        if (loadresult.isSuccess() && loadresult.getCreatedMailDocumentName() != null) {
-                            attachedMailsList.add(loadresult.getCreatedMailDocumentName()); // the name of created page
-                                                                                            // for this attached mail
-                        }
-                    } else {
-                        result = getMailContentAttachedMails((Multipart) rfcbodypart.getContent(), parentMail);
-                        attachedMailsList.addAll(result);
-                    }
-                }
-
-                i++;
-            }
-
-            return attachedMailsList;
-
-        } catch (Exception e) {
-            logger.debug("Failed to get Attached Mails Content", e);
-            ArrayList<String> returnval = new ArrayList<String>();
-            returnval.add("Failed to get Attached Mails Content");
-            return returnval;
-        }
-    }
-
-    /**
-     * Returns a list of attachments found from parsing an email parts.
-     * 
-     * @param bodypart
-     * @return
-     */
-    public ArrayList<MimeBodyPart> getMailAttachments(Multipart bodypart)
-    {
-        ArrayList<MimeBodyPart> bodyparts = new ArrayList<MimeBodyPart>();
-        try {
-            int mcount = bodypart.getCount();
-            int i = 0;
-            while (i < mcount) {
-                BodyPart newbodypart = bodypart.getBodyPart(i);
-
-                if (newbodypart.getFileName() != null
-                    || (newbodypart.getContentType().toLowerCase().startsWith("application/") || newbodypart
-                        .getContentType().toLowerCase().startsWith("image/"))) {
-                    MimeBodyPart mimeBodyPart = (MimeBodyPart) newbodypart;
-
-                    bodyparts.add(mimeBodyPart);
-                    logger.debug("getMailAttachments: found an attachment " + newbodypart.getFileName() + " "
-                        + newbodypart.getClass());
-                }
-
-                if (newbodypart.getContentType().toLowerCase().startsWith("multipart/")) {
-                    bodyparts.addAll(getMailAttachments((Multipart) newbodypart.getContent()));
-                }
-
-                // TODO if it's an attached mail, then we should not add the inner attachments to this message, because
-                // if we do they're added twice (in attached mail page, and in current mail)
-                if (newbodypart.getContentType().toLowerCase().startsWith("message/rfc822")) {
-                    bodyparts
-                        .addAll(getMailAttachments((Multipart) ((BodyPart) newbodypart.getContent()).getContent()));
-                }
-
-                i++;
-            }
-
-        } catch (Exception e) {
-            logger.error("Failed to retrieve attachments", e);
-        }
-
-        return bodyparts;
-    }
-
-    public MailContent extractMailContent(Multipart bodypart)
-    {
-        MailContent mailContent = new MailContent();
-
-        mailContent.setText(getMailContent(bodypart));
-        mailContent.setHtml(getMailContentHtml(bodypart, 0));
-        ArrayList<MimeBodyPart> attachments = getMailAttachments(bodypart);
-        mailContent.setAttachments(attachments);
-        HashMap<String, XWikiAttachment> wikiAttachments = new HashMap<String, XWikiAttachment>();
-        // TODO : filling attachment cids and creating xwiki attachments should be done in same method
-        HashMap<String, String> attachmentsMap = fillAttachmentContentIds(mailContent.getAttachments());
-        String fileName = "";
-        for (MimeBodyPart currentbodypart : attachments) {
-            try {
-                String cid = currentbodypart.getContentID();
-                fileName = currentbodypart.getFileName();
-
-                // replace by correct name if filename was renamed (multiple attachments with same name)
-                if (attachmentsMap.containsKey(cid)) {
-                    fileName = attachmentsMap.get(cid);
-                }
-                logger.debug("Treating attachment: " + fileName + " with contentid " + cid);
-                if (fileName == null) {
-                    fileName = "file.ext";
-                }
-                if (fileName.equals("oledata.mso") || fileName.endsWith(".wmz") || fileName.endsWith(".emz")) {
-                    logger.debug("Garbaging Microsoft crap !");
-                } else {
-                    String disposition = currentbodypart.getDisposition();
-                    String contentType = currentbodypart.getContentType().toLowerCase();
-
-                    logger.debug("Treating attachment of type: " + contentType);
-
-                    XWikiAttachment wikiAttachment = new XWikiAttachment();
-                    wikiAttachment.setFilename(fileName);
-                    wikiAttachment.setContent(currentbodypart.getInputStream());
-                    wikiAttachments.put(cid, wikiAttachment);
-
-                } // end if
-            } catch (Exception e) {
-                logger.warn("Attachment " + fileName + " could not be treated", e);
-            }
-        }
-        mailContent.setWikiAttachments(wikiAttachments);
-
-        return mailContent;
-    }
-
-    /*
-     * Fills a map with key=contentId, value=filename of attachment
-     */
-    public HashMap<String, String> fillAttachmentContentIds(ArrayList<MimeBodyPart> bodyparts)
-    {
-        HashMap<String, String> attmap = new HashMap<String, String>();
-
-        for (MimeBodyPart bodypart : bodyparts) {
-            String fileName = null;
-            String cid = null;
-            try {
-                fileName = bodypart.getFileName();
-                cid = bodypart.getContentID();
-            } catch (MessagingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            if (!StringUtils.isBlank(cid) && fileName != null) {
-                logger.debug("fillAttachmentContentIds: Treating attachment: " + fileName + " with contentid " + cid);
-                String name = getAttachmentValidName(fileName);
-                int nb = 1;
-                if (!name.contains(".")) {
-                    name += ".ext";
-                }
-                String newName = name;
-                while (attmap.containsValue(newName)) {
-                    logger.debug("fillAttachmentContentIds: " + newName + " attachment already exists, renaming to "
-                        + name.replaceAll("(.*)\\.([^.]*)", "$1-" + nb + ".$2"));
-                    newName = name.replaceAll("(.*)\\.([^.]*)", "$1-" + nb + ".$2");
-                    nb++;
-                }
-                attmap.put(cid, newName);
-            } else {
-                logger.debug("fillAttachmentContentIds: content ID is null, nothing to do");
-            }
-        }
-
-        return attmap;
-    }
-
-    /*
      * Returns a valid name for an attachment from its original name
      */
     public String getAttachmentValidName(String afilename)
@@ -1618,7 +1275,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 if (msgObj != null) {
                     logger
                         .debug("existsTopic : message " + replyId + " is a reply to " + existingMessages.get(replyId));
-                    if (MailArchiveStringUtils.similarSubjects(this, previousSubject, msgObj.getStringValue("topicsubject"))) {
+                    if (MailArchiveStringUtils.similarSubjects(this, previousSubject,
+                        msgObj.getStringValue("topicsubject"))) {
                         previous = replyId;
                         replyId = msgObj.getStringValue("inreplyto");
                         previousSubject = msgObj.getStringValue("topicSubject");
@@ -1643,7 +1301,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         if (foundTopicId == null) {
             if (!StringUtils.isBlank(topicId) && existingTopics.containsKey(topicId)) {
                 logger.debug("existsTopic : found topic id in loaded topics");
-                if (MailArchiveStringUtils.similarSubjects(this, topicSubject, existingTopics.get(topicId).getSubject())) {
+                if (MailArchiveStringUtils
+                    .similarSubjects(this, topicSubject, existingTopics.get(topicId).getSubject())) {
                     foundTopicId = topicId;
                 } else {
                     logger.debug("... but subjects are too different");

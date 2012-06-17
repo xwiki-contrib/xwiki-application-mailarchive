@@ -28,11 +28,11 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IServer;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
+import org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
@@ -191,7 +191,8 @@ public class MailArchiveConfigurationImpl implements IMailArchiveConfiguration
     /**
      * Loads mail types from database.
      * 
-     * @return A list of mail types definitions.
+     * @return A map of mail types definitions, key of map entries being the type name, and value the IType
+     *         representation.
      * @throws MailArchiveException
      */
     protected Map<String, IType> loadMailTypesDefinitions() throws MailArchiveException
@@ -346,7 +347,7 @@ public class MailArchiveConfigurationImpl implements IMailArchiveConfiguration
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.IMailArchiveConfiguration#isUseStore()
+     * @see org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration#isUseStore()
      */
     @Override
     public boolean isUseStore()
@@ -362,7 +363,7 @@ public class MailArchiveConfigurationImpl implements IMailArchiveConfiguration
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.IMailArchiveConfiguration#getMailingLists()
+     * @see org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration#getMailingLists()
      */
     @Override
     public Map<String, IMailingList> getMailingLists()
@@ -373,7 +374,7 @@ public class MailArchiveConfigurationImpl implements IMailArchiveConfiguration
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.IMailArchiveConfiguration#getServers()
+     * @see org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration#getServers()
      */
     @Override
     public List<IServer> getServers()
@@ -384,7 +385,7 @@ public class MailArchiveConfigurationImpl implements IMailArchiveConfiguration
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.IMailArchiveConfiguration#getMailTypes()
+     * @see org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration#getMailTypes()
      */
     @Override
     public Map<String, IType> getMailTypes()

@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+import javax.mail.Message;
+
 /**
  * POJO representing a Mail.<br/>
  * Most attributes relate easily to their corresponding mail header, except when specified.
@@ -46,8 +48,6 @@ import java.util.Locale;
 public class MailItem
 {
     public static final int MAIL_HEADER_MAX_LENGTH = 255;
-
-    private HashMap map;
 
     // Date
     private Date date;
@@ -88,6 +88,8 @@ public class MailItem
     private boolean isFirstInTopic;
 
     private String importance;
+
+    private Message originalMessage;
 
     public MailItem()
     {
@@ -379,7 +381,17 @@ public class MailItem
         this.isFirstInTopic = isFirstInTopic;
     }
 
-    public HashMap<String, Object> getMap()
+    public Message getOriginalMessage()
+    {
+        return originalMessage;
+    }
+
+    public void setOriginalMessage(final Message originalMessage)
+    {
+        this.originalMessage = originalMessage;
+    }
+
+    public HashMap<String, Object> asMap()
     {
         HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("Date", this.date);
@@ -390,31 +402,15 @@ public class MailItem
         map.put("In-Reply-To", this.replyToId);
         map.put("References", this.refs);
         map.put("Subject", this.subject);
+        map.put("Sender", this.sender);
         // TODO Keywords field
-        // TODO Sender field
 
-        return this.map;
-    }
-
-/**
-     * Removes surrounding '<' and '>' from an ID string, if needed.
-     * 
-     * @param id
-     * @return Extracted id, if not surrounded by '<' and '>', input string is returned as is.
-     */
-    protected static String cropId(String id)
-    {
-        int start = id.indexOf('<');
-        int end = id.indexOf('>');
-        if (start != -1 && end != -1) {
-            return id.substring(start + 1, end);
-        } else {
-            return id;
-        }
+        return map;
     }
 
     public String toString()
     {
+        // FIXME : when migrating to 4.0, use XWikiToStringBuilder
         StringBuilder result = new StringBuilder();
 
         result.append("MailItem [\n").append("\t  date:'").append(date).append("'\n").append("\t, subject:'")

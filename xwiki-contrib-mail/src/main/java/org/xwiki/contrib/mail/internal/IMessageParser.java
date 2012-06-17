@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import javax.mail.MessagingException;
 
+import org.xwiki.contrib.mail.MailContent;
 import org.xwiki.contrib.mail.MailItem;
 
 /**
@@ -31,4 +32,6 @@ import org.xwiki.contrib.mail.MailItem;
 public interface IMessageParser<M>
 {
     MailItem parseHeaders(M message) throws MessagingException, IOException;
+
+    MailContent extractMailContent(M message) throws MessagingException, IOException;
 }

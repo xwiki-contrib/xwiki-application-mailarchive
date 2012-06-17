@@ -53,6 +53,7 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mail.ConnectionErrors;
 import org.xwiki.contrib.mail.MailComponent;
+import org.xwiki.contrib.mail.MailContent;
 import org.xwiki.contrib.mail.MailItem;
 
 import com.xpn.xwiki.api.Attachment;
@@ -275,6 +276,11 @@ public class DefaultMailComponent implements MailComponent, Initializable
     public MailItem parseHeaders(Part mail) throws MessagingException, IOException
     {
         return parser.parseHeaders(mail);
+    }
+
+    public MailContent parseContent(Part mail) throws MessagingException, IOException
+    {
+        return parser.extractMailContent(mail);
     }
 
     /**

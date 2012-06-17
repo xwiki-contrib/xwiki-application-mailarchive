@@ -31,8 +31,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
-import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
+import org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -174,8 +174,9 @@ public class TimeLine
                                 icon = "http://r-wikiggs.gemalto.com/xwiki/resources/icons/silk/cd.gif";
                             }
                             link =
-                                xwiki.getDocument("IMailArchive.M" + doc.getName().substring(1, doc.getName().length()),
-                                    context).getURL("view", context);
+                                xwiki.getDocument(
+                                    "IMailArchive.M" + doc.getName().substring(1, doc.getName().length()), context)
+                                    .getURL("view", context);
                             sortedEvents.put(
                                 date.getTime(),
                                 "<event start=\""

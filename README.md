@@ -8,9 +8,9 @@ Mail Archive application repository.
 Build
 -----
 
-1. run "mvn clean install -Dmaven.test.skip=true" or "mvn clean install -Dmaven.test.failure.ignore=true"
+1. Configure maven repositories for XWiki: http://dev.xwiki.org/xwiki/bin/view/Community/Building
 
-2. Unit tests are almost not implemented, and initialize() of component fails to pass jmock expectations for still unknown reason
+2. run "mvn clean install" at root folder
 
 
 For testing

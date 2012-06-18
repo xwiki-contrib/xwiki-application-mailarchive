@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -55,8 +54,6 @@ import org.xwiki.contrib.mail.ConnectionErrors;
 import org.xwiki.contrib.mail.MailComponent;
 import org.xwiki.contrib.mail.MailContent;
 import org.xwiki.contrib.mail.MailItem;
-
-import com.xpn.xwiki.api.Attachment;
 
 /**
  * @version $Id$
@@ -278,81 +275,13 @@ public class DefaultMailComponent implements MailComponent, Initializable
         return parser.parseHeaders(mail);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public MailContent parseContent(Part mail) throws MessagingException, IOException
     {
         return parser.extractMailContent(mail);
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mail.MailComponent#extractText(javax.mail.Message)
-     */
-    @Override
-    public String extractText(Message message)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mail.MailComponent#extractHtml(javax.mail.Message)
-     */
-    @Override
-    public String extractHtml(Message message)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mail.MailComponent#extractHistoryText(javax.mail.Message)
-     */
-    @Override
-    public String extractHistoryText(Message message)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mail.MailComponent#extractHistoryHtml(javax.mail.Message)
-     */
-    @Override
-    public String extractHistoryHtml(Message message)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mail.MailComponent#extractAttachments(javax.mail.Message)
-     */
-    @Override
-    public Map<String, Attachment> extractAttachments(Message message)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mail.MailComponent#extractAttachedEmails(javax.mail.Message)
-     */
-    @Override
-    public Map<String, MailItem> extractAttachedEmails(Message message)
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     public void setStore(String location, String provider)

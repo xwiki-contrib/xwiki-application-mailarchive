@@ -26,7 +26,7 @@ import java.util.List;
 import javax.mail.Message;
 import javax.mail.internet.MimeBodyPart;
 
-import com.xpn.xwiki.doc.XWikiAttachment;
+import org.xwiki.contrib.mail.internal.MailAttachment;
 
 /**
  * Email content. TODO javadoc
@@ -35,9 +35,9 @@ import com.xpn.xwiki.doc.XWikiAttachment;
  */
 public class MailContent
 {
-    private StringBuilder text;
+    private StringBuilder text = new StringBuilder();
 
-    private StringBuilder html;
+    private StringBuilder html = new StringBuilder();;
 
     /**
      * Extracted attachments as a map, key being content-ID.
@@ -49,7 +49,7 @@ public class MailContent
      * joined files in a mail have the same filenames, renaming occurs in order to have only unique names. This map
      * provides the new name to be used instead of original attachment name.
      */
-    private HashMap<String, XWikiAttachment> wikiAttachments = new HashMap<String, XWikiAttachment>();
+    private HashMap<String, MailAttachment> wikiAttachments = new HashMap<String, MailAttachment>();
 
     private List<Message> attachedMails = new ArrayList<Message>();
 
@@ -125,20 +125,20 @@ public class MailContent
         this.rawAttachments.add(attachment);
     }
 
-    public HashMap<String, XWikiAttachment> getWikiAttachments()
+    public HashMap<String, MailAttachment> getWikiAttachments()
     {
         return wikiAttachments;
     }
 
-    public void setWikiAttachments(HashMap<String, XWikiAttachment> wikiAttachments)
+    public void setWikiAttachments(HashMap<String, MailAttachment> wikiAttachments)
     {
         this.wikiAttachments = wikiAttachments;
     }
 
-    public void addWikiAttachment(String contentId, XWikiAttachment attachment)
+    public void addWikiAttachment(String contentId, MailAttachment attachment)
     {
         if (this.wikiAttachments == null) {
-            this.wikiAttachments = new HashMap<String, XWikiAttachment>();
+            this.wikiAttachments = new HashMap<String, MailAttachment>();
         }
         this.wikiAttachments.put(contentId, attachment);
     }

@@ -35,13 +35,12 @@ import javax.mail.internet.MailDateFormat;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeUtility;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.contrib.mail.MailContent;
 import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mail.Utils;
-
-import com.xpn.xwiki.doc.XWikiAttachment;
 
 /**
  * @version $Id$
@@ -289,9 +288,17 @@ public class JavamailMessageParser implements IMessageParser<Part>
 
                     logger.debug("Treating attachment of type: " + attcontentType);
 
-                    XWikiAttachment wikiAttachment = new XWikiAttachment();
+                    /*
+                     * XWikiAttachment wikiAttachment = new XWikiAttachment(); wikiAttachment.setFilename(fileName);
+                     * wikiAttachment.setContent(currentbodypart.getInputStream());
+                     */
+
+                    MailAttachment wikiAttachment = new MailAttachment();
+                    wikiAttachment.setCid(cid);
                     wikiAttachment.setFilename(fileName);
-                    wikiAttachment.setContent(currentbodypart.getInputStream());
+                    byte[] filedatabytes = IOUtils.toByteArray(currentbodypart.getInputStream());
+                    wikiAttachment.setData(filedatabytes);
+
                     mailContent.addWikiAttachment(cid, wikiAttachment);
 
                 } // end if

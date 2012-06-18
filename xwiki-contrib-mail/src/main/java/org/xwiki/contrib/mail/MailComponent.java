@@ -23,7 +23,6 @@ package org.xwiki.contrib.mail;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -32,8 +31,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.search.SearchTerm;
 
 import org.xwiki.component.annotation.ComponentRole;
-
-import com.xpn.xwiki.api.Attachment;
 
 /**
  * @version $Id$
@@ -79,20 +76,6 @@ public interface MailComponent
     MailItem parseHeaders(Part message) throws MessagingException, IOException;
 
     MailContent parseContent(Part message) throws MessagingException, IOException;
-
-    String extractText(Message message);
-
-    String extractHtml(Message message);
-
-    String extractHistoryText(Message message);
-
-    String extractHistoryHtml(Message message);
-
-    // key : content-ID
-    Map<String, Attachment> extractAttachments(Message message);
-
-    // key : message-ID
-    Map<String, MailItem> extractAttachedEmails(Message message);
 
     // Persistence to FS (backup)
     void setStore(String location, String provider);

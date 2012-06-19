@@ -63,6 +63,7 @@ import org.xwiki.contrib.mail.MailComponent;
 import org.xwiki.contrib.mail.MailContent;
 import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mail.Utils;
+import org.xwiki.contrib.mail.internal.MailAttachment;
 import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IServer;
@@ -1007,7 +1008,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * Cleans up HTML content and treat it to replace cid tags with correct image urls (targeting attachments), then zip
      * it.
      */
-    String treatHtml(XWikiDocument msgdoc, String htmlcontent, HashMap<String, XWikiAttachment> attachmentsMap)
+    String treatHtml(XWikiDocument msgdoc, String htmlcontent, HashMap<String, MailAttachment> attachmentsMap)
         throws IOException
     {
         if (!StringUtils.isBlank(htmlcontent)) {
@@ -1017,7 +1018,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             htmlcontent = htmlcontent.replaceAll("&Acirc;", " ");
 
             // Replace attachment URLs in HTML content for images to be shown
-            for (Entry<String, XWikiAttachment> att : attachmentsMap.entrySet()) {
+            for (Entry<String, MailAttachment> att : attachmentsMap.entrySet()) {
                 // remove starting "<" and finishing ">"
                 String pattern = att.getKey().substring(1, att.getKey().length() - 2);
                 pattern = "cid:" + pattern;

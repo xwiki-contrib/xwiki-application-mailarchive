@@ -28,14 +28,10 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
-import org.xwiki.contrib.mailarchive.internal.MailUtils;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
-
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
 
 /**
  * Threading methods allowing to thread a specific topic, or the full archive.
@@ -44,15 +40,9 @@ import com.xpn.xwiki.XWikiContext;
  */
 public class MessagesThreader
 {
-    private XWikiContext context;
-
-    private XWiki xwiki;
-
     private QueryManager queryManager;
 
     private Logger logger;
-
-    private MailUtils mailutils;
 
     /**
      * @param context
@@ -61,15 +51,11 @@ public class MessagesThreader
      * @param logger
      * @param mailutils
      */
-    public MessagesThreader(XWikiContext context, XWiki xwiki, QueryManager queryManager, Logger logger,
-        MailUtils mailutils)
+    public MessagesThreader(QueryManager queryManager, Logger logger)
     {
         super();
-        this.context = context;
-        this.xwiki = xwiki;
         this.queryManager = queryManager;
         this.logger = logger;
-        this.mailutils = mailutils;
     }
 
     /**

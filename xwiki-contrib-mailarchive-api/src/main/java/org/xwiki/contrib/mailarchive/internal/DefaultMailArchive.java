@@ -76,6 +76,8 @@ import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.threads.MessagesThreader;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadableMessage;
 import org.xwiki.contrib.mailarchive.internal.timeline.TimeLine;
+import org.xwiki.contrib.mailarchive.internal.xwiki.IPersistence;
+import org.xwiki.contrib.mailarchive.internal.xwiki.XWikiPersistence;
 import org.xwiki.environment.Environment;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -200,6 +202,9 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     /** Provides access to the Mail archive configuration */
     private IMailArchiveConfiguration config;
 
+    /** Used to persist pages for mails and topics */
+    private IPersistence persistence;
+
     /** Some utilities */
     public MailUtils mailutils;
 
@@ -232,6 +237,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             this.xwiki = this.context.getWiki();
             this.factory = new MailArchiveFactory(dab);
             this.store = new ItemsManager(queryManager, logger, factory);
+            this.persistence = new XWikiPersistence(this.context, this.xwiki, this.logger);
             logger.error("Mail archive initiliazed !");
             logger.error("PERMANENT DIR : " + this.environment.getPermanentDirectory());
         } catch (Throwable e) {
@@ -277,11 +283,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         // Persist connection state
 
         try {
-            logger.debug("Updating server state in " + server.getWikiDoc());
-            XWikiDocument serverDoc = context.getWiki().getDocument(server.getWikiDoc(), context);
-            BaseObject serverObj = serverDoc.getObject(SPACE_CODE + ".ServerSettingsClass");
-            serverObj.set("status", nbMessages, context);
-            serverObj.setDateValue("lasttest", new Date());
+            persistence.updateServerState(server.getWikiDoc(), nbMessages);
         } catch (Exception e) {
             logger.info("Failed to persist server connection state", e);
         }
@@ -296,7 +298,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      */
     public ThreadableMessage computeThreads(String topicId)
     {
-        MessagesThreader threads = new MessagesThreader(context, xwiki, queryManager, logger, mailutils);
+        MessagesThreader threads = new MessagesThreader(queryManager, logger);
 
         try {
             if (topicId == null) {
@@ -567,7 +569,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * @throws MessagingException
      */
     public MailLoadingResult loadMail(Part mail, boolean confirm, boolean isAttachedMail, String parentMail)
-        throws XWikiException, ParseException, MessagingException, IOException
+        throws Exception, ParseException, MessagingException, IOException
     {
         MailItem m = null;
 
@@ -593,10 +595,11 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * @throws ParseException
      */
     public MailLoadingResult loadMail(MailItem m, boolean confirm, boolean isAttachedMail, String parentMail)
-        throws XWikiException, ParseException
+        throws Exception, ParseException
     {
         XWikiDocument msgDoc = null;
         XWikiDocument topicDoc = null;
+        String topicDocName = null;
 
         logger.debug("Loading mail content into wiki objects");
 
@@ -627,7 +630,10 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                     m.setTopicId(m.getMessageId());
                 }
                 existingTopicId = m.getTopicId();
-                topicDoc = createTopicPage(m, dateFormatter, confirm);
+                topicDocName = createTopicPage(m, dateFormatter, confirm);
+
+                // FIXME: to be removed when everything has been moved to IPersistence/XWikiPersistence
+                topicDoc.setFullName(topicDocName);
 
                 logger.debug("  loaded new topic " + topicDoc);
             } else if (MailArchiveStringUtils.similarSubjects(this, m.getTopic(), existingTopics.get(existingTopicId)
@@ -648,7 +654,10 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 m.setReplyToId("");
                 existingTopicId = existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId(), m.getMessageId());
                 logger.debug("  creating new topic");
-                topicDoc = createTopicPage(m, dateFormatter, confirm);
+                topicDocName = createTopicPage(m, dateFormatter, confirm);
+
+                // FIXME: to be removed when everything has been moved to IPersistence/XWikiPersistence
+                topicDoc.setFullName(topicDocName);
             }
         } // if not attached email
 
@@ -700,60 +709,23 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * 
      * @throws XWikiException
      */
-    protected XWikiDocument createTopicPage(MailItem m, SimpleDateFormat dateFormatter, boolean create)
-        throws XWikiException
+    protected String createTopicPage(MailItem m, SimpleDateFormat dateFormatter, boolean create) throws Exception
     {
 
         XWikiDocument topicDoc;
 
-        String topicwikiname = context.getWiki().clearName("T" + m.getTopic().replaceAll(" ", ""), context);
-        if (topicwikiname.length() >= 30) {
-            topicwikiname = topicwikiname.substring(0, 30);
-        }
-        String pagename = context.getWiki().getUniquePageName(SPACE_ITEMS, topicwikiname, context);
-        topicDoc = xwiki.getDocument(SPACE_ITEMS + "." + pagename, context);
-        BaseObject topicObj = topicDoc.newObject(SPACE_CODE + ".MailTopicClass", context);
-
-        topicObj.set("topicid", m.getTopicId(), context);
-        topicObj.set("subject", m.getTopic(), context);
-        // Note : we always add author and stardate at topic creation because anyway we will update this later if
-        // needed,
-        // to avoid topics with "unknown" author
-        logger.debug("adding startdate and author to topic");
-        topicObj.set("startdate", m.getDate(), context);
-        topicObj.set("author", m.getFrom(), context);
-
-        // when first created, we put the same date as start date
-        topicObj.set("lastupdatedate", m.getDate(), context);
-        topicDoc.setCreationDate(m.getDate());
-        topicDoc.setDate(m.getDate());
-        topicDoc.setContentUpdateDate(m.getDate());
-        topicObj.set("sensitivity", m.getSensitivity(), context);
-        topicObj.set("importance", m.getImportance(), context);
-
-        topicObj.set("type", m.getType(), context);
-        topicDoc.setParent(SPACE_HOME + ".WebHome");
-        topicDoc.setTitle("Topic " + m.getTopic());
-        topicDoc.setComment("Created topic from mail [" + m.getMessageId() + "]");
+        String pageName = "T" + m.getTopic().replaceAll(" ", "");
 
         // Materialize mailing-lists information and mail IType in Tags
         ArrayList<String> taglist = extractMailingListsTags(m);
         taglist.add(m.getType());
 
-        if (taglist.size() > 0) {
-            BaseObject tagobj = topicDoc.newObject("XWiki.TagClass", context);
-            String tags = StringUtils.join(taglist.toArray(new String[] {}), ',');
-            tagobj.set("tags", tags.replaceAll(" ", "_"), context);
-        }
+        String createdTopicName = persistence.createTopic(pageName, m, taglist, config.getLoadingUser(), !create);
 
-        if (create) {
-            saveAsUser(topicDoc, m.getWikiuser(), config.getLoadingUser(),
-                "Created topic from mail [" + m.getMessageId() + "]");
-        }
         // add the existing topic created to the map
-        existingTopics.put(m.getTopicId(), new TopicShortItem(topicDoc.getFullName(), m.getTopic()));
+        existingTopics.put(m.getTopicId(), new TopicShortItem(createdTopicName, m.getTopic()));
 
-        return topicDoc;
+        return createdTopicName;
     }
 
     /**
@@ -894,7 +866,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 if (result.isSuccess()) {
                     attachedMailsPages.add(result.getCreatedMailDocumentName());
                 }
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }

@@ -464,6 +464,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      */
     public void setMailSpecificParts(final MailItem m)
     {
+        // Types
         List<IType> foundTypes = extractTypes(config.getMailTypes().values(), m);
         foundTypes.remove(getType(IType.TYPE_MAIL));
         if (foundTypes.size() > 0) {
@@ -472,16 +473,20 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             m.setType(IType.TYPE_MAIL);
         }
 
-        // set wiki user
-        // // @TODO Try to retrieve wiki user
-        // // @TODO : here, or after ? (link with ldap and xwiki profiles
-        // // options to be checked ...)
-
-        String userwiki = mailutils.parseUser(m.getFrom(), config.isMatchLdap());
-        if (userwiki == null || "".equals(userwiki)) {
+        // User
+        String userwiki = null;
+        if (config.isMatchProfiles()) {
+            userwiki = mailutils.parseUser(m.getFrom(), config.isMatchLdap());
+        }
+        if (StringUtils.isBlank(userwiki)) {
             userwiki = UNKNOWN_USER;
         }
         m.setWikiuser(userwiki);
+
+        // Compatibility: crop ids
+        if (config.isCropTopicIds() && m.getTopicId().length() >= 30) {
+            m.setTopicId(m.getTopicId().substring(0, 29));
+        }
     }
 
     /**
@@ -711,9 +716,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      */
     protected String createTopicPage(MailItem m, SimpleDateFormat dateFormatter, boolean create) throws Exception
     {
-
-        XWikiDocument topicDoc;
-
         String pageName = "T" + m.getTopic().replaceAll(" ", "");
 
         // Materialize mailing-lists information and mail IType in Tags
@@ -740,7 +742,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * @throws XWikiException
      * @throws ParseException
      */
-    protected XWikiDocument updateTopicPage(MailItem m, String existingTopicId, SimpleDateFormat dateFormatter,
+    public XWikiDocument updateTopicPage(MailItem m, String existingTopicId, SimpleDateFormat dateFormatter,
         boolean create) throws XWikiException, ParseException
     {
         logger.debug("updateTopicPage(" + existingTopicId + ")");
@@ -764,10 +766,9 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
         boolean isMoreRecent = (m.getDate().getTime() > lastupdatedate.getTime());
         boolean isMoreAncient = (m.getDate().getTime() < startdate.getTime());
-        logger.debug("decodedDate = " + m.getDate().getTime() + ", lastupdatedate = " + lastupdatedate.getTime()
-            + ", is more recent = " + isMoreRecent + ", first in topic = " + m.isFirstInTopic());
-        logger.debug("lastupdatedate " + lastupdatedate);
-        logger.debug("current mail date " + m.getDate());
+        logger.debug("mail date = " + m.getDate().getTime() + ", last update date = " + lastupdatedate.getTime()
+            + ", is more recent = " + isMoreRecent + ", is more ancient = " + isMoreAncient + ", first in topic = "
+            + m.isFirstInTopic());
 
         // If the first one, we add the startdate to existing topic
         if (m.isFirstInTopic() || isMoreRecent) {
@@ -807,7 +808,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 logger.debug("     Updated existing topic");
                 saveAsUser(topicDoc, newuser, config.getLoadingUser(), comment);
             }
-            // TODO if already added, update the map
             existingTopics.put(m.getTopicId(),
                 new TopicShortItem(topicDoc.getFullName(), topicObj.getStringValue("subject")));
         } else {

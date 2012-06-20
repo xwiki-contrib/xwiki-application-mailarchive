@@ -24,6 +24,7 @@ import java.util.List;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -89,7 +90,7 @@ public class MailUtils
             mail = user;
         }
         String parsedUser = null;
-        if (!"".equals(mail)) {
+        if (!StringUtils.isBlank(mail)) {
             // to match "-external" emails and old mails with '@gemplus.com'...
             mail = mail.toLowerCase();
             mail = mail.replace("-external", "").replaceAll("^(.*)@.*[.]com$", "$1%@%.com");
@@ -132,11 +133,5 @@ public class MailUtils
         }
 
     }
-
-
-
-
-
-
 
 }

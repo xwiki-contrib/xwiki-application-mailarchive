@@ -31,6 +31,10 @@ import org.xwiki.contrib.mailarchive.IType;
  */
 public interface IMailArchiveConfiguration
 {
+    public static final String LDAP_PHOTO_CONTENT_BINARY = "binary";
+
+    public static final String LDAP_PHOTO_CONTENT_URL = "url";
+
     public String getLoadingUser();
 
     public String getDefaultHomeView();

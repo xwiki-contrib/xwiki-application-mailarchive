@@ -23,6 +23,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -391,12 +392,20 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             }
 
             try {
-                // Compute timeline
+                // Compute timeline feed
                 if (config.isManageTimeline() && nbMessages > 0) {
                     TimeLine timeline = new TimeLine(config, xwiki, context, queryManager, logger);
-                    timeline.compute();
+                    String timelineFeed = timeline.compute();
+                    if (!StringUtils.isBlank(timelineFeed)) {
+                        File timelineFeedLocation =
+                            new File(environment.getPermanentDirectory(), "mailarchive/timeline");
+                        FileWriter fw =
+                            new FileWriter(timelineFeedLocation.getAbsolutePath() + "/TimeLineFeed.xml", false);
+                        fw.write(timelineFeed);
+                        fw.close();
+                    }
                 }
-            } catch (XWikiException e) {
+            } catch (Exception e) {
                 logger.warn("Could not compute timeline data", e);
             }
 
@@ -418,6 +427,13 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         inProgress = false;
         return nbMessages;
 
+    }
+
+    public String computeTimeline() throws XWikiException, InitializationException, MailArchiveException
+    {
+        configure();
+        TimeLine timeline = new TimeLine(config, xwiki, context, queryManager, logger);
+        return timeline.compute();
     }
 
     /**

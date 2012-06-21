@@ -86,4 +86,18 @@ public class MailArchiveScriptService implements ScriptService
     {
         return this.mailArchive.parseUser(internetAddress);
     }
+
+    // FIXME: for manual tests only, to be removed
+    public String getTimelineFeed()
+    {
+        String timelineFeed = "";
+        try {
+            timelineFeed = this.mailArchive.computeTimeline();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return timelineFeed;
+    }
 }

@@ -24,14 +24,16 @@ import java.util.ArrayList;
 import org.xwiki.contrib.mail.MailItem;
 
 /**
+ * Defines a layer above XWiki API for persistence of Mail Archive items as XWiki pages and objects.
+ * 
  * @version $Id$
  */
 public interface IPersistence
 {
 
-    public abstract String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
+    String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
         final String loadingUser, final boolean create) throws Exception;
 
-    public abstract void updateServerState(String serverPrefsDoc, int status) throws Exception;
+    void updateServerState(String serverPrefsDoc, int status) throws Exception;
 
 }

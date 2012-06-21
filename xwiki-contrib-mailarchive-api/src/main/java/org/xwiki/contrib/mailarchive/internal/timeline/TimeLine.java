@@ -19,7 +19,6 @@
  */
 package org.xwiki.contrib.mailarchive.internal.timeline;
 
-import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -68,7 +67,13 @@ public class TimeLine
         this.queryManager = queryManager;
     }
 
-    public void compute() throws XWikiException
+    /**
+     * Computes timeline XML feed from topics and mails, and returns it as a string.
+     * 
+     * @return
+     * @throws XWikiException
+     */
+    public String compute() throws XWikiException
     {
 
         int count = 200;
@@ -167,7 +172,8 @@ public class TimeLine
                             if (type == "Newsletter") {
                                 action = "Newsletter posted";
                                 icon =
-                                    "${xwiki.getDocument('XWiki.GSESkin').getURL('download')}/667%2D2_pupils_speech.png";
+                                    xwiki.getDocument("XWiki.GSESkin", context).getURL("download", context)
+                                        + "/667%2D2_pupils_speech.png";
                             }
                             if (type == "Product Release") {
                                 action = "Product Release published";
@@ -211,21 +217,20 @@ public class TimeLine
                 content.append(event.getValue() + '\n');
             }
             content.append("</data>");
-
-            curdoc.addAttachment("TimeLineFeed-MailArchiver.xml", content.toString().getBytes(), context);
-            curdoc.saveAllAttachments(context);
-
-            // TODO path to timeline file
-
-            FileWriter fw = new FileWriter("TimeLineFeed-MailArchiver.xml", false);
-            fw.write(content.toString());
-            fw.close();
-
             logger.debug("Loaded " + sortedEvents.size() + " into Timeline feed");
+            return content.toString();
+
+            /*
+             * curdoc.addAttachment("TimeLineFeed-MailArchiver.xml", content.toString().getBytes(), context);
+             * curdoc.saveAllAttachments(context); // TODO path to timeline file FileWriter fw = new
+             * FileWriter("TimeLineFeed-MailArchiver.xml", false); fw.write(content.toString()); fw.close();
+             */
 
         } catch (Exception e) {
             logger.warn("Could not save timeline date", e);
         }
+
+        return null;
 
     }
 

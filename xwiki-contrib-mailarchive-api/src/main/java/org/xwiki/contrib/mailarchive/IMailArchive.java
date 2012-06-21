@@ -70,4 +70,6 @@ public interface IMailArchive
     public String parseUser(String internetAddress);
 
     public IType getType(String name);
+
+    public String computeTimeline() throws Exception;
 }

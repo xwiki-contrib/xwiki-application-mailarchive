@@ -22,6 +22,8 @@ package org.xwiki.contrib.mailarchive.internal.ldap;
 import java.text.MessageFormat;
 import java.util.List;
 
+import org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration;
+
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPAttributeSet;
 import com.novell.ldap.LDAPConnection;
@@ -45,7 +47,9 @@ class LDAPUser
 
     String avatar = null;
 
-    static LDAPUser searchLDAPUser(String uid, XWikiLDAPUtils ldaputils)
+    private static IMailArchiveConfiguration config;
+
+    LDAPUser searchLDAPUser(String uid, XWikiLDAPUtils ldaputils)
     {
         String[] attr_names = new String[] {"sn", "givenName", "mail"};
         List<XWikiLDAPSearchAttribute> attrs = ldaputils.searchUserAttributesByUid(uid, attr_names);
@@ -64,7 +68,7 @@ class LDAPUser
         return null;
     }
 
-    static LDAPUser searchLDAPUserByMail(String mail, XWikiLDAPUtils ldaputils)
+    LDAPUser searchLDAPUserByMail(String mail, XWikiLDAPUtils ldaputils)
     {
         String[] attr_names = new String[] {"sn", "givenName", ldaputils.getUidAttributeName()};
         String query =
@@ -82,22 +86,27 @@ class LDAPUser
         return null;
     }
 
-    static byte[] searchLDAPPhoto(String uid, XWikiLDAPUtils ldaputils) throws LDAPException
+    byte[] searchLDAPPhoto(String uid, XWikiLDAPUtils ldaputils) throws LDAPException
     {
-        // FIXME: hard-coded ldap field "jpegPhoto"
-        String[] attr_names = new String[] {"jpegPhoto"};
+        String[] attr_names = new String[] {config.getLdapPhotoFieldName()};
         String query =
             MessageFormat.format(ldaputils.getUserSearchFormatString(), new String[] {ldaputils.getUidAttributeName(),
             uid.toLowerCase()});
         LDAPSearchResults results =
-            LDAPUser.searchLDAP(ldaputils.getConnection().getConnection(), ldaputils.getBaseDN(), query, attr_names, 2);
+            searchLDAP(ldaputils.getConnection().getConnection(), ldaputils.getBaseDN(), query, attr_names, 2);
         if (results != null) {
             LDAPEntry nextEntry = results.next();
             if (nextEntry != null) {
                 LDAPAttributeSet attributeSet = nextEntry.getAttributeSet();
-                LDAPAttribute bytesattr = attributeSet.getAttribute("jpegPhoto");
+                LDAPAttribute bytesattr = attributeSet.getAttribute(config.getLdapPhotoFieldName());
                 if (bytesattr != null) {
-                    return bytesattr.getByteValue();
+                    if (IMailArchiveConfiguration.LDAP_PHOTO_CONTENT_BINARY.equals(config.getLdapPhotoFieldContent())) {
+                        return bytesattr.getByteValue();
+                    } else if (IMailArchiveConfiguration.LDAP_PHOTO_CONTENT_URL.equals(config
+                        .getLdapPhotoFieldContent())) {
+                        // FIXME: manage ldap photo field content type 'url'
+                        return null;
+                    }
                 }
             }
         }
@@ -149,8 +158,7 @@ class LDAPUser
      * @param ldapScope {@link LDAPConnection#SCOPE_SUB} oder {@link LDAPConnection#SCOPE_BASE}.
      * @return the found LDAP attributes.
      */
-    static LDAPSearchResults searchLDAP(LDAPConnection connection, String baseDN, String query, String[] attr,
-        int ldapScope)
+    LDAPSearchResults searchLDAP(LDAPConnection connection, String baseDN, String query, String[] attr, int ldapScope)
     {
 
         LDAPSearchResults searchResults = null;

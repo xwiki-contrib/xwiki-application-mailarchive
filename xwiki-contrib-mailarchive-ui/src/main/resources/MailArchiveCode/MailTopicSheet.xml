@@ -11,9 +11,9 @@
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
 <creationDate>1258472505000</creationDate>
-<date>1338977559000</date>
-<contentUpdateDate>1338977559000</contentUpdateDate>
-<version>16.9</version>
+<date>1340803276000</date>
+<contentUpdateDate>1340803276000</contentUpdateDate>
+<version>19.21</version>
 <title></title>
 <template></template>
 <defaultTemplate></defaultTemplate>
@@ -102,70 +102,117 @@
 <cache>long</cache>
 </property>
 <property>
-<code>.forum-message-user {
-  vertical-align:top !important;
+<code>{{velocity wiki="false"}}
+#template('colorThemeInit.vm')
+.topic-header {
+  background-color:$theme.highlightColor !important;
+  padding:10px 10px 10px 10px !important;
+  height:2em;
+  line-height:2em;
+}
+.topic-header-info {
+  background-color:$theme.highlightColor !important;
+  text-align:left;
+  width:60%;
+  float:left;
+  display:inline-block;
+  vertical-align:middle;
+  line-height:1.2;
+}
+.topic-header-nav {
+  background-color:$theme.highlightColor !important;
+  text-align:right;
+  width:39%;
+  float:left;
+  display:inline-block;
+  vertical-align:middle;
+  line-height:1.2;
+}
+.forum-message-author-header {
+  background-color:$theme.backgroundSecondaryColor !important;
   text-align:center !important;
-  background-color:rgb(240,240,240) !important;
-  border-right-color:rgb(240,240,240) !important;
-  border-left-color:darkgrey !important;
   border-top-color:darkgrey !important;
-  border-bottom-color:darkgrey !important;
-  border-left-width:3px !important;
-  border-top-width:3px !important;
-  border-bottom-width:3px !important;
-  border-left-style:outset !important;
-  border-top-style:outset !important;
-  border-bottom-style:outset !important;
+  border-top-width:4px !important;
+}
+.forum-message-author {
+  //border-bottom-left-radius: 100px 50px;
+  //-moz-border-bottom-left-radius: 100px 50px;
+  vertical-align:top !important;
+  text-align:left !important;
+  border:0px none !important;
+  padding-left:10px !important;
+  background-color:$!{theme.backgroundSecondaryColor} !important;
+  //border-right-color:$!{theme.borderColor} !important;
+
   
   //border-bottom-color:grey !important;
   //border-bottom-width:2px !important;
 }
-.forum-message-menu {
-  background-color:rgb(240,240,240) !important;
+.forum-message-content-header-left {
+  background-color:$theme.backgroundSecondaryColor !important;
   border-top-color:darkgrey !important;
-  border-left-color:rgb(240,240,240) !important;
-  border-right-color:darkgrey !important;
-  border-bottom-color:rgb(240,240,240) !important;
-  border-top-width:3px !important;
-  border-top-style:outset !important;
-  border-right-width:3px !important;
-  border-right-style:outset !important;
+  border-top-width:4px !important;
+  text-align:left;
 }
-.forum-message-content {
-  border-color:rgb(240,240,240) !important;
+.forum-message-content-header-right {
+  background-color:$theme.backgroundSecondaryColor !important;
   border-top-color:darkgrey !important;
-  border-top-width:2px !important;
-  border-top-style:inset !important;
-  border-left-color:darkgrey !important;
-  border-left-width:2px !important;
-  border-left-style:inset !important;
-  border-right-color:darkgrey !important;
-  border-right-width:3px !important;
-  border-right-style:outset !important;
+  border-top-width:4px !important;
+  text-align:right;
+}
+
+.forum-message-content {
+  border-style:none;
+}
+.forum-message-footer-left {
+  background-color:$theme.backgroundSecondaryColor !important;
+  text-align:right !important;
+  border-style:none !important;
+}
+.forum-message-footer-right {
+  background-color:$theme.backgroundSecondaryColor !important;
+  text-align:right !important;
+  border-style:none !important;
+}
+.forum-message-author-footer {
+ background-color:$theme.backgroundSecondaryColor !important;
+ border-top-style:none !important;
+ border-bottom-width:4px !important;
+ border-bottom-color:darkgrey !important;
 }
 .forum-table {
-  border-color:rgb(240,240,240) !important;
+  border-color:$!{theme.borderColor} !important;
   width:100% !important;
 }
+.forum-table th {
+  background-color:$theme.highlightColor !important;
+  text-align:center;
+  font-variant: small-caps;
+  border-color:black !important;
+  border-width:1px !important;
+}
 .forum-usercolumn {
-  background-color:rgb(240,240,240) !important;
-  border-color:rgb(240,240,240) !important;
-  width:130px !important;
+  background-color:$!{theme.backgroundSecondaryColor} !important;
+  border-style:none;
+  //border-color:$!{theme.backgroundSecondaryColor} !important;
+  width:150px !important;
   height:0px !important;
   padding: 0px 0px !important;
 }
 .forum-contentcolumn {
-  background-color:rgb(240,240,240) !important;
-  border-color:rgb(240,240,240) !important;
+  background-color:$!{theme.backgroundSecondaryColor} !important;
+  border-style:none;
+  //border-color:$!{theme.backgroundSecondaryColor} !important;
   height:0px !important;
   padding: 0px 0px !important;
-}</code>
+}
+{{/velocity}}</code>
 </property>
 <property>
 <name>topicstyles</name>
 </property>
 <property>
-<parse>0</parse>
+<parse>1</parse>
 </property>
 <property>
 <use>currentPage</use>
@@ -214,6 +261,9 @@ function resizeIframeToFitContent(iframe, framenb) {
     // The IFrame tag must have a unique ID attribute.
     iframe.height = window.frames[framenb].document.body.scrollHeight;
 }
+Event.observe(window, 'load', function() {
+  initialize();
+});
 &lt;/SCRIPT&gt;
 {{/html}}
 
@@ -225,6 +275,7 @@ function resizeIframeToFitContent(iframe, framenb) {
 #set($discard = $xwiki.ssx.use('MailArchiveCode.MailTopicSheet'))
 #set($prefsdoc = $xwiki.getDocument('MailArchivePrefs.GlobalParameters'))
 #set($prefs = $prefsdoc.getObject('MailArchiveCode.AdminClass'))
+#set($obj = $doc.getObject('MailArchiveCode.MailTopicClass'))
 #set($showRatings = $prefs.getProperty('ratings').getValue() != "0")
 #if($prefs.getProperty('ratings').value != "0" &amp;&amp; $xwiki.exists('XWiki.Ratings') &amp;&amp; $xwiki.ratings)
   #set($showRatings = true)
@@ -238,11 +289,36 @@ function resizeIframeToFitContent(iframe, framenb) {
 #if("$!mode" != "table" &amp;&amp; "$!mode" != "forum" &amp;&amp; "$!mode" != "threads")
   #set($mode = $prefs.getProperty('defaulttopicsview').getValue())
 #end
-**$!doc.display('type')** from **$!doc.display('author')** started **$!doc.display('startdate')** last updated **$!doc.display('lastupdatedate')**
+#if("$!doc.display('importance')" == "high")
+  #set($prefix = "(% style='color:red' %)[[image:icon:exclamation]] Important ")
+#end
+{{html wiki="true"}}
+&lt;div class="topic-header"&gt;
+&lt;div class="topic-header-info"&gt;
+$!prefix **$doc.display('author')** started **$datetool.format('medium', $obj.getProperty('startdate').getValue())** last updated **$datetool.format('medium', $obj.getProperty('lastupdatedate').getValue())**
+&lt;/div&gt;
+&lt;div class="topic-header-nav"&gt;
 {{html wiki="false"}}
-View as &lt;a href="$doc.getURL()?display=threads"&gt;Threads&lt;/a&gt;, &lt;a href="$doc.getURL()?display=table&gt;List&lt;/a&gt; or &lt;a href="$doc.getURL()?display=forum&gt;Forum&lt;/a&gt;
+&lt;span class="buttonwrapper"&gt;&lt;a class="button" id="choice_threads" href="$doc.getURL()?display=threads"&gt;Threads&lt;/a&gt; &lt;a class="button" id="choice_list" href="$doc.getURL()?display=table&gt;List&lt;/a&gt; &lt;a class="button" id="choice_forum" href="$doc.getURL()?display=forum&gt;Forum&lt;/a&gt;&lt;/span&gt;
 {{/html}}
------
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script type="text/javascript"&gt;
+
+function initialize() {
+  #if($mode == "table")
+    $('choice_list').addClassName('disabled');
+  #elseif ($mode == "threads")
+    $('choice_threads').addClassName('disabled');
+  #elseif ($mode == "forum")
+    $('choice_forum').addClassName('disabled');
+  #end
+}
+
+&lt;/script&gt;
+{{/html}}
+
 #if($mode == "table")
   #set($discard = $xwiki.ssx.use("MailArchiveCode.TopicsLiveTableResults"))
   #set($discard = $xwiki.jsx.use("MailArchiveCode.TopicsLiveTableResults"))
@@ -267,22 +343,27 @@ View as &lt;a href="$doc.getURL()?display=threads"&gt;Threads&lt;/a&gt;, &lt;a h
   #livetable("mails" $collist $colprops $options)
 
 #elseif ($mode == "threads")
-Threading $doc.topicid
   #set($threadedMessages = $services.mailarchive.thread($doc.topicid))
-  #foreach($message in $threadedMessages)
-    ##if($message.level != "0")
-      #foreach($i in [0..$message.level]) #set($star="$!{star}*") #end
+  #if($!threadedMessages[0].user)
+    #set($start = 0)
+  #else
+    #set($start = 1)
+  #end
+  #foreach($message in $threadedMessages) 
+    #set($star="")
+    #if($!message.user)
+      #foreach($i in [$start..$message.level]) #set($star="$!{star}*") #end
 $star #if($message.page) [[$message.subject&gt;&gt;$message.page]] #else $message.subject #end $message.date
       #end
-    ##end
+    #end
 #elseif ($mode == "forum")
   #set($threadedMessages = $services.mailarchive.thread($doc.topicid))
   ## HEADER Part
 {{html wiki="true"}}
 &lt;table class="forum-table" id="table-forum"&gt;
   &lt;tr&gt;
-    &lt;th class="forum-usercolumn"&gt;~ &lt;/th&gt;
-    &lt;th class="forum-contentcolumn"&gt;~ &lt;/th&gt;
+    &lt;th class="forum-usercolumn"&gt;Author&lt;/th&gt;
+    &lt;th class="forum-contentcolumn" colspan="2"&gt;Message&lt;/th&gt;
   &lt;/tr&gt;
   ## By default, we show it sorted by dates for forum view
   #set($threadedMessages = $sorttool.sort($threadedMessages, "date"))
@@ -291,8 +372,13 @@ $star #if($message.page) [[$message.subject&gt;&gt;$message.page]] #else $messag
   
   ## show messages
   #foreach($mail in $threadedMessages)
+    #if($!mail.user)
      #set($subject = $mail.subject.replaceAll("&lt;","&amp;lt;").replaceAll("&gt;","&amp;gt;"))
      #set($link = "$mail.page")
+     #if($!anchor)
+       #set($previousAnchor = $anchor)
+     #end
+     #set($anchor = $escapetool.javascript($link))
      #set($user = "$mail.user")
      #set($userDisplay = $services.mail.parseAddressHeader($!user)[0].getPersonal())
      #set($userWiki = $services.mailarchive.parseUser($!user))
@@ -306,20 +392,49 @@ $star #if($message.page) [[$message.subject&gt;&gt;$message.page]] #else $messag
      #end
      #set($iframeid = "iframe_$mail.page")
   &lt;tr&gt;
-    &lt;td class="forum-message-user" rowspan="2"&gt;**$mail.user**&lt;br/&gt;([[$count posts&gt;&gt;MailArchive.ViewUserMessages||queryString="user=$!{user}&amp;wikiUser=$!{userWiki}"]])&lt;br/&gt;&lt;br/&gt;${mail.date}&lt;/td&gt;
-    &lt;td class="forum-message-menu" valign="top"&gt;
-      {{html wiki="false"}}&lt;a href="$xwiki.getURL($link,'view')" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $subject'}); return false; "&gt;$subject&lt;/a&gt;{{/html}}
+    &lt;td class="forum-message-author-header"&gt;**$mail.user**&lt;/td&gt;
+    &lt;td class="forum-message-content-header-left" valign="top"&gt;
+      &lt;div style="float:left;"&gt;
+      {{html wiki="false"}}&lt;a href="$xwiki.getURL($link,'view')" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $subject'}); return false; " name="$anchor"&gt;$subject&lt;/a&gt;{{/html}}
+      &lt;/div&gt;
+      &lt;div style="float:right;"&gt;
+      #if($!previousAnchor) &lt;a href="${doc.getURL()}#${previousAnchor}"&gt; image:icon:bullet_arrow_up &lt;/a&gt; #end
+      &lt;a href="${doc.getURL()}#${anchor}"&gt; image:icon:bullet_arrow_down &lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/td&gt;
+    &lt;td class="forum-message-content-header-right" valign="top"&gt;
       #if($showRatings) #displayFullRating($xwiki.getDocument("$mail.page"), "") #end
-      {{html wiki="false"}}&lt;a href="$xwiki.getURL($link,'view','xpage=plain')&amp;showdetails=false" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $escapetool.javascript($subject)'}); return false; "&gt;&lt;span style='font-size:xx-small;text-align:right;float:right;'&gt;permalink&lt;/span&gt;&lt;/a&gt;{{/html}}
+      $datetool.format('medium', $mail.date)      
     &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
-    &lt;td class="forum-message-content"&gt;
+    &lt;td class="forum-message-author"&gt;
+      #if($userWiki) [[image:$xwiki.getDocument($userWiki).fullName@$xwiki.getDocument($userWiki).getObject('XWiki.XWikiUsers').avatar]] &lt;br/&gt;#end
+      **Posts**: $count&lt;br/&gt;&lt;br/&gt;
+      &lt;span class="buttonwrapper"&gt;
+        &lt;a href="${xwiki.getDocument('MailArchive.ViewUserMessages').getURL()}?user=$escapetool.html("$!{user}")&amp;wikiUser=$escapetool.html("$!{userWiki}")"&gt;Statistics&lt;/a&gt;&lt;br/&gt;
+        #if("$!userWiki" != "") &lt;br/&gt;&lt;a href="${xwiki.getDocument($userWiki).getURL()}"&gt;Profile&lt;/a&gt;&lt;br/&gt; #end
+      &lt;/span&gt;
+    &lt;/td&gt;
+    &lt;td class="forum-message-content" colspan="2"&gt;
       {{html wiki="false"}}
       &lt;iframe id="$iframeid" name="$iframeid" width="100%" height="0" scrolling="no" src="$providerUrl?page=$mail.page&amp;cut=true&amp;xpage=plain" onload="resizeIframeToFitContent(this, '$iframeid')"&gt;&lt;/iframe&gt;
       {{/html}}    
     &lt;/td&gt;
   &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td class="forum-message-author-footer&gt;&amp;nbsp;&lt;/td&gt;
+    &lt;td class="forum-message-footer-left"&gt;
+    &lt;/td&gt;
+    &lt;td class="forum-message-footer-right"&gt;
+      &lt;span class="buttonwrapper"&gt;
+       &lt;a class="button" href="$xwiki.getURL($link,'view','xpage=plain')&amp;showdetails=false" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $escapetool.javascript($subject)'}); return false; "&gt;View&lt;/a&gt;
+       #if($hasEdit) &lt;a class="button" href="$xwiki.getURL($link,'view','xpage=plain')&amp;showdetails=false" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $escapetool.javascript($subject)'}); return false; "&gt;Reply&lt;/a&gt; #end
+       #if($hasAdmin) &lt;a class="button" href="$xwiki.getURL($link,'view','xpage=plain')&amp;showdetails=false" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $escapetool.javascript($subject)'}); return false; "&gt;Edit&lt;/a&gt; #end
+      &lt;/span&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+    #end
   #end
 
   ## Footer Part

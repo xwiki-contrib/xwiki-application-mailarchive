@@ -64,7 +64,7 @@
 <name>displayname</name>
 <number>1</number>
 <picker>0</picker>
-<prettyName>List Display Name</prettyName>
+<prettyName>Display Name</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
@@ -90,7 +90,7 @@
 <name>pattern</name>
 <number>2</number>
 <picker>0</picker>
-<prettyName>Pattern mail address to match</prettyName>
+<prettyName>Pattern to match from recipients</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>

@@ -126,7 +126,7 @@ public class MailArchiveConfigurationImpl implements IMailArchiveConfiguration
         }
         try {
             XWikiDocument prefsdoc = xwiki.getDocument(adminPrefsPage, context);
-            BaseObject prefsobj = prefsdoc.getObject(DefaultMailArchive.SPACE_CODE + '.' + CLASS_ADMIN);
+            BaseObject prefsobj = prefsdoc.getObject(CLASS_ADMIN);
             this.loadingUser = prefsobj.getStringValue("user");
             this.defaultHomeView = prefsobj.getStringValue("defaulthomeview");
             this.defaultTopicsView = prefsobj.getStringValue("defaulttopicsview");

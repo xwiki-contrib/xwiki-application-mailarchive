@@ -239,8 +239,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             this.factory = new MailArchiveFactory(dab);
             this.store = new ItemsManager(queryManager, logger, factory);
             this.persistence = new XWikiPersistence(this.context, this.xwiki, this.logger);
-            logger.error("Mail archive initiliazed !");
-            logger.error("PERMANENT DIR : " + this.environment.getPermanentDirectory());
+            logger.info("Mail archive initiliazed !");
+            logger.debug("PERMANENT DATA DIR : " + this.environment.getPermanentDirectory());
         } catch (Throwable e) {
             // TODO Auto-generated catch block
             logger.error("Could not initiliaze mailarchive ", e);
@@ -570,12 +570,16 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     @Override
     public String parseUser(String internetAddress)
     {
+        logger.debug("parseUser {}", internetAddress);
         try {
             configure();
         } catch (Exception e) {
+            logger.warn("parseUser: failed to configure the Mail Archive", e);
             return null;
         }
-        return mailutils.parseUser(internetAddress, config.isMatchLdap());
+        String user = mailutils.parseUser(internetAddress, config.isMatchLdap());
+        logger.debug("parseUser return {}", user);
+        return user;
     }
 
     /**

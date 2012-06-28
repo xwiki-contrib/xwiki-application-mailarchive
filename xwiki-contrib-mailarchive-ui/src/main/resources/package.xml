@@ -10,7 +10,6 @@
 <preserveVersion>false</preserveVersion><files>
 <file defaultAction="0" language="">MailArchiveCode.WebHome</file>
 <file defaultAction="0" language="">MailArchiveCode.UserClass</file>
-<file defaultAction="0" language="">MailArchiveCode.WebPreferences</file>
 <file defaultAction="0" language="">MailArchiveCode.Translations</file>
 <file defaultAction="0" language="">MailArchiveCode.TimeLineFeed</file>
 <file defaultAction="0" language="">MailArchiveCode.LiveTableResults</file>

@@ -82,53 +82,73 @@ public class MailUtils
     @SuppressWarnings("deprecation")
     public String parseUser(String user, boolean isMatchLdap)
     {
+        logger.debug("parseUser {}, {}", user, isMatchLdap);
         String mail = null;
         try {
-            InternetAddress ia = InternetAddress.parse(user, true)[0];
-            mail = ia.getAddress();
+            InternetAddress ia = null;
+            InternetAddress[] result = InternetAddress.parse(user, true);
+            if (result != null && result.length > 0) {
+                ia = result[0];
+                mail = ia.getAddress();
+            }
         } catch (AddressException e) {
             mail = user;
         }
+        if (mail == null) {
+            mail = user;
+        }
+        if (mail.contains("<") && mail.contains(">")) {
+            mail = mail.substring(mail.indexOf('<'), mail.indexOf('>'));
+        }
+        logger.debug("parseUser extracted email {}", mail);
         String parsedUser = null;
         if (!StringUtils.isBlank(mail)) {
             // to match "-external" emails and old mails with '@gemplus.com'...
             mail = mail.toLowerCase();
             mail = mail.replace("-external", "").replaceAll("^(.*)@.*[.]com$", "$1%@%.com");
+            logger.debug("parseUser pattern applied {}", mail);
             // Try to find a wiki profile with this email as parameter.
             // TBD : do this in the loading phase, and only try to search db if it was not found ?
             String xwql =
-                "select doc.fullName from Document doc, doc.object(XWiki.XWikiUsers) as user where LOWER(user.email) like '?'";
+                "select doc.fullName from Document doc, doc.object(XWiki.XWikiUsers) as user where LOWER(user.email) like :mail";
 
             List<String> profiles = null;
             try {
-                profiles = queryManager.createQuery(xwql, Query.XWQL).bindValue(0, mail).execute();
+                profiles = queryManager.createQuery(xwql, Query.XWQL).bindValue("mail", mail).execute();
             } catch (QueryException e) {
+                logger.warn("parseUser Query threw exception", e);
                 profiles = null;
             }
             if (profiles == null || profiles.size() == 0) {
+                logger.debug("parseUser found no wiki profile from db");
                 return null;
             } else {
                 if (isMatchLdap) {
+                    logger.debug("parseUser Checking for LDAP authenticated profile(s) ...");
                     // If there exists one, we prefer the user that's been authenticated through LDAP
                     for (String usr : profiles) {
                         try {
                             if (xwiki.getDocument(usr, context).getObject("XWiki.LDAPProfileClass") != null) {
                                 parsedUser = usr;
+                                logger.debug("parseUser Found LDAP authenticated profile {}", parsedUser);
                             }
                         } catch (XWikiException e) {
                             // nothing to do
                         }
                     }
                     if (parsedUser != null) {
+                        logger.info("parseUser return {}", parsedUser);
                         return parsedUser;
                     }
                 }
             }
 
             // If none has authenticated from LDAP, we return the first user found
+            logger.info("parseUser return {}", profiles.get(0));
             return profiles.get(0);
 
         } else {
+            logger.info("parseUser No email found to match, return null");
             return null;
         }
 

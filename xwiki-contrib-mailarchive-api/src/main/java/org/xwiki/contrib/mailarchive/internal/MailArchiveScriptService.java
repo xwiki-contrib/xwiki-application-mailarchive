@@ -27,6 +27,7 @@ import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.mailarchive.IMailArchive;
+import org.xwiki.contrib.mailarchive.MailLoadingSession;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadMessageBean;
 import org.xwiki.script.service.ScriptService;
 
@@ -41,14 +42,14 @@ public class MailArchiveScriptService implements ScriptService
     @Inject
     private IMailArchive mailArchive;
 
-    public int load(int maxMailsNb)
+    public MailLoadingSession session()
     {
-        return this.mailArchive.loadMails(maxMailsNb, false, false, false);
+        return new MailLoadingSession(this.mailArchive);
     }
 
-    public int load(int maxMailsNb, boolean debug, boolean simulation, boolean delete)
+    public MailLoadingSession session(String serverPrefsDoc)
     {
-        return this.mailArchive.loadMails(maxMailsNb, debug, simulation, delete);
+        return new MailLoadingSession(this.mailArchive, serverPrefsDoc);
     }
 
     public int check(String serverPrefsDoc)

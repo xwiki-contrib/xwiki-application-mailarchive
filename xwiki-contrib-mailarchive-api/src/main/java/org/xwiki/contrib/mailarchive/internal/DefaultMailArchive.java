@@ -69,6 +69,7 @@ import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IServer;
 import org.xwiki.contrib.mailarchive.IType;
+import org.xwiki.contrib.mailarchive.MailLoadingSession;
 import org.xwiki.contrib.mailarchive.internal.data.MailArchiveConfigurationImpl;
 import org.xwiki.contrib.mailarchive.internal.data.MailArchiveFactory;
 import org.xwiki.contrib.mailarchive.internal.data.MailShortItem;
@@ -320,9 +321,9 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * @see org.xwiki.contrib.mailarchive.IMailArchive#loadMails(int, boolean)
      */
     @Override
-    public int loadMails(int maxMailsNb, boolean debug, boolean simulation, boolean delete)
+    public int loadMails(MailLoadingSession session)
     {
-        if (debug) {
+        if (session.isDebugMode()) {
             enterDebugMode();
         }
         logger.info("Starting new MAIL loading session...");
@@ -339,7 +340,18 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             configure();
             loadItems();
 
-            for (IServer server : config.getServers()) {
+            List<IServer> servers = null;
+            if (!StringUtils.isBlank(session.getServerPrefsDoc())) {
+                IServer server = factory.createMailServer(session.getServerPrefsDoc());
+                if (server != null) {
+                    servers = new ArrayList<IServer>();
+                    servers.add(server);
+                }
+            } else {
+                servers = config.getServers();
+            }
+
+            for (IServer server : servers) {
                 logger.info("[{}] Loading mails from server", server.getId());
 
                 List<Message> messages;
@@ -352,13 +364,14 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 logger.info("[{}] Number of messages to treat : ", new Object[] {server.getId(), messages.size()});
                 currentMsg = 0;
                 MailLoadingResult result = null;
-                while ((currentMsg < maxMailsNb || maxMailsNb < 0) && currentMsg < messages.size()) {
+                while ((currentMsg < session.getLimit() || session.getLimit() < 0)
+                    && currentMsg < messages.size()) {
                     logger.debug("[{}] Loading message {}/{}",
                         new Object[] {server.getId(), currentMsg, messages.size()});
                     try {
                         Message message = messages.get(currentMsg);
                         try {
-                            result = loadMail(message, !simulation, false, null);
+                            result = loadMail(message, !session.isSimulationMode(), false, null);
                         } catch (Exception me) {
                             if (me instanceof MessagingException || me instanceof IOException) {
                                 logger.debug("[" + server.getId() + "] Could not load email because of", me);
@@ -366,12 +379,12 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                                 Message clone = mailManager.cloneEmail(message, server.getProtocol(), server.getHost());
                                 message = clone;
                                 if (message != null) {
-                                    result = loadMail(message, !simulation, false, null);
+                                    result = loadMail(message, !session.isSimulationMode(), false, null);
                                 }
                             }
 
                         }
-                        if (result != null && result.isSuccess() && !simulation) {
+                        if (result != null && result.isSuccess() && !session.isSimulationMode()) {
                             message.setFlag(Flags.Flag.SEEN, true);
 
                             if (config.isUseStore()) {
@@ -419,7 +432,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             inProgress = false;
             this.existingMessages = null;
             this.existingTopics = null;
-            if (debug) {
+            if (session.isDebugMode()) {
                 quitDebugMode();
             }
         }

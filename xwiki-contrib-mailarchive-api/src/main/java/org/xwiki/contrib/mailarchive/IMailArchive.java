@@ -38,16 +38,13 @@ public interface IMailArchive
     public int queryServerInfo(String serverPrefsDoc);
 
     /**
-     * Fetch mails from a mail server folder, considering only UNREAD emails (not having Flag.SEEN), parses them, and
-     * persists new Topic and Mail objects (or update existing ones) into XWiki appropriately.
+     * Fetch mails from a specific server (given page name holding its preferences), or from all configured servers. The
+     * session object provides all needed parameters (Cf {@link MailLoadingSession}).
      * 
-     * @param maxMailsNb The maximum number of mails to read
-     * @param debug use debug mode during this loading session.
-     * @param simulation does everything except creating pages, updating mails states, and putting mails to store.
-     * @param delete mark loaded emails for deletion instead of just setting SEEN flag (caution).
-     * @return The number of emails really loaded during this session.
+     * @param session
+     * @return Number of emails loaded during this session.
      */
-    public int loadMails(int maxMailsNb, boolean debug, boolean simulation, boolean delete);
+    public int loadMails(MailLoadingSession session);
 
     /**
      * Threads messages related to a topic, given its ID.<br/>

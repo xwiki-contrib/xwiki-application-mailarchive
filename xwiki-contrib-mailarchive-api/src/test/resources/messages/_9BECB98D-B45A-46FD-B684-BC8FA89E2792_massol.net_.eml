@@ -1,0 +1,103 @@
+Received: from smtp1.gemalto.com (193.56.114.194) by ABSHUBBWP01.gemalto.com
+ (10.3.0.231) with Microsoft SMTP Server id 8.3.192.1; Tue, 20 Dec 2011
+ 14:17:11 +0100
+Received: from borabora.xwiki.com (borabora.xwiki.com [195.242.99.223])	by
+ smtp1.gemalto.com (envelope-from users-bounces@xwiki.org) (8.14.3/8.14.3)
+ with ESMTP id pBKDG1YD005392	for <jeremie.bousquet@gemalto.com>; Tue, 20 Dec
+ 2011 14:16:03 +0100
+Received: from localhost (localhost [127.0.0.1])	by borabora.xwiki.com
+ (Postfix) with ESMTP id 1412F59C2CF;	Tue, 20 Dec 2011 13:17:00 +0000 (UTC)
+Received: from borabora.xwiki.com ([127.0.0.1])	by localhost
+ (borabora.xpertnet.org [127.0.0.1]) (amavisd-new, port 10024)	with ESMTP id
+ I1Rk7TLyU0GM; Tue, 20 Dec 2011 13:16:59 +0000 (UTC)
+Received: from borabora.xwiki.com (localhost [127.0.0.1])	by
+ borabora.xwiki.com (Postfix) with ESMTP id 064AE59C2B3;	Tue, 20 Dec 2011
+ 13:16:55 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])	by borabora.xwiki.com
+ (Postfix) with ESMTP id 47D6559C28D	for <users@xwiki.org>; Tue, 20 Dec 2011
+ 13:16:52 +0000 (UTC)
+Received: from borabora.xwiki.com ([127.0.0.1])	by localhost
+ (borabora.xpertnet.org [127.0.0.1]) (amavisd-new,	port 10024) with ESMTP id
+ XfVhAyM-GI8l for <users@xwiki.org>;	Tue, 20 Dec 2011 13:16:47 +0000 (UTC)
+Received: from mail-wi0-f179.google.com (mail-wi0-f179.google.com
+	[209.85.212.179])	by borabora.xwiki.com (Postfix) with ESMTPS id DB60E59C27B
+	for <users@xwiki.org>; Tue, 20 Dec 2011 13:16:46 +0000 (UTC)
+Received: by wibhm4 with SMTP id hm4so1972730wib.24	for <users@xwiki.org>;
+ Tue, 20 Dec 2011 05:16:46 -0800 (PST)
+Received: by 10.180.83.69 with SMTP id o5mr4714810wiy.1.1324387006721;	Tue, 20
+ Dec 2011 05:16:46 -0800 (PST)
+Received: from [192.168.1.12] (105.232.146.195.dynamic.adsl.abo.nordnet.fr.
+	[195.146.232.105])	by mx.google.com with ESMTPS id
+ w8sm4453865wiz.4.2011.12.20.05.16.45	(version=TLSv1/SSLv3 cipher=OTHER);	Tue,
+ 20 Dec 2011 05:16:45 -0800 (PST)
+From: Vincent Massol <vincent@massol.net>
+To: XWiki Users <users@xwiki.org>
+Sender: "users-bounces@xwiki.org" <users-bounces@xwiki.org>
+Date: Tue, 20 Dec 2011 14:16:43 +0100
+Subject: [xwiki-users] [Help] Help us improve the XWiki documentation by
+	telling us what's missing
+Thread-Topic: [xwiki-users] [Help] Help us improve the XWiki documentation
+ by	telling us what's missing
+Thread-Index: Acy/Ga8k9SiGeQCZRVOruh1xcr0/aQ==
+Message-ID: <9BECB98D-B45A-46FD-B684-BC8FA89E2792@massol.net>
+List-Help: <mailto:users-request@xwiki.org?subject=help>
+List-Subscribe: <http://lists.xwiki.org/mailman/listinfo/users>,
+	<mailto:users-request@xwiki.org?subject=subscribe>
+List-Unsubscribe: <http://lists.xwiki.org/mailman/options/users>,
+	<mailto:users-request@xwiki.org?subject=unsubscribe>
+Reply-To: XWiki Users <users@xwiki.org>
+Accept-Language: fr-FR, en-US
+Content-Language: fr-FR
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Exchange-Organization-AuthSource: ABSHUBBWP01.gemalto.com
+X-MS-Has-Attach:
+X-Auto-Response-Suppress: All
+X-MS-TNEF-Correlator:
+list-id: XWiki Users <users.xwiki.org>
+x-spam-free: -5.585 ()
+ BAYES_00,GEM_XTNDSET7,GEM_XTNDSET8,GEM_XTNDSET9,MY_DSL,RCVD_IN_NJABL_PROXY,RCVD_IN_SORBS,RPL_XTNDSET1,RPL_XTNDSET7,RPL_XTNDSET8,RPL_XTNDSET9,RP_BONK_01,X_AUTH_WARN_FAKED
+x-scanned-by: MIMEDefang 2.70 on 193.56.114.194
+dkim-signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=gamma;
+	h=sender:from:content-type:content-transfer-encoding:subject:date
+	:message-id:to:mime-version:x-mailer;
+	bh=/QM2hFcJaijDhdKuDmS840Cd2VjIiAqGkhKfkj1SuDU=;
+	b=U6wpplO2BhJvKoa/JsXUEYwX9Q0eg0CcGG6ntClaKblRbBkcwH9NEIhffe03kPGSgI
+	hT2K/BqZA2YUTjrxBSyZyZkZoAOdEXA85EkTehqtoiLQOlB85pX7BaxxmmnqSHMXLp0F
+	PZsxL8Y6KTzzwcTjvgyadHKZxpEiWPKcnKrc0=
+x-original-to: users@xwiki.org
+delivered-to: users@localhost
+errors-to: users-bounces@xwiki.org
+list-archive: <http://lists.xwiki.org/pipermail/users>
+list-post: <mailto:users@xwiki.org>
+authentication-results: borabora.xwiki.com; dkim=pass (1024-bit key)
+	header.i=@gmail.com; dkim-adsp=none
+x-virus-scanned: Debian amavisd-new at xpertnet.org
+x-beenthere: users@xwiki.org
+x-mailman-version: 2.1.13
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Hi XWiki users,
+
+The XWiki projects needs your help. We'd like to improve the documentation =
+on xwiki.org but we need your help to tell us what should be improved in yo=
+ur opinion.
+
+To do so we've created a JIRA project for listing stuff to do:
+http://jira.xwiki.org/browse/XWIKIORG
+
+It would be a great help if you could register there and create JIRA issues=
+ for anything you think should be improved on xwiki.org.
+
+Please try to create very specific and focused issues so that they are acti=
+onable easily (for example an issue saying "Improve xwiki.org documentation=
+" would not help much ;) but one that would say for example: "Provide docum=
+entation on how to use the DBListClass" is useful).
+
+Thanks a lot for your help!
+-Vincent on behalf of the XWiki Dev Team
+_______________________________________________
+users mailing list
+users@xwiki.org
+http://lists.xwiki.org/mailman/listinfo/users

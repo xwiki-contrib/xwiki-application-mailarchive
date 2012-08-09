@@ -39,12 +39,12 @@ public interface IMailArchive
 
     /**
      * Fetch mails from a specific server (given page name holding its preferences), or from all configured servers. The
-     * session object provides all needed parameters (Cf {@link MailLoadingSession}).
+     * session object provides all needed parameters (Cf {@link LoadingSession}).
      * 
      * @param session
      * @return Number of emails loaded during this session.
      */
-    public int loadMails(MailLoadingSession session);
+    public int loadMails(LoadingSession session);
 
     /**
      * Threads messages related to a topic, given its ID.<br/>

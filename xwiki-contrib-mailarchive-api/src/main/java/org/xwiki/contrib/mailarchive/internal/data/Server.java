@@ -33,7 +33,7 @@ import org.xwiki.contrib.mailarchive.IServer;
 /**
  * @version $Id$
  */
-public class MailServerImpl implements IServer
+public class Server implements IServer
 {
     private String id;
 
@@ -53,7 +53,7 @@ public class MailServerImpl implements IServer
 
     private Properties additionalProperties;
 
-    public MailServerImpl()
+    public Server()
     {
         super();
     }

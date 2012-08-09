@@ -22,7 +22,7 @@ package org.xwiki.contrib.mailarchive.internal;
 /**
  * @version $Id$
  */
-public class MailLoadingResult
+public class LoadingSessionResult
 {
     // [true,(topicDoc!=null?topicDoc.fullName:topicDoc),(msgDoc!=null?msgDoc.fullName:msgDoc)];
 
@@ -32,7 +32,7 @@ public class MailLoadingResult
 
     private String createdMailDocumentName;
 
-    public MailLoadingResult(final boolean success, final String createdTopicDocumentName,
+    public LoadingSessionResult(final boolean success, final String createdTopicDocumentName,
         final String createdMailDocumentName)
     {
         super();

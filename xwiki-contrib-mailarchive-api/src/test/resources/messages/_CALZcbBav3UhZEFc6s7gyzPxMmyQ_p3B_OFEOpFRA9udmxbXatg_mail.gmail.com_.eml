@@ -1,0 +1,108 @@
+Received: from smtp1.gemalto.com (193.56.114.194) by ABSHUBBWP01.gemalto.com
+ (10.3.0.231) with Microsoft SMTP Server id 8.3.192.1; Fri, 23 Dec 2011
+ 10:30:05 +0100
+Received: from borabora.xwiki.com (borabora.xwiki.com [195.242.99.223])	by
+ smtp1.gemalto.com (envelope-from users-bounces@xwiki.org) (8.14.3/8.14.3)
+ with ESMTP id pBN9SvWg026717	for <jeremie.bousquet@gemalto.com>; Fri, 23 Dec
+ 2011 10:28:59 +0100
+Received: from localhost (localhost [127.0.0.1])	by borabora.xwiki.com
+ (Postfix) with ESMTP id 5B60659C1B2;	Fri, 23 Dec 2011 09:29:58 +0000 (UTC)
+Received: from borabora.xwiki.com ([127.0.0.1])	by localhost
+ (borabora.xpertnet.org [127.0.0.1]) (amavisd-new, port 10024)	with ESMTP id
+ Tk-FBj3XP5Ik; Fri, 23 Dec 2011 09:29:57 +0000 (UTC)
+Received: from borabora.xwiki.com (localhost [127.0.0.1])	by
+ borabora.xwiki.com (Postfix) with ESMTP id 908F459C22E;	Fri, 23 Dec 2011
+ 09:29:52 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])	by borabora.xwiki.com
+ (Postfix) with ESMTP id B573759C22B	for <users@xwiki.org>; Fri, 23 Dec 2011
+ 09:29:50 +0000 (UTC)
+Received: from borabora.xwiki.com ([127.0.0.1])	by localhost
+ (borabora.xpertnet.org [127.0.0.1]) (amavisd-new,	port 10024) with ESMTP id
+ Q7K+ruYubIiq for <users@xwiki.org>;	Fri, 23 Dec 2011 09:29:44 +0000 (UTC)
+Received: from mail-qy0-f179.google.com (mail-qy0-f179.google.com
+	[209.85.216.179])	by borabora.xwiki.com (Postfix) with ESMTPS id 16FD459C1B2
+	for <users@xwiki.org>; Fri, 23 Dec 2011 09:29:38 +0000 (UTC)
+Received: by qcol42 with SMTP id l42so7004791qco.24	for <users@xwiki.org>;
+ Fri, 23 Dec 2011 01:29:38 -0800 (PST)
+Received: by 10.229.76.31 with SMTP id a31mr5373375qck.35.1324632576598; Fri,
+	23 Dec 2011 01:29:36 -0800 (PST)
+Received: by 10.229.1.210 with HTTP; Fri, 23 Dec 2011 01:29:36 -0800 (PST)
+From: Marius Dumitru Florea <mariusdumitru.florea@xwiki.com>
+To: XWiki Users <users@xwiki.org>
+Sender: "users-bounces@xwiki.org" <users-bounces@xwiki.org>
+Date: Fri, 23 Dec 2011 10:29:36 +0100
+Subject: Re: [xwiki-users] Does class sheet effect on translation page?
+Thread-Topic: [xwiki-users] Does class sheet effect on translation page?
+Thread-Index: AczBVXP4OhdivtTKRmacSpBWG/SAcw==
+Message-ID:
+ <CALZcbBav3UhZEFc6s7gyzPxMmyQ=p3B+OFEOpFRA9udmxbXatg@mail.gmail.com>
+References:
+ <CAFMa0ZTEDaAB4Y4v3u+Aj-WPF-OOo_swdhLeAFnDYzso3zL8Ww@mail.gmail.com>
+List-Help: <mailto:users-request@xwiki.org?subject=help>
+List-Subscribe: <http://lists.xwiki.org/mailman/listinfo/users>,
+	<mailto:users-request@xwiki.org?subject=subscribe>
+List-Unsubscribe: <http://lists.xwiki.org/mailman/options/users>,
+	<mailto:users-request@xwiki.org?subject=unsubscribe>
+In-Reply-To:
+ <CAFMa0ZTEDaAB4Y4v3u+Aj-WPF-OOo_swdhLeAFnDYzso3zL8Ww@mail.gmail.com>
+Reply-To: XWiki Users <users@xwiki.org>
+Accept-Language: fr-FR, en-US
+Content-Language: fr-FR
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Exchange-Organization-AuthSource: ABSHUBBWP01.gemalto.com
+X-MS-Has-Attach:
+X-Auto-Response-Suppress: All
+X-MS-TNEF-Correlator:
+list-id: XWiki Users <users.xwiki.org>
+x-spam-free: -9.49 ()
+ BAYES_00,GEM_XTNDSET7,GEM_XTNDSET8,GEM_XTNDSET9,RPL_XTNDSET7,RPL_XTNDSET8,RPL_XTNDSET9,X_AUTH_WARN_FAKED
+x-scanned-by: MIMEDefang 2.70 on 193.56.114.194
+dkim-signature: v=1; a=rsa-sha256; c=simple/simple; d=xwiki.org; s=mail;
+	t=1324632593; bh=D8uWk4bWLkOOhARPwCqn+p67+rZUw91xFsWsp1t2pFo=;
+	h=MIME-Version:In-Reply-To:References:Date:Message-ID:From:To:
+	 Subject:Reply-To:List-Id:List-Unsubscribe:List-Archive:List-Post:
+	 List-Help:List-Subscribe:Content-Type:Content-Transfer-Encoding:	 Sender;
+	b=XR21BgZiQzHVEVGZ7ooOFL/0av9gYQN3+/0ik6xZkbHpuAjDxnIEsUSK309L6u16b
+	 D+uAHIA1w5HFNGXU6NwvhDE+08dlzTMwC2/NeewrHjJQAK6rIie9PF0dposRDnfvRx
+	 3s2anCVG3C6L8ERXaI+7aC44YVkvYgVpB0V2SHE4=
+x-original-to: users@xwiki.org
+delivered-to: users@localhost
+errors-to: users-bounces@xwiki.org
+list-archive: <http://lists.xwiki.org/pipermail/users>
+list-post: <mailto:users@xwiki.org>
+x-virus-scanned: Debian amavisd-new at xpertnet.org
+x-beenthere: users@xwiki.org
+x-mailman-version: 2.1.13
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+This is a bug. Can you report it in http://jira.xwiki.org/browse/XWIKI
+? I'll handle it.
+
+Thanks,
+Marius
+
+On Thu, Dec 22, 2011 at 7:55 PM, Chi-Yi Liao <virtu310@gmail.com> wrote:
+> My steps as below:
+> 1. Create a data type CarClass. (lang=3Den)
+> 2. Create class sheets and bind it. (lang=3Den)
+> 3. Add FordPage. (lang=3Den)
+> 4. Add a CarClass object to the page.
+>
+> And then xwiki can render html of FordPage as sheet content correctly.
+> After that, I create a translation document of FordPage (lang=3Dzh_TW).
+> I found that xwiki would not render the sheet content when I visit FordPa=
+ge
+> as lang=3Dzh_TW.
+> It just render the content of FordPage(lang=3Dzh_TW).
+>
+> How to make xwiki render sheet content correctly?
+> _______________________________________________
+> users mailing list
+> users@xwiki.org
+> http://lists.xwiki.org/mailman/listinfo/users
+_______________________________________________
+users mailing list
+users@xwiki.org
+http://lists.xwiki.org/mailman/listinfo/users

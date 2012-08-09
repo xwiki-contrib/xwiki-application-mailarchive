@@ -35,6 +35,9 @@ import com.xpn.xwiki.plugin.ldap.XWikiLDAPSearchAttribute;
 import com.xpn.xwiki.plugin.ldap.XWikiLDAPUtils;
 import com.xpn.xwiki.util.Util;
 
+/**
+ * @version $Id$
+ */
 class LDAPUser
 {
     String uid;
@@ -51,6 +54,7 @@ class LDAPUser
 
     LDAPUser searchLDAPUser(String uid, XWikiLDAPUtils ldaputils)
     {
+        // TODO : retrieve ldap attributes names from configuration
         String[] attr_names = new String[] {"sn", "givenName", "mail"};
         List<XWikiLDAPSearchAttribute> attrs = ldaputils.searchUserAttributesByUid(uid, attr_names);
         if (null != attrs && 0 != attrs.size()) {
@@ -70,6 +74,7 @@ class LDAPUser
 
     LDAPUser searchLDAPUserByMail(String mail, XWikiLDAPUtils ldaputils)
     {
+        // TODO : retrieve ldap attributes names from configuration
         String[] attr_names = new String[] {"sn", "givenName", ldaputils.getUidAttributeName()};
         String query =
             MessageFormat.format(ldaputils.getUserSearchFormatString(), new String[] {"mail", mail.toLowerCase()});

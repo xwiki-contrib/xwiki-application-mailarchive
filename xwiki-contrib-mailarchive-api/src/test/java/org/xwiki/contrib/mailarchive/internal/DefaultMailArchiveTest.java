@@ -37,7 +37,7 @@ import org.xwiki.context.Execution;
 import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IType;
-import org.xwiki.contrib.mailarchive.internal.data.MailTypeImpl;
+import org.xwiki.contrib.mailarchive.internal.data.Type;
 import org.xwiki.environment.Environment;
 import org.xwiki.environment.internal.ServletEnvironment;
 
@@ -120,7 +120,7 @@ public class DefaultMailArchiveTest extends AbstractBridgedComponentTestCase
         // Check with a unique "mail" type
         List<IType> types = new ArrayList<IType>();
 
-        MailTypeImpl typeMail = new MailTypeImpl();
+        Type typeMail = new Type();
         typeMail.setName(IType.TYPE_MAIL);
         typeMail.setDisplayName("Mail");
         HashMap<List<String>, String> patterns = new HashMap<List<String>, String>();
@@ -148,7 +148,7 @@ public class DefaultMailArchiveTest extends AbstractBridgedComponentTestCase
         // Check with a unique "mail" type
         List<IType> types = new ArrayList<IType>();
 
-        MailTypeImpl typeProposal = new MailTypeImpl();
+        Type typeProposal = new Type();
         typeProposal.setName("proposal");
         typeProposal.setDisplayName("Proposal");
         HashMap<List<String>, String> patterns = new HashMap<List<String>, String>();
@@ -199,7 +199,7 @@ public class DefaultMailArchiveTest extends AbstractBridgedComponentTestCase
         List<IType> types = new ArrayList<IType>();
 
         // First setup a type "proposal" that matches subject field
-        MailTypeImpl typeProposal = new MailTypeImpl();
+        Type typeProposal = new Type();
         typeProposal.setName("proposal");
         typeProposal.setDisplayName("Proposal");
         HashMap<List<String>, String> patterns = new HashMap<List<String>, String>();
@@ -211,7 +211,7 @@ public class DefaultMailArchiveTest extends AbstractBridgedComponentTestCase
         types.add(typeProposal);
 
         // Type release : matches subject for a token, and a specific originating from
-        MailTypeImpl typeRelease = new MailTypeImpl();
+        Type typeRelease = new Type();
         typeRelease.setName("release");
         typeRelease.setDisplayName("Release");
         HashMap<List<String>, String> patternsRelease = new HashMap<List<String>, String>();

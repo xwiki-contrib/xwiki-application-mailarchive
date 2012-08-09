@@ -1,13 +1,13 @@
 package org.xwiki.contrib.mailarchive.internal.data;
 
-public class TopicShortItem
+public class TopicDescriptor
 {
 
     private String fullName;
 
     private String subject;
 
-    public TopicShortItem(String fullName, String subject)
+    public TopicDescriptor(String fullName, String subject)
     {
         super();
         this.fullName = fullName;

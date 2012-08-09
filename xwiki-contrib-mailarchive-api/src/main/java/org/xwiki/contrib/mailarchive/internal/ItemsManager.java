@@ -23,9 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
-import org.xwiki.contrib.mailarchive.internal.data.MailArchiveFactory;
-import org.xwiki.contrib.mailarchive.internal.data.MailShortItem;
-import org.xwiki.contrib.mailarchive.internal.data.TopicShortItem;
+import org.xwiki.contrib.mailarchive.internal.data.Factory;
+import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
+import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -43,9 +43,9 @@ public class ItemsManager
 
     private Logger logger;
 
-    private MailArchiveFactory factory;
+    private Factory factory;
 
-    public ItemsManager(final QueryManager queryManager, final Logger logger, final MailArchiveFactory factory)
+    public ItemsManager(final QueryManager queryManager, final Logger logger, final Factory factory)
     {
         this.queryManager = queryManager;
         this.logger = logger;
@@ -58,10 +58,10 @@ public class ItemsManager
      * @return a map of existing topics, with key = topicId
      * @throws QueryException
      */
-    public HashMap<String, TopicShortItem> loadStoredTopics() throws MailArchiveException
+    public HashMap<String, TopicDescriptor> loadStoredTopics() throws MailArchiveException
     {
 
-        final HashMap<String, TopicShortItem> existingTopics = new HashMap<String, TopicShortItem>();
+        final HashMap<String, TopicDescriptor> existingTopics = new HashMap<String, TopicDescriptor>();
         List<Object[]> topics;
 
         String xwql =
@@ -74,7 +74,7 @@ public class ItemsManager
 
             for (Object[] topic : topics) {
                 // map[topicId] = [fullname, subject]
-                TopicShortItem shorttopic = new TopicShortItem((String) topic[0], (String) topic[2]);
+                TopicDescriptor shorttopic = new TopicDescriptor((String) topic[0], (String) topic[2]);
                 existingTopics.put((String) topic[1], shorttopic);
                 logger.debug("Loaded topic " + topic[0] + " : " + shorttopic);
             }
@@ -90,10 +90,10 @@ public class ItemsManager
      * @return a map of existing mails, with key = messageId
      * @throws MailArchiveException
      */
-    public HashMap<String, MailShortItem> loadStoredMessages() throws MailArchiveException
+    public HashMap<String, MailDescriptor> loadStoredMessages() throws MailArchiveException
     {
 
-        final HashMap<String, MailShortItem> existingMessages = new HashMap<String, MailShortItem>();
+        final HashMap<String, MailDescriptor> existingMessages = new HashMap<String, MailDescriptor>();
         List<Object[]> messages;
 
         try {
@@ -108,8 +108,8 @@ public class ItemsManager
                 for (Object[] message : messages) {
                     if (message[0] != null && message[0] != "") {
                         // map[messageid] = [subject, topicid, fullName]
-                        MailShortItem shortmail =
-                            new MailShortItem((String) message[1], (String) message[2], (String) message[3]);
+                        MailDescriptor shortmail =
+                            new MailDescriptor((String) message[1], (String) message[2], (String) message[3]);
                         existingMessages.put((String) message[0], shortmail);
                         logger.debug("Loaded mail " + message[1] + " : " + shortmail);
                     } else {

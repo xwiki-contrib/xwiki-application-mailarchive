@@ -1,4 +1,4 @@
-package org.xwiki.contrib.mailarchive.internal;
+package org.xwiki.contrib.mailarchive.internal.utils;
 
 import java.io.UnsupportedEncodingException;
 
@@ -6,28 +6,38 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 
 /**
- * 
- * 
  * @author jbousque
- *
  */
-public class MailArchiveStringUtils {
-	
-	private static Logger logger;
-	
-	private MailArchiveStringUtils() {
-		
-	}
-	
-	
-    public Logger getLogger() {
-		return logger;
-	}
+public class TextUtils
+{
 
-	public static void setLogger(final Logger loggr) {
-		logger = loggr;
-	}
-	
+    /**
+     * Assumed maximum length for Large string properties
+     */
+    public static final int LONG_STRINGS_MAX_LENGTH = 60000;
+
+    /**
+     * Assumed maximum length for string properties
+     */
+    public static final int SHORT_STRINGS_MAX_LENGTH = 255;
+
+    private static Logger logger;
+
+    private TextUtils()
+    {
+
+    }
+
+    public Logger getLogger()
+    {
+        return logger;
+    }
+
+    public static void setLogger(final Logger loggr)
+    {
+        logger = loggr;
+    }
+
     /**
      * Returns the Levenshtein distance between two strings, averaged by the length of the largest string provided, in
      * order to return a value n so that 0 < n < 1.
@@ -40,7 +50,7 @@ public class MailArchiveStringUtils {
     {
         return (double) (StringUtils.getLevenshteinDistance(s, t)) / ((double) Math.max(s.length(), t.length()));
     }
-    
+
     /**
      * Compare 2 strings for similarity Returns true if strings can be considered similar enough<br/>
      * - s1 and s2 have a levenshtein distance < 25% <br/>
@@ -51,7 +61,7 @@ public class MailArchiveStringUtils {
      * @param s2
      * @return
      */
-    public static boolean similarSubjects(DefaultMailArchive defaultMailArchive, String s1, String s2)
+    public static boolean similarSubjects(String s1, String s2)
     {
         logger.debug("similarSubjects : comparing [" + s1 + "] and [" + s2 + "]");
         s1 = s1.replaceAll("^([Rr][Ee]:|[Ff][Ww]:)(.*)$", "$2");
@@ -70,7 +80,7 @@ public class MailArchiveStringUtils {
             return false;
         }
         try {
-            double d = MailArchiveStringUtils.getAveragedLevenshteinDistance(s1, s2);
+            double d = TextUtils.getAveragedLevenshteinDistance(s1, s2);
             logger.debug("similarSubjects : Levenshtein distance d=" + d);
             if (d <= 0.25) {
                 logger.debug("similarSubjects : subjects are considered similar because d <= 0.25");
@@ -86,7 +96,7 @@ public class MailArchiveStringUtils {
         return false;
     }
 
-	// Truncate a string "s" to obtain less than a certain number of bytes "maxBytes", starting with "maxChars"
+    // Truncate a string "s" to obtain less than a certain number of bytes "maxBytes", starting with "maxChars"
     // characters.
     public static String truncateStringForBytes(String s, int maxChars, int maxBytes)
     {
@@ -117,5 +127,21 @@ public class MailArchiveStringUtils {
             return substring;
         }
 
+    }
+
+    public static String truncateForString(String s)
+    {
+        if (s.length() > SHORT_STRINGS_MAX_LENGTH) {
+            return s.substring(0, SHORT_STRINGS_MAX_LENGTH - 1);
+        }
+        return s;
+    }
+
+    public static String truncateForLargeString(String s)
+    {
+        if (s.length() > LONG_STRINGS_MAX_LENGTH) {
+            return s.substring(0, LONG_STRINGS_MAX_LENGTH - 1);
+        }
+        return s;
     }
 }

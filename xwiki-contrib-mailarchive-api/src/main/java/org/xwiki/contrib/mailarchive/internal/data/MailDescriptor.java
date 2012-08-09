@@ -1,6 +1,6 @@
 package org.xwiki.contrib.mailarchive.internal.data;
 
-public class MailShortItem
+public class MailDescriptor
 {
 
     private String subject;
@@ -9,7 +9,7 @@ public class MailShortItem
 
     private String fullName;
 
-    public MailShortItem(String subject, String topicId, String fullName)
+    public MailDescriptor(String subject, String topicId, String fullName)
     {
         super();
         this.subject = subject;

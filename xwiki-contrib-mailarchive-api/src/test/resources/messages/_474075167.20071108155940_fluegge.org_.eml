@@ -1,0 +1,161 @@
+Received: from GMSEXC05.CORP.DS.GEMPLUS.COM ([10.2.158.54]) by GMSEXC03.CORP.DS.GEMPLUS.COM with Microsoft SMTPSVC(6.0.3790.1830);
+	 Thu, 8 Nov 2007 16:10:02 +0100
+Received: from GMSEXC01.CORP.DS.GEMPLUS.COM ([10.2.158.60]) by GMSEXC05.CORP.DS.GEMPLUS.COM with Microsoft SMTPSVC(6.0.3790.1830);
+	 Thu, 8 Nov 2007 16:10:02 +0100
+Received: from difool.gemplus.com ([194.88.222.195]) by GMSEXC01.CORP.DS.GEMPLUS.COM with Microsoft SMTPSVC(6.0.3790.1830);
+	 Thu, 8 Nov 2007 16:10:02 +0100
+Received: from borabora.xpertnet.biz (borabora.xpertnet.biz [195.242.99.110])
+	by difool.gemplus.com (Postfix) with ESMTP id CBEB829EF44
+	for <jeremie.bousquet@gemplus.com>; Thu,  8 Nov 2007 15:15:55 +0000 (GMT)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by borabora.xpertnet.biz (Postfix) with ESMTP id B7DADA64011;
+	Thu,  8 Nov 2007 16:09:44 +0100 (CET)
+Received: from borabora.xpertnet.biz ([127.0.0.1])
+	by localhost (borabora.xpertnet.biz [127.0.0.1]) (amavisd-new, port 10024)
+	with LMTP id P81eKrsBC0SY; Thu,  8 Nov 2007 16:09:43 +0100 (CET)
+Received: from borabora.xpertnet.biz (localhost.localdomain [127.0.0.1])
+	by borabora.xpertnet.biz (Postfix) with ESMTP id 7C9E4A64002;
+	Thu,  8 Nov 2007 16:09:38 +0100 (CET)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by borabora.xpertnet.biz (Postfix) with ESMTP id 97B91A64003
+	for <users@borabora.xpertnet.biz>; Thu,  8 Nov 2007 16:09:34 +0100 (CET)
+Received: from borabora.xpertnet.biz ([127.0.0.1])
+	by localhost (borabora.xpertnet.biz [127.0.0.1]) (amavisd-new,
+	port 10024)
+	with LMTP id xk1pKk+GO9Te for <users@borabora.xpertnet.biz>;
+	Thu,  8 Nov 2007 16:09:33 +0100 (CET)
+Received: from web-hn001-vh001.systemcluster.com
+	(web-hn001-vh001.systemcluster.com [212.12.112.22])
+	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by borabora.xpertnet.biz (Postfix) with ESMTP id CA965A64002
+	for <users@xwiki.org>; Thu,  8 Nov 2007 16:09:23 +0100 (CET)
+Received: (qmail 25604 invoked from network); 8 Nov 2007 10:59:44 +0100
+Received: from p3ee25f02.dip.t-dialin.net (HELO Einstein) (62.226.95.2)
+	by web-hn001-vh001.systemcluster.com with SMTP;
+	8 Nov 2007 10:59:22 +0100
+From: =?Windows-1252?Q?Andreas_Fl=FCgge?= <andreas@fluegge.org>
+To: "users@xwiki.org" <users@xwiki.org>
+Sender: "users-bounces@xwiki.org" <users-bounces@xwiki.org>
+Date: Thu, 8 Nov 2007 15:59:40 +0100
+Subject: [xwiki-users] Attachment link with target
+Thread-Topic: [xwiki-users] Attachment link with target
+Thread-Index: AcgiGXIMl3yLIWnhQS62H9w7D6d1GQ==
+Message-ID: <474075167.20071108155940@fluegge.org>
+List-Help: <mailto:users-request@xwiki.org?subject=help>
+List-Subscribe:
+ <http://lists.xwiki.org/mailman/listinfo/users>,<mailto:users-request@xwiki.org?subject=subscribe>
+List-Unsubscribe:
+ <http://lists.xwiki.org/mailman/listinfo/users>,<mailto:users-request@xwiki.org?subject=unsubscribe>
+Reply-To: XWiki Users <users@xwiki.org>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-Auto-Response-Suppress: All
+X-MS-TNEF-Correlator:
+Content-Type: multipart/mixed;
+	boundary="_002_47407516720071108155940flueggeorg_"
+MIME-Version: 1.0
+
+--_002_47407516720071108155940flueggeorg_
+Content-Type: text/html; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title></title>
+
+<meta http-equiv=3D"Content-Style-Type" content=3D"text/css">
+<style type=3D"text/css"><!--
+body {
+  margin: 5px 5px 5px 5px;
+  background-color: #ffffff;
+}
+/* =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D Text Styles =3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D */
+hr { color: #000000}
+body, table /* Normal text */
+{
+ font-size: 9pt;
+ font-family: 'Segoe UI';
+ font-style: normal;
+ font-weight: normal;
+ color: #000000;
+ text-decoration: none;
+}
+span.rvts1 /* Heading */
+{
+ font-size: 10pt;
+ font-family: 'Arial';
+ font-weight: bold;
+ color: #0000ff;
+}
+span.rvts2 /* Subheading */
+{
+ font-size: 10pt;
+ font-family: 'Arial';
+ font-weight: bold;
+ color: #000080;
+}
+span.rvts3 /* Keywords */
+{
+ font-size: 10pt;
+ font-family: 'Arial';
+ font-style: italic;
+ color: #800000;
+}
+a.rvts4, span.rvts4 /* Jump 1 */
+{
+ font-size: 10pt;
+ font-family: 'Arial';
+ color: #008000;
+ text-decoration: underline;
+}
+a.rvts5, span.rvts5 /* Jump 2 */
+{
+ font-size: 10pt;
+ font-family: 'Arial';
+ color: #008000;
+ text-decoration: underline;
+}
+/* =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D Para Styles =3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D */
+p,ul,ol /* Paragraph Style */
+{
+ text-align: left;
+ text-indent: 0px;
+ padding: 0px 0px 0px 0px;
+ margin: 0px 0px 0px 0px;
+}
+.rvps1 /* Centered */
+{
+ text-align: center;
+}
+--></style>
+</head>
+<body>
+
+<p>Hello!</p>
+<p><br></p>
+<p>Is it possible to set an attachment link with target=3D_blank?</p>
+<p>I would like to open an attached pdf in a new browser window.</p>
+<p><br></p>
+<p>Thanks for any help.</p>
+<p>Best regards,</p>
+<p>Andreas</p>
+
+</body></html>
+
+
+--_002_47407516720071108155940flueggeorg_
+Content-Type: text/plain; name="ATT18102860.txt"
+Content-Description: ATT18102860.txt
+Content-Disposition: attachment; filename="ATT18102860.txt"; size=197;
+	creation-date="Thu, 08 Nov 2007 15:10:25 GMT";
+	modification-date="Thu, 08 Nov 2007 15:10:25 GMT"
+Content-Transfer-Encoding: base64
+
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCnVzZXJzIG1h
+aWxpbmcgbGlzdA0KdXNlcnNAeHdpa2kub3JnDQpodHRwOi8vbGlzdHMueHdpa2kub3JnL21haWxt
+YW4vbGlzdGluZm8vdXNlcnMNCg==
+
+--_002_47407516720071108155940flueggeorg_--

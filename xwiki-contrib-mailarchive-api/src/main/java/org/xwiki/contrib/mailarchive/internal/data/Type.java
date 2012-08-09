@@ -29,7 +29,7 @@ import org.xwiki.contrib.mailarchive.IType;
  * 
  * @version $Id$
  */
-public class MailTypeImpl implements IType
+public class Type implements IType
 {
     private String name;
 

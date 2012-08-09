@@ -24,7 +24,7 @@ import org.xwiki.contrib.mailarchive.IMailingList;
 /**
  * @version $Id$
  */
-public class MailingListImpl implements IMailingList
+public class MailingList implements IMailingList
 {
 
     private String displayName;

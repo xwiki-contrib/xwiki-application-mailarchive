@@ -43,6 +43,8 @@ public class XWikiPersistence implements IPersistence
      */
     public static final String UNKNOWN_USER = "XWiki.UserDoesNotExist";
 
+    public static final int MAX_PAGENAME_LENGTH = 30;
+
     private XWikiContext context;
 
     private XWiki xwiki;
@@ -63,14 +65,14 @@ public class XWikiPersistence implements IPersistence
      */
     @Override
     public String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
-        final String loadingUser, final boolean simulate) throws XWikiException
+        final String loadingUser, final boolean create) throws XWikiException
     {
 
         XWikiDocument topicDoc;
 
         String topicwikiname = context.getWiki().clearName(pagename, context);
-        if (topicwikiname.length() >= 30) {
-            topicwikiname = topicwikiname.substring(0, 30);
+        if (topicwikiname.length() >= MAX_PAGENAME_LENGTH) {
+            topicwikiname = topicwikiname.substring(0, MAX_PAGENAME_LENGTH);
         }
         String uniquePageName =
             context.getWiki().getUniquePageName(DefaultMailArchive.SPACE_ITEMS, topicwikiname, context);
@@ -104,7 +106,7 @@ public class XWikiPersistence implements IPersistence
             tagobj.set("tags", tags.replaceAll(" ", "_"), context);
         }
 
-        if (!simulate) {
+        if (create) {
             saveAsUser(topicDoc, m.getWikiuser(), loadingUser, "Created topic from mail [" + m.getMessageId() + "]");
         }
 

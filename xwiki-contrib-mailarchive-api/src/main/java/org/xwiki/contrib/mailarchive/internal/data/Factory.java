@@ -36,11 +36,11 @@ import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 /**
  * @version $Id$
  */
-public class MailArchiveFactory
+public class Factory
 {
     private DocumentAccessBridge dab;
 
-    public MailArchiveFactory(final DocumentAccessBridge dab)
+    public Factory(final DocumentAccessBridge dab)
     {
         this.dab = dab;
     }
@@ -51,12 +51,12 @@ public class MailArchiveFactory
      * @param serverPrefsDoc wiki page name of preferences document.
      * @return a IServer object, or null if preferences document does not exist
      */
-    public MailServerImpl createMailServer(final String serverPrefsDoc)
+    public Server createMailServer(final String serverPrefsDoc)
     {
         if (!dab.exists(serverPrefsDoc)) {
             return null;
         }
-        MailServerImpl server = new MailServerImpl();
+        Server server = new Server();
 
         // Retrieve connection properties from prefs
         String className = DefaultMailArchive.SPACE_CODE + ".ServerSettingsClass";
@@ -102,7 +102,7 @@ public class MailArchiveFactory
         final String patternsList)
     {
 
-        MailTypeImpl typeobj = new MailTypeImpl();
+        Type typeobj = new Type();
 
         typeobj.setName(name);
         typeobj.setDisplayName(displayName);
@@ -128,7 +128,7 @@ public class MailArchiveFactory
     public IMailingList createMailingList(final String pattern, final String displayName, final String tag,
         final String color)
     {
-        MailingListImpl list = new MailingListImpl();
+        MailingList list = new MailingList();
 
         list.setPattern(pattern);
         list.setTag(tag);

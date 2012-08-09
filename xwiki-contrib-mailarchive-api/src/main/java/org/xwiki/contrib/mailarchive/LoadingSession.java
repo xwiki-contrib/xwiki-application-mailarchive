@@ -22,7 +22,7 @@ package org.xwiki.contrib.mailarchive;
 /**
  * @version $Id$
  */
-public class MailLoadingSession
+public class LoadingSession
 {
     private boolean withDelete = false;
 
@@ -38,42 +38,42 @@ public class MailLoadingSession
 
     private final IMailArchive ma;
 
-    public MailLoadingSession(IMailArchive ma)
+    public LoadingSession(IMailArchive ma)
     {
         this.ma = ma;
     }
 
-    public MailLoadingSession(IMailArchive ma, String serverPrefsDoc)
+    public LoadingSession(IMailArchive ma, String serverPrefsDoc)
     {
         this(ma);
         this.serverPrefsDoc = serverPrefsDoc;
     }
 
-    public MailLoadingSession withDelete()
+    public LoadingSession withDelete()
     {
         this.withDelete = true;
         return this;
     }
 
-    public MailLoadingSession loadAll()
+    public LoadingSession loadAll()
     {
         this.loadAll = true;
         return this;
     }
 
-    public MailLoadingSession debugMode()
+    public LoadingSession debugMode()
     {
         this.debugMode = true;
         return this;
     }
 
-    public MailLoadingSession simulationMode()
+    public LoadingSession simulationMode()
     {
         this.simulationMode = true;
         return this;
     }
 
-    public MailLoadingSession setLimit(int maxMailsNb)
+    public LoadingSession setLimit(int maxMailsNb)
     {
         this.maxMailsNb = maxMailsNb;
         return this;
@@ -116,13 +116,13 @@ public class MailLoadingSession
     }
 
     @Override
-    protected MailLoadingSession clone()
+    protected LoadingSession clone()
     {
-        MailLoadingSession clone = null;
+        LoadingSession clone = null;
         if (serverPrefsDoc != null) {
-            clone = new MailLoadingSession(ma, serverPrefsDoc);
+            clone = new LoadingSession(ma, serverPrefsDoc);
         } else {
-            clone = new MailLoadingSession(ma);
+            clone = new LoadingSession(ma);
         }
         if (debugMode) {
             clone.debugMode();
@@ -138,6 +138,14 @@ public class MailLoadingSession
         }
         clone.setLimit(getLimit());
         return clone;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "MailLoadingSession [withDelete=" + withDelete + ", loadAll=" + loadAll + ", debugMode=" + debugMode
+            + ", simulationMode=" + simulationMode + ", maxMailsNb=" + maxMailsNb + ", serverPrefsDoc="
+            + serverPrefsDoc + ", ma=" + ma + "]";
     }
 
 }

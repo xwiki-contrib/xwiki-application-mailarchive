@@ -46,7 +46,7 @@ import com.xpn.xwiki.objects.BaseObject;
 /**
  * @version $Id$
  */
-public class MailArchiveConfigurationImpl implements IMailArchiveConfiguration
+public class MailArchiveConfiguration implements IMailArchiveConfiguration
 {
     private static final String CLASS_ADMIN = DefaultMailArchive.SPACE_CODE + ".AdminClass";
 
@@ -100,14 +100,14 @@ public class MailArchiveConfigurationImpl implements IMailArchiveConfiguration
 
     private Logger logger;
 
-    private MailArchiveFactory factory;
+    private Factory factory;
 
     private XWikiContext context;
 
     private XWiki xwiki;
 
-    public MailArchiveConfigurationImpl(String adminPrefsPage, XWikiContext context, final QueryManager queryManager,
-        final Logger logger, final MailArchiveFactory factory) throws MailArchiveException
+    public MailArchiveConfiguration(String adminPrefsPage, XWikiContext context, final QueryManager queryManager,
+        final Logger logger, final Factory factory) throws MailArchiveException
     {
         this.adminPrefsPage = adminPrefsPage;
         this.context = context;
@@ -244,7 +244,7 @@ public class MailArchiveConfigurationImpl implements IMailArchiveConfiguration
             for (String serverPrefsDoc : props) {
                 logger.info("Loading server definition from page " + serverPrefsDoc + " ...");
                 if (serverPrefsDoc != null && !"".equals(serverPrefsDoc)) {
-                    MailServerImpl server = factory.createMailServer(serverPrefsDoc);
+                    Server server = factory.createMailServer(serverPrefsDoc);
                     if (server != null) {
                         lists.add(server);
                         logger.info("Loaded IServer connection definition " + server);

@@ -38,6 +38,8 @@
   <description>${project.name}</description>
 
   <properties>
+    <extensionrepository>xwiki-application-mailarchive</extensionrepository>
+  
     <!-- Versions of XWiki dependencies -->
     <rendering.version>${commons.version}</rendering.version>
     <platform.version>${commons.version}</platform.version>
@@ -47,9 +49,9 @@
   </properties>
 
   <scm>
-    <connection>scm:git:git://github.com/xwiki-contrib/xwiki-application-mailarchive.git</connection>
-    <developerConnection>scm:git:git@github.com:xwiki-contrib/xwiki-application-mailarchive.git</developerConnection>
-    <url>https://github.com/xwiki-contrib/xwiki-application-mailarchive</url>
+    <connection>scm:git:git://github.com/xwiki-contrib/${extensionrepository}.git</connection>
+    <developerConnection>scm:git:git@github.com:xwiki-contrib/${extensionrepository}.git</developerConnection>
+    <url>https://github.com/xwiki-contrib/${extensionrepository}</url>
   </scm>
 
   <modules>
@@ -76,4 +78,12 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+  
+  <distributionManagement>
+   <repository>
+     <id>xwiki-staging</id>
+     <name>XWiki Staging Repository</name>
+     <url>http://nexus.xwiki.org/nexus/service/local/staging/deploy/maven2/</url>
+   </repository>
+  </distributionManagement>
 </project>

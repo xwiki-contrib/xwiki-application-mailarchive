@@ -195,6 +195,7 @@ public class JavamailMessageParser implements IMessageParser<Part>
         // */
         // m.setWikiuser(null);
 
+        m.setOriginalMessage((Message) mail);
         m.setBodypart(mail.getContent());
         m.setContentType(mail.getContentType().toLowerCase());
 
@@ -250,6 +251,10 @@ public class JavamailMessageParser implements IMessageParser<Part>
         IOException
     {
         logger.debug("extractMailContent...");
+
+        if (part == null) {
+            return null;
+        }
         MailContent mailContent = new MailContent();
 
         if (part.isMimeType("application/pkcs7-mime") || part.isMimeType("multipart/encrypted")) {
@@ -343,7 +348,7 @@ public class JavamailMessageParser implements IMessageParser<Part>
             // FIXME attached mails should be loaded previously to their container
         } else if (contentType.startsWith("multipart/")) {
             logger.debug("Adding a MULTIPART");
-            Multipart multipart = (Multipart) part;
+            Multipart multipart = (Multipart) part.getContent();
             if (contentType.startsWith("multipart/signed")) {
                 // Signed multiparts contain 2 parts: first is the content, second is the control information
                 // We just ignore the control information

@@ -21,6 +21,7 @@ package org.xwiki.contrib.mail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -43,19 +44,20 @@ public class MailScriptService implements ScriptService
     private MailComponent mailComp;
 
     List<Message> fetch(String hostname, int port, String protocol, String folder, String username, String password,
-        boolean onlyUnread)
+        Properties additionalProperties, boolean onlyUnread)
     {
         try {
-            return mailComp.fetch(hostname, port, protocol, folder, username, password, onlyUnread);
+            return mailComp.fetch(hostname, port, protocol, folder, username, password, additionalProperties,
+                onlyUnread);
         } catch (MessagingException e) {
             return new ArrayList<Message>();
         }
     }
 
     int check(String hostname, int port, String protocol, String folder, String username, String password,
-        boolean onlyUnread)
+        Properties additionalProperties, boolean onlyUnread)
     {
-        return mailComp.check(hostname, port, protocol, folder, username, password, onlyUnread);
+        return mailComp.check(hostname, port, protocol, folder, username, password, additionalProperties, onlyUnread);
     }
 
     String parseAddressHeader(String header)

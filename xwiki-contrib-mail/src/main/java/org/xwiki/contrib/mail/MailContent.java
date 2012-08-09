@@ -169,4 +169,12 @@ public class MailContent
         this.attachedMails.add(message);
     }
 
+    @Override
+    public String toString()
+    {
+        return "MailContent [text=" + text + ", html=" + html + ", rawAttachments=" + rawAttachments
+            + ", wikiAttachments=" + wikiAttachments + ", attachedMails=" + attachedMails + ", encrypted=" + encrypted
+            + ", signed=" + signed + "]";
+    }
+
 }

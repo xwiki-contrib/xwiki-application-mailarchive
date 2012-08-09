@@ -23,7 +23,9 @@ package org.xwiki.contrib.mail;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
+import javax.inject.Singleton;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Part;
@@ -35,15 +37,16 @@ import org.xwiki.component.annotation.ComponentRole;
 /**
  * @version $Id$
  */
+@Singleton
 @ComponentRole
 public interface MailComponent
 {
     List<Message> fetch(String hostname, int port, String protocol, String folder, String username, String password,
-        boolean onlyUnread) throws MessagingException;
+        Properties additionalProperties, boolean onlyUnread) throws MessagingException;
 
     // Fetch up to max messages from a server
     List<Message> fetch(String hostname, int port, String protocol, String folder, String username, String password,
-        boolean onlyUnread, int max) throws MessagingException;
+        Properties additionalProperties, boolean onlyUnread, int max) throws MessagingException;
 
     List<Message> fetchFromPst(String pstFileName, String folder);
 
@@ -61,7 +64,7 @@ public interface MailComponent
      * @return if >=0, the number of available messages, if negative, represents a connection error.
      */
     int check(String hostname, int port, String protocol, String folder, String username, String password,
-        boolean onlyUnread);
+        Properties additionalProperties, boolean onlyUnread);
 
     /**
      * Clones an email.

@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -69,6 +70,12 @@ public class DefaultMailComponent implements MailComponent, Initializable
     // TODO manage topics max length for compatibility
     private static final int MAIL_HEADER_MAX_LENGTH = 255;
 
+    /**
+     * Store Session objects (values) related to a server id (keys). Only last Session created for fetching email(s) is
+     * kept.
+     **/
+    private HashMap<String, Session> sessions = new HashMap<String, Session>();
+
     @Inject
     private Logger logger;
 
@@ -92,9 +99,9 @@ public class DefaultMailComponent implements MailComponent, Initializable
      */
     @Override
     public List<Message> fetch(String hostname, int port, String protocol, String folder, String username,
-        String password, boolean onlyUnread) throws MessagingException
+        String password, Properties additionalProperties, boolean onlyUnread) throws MessagingException
     {
-        return fetch(hostname, port, protocol, folder, username, password, onlyUnread, -1);
+        return fetch(hostname, port, protocol, folder, username, password, additionalProperties, onlyUnread, -1);
     }
 
     /**
@@ -108,7 +115,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
      */
     @Override
     public List<Message> fetch(String hostname, int port, String protocol, String folder, String username,
-        String password, boolean onlyUnread, int max) throws MessagingException
+        String password, Properties additionalProperties, boolean onlyUnread, int max) throws MessagingException
     {
         assert (hostname != null);
 
@@ -119,7 +126,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
 
         logger.info("Trying to retrieve mails from server " + hostname);
 
-        Session session = createSession(protocol, isGmail);
+        Session session = createSession(protocol, additionalProperties, isGmail);
 
         // Get a Store object
         Store store = session.getStore();
@@ -167,7 +174,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
      */
     @Override
     public int check(String hostname, int port, String protocol, String folder, String username, String password,
-        boolean onlyUnread)
+        Properties additionalProperties, boolean onlyUnread)
     {
         int nbMessages;
         Store store = null;
@@ -175,7 +182,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
 
         try {
             // Create the session
-            Session session = createSession(protocol, isGmail);
+            Session session = createSession(protocol, additionalProperties, isGmail);
 
             // Get a Store object
             store = session.getStore();
@@ -239,10 +246,10 @@ public class DefaultMailComponent implements MailComponent, Initializable
         return nbMessages;
     }
 
-    private Session createSession(String protocol, boolean isGmail)
+    private Session createSession(String protocol, Properties additionalProperties, boolean isGmail)
     {
         // Get a session. Use a blank Properties object.
-        Properties props = new Properties();
+        Properties props = new Properties(additionalProperties);
         // necessary to work with Gmail
         if (isGmail) {
             props.put("mail.imap.partialfetch", "false");
@@ -344,7 +351,17 @@ public class DefaultMailComponent implements MailComponent, Initializable
     @Override
     public Message readFromStore(String folder, String messageid) throws MessagingException
     {
-        Session session = Session.getInstance(new Properties());
+        Properties props = new Properties();
+        if ("maildir".equals(this.storeProvider)) {
+            // the following specifies whether to create maildirpath if it is not existent
+            // if not specified then autocreatedir is false
+            props.put("mail.store.maildir.autocreatedir", "true");
+        }
+        if ("mstor".equals(this.storeProvider)) {
+            props.put("mstor.mbox.metadataStrategy", "XML");
+        }
+
+        Session session = Session.getInstance(props);
 
         String url = this.storeProvider + ":" + this.storeLocation;
 
@@ -370,7 +387,17 @@ public class DefaultMailComponent implements MailComponent, Initializable
     @Override
     public Message[] readFromStore(String folder) throws MessagingException
     {
-        Session session = Session.getInstance(new Properties());
+        Properties props = new Properties();
+        if ("maildir".equals(this.storeProvider)) {
+            // the following specifies whether to create maildirpath if it is not existent
+            // if not specified then autocreatedir is false
+            props.put("mail.store.maildir.autocreatedir", "true");
+        }
+        if ("mstor".equals(this.storeProvider)) {
+            props.put("mstor.mbox.metadataStrategy", "XML");
+        }
+
+        Session session = Session.getInstance(props);
 
         String url = this.storeProvider + ":" + this.storeLocation;
 
@@ -393,7 +420,17 @@ public class DefaultMailComponent implements MailComponent, Initializable
     @Override
     public Message[] readFromStore(String folder, SearchTerm term) throws MessagingException
     {
-        Session session = Session.getInstance(new Properties());
+        Properties props = new Properties();
+        if ("maildir".equals(this.storeProvider)) {
+            // the following specifies whether to create maildirpath if it is not existent
+            // if not specified then autocreatedir is false
+            props.put("mail.store.maildir.autocreatedir", "true");
+        }
+        if ("mstor".equals(this.storeProvider)) {
+            props.put("mstor.mbox.metadataStrategy", "XML");
+        }
+
+        Session session = Session.getInstance(props);
 
         String url = this.storeProvider + ":" + this.storeLocation;
 
@@ -472,6 +509,11 @@ public class DefaultMailComponent implements MailComponent, Initializable
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mail.MailComponent#cloneEmail(javax.mail.Message, java.lang.String, java.lang.String)
+     */
     public MimeMessage cloneEmail(Message mail, String protocol, String hostname)
     {
         MimeMessage cmail;
@@ -481,7 +523,9 @@ public class DefaultMailComponent implements MailComponent, Initializable
             mail.writeTo(bos);
             bos.close();
             SharedByteArrayInputStream bis = new SharedByteArrayInputStream(bos.toByteArray());
-            cmail = new MimeMessage(createSession(protocol, isGmail), bis);
+            // FIXME: cloning needs the Session object that was used to read initial mail, but this is not persisted
+            // (yet)
+            cmail = new MimeMessage(createSession(protocol, null, isGmail), bis);
             bis.close();
         } catch (Exception e) {
             logger.warn("Could not clone email", e);

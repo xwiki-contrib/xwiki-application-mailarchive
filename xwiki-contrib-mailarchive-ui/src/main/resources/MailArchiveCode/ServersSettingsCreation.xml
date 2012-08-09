@@ -11,15 +11,15 @@
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
 <creationDate>1331555655000</creationDate>
-<date>1338929569000</date>
-<contentUpdateDate>1338929569000</contentUpdateDate>
-<version>1.2</version>
+<date>1342446534000</date>
+<contentUpdateDate>1342446534000</contentUpdateDate>
+<version>9.1</version>
 <title>Mail Server Creation</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
 <comment></comment>
-<minorEdit>true</minorEdit>
+<minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.1</syntaxId>
 <hidden>false</hidden>
 <object>
@@ -146,6 +146,27 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
 </protocol>
+<state>
+<cache>0</cache>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>state</name>
+<number>11</number>
+<picker>0</picker>
+<prettyName>State</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<sort>none</sort>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<values>on=Enabled|off=Disabled</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</state>
 <status>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -232,17 +253,18 @@
 <content>{{velocity}}
 #if($request.get('save'))
   #set($id = $request.get('MailArchiveCode.ServerSettingsClass_0_id'))
-  #set($newdoc = $xwiki.getDocument("MailArchiveCode.Server_${id}"))
-  #if($xwiki.exists($newdoc))
+  #set($newdoc = $xwiki.getDocument("MailArchivePrefs.Server_${id}"))
+  #if($xwiki.exists($newdoc.fullName))
     #set($alreadyExisting = true)
-    #set($message = "A server with this id ${id} already exists")
+    #set($message = "A server with page name MailArchivePrefs.Server_${id} already exists")
   #else
     #set($newobj = $newdoc.updateObjectFromRequest('MailArchiveCode.ServerSettingsClass'))
-    #set($xwql="select doc.fullName from Document doc, doc.object('MailArchiveCode.ServerSettingsClass') as server where doc.space='MailArchivePrefs' and server.hostname='${newobj.hostname}' and server.user='${newobj.user}' and server.folder='${newobj.folder}'")
+    #set($xwql="select doc.fullName from Document doc, doc.object('MailArchiveCode.ServerSettingsClass') as server where doc.space='MailArchivePrefs' and server.id='${newobj.id}'")
     #set($result=$xwiki.queryManager.xwql($xwql).execute())
     #if($result.size() &gt; 0)
       #set($alreadyExisting = true)
-      #set($message = "A server already exists with host ${newobj.hostname}, user ${newobj.user} and folder ${newobj.folder} : ${result}") 
+      #set($message = "A server already exists with id ${newobj.id} : ${result}")
+    #end 
   #end
   #if(!$alreadyExisting)
     #set($pagename = "MailArchivePrefs.Server_${id}")
@@ -250,13 +272,12 @@
     #set($ok = $newdoc.save())   
   #else
     #set($ok = false)
-    #set($message = "A server is already configured for host $newobj.hostname, account $newobj.user, folder $newobj.folder")
   #end
   #if($ok)
     $response.setContentType('text/xml')
     &lt;response&gt;
       &lt;status&gt;ok&lt;/status&gt;
-      &lt;message&gt;Successfully created new Server (${newobj.fullName})&lt;/message&gt;
+      &lt;message&gt;Successfully created new Server (${newdoc.fullName})&lt;/message&gt;
     &lt;/response&gt;
   #else    
     $response.setContentType('text/xml')
@@ -316,12 +337,12 @@
           window.lb.lbClose();
         }
       &lt;/script&gt;
-      &lt;input class="button" type="submit" value="$msg.get('save')" onclick="window.lb.lbSaveForm();"/&gt;
+      &lt;input class="button" type="submit" name="save" value="$msg.get('save')" onclick="window.lb.lbSaveForm();"/&gt;
       &lt;/span&gt;&lt;span class="buttonwrapper"&gt;
-      &lt;input class="button secondary" type="submit" value="$msg.get("cancel")" onclick="Form.disable(window.lb.form); window.lb.lbClose();"/&gt;
+      &lt;input class="button secondary" type="submit" name="cancel" value="$msg.get("cancel")" onclick="Form.disable(window.lb.form); window.lb.lbClose();"/&gt;
     #else
       ## Not using the LightBox
-      &lt;input type="submit" value="$msg.get('save')" class="button"/&gt;
+      &lt;input type="submit" name="save" value="$msg.get('save')" class="button"/&gt;
     #end
   &lt;/span&gt;## ButtonWrapper
 &lt;/form&gt;

@@ -11,9 +11,9 @@
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
 <creationDate>1322841264000</creationDate>
-<date>1338121206000</date>
-<contentUpdateDate>1338121206000</contentUpdateDate>
-<version>1.6</version>
+<date>1344333629000</date>
+<contentUpdateDate>1344333629000</contentUpdateDate>
+<version>1.9</version>
 <title></title>
 <template></template>
 <defaultTemplate></defaultTemplate>
@@ -63,7 +63,7 @@
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
-<values>MailArchiveItems|MailArchive|MailArchive_${folder}</values>
+<values>MailArchiveItems|MailArchive|MailArchive_${server_id}</values>
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </adv_itemsspace>
 <createmissingprofiles>
@@ -122,6 +122,19 @@
 <values>threads=Threaded messages|forum=Forum|list=List</values>
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </defaulttopicsview>
+<emailignoredtext>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>emailignoredtext</name>
+<number>19</number>
+<picker>0</picker>
+<prettyName>Text to ignore when matching emails</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</emailignoredtext>
 <excelexport>
 <customDisplay></customDisplay>
 <defaultValue></defaultValue>

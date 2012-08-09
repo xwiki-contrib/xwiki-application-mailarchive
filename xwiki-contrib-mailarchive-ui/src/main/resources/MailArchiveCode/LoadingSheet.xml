@@ -11,9 +11,9 @@
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
 <creationDate>1255425870000</creationDate>
-<date>1338994760000</date>
-<contentUpdateDate>1338994760000</contentUpdateDate>
-<version>20.30</version>
+<date>1342084285000</date>
+<contentUpdateDate>1342084285000</contentUpdateDate>
+<version>32.14</version>
 <title></title>
 <template></template>
 <defaultTemplate></defaultTemplate>
@@ -58,16 +58,56 @@
 </property>
 </object>
 <content>{{velocity wiki="true"}}
+## TODO: use updateObjectFromRequest to save session parameters
+## TODO: use $doc.display to display fields from session object(s)
 #set($installed = $services.mailarchive)
 #if(!$installed)
-#set($disabled="disabled='disabled'")
+  #set($disabled="disabled='disabled'")
 #else
+  ## Loading Parameters creation
+  #set($sessionsprefsdoc = $xwiki.getDocument('MailArchivePrefs.LoadingSession_manual'))
+  #set($msession = $sessionsprefsdoc.getObject('MailArchiveCode.LoadingSessionClass'))
+  #if(!$xwiki.exists('MailArchivePrefs.LoadingSession_manual') || $msession.id != 'manual')
+    #set($msession = $sessionsprefsdoc.newObject('MailArchiveCode.LoadingSessionClass'))
+$msession
+    #set($discard = $msession.set('id', 'manual'))
+    #set($discard = $ssession.set('maxMailsNb', '1'))
+    #set($discard = $msession.set('withDelete', '0'))
+    #set($discard = $msession.set('loadAll', '0'))
+    #set($discard = $msession.set('debugMode', '1'))
+    #set($discard = $msession.set('simulationMode', '1'))
+    #set($discard = $msession.set('recentMails', '0'))
+    #set($discard = $sessionsprefsdoc.save('Init'))
+$msession
+$msession.id
+Saved manual session params.
+  #end
+  #set($sessionsprefsdoc = $xwiki.getDocument('MailArchivePrefs.LoadingSession_schedule'))
+  #set($ssession = $sessionsprefsdoc.getObject('MailArchiveCode.LoadingSessionClass'))
+  #if(!$xwiki.exists('MailArchivePrefs.LoadingSession_schedule') || $ssession.id != 'schedule')
+    #set($ssession = $sessionsprefsdoc.newObject('MailArchiveCode.LoadingSessionClass'))
+    #set($discard = $ssession.set('id', 'schedule'))
+    #set($discard = $ssession.set('maxMailsNb', '-1'))
+    #set($discard = $ssession.set('withDelete', '0'))
+    #set($discard = $ssession.set('loadAll', '0'))
+    #set($discard = $ssession.set('debugMode', '0'))
+    #set($discard = $ssession.set('simulationMode', '0'))
+    #set($discard = $ssession.set('recentMails', '0'))
+    #set($discard = $sessionprefsdoc.save('Init'))
+Saved automatic loading params.
+  #end
+  #set($max = $request.input-max-nb)
+  #set($saveschedule = $request.button-scheduleparams)
+  #if(!$max) #set($max = -1) #else #set($max = $util.parseInteger($max)) #end
   #set($xwql = "select doc.fullName, server.id from Document doc, doc.object(MailArchiveCode.ServerSettingsClass) as server where doc.space='MailArchivePrefs'")
   #set($servers = $services.query.xwql($xwql).execute())
   #if($request.button-check)
     #foreach($server in $servers)
-      ##set($discard=$services.mailarchive.check($server[0]))
+      #set($discard=$services.mailarchive.check($server[0]))
     #end
+  #end
+  #if($request.button-load)
+      Not implemented
   #end
   #set($params = $request.parameterMap)
 
@@ -81,10 +121,6 @@
       #set($serverid = $param.key.substring(12, $length))
       #set($action="load")
     #end
-    #if($param.key.startsWith("button-simulate-"))
-      #set($serverid = $param.key.substring(16, $length))
-      #set($action="simulate")
-    #end    
   #end
   #if($!serverid)
     #foreach($server in $servers)
@@ -97,14 +133,12 @@
   #if($action == "check")
     #set($discard = $services.mailarchive.check($servername))
   #elseif($action == "load")
-    #set($max = $request.input-max-nb)
-    #if($max == "-1")
-      #set($discard = $services.mailarchive.load($servername))
-    #end
-    #set($discard = $services.mailarchive.load($servername, $util.parseInteger($request.input-max-nb)))
-  #elseif($action == "simulate")
-    ## TODO
-  #end
+
+    #set($session = $services.mailarchive.session($servername).setLimit($max))
+debug SESSION $session
+    #set($nbLoaded = $session.loadMails())
+    Loaded $nbLoaded emails from server $serverid.
+  #end 
 #end
 
 {{html wiki="true"}}
@@ -123,16 +157,26 @@ $msg.mailarchive_loading_description
       &lt;input type="checkbox" name="input-debug-mode" value="input-debug-mode"/&gt; $msg.get('mailarchive_loading_action_debug')
      &lt;/label&gt;
     &lt;/dt&gt;
+    &lt;dt&gt;&lt;label for="input-simulation-mode"&gt;
+      &lt;input type="checkbox" name="input-simulation-mode" value="input-simulation-mode"/&gt; $msg.get('mailarchive_loading_action_simulate')
+     &lt;/label&gt;
+    &lt;/dt&gt;
     &lt;dt&gt;&lt;label for="input-readflag-mode"&gt;
-      &lt;input type="checkbox" name="input-readflag-mode" value="input-readflag-mode"/&gt; Load mails already read
+      &lt;input type="checkbox" name="input-readflag-mode" value="input-readflag-mode"/&gt; $msg.get('mailarchive_loading_action_readflag')
     &lt;/label&gt;&lt;dt&gt;
+    &lt;dt&gt;&lt;label for="input-recentflag-mode"&gt;
+      &lt;input type="checkbox" name="input-recentflag-mode" value="input-recentflag-mode"/&gt; $msg.get('mailarchive_loading_action_recentflag')
+     &lt;/label&gt;
+    &lt;/dt&gt;
+    &lt;dt&gt;&lt;label for="input-delete-mode"&gt;
+      &lt;input type="checkbox" name="input-delete-mode" value="input-delete-mode"/&gt; $msg.get('mailarchive_loading_action_delete')
+     &lt;/label&gt;
+    &lt;/dt&gt;
   &lt;/dl&gt;
-
-
 
 #if($servers.size() &gt; 0)
 #set($total = 0)
-|=Server|=Nb Mails available|=Actions
+|=Server|=State|=Nb Mails available|=Actions
 #foreach($servera in $servers)
   #set($server = $servera[0])
   #set($serverobj = $xwiki.getDocument($server).getObject('MailArchiveCode.ServerSettingsClass'))
@@ -143,25 +187,45 @@ $msg.mailarchive_loading_description
     #set($status = "$nb")
     #set($total = $total + $nb)
   #end
-|[[$serverobj.id / $serverobj.hostname / $serverobj.port / $serverobj.protocol / $serverobj.user / $serverobj.folder&gt;&gt;$server]]|$status|(((
+|[[$serverobj.id / $serverobj.hostname / $serverobj.port / $serverobj.protocol / $serverobj.user / $serverobj.folder&gt;&gt;$server]]|$serverobj.state|$status|(((
 &lt;div class="buttons"&gt;
-  &lt;span class="buttonWrapper"&gt;
+  &lt;span class="buttonwrapper"&gt;
     &lt;input type="submit" name="button-check-${serverobj.id}" $!disabled value="$msg.get('mailarchive_loading_action_check')"/&gt;
-  &lt;/span&gt;
-  &lt;span class="buttonWrapper"&gt;
     &lt;input type="submit" name="button-load-${serverobj.id}" $!disabled value="$msg.get('mailarchive_loading_action_load')"/&gt;
+    &lt;input type="submit" name="button-switch-${serverobj.id}" $!disabled value="$msg.get('mailarchive_loading_action_switch')"/&gt;
   &lt;/span&gt;
-  &lt;span class="buttonWrapper"&gt;
-    &lt;input type="submit" name="button-simulate-${serverobj.id}" $!disabled value="$msg.get('mailarchive_loading_action_simulate')"/&gt;
-  &lt;/span&gt;&lt;/div&gt;
 &lt;/div&gt;
 )))
 #end
-|All Servers|$total|&lt;span class="buttonWrapper"&gt;&lt;input type="submit" name="button-check" value="$msg.get('mailarchive_loading_action_check')" $!disabled/&gt;&lt;input type="submit" name="button-load" value="$msg.get('mailarchive_loading_action_load')" $!disabled/&gt;&lt;input type="submit" name="button-simulate" value="$msg.get('mailarchive_loading_action_simulate')" $!disabled/&gt;&lt;/span&gt;
+|All Servers|/|$total|&lt;span class="buttonwrapper"&gt;&lt;input type="submit" name="button-check" value="$msg.get('mailarchive_loading_action_check')" $!disabled/&gt;&lt;input type="submit" name="button-load" value="$msg.get('mailarchive_loading_action_load')" $!disabled/&gt;&lt;/span&gt;
+
+= Automatic loading =
+
+Go to [[Scheduler job page&gt;&gt;Scheduler.MailArchiveLoadingJob]] to activate / deactivate automatic loading.
+Scheduled job, once activated, will automatically load mails from servers in ACTIVE state, using the parameters below:&lt;br/&gt;&lt;br/&gt;
+
+|=Parameter|=Value
+|Max number of Mails to load|$ssession.maxMailsNb
+|$msg.get('mailarchive_loading_action_debug')|$ssession.debugMode
+|$msg.get('mailarchive_loading_action_simulate')|$ssession.simulationMode
+|$msg.get('mailarchive_loading_action_readflag')|$ssession.loadAll
+|$msg.get('mailarchive_loading_action_recentflag')|$ssession.recentMails
+|$msg.get('mailarchive_loading_action_delete')|$ssession.withDelete
+
+&lt;br/&gt;&lt;br/&gt;
+
+&lt;div class="buttons_schedule"&gt;
+  &lt;span class="buttonwrapper"&gt;
+    &lt;input type="submit" id="button-scheduleparams" name="button-scheduleparams" $!disabled value="Use parameters from top of this page for scheduled job"/&gt;
+  &lt;/span&gt;
+&lt;/div&gt;
+
 
 #else
   No server is configured, go to [[Administration page&gt;&gt;MailArchive.Admin]] to add at least one.
 #end
+
+&lt;/form&gt;
 
 {{/html}}
 {{/velocity}}</content></xwikidoc>

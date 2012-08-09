@@ -11,9 +11,9 @@
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
 <creationDate>1331541133000</creationDate>
-<date>1338988478000</date>
-<contentUpdateDate>1338988478000</contentUpdateDate>
-<version>2.7</version>
+<date>1342446705000</date>
+<contentUpdateDate>1342446705000</contentUpdateDate>
+<version>3.4</version>
 <title>#if($doc.name == 'ServerSettingsSheet')ServerSettings Sheet#{else}$services.display.title($doc, {'displayerHint': 'default'})#end</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
@@ -34,12 +34,16 @@
 #if($context.action != "edit")
 {{html}}
 #startfloatingbox()
-#set($nb = $util.parseInteger($obj.get('status')))
-#if($nb &gt;= 0)
+  #if(!$obj.status || "$!obj.status" == "")
+Connection never tested.
+  #else
+    #set($nb = $util.parseInteger($obj.get('status')))
+    #if($nb &gt;= 0)
 There were $obj.get('status') messages to read on $obj.get('lasttest')
-#else
+    #else
 Connection failed, tested on $obj.get('lasttest')
-#end
+    #end
+  #end
 #if($doc.checkAccess('edit'))
 &lt;form action="" class="xform" method="post" name="form_test_connection"&gt;
   &lt;input class="button" type="submit" name="submit" value="Test Connection"/&gt;

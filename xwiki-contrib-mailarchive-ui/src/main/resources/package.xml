@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package>
 <infos/>
-<name>MailingListArchive-1.0-SNAPSHOT</name>
+<name>MailingListArchive-0.1-SNAPSHOT</name>
 <description></description>
 <licence>LGPL</licence>
 <author>XWiki</author>
@@ -10,6 +10,7 @@
 <preserveVersion>false</preserveVersion><files>
 <file defaultAction="0" language="">MailArchiveCode.WebHome</file>
 <file defaultAction="0" language="">MailArchiveCode.UserClass</file>
+<file defaultAction="0" language="">MailArchiveCode.WebPreferences</file>
 <file defaultAction="0" language="">MailArchiveCode.Translations</file>
 <file defaultAction="0" language="">MailArchiveCode.TimeLineFeed</file>
 <file defaultAction="0" language="">MailArchiveCode.LiveTableResults</file>
@@ -17,6 +18,7 @@
 <file defaultAction="0" language="">MailArchiveCode.SettingsClassSheet</file>
 <file defaultAction="0" language="">MailArchiveCode.ListsSettingsClass</file>
 <file defaultAction="0" language="">MailArchiveCode.MailTopicClassTemplate</file>
+<file defaultAction="0" language="">MailArchiveCode.LoadingSessionSheet</file>
 <file defaultAction="0" language="">MailArchiveCode.ListInfoClass</file>
 <file defaultAction="0" language="">MailArchiveCode.MailClassSheet</file>
 <file defaultAction="0" language="en">MailArchiveCode.MailClassSheet</file>
@@ -42,19 +44,21 @@
 <file defaultAction="0" language="">MailArchive.WebHome</file>
 <file defaultAction="0" language="">MailArchiveCode.MailClass</file>
 <file defaultAction="0" language="">MailArchiveCode.LoadingSheet</file>
+<file defaultAction="0" language="">MailArchiveCode.LoadingSessionClass</file>
 <file defaultAction="0" language="">MailArchiveCode.ListsSettingsCreation</file>
 <file defaultAction="0" language="">MailArchiveCode.ListsSettingsSheet</file>
 <file defaultAction="0" language="">MailArchiveCode.LiveTableTopicsResultsMacros</file>
 <file defaultAction="0" language="">MailArchiveCode.UserTemplate</file>
+<file defaultAction="0" language="">MailArchiveCode.LoadingSessionTemplate</file>
 <file defaultAction="0" language="">MailArchiveCode.ResetLoadingSemaphore</file>
 <file defaultAction="0" language="">MailArchiveCode.IntegrationService</file>
 <file defaultAction="0" language="">MailArchive.ViewUserMessages</file>
 <file defaultAction="0" language="">MailArchiveCode.TypePatternClass</file>
 <file defaultAction="0" language="">MailArchiveCode.AdminClass</file>
 <file defaultAction="0" language="">MailArchiveCode.LoadMails</file>
+<file defaultAction="0" language="">Scheduler.MailArchiveLoadingJob</file>
 <file defaultAction="0" language="">MailArchiveCode.IconsSuggest</file>
 <file defaultAction="0" language="">MailArchive.RemoteIntegration</file>
-<file defaultAction="0" language="">MailArchiveCode.LoadingJob</file>
 <file defaultAction="0" language="">MailArchiveCode.ToolsGroovyClass</file>
 <file defaultAction="0" language="">MailArchiveCode.ReassignAuthors</file>
 <file defaultAction="0" language="">MailArchiveCode.LiveTableResultsMacros</file>

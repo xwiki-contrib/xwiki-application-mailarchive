@@ -11,9 +11,9 @@
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
 <creationDate>1255357223000</creationDate>
-<date>1340098299000</date>
-<contentUpdateDate>1340098299000</contentUpdateDate>
-<version>3.1</version>
+<date>1344517708000</date>
+<contentUpdateDate>1344517708000</contentUpdateDate>
+<version>4.1</version>
 <title>$msg.mailarchive_home_title</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
@@ -33803,7 +33803,7 @@ $msg.mailarchive_home_description
 [[image:icon:table]] [[Switch to Table view&gt;&gt;MailArchive.WebHome||queryString="display=table"]]
   #end
 #end
-[[image:icon:chart_pie]] [[Mailing-list Statistics&gt;&gt;MailArchive.Statistics]] [[image:icon:page_white_word]] [[User Guide&gt;&gt;attach:WikiMailArchiveUserGuide.doc||rel="__blank"]] [[image:icon:page_white_code]] [[Integrate the MailArchive in your web site !&gt;&gt;MailArchive.RemoteIntegration]]  [[image:icon:bug]] [[Open issues&gt;&gt;http://jira.xwiki.org/browse/XCONTRIB/component/12343]]
+[[image:icon:chart_pie]] [[Mailing-list Statistics&gt;&gt;MailArchive.Statistics]] [[image:icon:page_white_word]] [[User Guide&gt;&gt;attach:WikiMailArchiveUserGuide.doc||rel="__blank"]] [[image:icon:page_white_code]] [[Integrate the MailArchive in your web site !&gt;&gt;MailArchive.RemoteIntegration]]  [[image:icon:bug]] [[Open issues&gt;&gt;http://jira.xwiki.org/browse/XCONTRIB/component/12343]]  [[Trouble-Shooting&gt;&gt;MailArchive.TroubleShooting]]
 #if($hasAdmin)
 [[image:icon:cog]] [[Administrate and Configure&gt;&gt;MailArchive.Admin]] [[image:icon:wrench]] [[Operations&gt;&gt;MailArchive.Operate]] 
 #end

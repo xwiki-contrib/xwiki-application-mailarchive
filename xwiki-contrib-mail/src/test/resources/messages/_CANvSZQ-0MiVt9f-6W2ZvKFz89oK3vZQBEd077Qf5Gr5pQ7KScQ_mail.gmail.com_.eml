@@ -1,0 +1,71 @@
+Received: from smtp2.gemalto.com (193.56.114.195) by ABSHUBBWP01.gemalto.com
+ (10.3.0.231) with Microsoft SMTP Server id 8.3.192.1; Mon, 12 Mar 2012
+ 16:28:32 +0100
+Received: from mail.sonatype.org (207-223-241-82.contegix.com
+ [207.223.241.82])	by smtp2.gemalto.com (envelope-from
+ nexus-user-return-6774-Jeremie.BOUSQUET=gemalto.com@sonatype.org)
+ (8.14.3/8.14.3) with ESMTP id q2CFQvk4016359	(version=TLSv1/SSLv3
+ cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT)	for
+ <Jeremie.BOUSQUET@gemalto.com>; Mon, 12 Mar 2012 16:27:00 +0100
+Received: (qmail 25177 invoked by uid 89); 12 Mar 2012 15:28:19 -0000
+Received: (qmail 25171 invoked by uid 89); 12 Mar 2012 15:28:19 -0000
+From: Thilo-Alexander Ginkel <thilo@ginkel.com>
+To: "nexus-user@sonatype.org" <nexus-user@sonatype.org>
+Date: Mon, 12 Mar 2012 16:27:56 +0100
+Subject: [nexus-user] Nexus 1.9.2.4 periodically resets buildNumber
+Thread-Topic: [nexus-user] Nexus 1.9.2.4 periodically resets buildNumber
+Thread-Index: Ac0AZMi/MTbWu/PYRvOBni772P/kTA==
+Message-ID:
+ <CANvSZQ-0MiVt9f-6W2ZvKFz89oK3vZQBEd077Qf5Gr5pQ7KScQ@mail.gmail.com>
+List-Help: <mailto:nexus-user-help@sonatype.org>
+List-Subscribe: <mailto:nexus-user-subscribe@sonatype.org>
+List-Unsubscribe: <mailto:nexus-user-unsubscribe@sonatype.org>
+Reply-To: "nexus-user@sonatype.org" <nexus-user@sonatype.org>
+Accept-Language: fr-FR, en-US
+Content-Language: fr-FR
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Exchange-Organization-AuthSource: ABSHUBBWP01.gemalto.com
+X-MS-Has-Attach:
+X-Auto-Response-Suppress: All
+X-MS-TNEF-Correlator:
+x-pm-nine: Xy1rY2FCZXJlaHdvTmduaW9HXC8zaW5pbWVHbW9yRmdub3J0U25PZ25pbW9DLV8K
+x-spam-free: -8.539 ()
+ BAYES_00,GEM_XTNDSET1,GEM_XTNDSET7,GEM_XTNDSET8,GEM_XTNDSET9,RDNS_DYNAMIC,RPL_XTNDSET0,RPL_XTNDSET7,RPL_XTNDSET8,RPL_XTNDSET9,RP_BONK_01,RP_BONK_02,RP_PONK_01,RP_PONK_02,SPF_PASS,X_AUTH_WARN_FAKED
+x-scanned-by: MIMEDefang 2.70 on 193.56.114.195
+dkim-signature: v=1; a=rsa-sha256; c=relaxed/relaxed;        d=ginkel.com;
+ s=google;
+        h=mime-version:x-originating-ip:from:date:message-id:subject:to
+         :content-type;
+        bh=/BUhKFGMpUMNKW5HLuIDpG53f1Xt+wd4OZNn5qzYXgU=;
+        b=MD/sY5VK7vqXHsi8B2HJEp3BlTX6XGcAC3o0gz7yGDSIKMNbBPxo428q66X2GPrYgr
+         apKJSdDCv1dSVA5w+TAtTruR6yTd2nWfIkc0dF/WwcmbuLkS6c59r4Tu5m7vzpHntzrG
+         66xPbFiKldClcHUfPWKZ4vG9Ln7nIx/tINjWQ=
+delivered-to: mailing list nexus-user@sonatype.org
+x-no-archive: yes
+list-post: <mailto:nexus-user@sonatype.org>
+x-originating-ip: [62.182.98.193]
+received-spf: pass (207-223-240-94.contegix.com: SPF record at
+ _spf.google.com designates 74.125.83.45 as permitted sender)
+mailing-list: contact nexus-user-help@sonatype.org; run by ezmlm
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+
+SGkgdGhlcmUsDQoNCndlIGFyZSBjdXJyZW50bHkgdXNpbmcgTmV4dXMgT1NTIDEuOS4yLjQgYW5k
+IGV4cGVyaWVuY2luZyBhIHN0cmFuZ2UNCmlzc3VlOiBQZXJpb2RpY2FsbHksIHRoZSBidWlsZE51
+bWJlciBzdG9yZWQgaW4gdGhlDQptYXZlbi1tZXRhZGF0YS0qLnhtbCBmaWxlIGFsb25nIHdpdGgg
+YSBTTkFQU0hPVCBbMV0gYXJ0aWZhY3QgZ2V0cw0KcmVzZXQsIHdoaWNoIGNhdXNlcyB2YXJpb3Vz
+IGlzc3VlcyBkdWUgdG8gYnVpbGRzICh2aWEgTWF2ZW4gMiAvIDMpIG5vdA0KZmV0Y2hpbmcgbmV3
+IHZlcnNpb25zIG9mIHRoZSByZXNwZWN0aXZlIGFydGlmYWN0cyAoYXMgYnVpbGQgbnVtYmVycw0K
+YXJlIG5vIGxvbmdlciBzdHJpY3RseSBpbmNyZWFzaW5nKS4gVGhlIGxhc3RVcGRhdGVkIHRpbWVz
+dGFtcCBpcw0KY29ycmVjdCwgdGhvdWdoLg0KDQpIYXMgYW55b25lIGV4cGVyaWVuY2VkIHN1Y2gg
+YmVoYXZpb3IgYmVmb3JlPw0KDQpJIGFtIGN1cnJlbnRseSBzb21ld2hhdCBsb3N0IHdoZXJlIHRv
+IHN0YXJ0IGxvb2tpbmcgZm9yIHBvdGVudGlhbA0KY2F1c2VzLCBzbyBhbnkgaGludHMgd2hlcmUg
+dG8gc3RhcnQgYXJlIG11Y2ggYXBwcmVjaWF0ZWQhDQoNClRoYW5rcywNClRoaWxvDQoNClsxXSBU
+aGUgYXJ0aWZhY3QgdmVyc2lvbiBpcyBzZXQgdG8gIlNOQVBTSE9UIi4gSSBrbm93IHRoYXQgdGhp
+cyBpcw0Kd3JvbmcsIGJ1dCBpdCBpcyBzb21ld2hhdCB0cmlja3kgdG8gY29udmluY2UgdGhlIHJl
+c3BvbnNpYmxlIHBlb3BsZSB0bw0KY2hhbmdlIHRoaXMgd2l0aG91dCBhIGdvb2QgcmVhc29uIHRv
+IGRvIHNvLiA7LSkNCg0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQpUbyB1bnN1YnNjcmliZSwgZS1tYWlsOiBuZXh1
+cy11c2VyLXVuc3Vic2NyaWJlQHNvbmF0eXBlLm9yZw0KRm9yIGFkZGl0aW9uYWwgY29tbWFuZHMs
+IGUtbWFpbDogbmV4dXMtdXNlci1oZWxwQHNvbmF0eXBlLm9yZw0KDQo=

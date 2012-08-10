@@ -1,0 +1,95 @@
+Received: from GMSEXC04.CORP.DS.GEMPLUS.COM ([10.2.158.52]) by GMSEXC03.CORP.DS.GEMPLUS.COM with Microsoft SMTPSVC(6.0.3790.1830);
+	 Sat, 29 Apr 2006 01:44:26 +0200
+Received: from GMSEXC01.CORP.DS.GEMPLUS.COM ([10.2.158.60]) by GMSEXC04.CORP.DS.GEMPLUS.COM with Microsoft SMTPSVC(6.0.3790.1830);
+	 Sat, 29 Apr 2006 01:44:24 +0200
+Received: from difool.gemplus.com ([195.25.133.180]) by GMSEXC01.CORP.DS.GEMPLUS.COM with Microsoft SMTPSVC(6.0.3790.1830);
+	 Sat, 29 Apr 2006 01:44:25 +0200
+Received: from mars.objectweb.org (mars.objectweb.org [194.199.16.17])
+	by difool.gemplus.com (Postfix) with ESMTP id D17DA2AEAE3
+	for <jeremie.bousquet@gemplus.com>; Fri, 28 Apr 2006 23:44:21 +0000 (GMT)
+Received: from sympa by mars.objectweb.org with local (Exim 3.36 #1 (Debian))
+	id 1FZcd6-0006CW-00; Sat, 29 Apr 2006 01:44:08 +0200
+Received: from prod.terracottatech.com ([69.20.13.229])
+	by mars.objectweb.org with esmtp (Exim 3.36 #1 (Debian))
+	id 1FZcd1-0006Bk-00
+	for <xwiki-users@objectweb.org>; Sat, 29 Apr 2006 01:44:03 +0200
+Received: from [10.0.0.151] (pnapgw.terracottatech.com [72.5.115.161])
+	(authenticated bits=0)
+	by prod.terracottatech.com (8.13.6/8.13.6) with ESMTP id k3SNhOLJ006096
+	(version=TLSv1/SSLv3 cipher=RC4-MD5 bits=128 verify=NO);
+	Fri, 28 Apr 2006 16:43:25 -0700
+From: Dave Mangot <dmangot@terracottatech.com>
+To: "robin@soal.org" <robin@soal.org>
+CC: "xwiki-users@objectweb.org" <xwiki-users@objectweb.org>
+Date: Sat, 29 Apr 2006 01:43:24 +0200
+Subject: Re: [xwiki-users] can't see blog entries
+Thread-Topic: [xwiki-users] can't see blog entries
+Thread-Index: AcZrHa9fl4wMSg8lSNaI3Ha9eR7dgw==
+Message-ID: <4452A89C.70205@terracottatech.com>
+References: <44529FEA.1000404@terracottatech.com>
+ <5a8807d10604281630g55bc8332le3627d034594a5e4@mail.gmail.com>
+List-Help: <mailto:sympa@objectweb.org?subject=help>
+List-Subscribe: <mailto:sympa@objectweb.org?subject=subscribe%20xwiki-users>
+List-Unsubscribe:
+ <mailto:sympa@objectweb.org?subject=unsubscribe%20xwiki-users>
+In-Reply-To: <5a8807d10604281630g55bc8332le3627d034594a5e4@mail.gmail.com>
+Reply-To: "xwiki-users@objectweb.org" <xwiki-users@objectweb.org>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-Auto-Response-Suppress: All
+X-MS-TNEF-Correlator:
+Content-Type: multipart/mixed; boundary="_002_4452A89C70205terracottatechcom_"
+MIME-Version: 1.0
+
+--_002_4452A89C70205terracottatechcom_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Robin Fernandes wrote:
+
+> If I understand correctly, when you edit the blog entry document, you
+> can see that the category has actually been saved with the article
+> object - yet the article isn't found when attempting to filter by
+> category... a few thoughts:
+>
+> 1.Check that your Blog.Categories page contains something like:
+> #set($category =3D "$request.category")
+> #set($nbitems =3D "10")
+> #set($nbstart =3D $request.nbstart)
+> #includeMacros("Blog.Macros")
+
+Robin.  That was it!  You made my weekend.  Thanks!
+
+                                                        -Dave
+
+
+
+--
+Dave Mangot
+Terracotta Inc.
+650 Townsend St. Suite 325
+San Francisco, CA 94103 USA
++1 415 738 4059
+dmangot@terracottatech.com
+
+This e-mail incorporates Terracotta's confidentiality policy, which is
+online at http://www.terracottatech.com/emailconfidentiality.shtml
+
+
+--_002_4452A89C70205terracottatechcom_
+Content-Type: text/plain; name="message-footer.txt"
+Content-Description: message-footer.txt
+Content-Disposition: attachment; filename="message-footer.txt"; size=353;
+	creation-date="Tue, 02 May 2006 07:07:56 GMT";
+	modification-date="Tue, 02 May 2006 07:07:56 GMT"
+Content-Transfer-Encoding: base64
+
+DQotLQ0KWW91IHJlY2VpdmUgdGhpcyBtZXNzYWdlIGFzIGEgc3Vic2NyaWJlciBvZiB0aGUgeHdp
+a2ktdXNlcnNAb2JqZWN0d2ViLm9yZyBtYWlsaW5nIGxpc3QuDQpUbyB1bnN1YnNjcmliZTogbWFp
+bHRvOnh3aWtpLXVzZXJzLXVuc3Vic2NyaWJlQG9iamVjdHdlYi5vcmcNCkZvciBnZW5lcmFsIGhl
+bHA6IG1haWx0bzpzeW1wYUBvYmplY3R3ZWIub3JnP3N1YmplY3Q9aGVscA0KT2JqZWN0V2ViIG1h
+aWxpbmcgbGlzdHMgc2VydmljZSBob21lIHBhZ2U6IGh0dHA6Ly93d3cub2JqZWN0d2ViLm9yZy93
+d3MNCg==
+
+--_002_4452A89C70205terracottatechcom_--

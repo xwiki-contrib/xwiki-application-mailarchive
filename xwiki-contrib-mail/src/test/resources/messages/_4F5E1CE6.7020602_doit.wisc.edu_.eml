@@ -1,0 +1,330 @@
+Received: from smtp2.gemalto.com (193.56.114.195) by ABSHUBBWP01.gemalto.com
+ (10.3.0.231) with Microsoft SMTP Server id 8.3.192.1; Mon, 12 Mar 2012
+ 16:57:46 +0100
+Received: from mail.sonatype.org (mail.sonatype.org [207.223.241.82])	by
+ smtp2.gemalto.com (envelope-from
+ nexus-user-return-6777-Jeremie.BOUSQUET=gemalto.com@sonatype.org)
+ (8.14.3/8.14.3) with ESMTP id q2CFu5GD026344	(version=TLSv1/SSLv3
+ cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT)	for
+ <Jeremie.BOUSQUET@gemalto.com>; Mon, 12 Mar 2012 16:56:08 +0100
+Received: (qmail 27365 invoked by uid 89); 12 Mar 2012 15:57:28 -0000
+Received: (qmail 27359 invoked by uid 89); 12 Mar 2012 15:57:28 -0000
+From: Eric Dalquist <eric.dalquist@doit.wisc.edu>
+To: "nexus-user@sonatype.org" <nexus-user@sonatype.org>
+Date: Mon, 12 Mar 2012 16:57:26 +0100
+Subject: Re: [nexus-user] Re: Repository targets and patterns
+Thread-Topic: [nexus-user] Re: Repository targets and patterns
+Thread-Index: Ac0AaN3wSgGA0sKrRmWoeUoSuCK2AQ==
+Message-ID: <4F5E1CE6.7020602@doit.wisc.edu>
+References: <1331283013542-5549940.post@n5.nabble.com>
+ <CAOf_j42RHq=UijqynLDu-T2D22GxGm+T1cD7HR6Wbjo_6FrUfw@mail.gmail.com>
+ <1331567238229-5558202.post@n5.nabble.com>
+List-Help: <mailto:nexus-user-help@sonatype.org>
+List-Subscribe: <mailto:nexus-user-subscribe@sonatype.org>
+List-Unsubscribe: <mailto:nexus-user-unsubscribe@sonatype.org>
+In-Reply-To: <1331567238229-5558202.post@n5.nabble.com>
+Reply-To: "nexus-user@sonatype.org" <nexus-user@sonatype.org>
+Accept-Language: fr-FR, en-US
+Content-Language: fr-FR
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Exchange-Organization-AuthSource: ABSHUBBWP01.gemalto.com
+X-MS-Has-Attach: yes
+X-Auto-Response-Suppress: All
+X-MS-TNEF-Correlator:
+x-pm-nine: Xy1rY2FCZXJlaHdvTmduaW9HXC8zaW5pbWVHbW9yRmdub3J0U25PZ25pbW9DLV8K
+x-spam-free: -11.995 ()
+ BAYES_00,GEM_XTNDSET1,GEM_XTNDSET7,GEM_XTNDSET8,GEM_XTNDSET9,HTML_MESSAGE,RPL_XTNDSET0,RPL_XTNDSET7,RPL_XTNDSET8,RPL_XTNDSET9,SPF_PASS,X_AUTH_WARN_FAKED
+x-scanned-by: MIMEDefang 2.70 on 193.56.114.195
+delivered-to: mailing list nexus-user@sonatype.org
+x-no-archive: yes
+list-post: <mailto:nexus-user@sonatype.org>
+user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:10.0.2)
+ Gecko/20120216 Thunderbird/10.0.2
+received-spf: pass (207-223-240-94.contegix.com: SPF record at
+ _spf.wiscmail.wisc.edu designates 144.92.197.210 as permitted sender)
+mailing-list: contact nexus-user-help@sonatype.org; run by ezmlm
+x-spam-report: AuthenticatedSender=yes, SenderIP=146.151.210.59
+x-spam-pmxinfo: Server=avs-15, Version=5.6.1.2065439, Antispam-Engine:
+ 2.7.2.376379, Antispam-Data: 2012.3.12.154816, SenderIP=146.151.210.59
+Content-Type: multipart/signed; protocol="application/pkcs7-signature";
+	micalg=sha1; boundary="------------ms030105050003030306080508"
+MIME-Version: 1.0
+
+--------------ms030105050003030306080508
+Content-Type: multipart/alternative;
+ boundary="------------030709050206090908020306"
+
+This is a multi-part message in MIME format.
+--------------030709050206090908020306
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
+
+They are regex patterns against the URL path.
+Try adding an additional expression of just / to get your browsing workin=
+g.
+
+We have a repo target setup that allows browsing a repo but not=20
+downloading any artifacts:
+
+All but Artifacts (Maven2)
+=2E*(?!\.jar)....
+/
+
+The first expression matches everything that doesn't end with .jar
+The second expression matches the root of the repo, without this you=20
+can't browse.
+
+-Eric
+
+On 3/12/12 10:47 AM, Ram=F3n Rial wrote:
+> Yes, it downloads, but I cannot view in Nexus the route to it, or the
+> pom.xml.
+>
+> I've just modified Target.java to see what is happening, what string id=
+'s
+> use to compare (match).
+>
+> I've just see the process, and now I think the problem is that there is=
+ no
+> way to match group, artifact and filename with different regular
+> expressions, or with the same. Isn't it?
+>
+> --
+> View this message in context: http://maven.40175.n5.nabble.com/Reposito=
+ry-targets-and-patterns-tp5549940p5558202.html
+> Sent from the Nexus Maven Repository Manager Users List mailing list ar=
+chive at Nabble.com.
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: nexus-user-unsubscribe@sonatype.org
+> For additional commands, e-mail: nexus-user-help@sonatype.org
+>
+
+--------------030709050206090908020306
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+  <head>
+    <meta content=3D"text/html; charset=3DISO-8859-1"
+      http-equiv=3D"Content-Type">
+  </head>
+  <body bgcolor=3D"#FFFFFF" text=3D"#000000">
+    They are regex patterns against the URL path.<br>
+    Try adding an additional expression of just / to get your browsing
+    working.<br>
+    <br>
+    We have a repo target setup that allows browsing a repo but not
+    downloading any artifacts:<br>
+    <br>
+    All but Artifacts (Maven2)<br>
+    <meta charset=3D"utf-8">
+    <span style=3D"color: rgb(0, 0, 0); font-family: Menlo,monospace;
+      font-size: 11px; font-style: normal; font-variant: normal;
+      font-weight: normal; letter-spacing: normal; line-height: normal;
+      orphans: 2; text-indent: 0px; text-transform: none; white-space:
+      pre-wrap; widows: 2; word-spacing: 0px; background-color: rgb(255,
+      255, 255); display: inline ! important; float: none;">.*(?!\.jar)..=
+=2E.<br>
+    </span>
+    <meta charset=3D"utf-8">
+    <span style=3D"color: rgb(0, 0, 0); font-family: Menlo, monospace;
+      font-size: 11px; font-style: normal; font-variant: normal;
+      font-weight: normal; letter-spacing: normal; line-height: normal;
+      orphans: 2; text-align: -webkit-auto; text-indent: 0px;
+      text-transform: none; white-space: pre-wrap; widows: 2;
+      word-spacing: 0px; -webkit-text-size-adjust: none;
+      -webkit-text-stroke-width: 0px; background-color: rgb(255, 255,
+      255); display: inline !important; float: none; ">/</span><br>
+    <br>
+    The first expression matches everything that doesn't end with .jar<br=
+>
+    The second expression matches the root of the repo, without this you
+    can't browse.<br>
+    <br>
+    -Eric<br>
+    <br>
+    On 3/12/12 10:47 AM, Ram&oacute;n Rial wrote:
+    <blockquote cite=3D"mid:1331567238229-5558202.post@n5.nabble.com"
+      type=3D"cite">
+      <pre wrap=3D"">Yes, it downloads, but I cannot view in Nexus the ro=
+ute to it, or the
+pom.xml.
+
+I've just modified Target.java to see what is happening, what string id's=
+
+use to compare (match).
+
+I've just see the process, and now I think the problem is that there is n=
+o
+way to match group, artifact and filename with different regular
+expressions, or with the same. Isn't it?
+
+--
+View this message in context: <a class=3D"moz-txt-link-freetext" href=3D"=
+http://maven.40175.n5.nabble.com/Repository-targets-and-patterns-tp554994=
+0p5558202.html">http://maven.40175.n5.nabble.com/Repository-targets-and-p=
+atterns-tp5549940p5558202.html</a>
+Sent from the Nexus Maven Repository Manager Users List mailing list arch=
+ive at Nabble.com.
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: <a class=3D"moz-txt-link-abbreviated" href=3D"mai=
+lto:nexus-user-unsubscribe@sonatype.org">nexus-user-unsubscribe@sonatype.=
+org</a>
+For additional commands, e-mail: <a class=3D"moz-txt-link-abbreviated" hr=
+ef=3D"mailto:nexus-user-help@sonatype.org">nexus-user-help@sonatype.org</=
+a>
+
+</pre>
+    </blockquote>
+  </body>
+</html>
+
+--------------030709050206090908020306--
+
+--------------ms030105050003030306080508
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIZOjCC
+BJ8wggQIoAMCAQICBEaekRowDQYJKoZIhvcNAQEFBQAwgcMxCzAJBgNVBAYTAlVTMRQwEgYD
+VQQKEwtFbnRydXN0Lm5ldDE7MDkGA1UECxMyd3d3LmVudHJ1c3QubmV0L0NQUyBpbmNvcnAu
+IGJ5IHJlZi4gKGxpbWl0cyBsaWFiLikxJTAjBgNVBAsTHChjKSAxOTk5IEVudHJ1c3QubmV0
+IExpbWl0ZWQxOjA4BgNVBAMTMUVudHJ1c3QubmV0IFNlY3VyZSBTZXJ2ZXIgQ2VydGlmaWNh
+dGlvbiBBdXRob3JpdHkwHhcNMDkwMzIzMTUxODI3WhcNMTkwMzIzMTU0ODI3WjCBtDEUMBIG
+A1UEChMLRW50cnVzdC5uZXQxQDA+BgNVBAsUN3d3dy5lbnRydXN0Lm5ldC9DUFNfMjA0OCBp
+bmNvcnAuIGJ5IHJlZi4gKGxpbWl0cyBsaWFiLikxJTAjBgNVBAsTHChjKSAxOTk5IEVudHJ1
+c3QubmV0IExpbWl0ZWQxMzAxBgNVBAMTKkVudHJ1c3QubmV0IENlcnRpZmljYXRpb24gQXV0
+aG9yaXR5ICgyMDQ4KTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAK1NS6kShrLq
+oyAHFRZkKitL0b8LSk2O7YB2pWe3eEDAc0LIaMDbUyvdXrh2mDWTixqdfBM6Dh9btx7P5SQU
+HrGBqY19uMxrSwPxAgzcq6VAJAB/dJShnQgps4gL9Yd3nVXN5MN+12pkq4UUhpVblzJQbz3I
+umYM4/y9uEnBdolJGf3AqL2Jo2cvxp+8cRlguC3pLMmQdmZ7lOKveNZlU1081pyyzykD+S+k
+ULLUSM4FMlWK/bJkTA7kmAd123/fuQhVYIUwKfl7SKRphuM1Px6GXXp6Fb3vAI4VIlQXAJAm
+k7wOSWiRv/hH052VQsEOTd9vJs/DGCFiZkNw1tXAB+ECAwEAAaOCAScwggEjMA4GA1UdDwEB
+/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MDMGCCsGAQUFBwEBBCcwJTAjBggrBgEFBQcwAYYX
+aHR0cDovL29jc3AuZW50cnVzdC5uZXQwMwYDVR0fBCwwKjAooCagJIYiaHR0cDovL2NybC5l
+bnRydXN0Lm5ldC9zZXJ2ZXIxLmNybDA7BgNVHSAENDAyMDAGBFUdIAAwKDAmBggrBgEFBQcC
+ARYaaHR0cDovL3d3dy5lbnRydXN0Lm5ldC9DUFMwHQYDVR0OBBYEFFXkgdERgL7YibkIozH5
+oSQJFrlwMB8GA1UdIwQYMBaAFPAXYhNVPbP/CgBr+1CEl/PtYtAaMBkGCSqGSIb2fQdBAAQM
+MAobBFY3LjEDAgCBMA0GCSqGSIb3DQEBBQUAA4GBAI9lojCOJquK7DUWmOkD8I0XX7xMbAL2
+dFLgwsYfzvKmEQyosQ5NhItxNu+zNUXzwfiWxYtVpMxrgxYgMtq++6+bt5/hfoSfnjxQpz9c
+wr6LhrgIku74QisNE+N2hUgKSr/QpTsKsFS4beMI+TSNC46LEswXGjOHlcieCtxQUxd7MIIF
+ozCCBIugAwIBAgIETA5iEjANBgkqhkiG9w0BAQUFADCBtDEUMBIGA1UEChMLRW50cnVzdC5u
+ZXQxQDA+BgNVBAsUN3d3dy5lbnRydXN0Lm5ldC9DUFNfMjA0OCBpbmNvcnAuIGJ5IHJlZi4g
+KGxpbWl0cyBsaWFiLikxJTAjBgNVBAsTHChjKSAxOTk5IEVudHJ1c3QubmV0IExpbWl0ZWQx
+MzAxBgNVBAMTKkVudHJ1c3QubmV0IENlcnRpZmljYXRpb24gQXV0aG9yaXR5ICgyMDQ4KTAe
+Fw0xMDA2MzAxODM0NTRaFw0yMDA2MzAxOTA0NTRaMIGAMQswCQYDVQQGEwJVUzEQMA4GA1UE
+ChMHRW50cnVzdDEiMCAGA1UECxMZQ2VydGlmaWNhdGlvbiBBdXRob3JpdGllczE7MDkGA1UE
+AxMyRW50cnVzdCBNYW5hZ2VkIFNlcnZpY2VzIENvbW1lcmNpYWwgUHVibGljIFJvb3QgQ0Ew
+ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMXI+wxZoiWKTiB15DT/VyF8eTSWED
+/vatNS6/Y+s9kbGo2oI8Qlk/lsWn7lv9UeJmIVeu+Pp6iNTyQ09kOAyBBmAQ/yKq4PRHnsrP
+uxgkirXZ5t3AumSPVr62v2kHVce9S94LjCR2UIov0EMvs8/qq95KIGxGLTgdoeDVXI/5RZeA
+sGTquePKvbHest1FmPQaly2pRPdnlRHEmJQ2NkaR45AeQvKKn8kzpYeCoBLyCsD0HbHzlIfP
+aujKqEcQZIbJUyD0y++KNajSPATWImCt2eXdeHEUcnmcHGq9ha1EEI02oW8zT2R0xhjdLoR5
+Ds+xg43iGyxLPdoliIxHVPhhAgMBAAGjggHtMIIB6TAOBgNVHQ8BAf8EBAMCAQYwEgYDVR0T
+AQH/BAgwBgEB/wIBATAzBggrBgEFBQcBAQQnMCUwIwYIKwYBBQUHMAGGF2h0dHA6Ly9vY3Nw
+LmVudHJ1c3QubmV0MIIBGAYDVR0gBIIBDzCCAQswVwYNYIZIAYb6a4FIAwoCBDBGMEQGCCsG
+AQUFBwIBFjhodHRwOi8vY29tcHViLm1hbmFnZWQuZW50cnVzdC5jb20vQ1AvRU1TQ29tbWVy
+Y2lhbENQLnBkZjBXBg1ghkgBhvprgUgDCgIFMEYwRAYIKwYBBQUHAgEWOGh0dHA6Ly9jb21w
+dWIubWFuYWdlZC5lbnRydXN0LmNvbS9DUC9FTVNDb21tZXJjaWFsQ1AucGRmMFcGDWCGSAGG
++muBSAMKAgYwRjBEBggrBgEFBQcCARY4aHR0cDovL2NvbXB1Yi5tYW5hZ2VkLmVudHJ1c3Qu
+Y29tL0NQL0VNU0NvbW1lcmNpYWxDUC5wZGYwMgYDVR0fBCswKTAnoCWgI4YhaHR0cDovL2Ny
+bC5lbnRydXN0Lm5ldC8yMDQ4Y2EuY3JsMB0GA1UdDgQWBBTAMkkFZmaDhxlpua6DJQYZiwXX
+dDAfBgNVHSMEGDAWgBRV5IHREYC+2Im5CKMx+aEkCRa5cDANBgkqhkiG9w0BAQUFAAOCAQEA
+D7NwMLoCbvFzWEObVh724gCE6XY+xB2NpOrYpu7dlh98kzn7upnY1BMhjvLHiWDMcxIIsar/
+XFNI7AePCF4PGpvfudBtB/U5umTxFVYgLLexxsN2cUOP5yd0mJb6k3wU6NOi8mPZNtSfullU
+s7avzGHWx787no9d97XrIKKCMV8HwJjtZCt0OKFXVCYWMNMcFqVvBX2pbqgSlSBtZhzTIfi3
+MYkEOY9Zgrtsh+2hP22OJuskImNEHqlYbM//OqlCGQz+4sK6Ai/3HMfKFKJ/6Oyf8j48dO12
+3nPRMQAy/oBHEITGQQUK0hdDZyglGOzTHGWH2Ae33vrzs+8T9rG8GzCCBxEwggX5oAMCAQIC
+BEwfo4cwDQYJKoZIhvcNAQEFBQAwgYAxCzAJBgNVBAYTAlVTMRAwDgYDVQQKEwdFbnRydXN0
+MSIwIAYDVQQLExlDZXJ0aWZpY2F0aW9uIEF1dGhvcml0aWVzMTswOQYDVQQDEzJFbnRydXN0
+IE1hbmFnZWQgU2VydmljZXMgQ29tbWVyY2lhbCBQdWJsaWMgUm9vdCBDQTAeFw0xMDA3MDcy
+MDE0NTRaFw0zMDA2MDcyMDQ0NTRaMHcxCzAJBgNVBAYTAlVTMRAwDgYDVQQKEwdFbnRydXN0
+MSIwIAYDVQQLExlDZXJ0aWZpY2F0aW9uIEF1dGhvcml0aWVzMTIwMAYDVQQDEylFbnRydXN0
+IEVkdWNhdGlvbiBTaGFyZWQgU2VydmljZSBQcm92aWRlcjCCASIwDQYJKoZIhvcNAQEBBQAD
+ggEPADCCAQoCggEBAOtRQhPAzU32kb0lQD4Zbvrz4z1/uMOXoAURJ8//Dm3SQFuuG+lDwyE4
+zkk85mtmqJgbGsA2cQOiv7189VBAHxgvOkc322Riwi5TKErPAk/tU9ay2Zne1S4oDeMiHp9K
+pgde0OcjKE7fx6PZmB/i0QWqVvm6C20cjFUcjYOs8QH79lh10w0bUuvR8/jk5FJ8Ss2cxDl2
+CIB826jCZW2SKsQ1LlRSJIJ9AOfn6fr/m5aBHCEoqAkrI0zK+CT3OTtMTRzoGvyh9Wv2oWVV
+OjlpUdD5HtxuFrDmps4Z2ZAE3+KCpX0G183hhEKzBRIDv3eC1Wv8J2mG/s+aNRqcgLmWFQcC
+AwEAAaOCA5kwggOVMA4GA1UdDwEB/wQEAwIBBjASBgNVHRMBAf8ECDAGAQH/AgEAMDwGA1Ud
+IAQ1MDMwDwYNYIZIAYb6a4FIAwoCBDAPBg1ghkgBhvprgUgDCgIFMA8GDWCGSAGG+muBSAMK
+AgYwggE/BggrBgEFBQcBAQSCATEwggEtMFUGCCsGAQUFBzAChklodHRwOi8vY29tcHVid2Vi
+Lm1hbmFnZWQuZW50cnVzdC5jb20vQUlBL0NlcnRzSXNzdWVkVG9FTVNDb21QdWJSb290Q0Eu
+cDdjMIHTBggrBgEFBQcwAoaBxmxkYXA6Ly9jb21wdWJzaGFkLm1hbmFnZWQuZW50cnVzdC5j
+b20vb3U9RW50cnVzdCUyME1hbmFnZWQlMjBTZXJ2aWNlcyUyMENvbW1lcmNpYWwlMjBQdWJs
+aWMlMjBSb290JTIwQ0Esb3U9Q2VydGlmaWNhdGlvbiUyMEF1dGhvcml0aWVzLG89RW50cnVz
+dCxjPVVTP2NBQ2VydGlmaWNhdGU7YmluYXJ5LGNyb3NzQ2VydGlmaWNhdGVQYWlyO2JpbmFy
+eTCCAawGA1UdHwSCAaMwggGfMIH+oIH7oIH4hj1odHRwOi8vY29tcHVid2ViLm1hbmFnZWQu
+ZW50cnVzdC5jb20vQ1JMcy9FTVNDb21QdWJSb290Q0EuY3JshoG2bGRhcDovL2NvbXB1YnNo
+YWQubWFuYWdlZC5lbnRydXN0LmNvbS9jbj1FbnRydXN0JTIwTWFuYWdlZCUyMFNlcnZpY2Vz
+JTIwQ29tbWVyY2lhbCUyMFB1YmxpYyUyMFJvb3QlMjBDQSxvdT1DZXJ0aWZpY2F0aW9uJTIw
+QXV0aG9yaXRpZXMsbz1FbnRydXN0LGM9VVM/Y2VydGlmaWNhdGVSZXZvY2F0aW9uTGlzdDti
+aW5hcnkwgZuggZiggZWkgZIwgY8xCzAJBgNVBAYTAlVTMRAwDgYDVQQKEwdFbnRydXN0MSIw
+IAYDVQQLExlDZXJ0aWZpY2F0aW9uIEF1dGhvcml0aWVzMTswOQYDVQQDEzJFbnRydXN0IE1h
+bmFnZWQgU2VydmljZXMgQ29tbWVyY2lhbCBQdWJsaWMgUm9vdCBDQTENMAsGA1UEAxMEQ1JM
+MTAfBgNVHSMEGDAWgBTAMkkFZmaDhxlpua6DJQYZiwXXdDAdBgNVHQ4EFgQUIt2i+lhOgz5T
+iwGAExY11IEVtn8wDQYJKoZIhvcNAQEFBQADggEBAHQ4kWFG0YwlCojUFLo5/Btbxr51qNZL
+52Mf5QVC9O09b7YZE1ZcAUJlYxerhKPV66xQAhro9ch/VUYDKu1/qTAX5OGRH5sq5lBO2Rat
+B7tEyEuY3S6SWXCsJcvyi7eUrPov5Ojo0GsMymqNbdU+Uy/e3I58daQx9BzVGIGXg8iAxt+7
+cG4NtiXeCOXXfjPemC/OxuzH9k6SEv16ztlnfOFBJVs5jI1iKCtKDSd74K/k3CgvBK8zEvgL
+jXzLgWS/pUqIv8jjhAFEu0pfxsXkpn69ORT3pw972+q+A2rg8lilyd9KIzvcpi07orohVeXn
+Q+67NIscURgNDDtfFRWrq3cwggfXMIIGv6ADAgECAgRMH9d4MA0GCSqGSIb3DQEBBQUAMHcx
+CzAJBgNVBAYTAlVTMRAwDgYDVQQKEwdFbnRydXN0MSIwIAYDVQQLExlDZXJ0aWZpY2F0aW9u
+IEF1dGhvcml0aWVzMTIwMAYDVQQDEylFbnRydXN0IEVkdWNhdGlvbiBTaGFyZWQgU2Vydmlj
+ZSBQcm92aWRlcjAeFw0xMTA3MjgxODAxMjFaFw0xNjA3MjgxODMxMjFaMIGsMQswCQYDVQQG
+EwJVUzESMBAGA1UECBMJV2lzY29uc2luMSAwHgYDVQQKExdVbml2ZXJzaXR5IG9mIFdpc2Nv
+bnNpbjEQMA4GA1UECxMHTWFkaXNvbjFVMBEGA1UEBRMKMDAwMDAwMDU1NDAWBgNVBAMTD0Vy
+aWMgQiBEYWxxdWlzdDAoBgkqhkiG9w0BCQEWG2VyaWMuZGFscXVpc3RAZG9pdC53aXNjLmVk
+dTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKh4khZd6cTV19M5evwKbBEWDijA
+DofaXZL3WpVqn2PFr3/g/vkO6wWIF3yKE/MuHt5Q5o4Pbkf5i1vZCOIXoHhrBKozID/lmbeu
+ea69gW9RpdBwkCUitiwnnzYsrKUxReMV6pUzfK6cRcVIEU/joXHaJSJs3/UuvWE+fC8zFQ0c
+DBJI4RCdHLvh0VshokZhISF6JsHXKzAgp2CXTrLTTMUyEbtfG5PvDnYpnQTRdaAdQGAg/xnf
+WM1SSvAI5X/Gd56cMoIuH4w2+1k9IyhYGQAwP4lW4vkGm0eSP10xvqkMA0ZreDeBkQcanIem
+ERXKM9ppUWQILtSuEqDMcmUFRFcCAwEAAaOCBDMwggQvMA4GA1UdDwEB/wQEAwIFoDArBgNV
+HRAEJDAigA8yMDExMDcyODE4MDEyMVqBDzIwMTUwMTI3MTUzMTIxWjCCATMGCCsGAQUFBwEB
+BIIBJTCCASEwUwYIKwYBBQUHMAKGR2h0dHA6Ly9lZHVjYXRpb253ZWIubWFuYWdlZC5lbnRy
+dXN0LmNvbS9BSUEvQ2VydHNJc3N1ZWRUb0VNU0VkU1NQQ0EucDdjMIHJBggrBgEFBQcwAoaB
+vGxkYXA6Ly9lZHVjYXRpb25zaGFkLm1hbmFnZWQuZW50cnVzdC5jb20vY249RW50cnVzdCUy
+MEVkdWNhdGlvbiUyMFNoYXJlZCUyMFNlcnZpY2UlMjBQcm92aWRlcixvdT1DZXJ0aWZpY2F0
+aW9uJTIwQXV0aG9yaXRpZXMsbz1FbnRydXN0LGM9VVM/Y0FDZXJ0aWZpY2F0ZTtiaW5hcnks
+Y3Jvc3NDZXJ0aWZpY2F0ZVBhaXI7YmluYXJ5MCsGA1UdIAQkMCIwDwYNYIZIAYb6a4FIAwoC
+BDAPBg1ghkgBhvprgUgDCgIFMFgGCWCGSAGG+mseAQRLDElUaGUgcHJpdmF0ZSBrZXkgY29y
+cmVzcG9uZGluZyB0byB0aGlzIGNlcnRpZmljYXRlIG1heSBoYXZlIGJlZW4gZXhwb3J0ZWQu
+MCYGA1UdEQQfMB2BG2VyaWMuZGFscXVpc3RAZG9pdC53aXNjLmVkdTCCAaIGA1UdHwSCAZkw
+ggGVMIH9oIH6oIH3hkZodHRwOi8vZWR1Y2F0aW9ud2ViLm1hbmFnZWQuZW50cnVzdC5jb20v
+Q1JMcy9FbnRydXN0RURVQ0FUSU9OU1NQQ0EuY3JshoGsbGRhcDovL2VkdWNhdGlvbnNoYWQu
+bWFuYWdlZC5lbnRydXN0LmNvbS9jbj1FbnRydXN0JTIwRWR1Y2F0aW9uJTIwU2hhcmVkJTIw
+U2VydmljZSUyMFByb3ZpZGVyLG91PUNlcnRpZmljYXRpb24lMjBBdXRob3JpdGllcyxvPUVu
+dHJ1c3QsYz1VUz9jZXJ0aWZpY2F0ZVJldm9jYXRpb25MaXN0O2JpbmFyeTCBkqCBj6CBjKSB
+iTCBhjELMAkGA1UEBhMCVVMxEDAOBgNVBAoTB0VudHJ1c3QxIjAgBgNVBAsTGUNlcnRpZmlj
+YXRpb24gQXV0aG9yaXRpZXMxMjAwBgNVBAMTKUVudHJ1c3QgRWR1Y2F0aW9uIFNoYXJlZCBT
+ZXJ2aWNlIFByb3ZpZGVyMQ0wCwYDVQQDEwRDUkwyMB8GA1UdIwQYMBaAFCLdovpYToM+U4sB
+gBMWNdSBFbZ/MB0GA1UdDgQWBBSjX9p6AvNODW6BCg5FfXxGJxptGzAJBgNVHRMEAjAAMBkG
+CSqGSIb2fQdBAAQMMAobBFY4LjADAgSwMA0GCSqGSIb3DQEBBQUAA4IBAQCSQc6gRB27L8OG
+WuMgsUMYVFcsPNyxn+waiQ+vL2SlomlTxMRLzOgI4OZbds5PzlgQuwZyY/R3lTem3btd+GbT
+uusk6jToZ6s51o6jCQrRND4AOh7831kKdZm5Dxr6lwvgITuduNOlehiEAFbcBxNyMb7q8YTh
+03fVtnn69CmZvgkqc50hDTQ13mXfKRWrSIsnfu3jQeA6WBZgZZUjhzd5Z+q/cxOYiH282/zY
+HF2tN7iCa1rkOWPwHYgHKQgDfL9oyFFriYrXda1Yogb/T/OzrTxpKLuB21F++eooM6kNRPIS
+kqQ3iuWYVH0XiWRb2lDAH3jDz6HLh2n6CSJGFFAnMYIDjjCCA4oCAQEwfzB3MQswCQYDVQQG
+EwJVUzEQMA4GA1UEChMHRW50cnVzdDEiMCAGA1UECxMZQ2VydGlmaWNhdGlvbiBBdXRob3Jp
+dGllczEyMDAGA1UEAxMpRW50cnVzdCBFZHVjYXRpb24gU2hhcmVkIFNlcnZpY2UgUHJvdmlk
+ZXICBEwf13gwCQYFKw4DAhoFAKCCAeQwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkq
+hkiG9w0BCQUxDxcNMTIwMzEyMTU1NzI2WjAjBgkqhkiG9w0BCQQxFgQU1MVldgK+pUka4jvy
+61FwFO02F2IwXwYJKoZIhvcNAQkPMVIwUDALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwDgYI
+KoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgEoMIGP
+BgkrBgEEAYI3EAQxgYEwfzB3MQswCQYDVQQGEwJVUzEQMA4GA1UEChMHRW50cnVzdDEiMCAG
+A1UECxMZQ2VydGlmaWNhdGlvbiBBdXRob3JpdGllczEyMDAGA1UEAxMpRW50cnVzdCBFZHVj
+YXRpb24gU2hhcmVkIFNlcnZpY2UgUHJvdmlkZXICBEwf13gwgZEGCyqGSIb3DQEJEAILMYGB
+oH8wdzELMAkGA1UEBhMCVVMxEDAOBgNVBAoTB0VudHJ1c3QxIjAgBgNVBAsTGUNlcnRpZmlj
+YXRpb24gQXV0aG9yaXRpZXMxMjAwBgNVBAMTKUVudHJ1c3QgRWR1Y2F0aW9uIFNoYXJlZCBT
+ZXJ2aWNlIFByb3ZpZGVyAgRMH9d4MA0GCSqGSIb3DQEBAQUABIIBAEFP+db15r+JvEbda9Yx
+GUbyK+JWblWuIz5dfm+B5787PerZS2uY1lJs5fykN3HOc4qmhJNQQ8cxMP9Bhfv0DnC4T6rX
+AidAbwAoyX7IN2S6ZdmCpcWSluv+YpqW8k4/51vXOi/pHLjgWjAbBTxzqySwABmWTn6xI7Qm
+08yNFCcJXudWCRseJVPiG4BvIDlOu/kuvwmUQWjsGmEN7l83vn2Vk7DG60aQnPwFODmKNv4/
++dheeyrzcJvCdbWtQm3ehcCrQinPlAL9jx9IHyhIYCR51RCErm+wl1vFdNHMsy/Dw/yHJlIY
+NT9DPtac+Wa4w1ypCz4w493vv8JahbZG400AAAAAAAA=
+--------------ms030105050003030306080508--

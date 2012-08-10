@@ -1,0 +1,131 @@
+From: BOUSQUET Jeremie <Jeremie.BOUSQUET@gemalto.com>
+To: "xwiki-users@objectweb.org" <xwiki-users@objectweb.org>
+Date: Thu, 4 May 2006 17:11:18 +0200
+Subject: RE: [xwiki-users] any news on 1.0 release date
+Thread-Topic: [xwiki-users] any news on 1.0 release date
+Thread-Index: AcZq+Gbn5R5z+zqNQXeIaFSlvxexjQEk/glg
+Message-ID:
+ <EFC1CAA5DCEF684FAD20ACA07A1F546B146D8B4409@CROEXCFWP03.gemalto.com>
+In-Reply-To: <44526A09.4060307@xwiki.com>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Hi,
+
+I'm currently on version 0.9.840 of xwiki.
+I believe there won't be any problem to migrate the database part to versio=
+n 1.0.
+But what will we do about default page content and structure ?
+
+If you have had some nice features in left or right toolbar, or in top-menu=
+, will there be an easy way to "reinject" it in a migrated wiki ? Some kind=
+ of conflict resolution between the migrated wiki and the new 1.0 default i=
+nstalled wiki ...
+
+Regards,
+Jeremie.
+
+> -----Original Message-----
+> From: Ludovic Dubost [mailto:ludovic@xwiki.com]
+> Sent: vendredi 28 avril 2006 21:16
+> To: robin@soal.org
+> Cc: xwiki-users@objectweb.org
+> Subject: Re: [xwiki-users] any news on 1.0 release date
+>
+>
+> Yes. We hope to do it quickly after that since it should
+> bring many performance improvements.
+>
+> If you have a Wiki and are ok to be beta-tester of the
+> migration, let us know, we can move your wiki to a separate
+> platform which will be upgraded before all the other wikis.
+> Of course there are no risk of loosing data since we will do
+> a full backup before starting the migration.
+>
+> Ludovic
+>
+> Robin Fernandes a =E9crit :
+> > Great! Will xwiki.com be upgraded to 1.0B1 shortly after
+> the release?
+> >
+> > On 28/04/06, Ludovic Dubost <ludovic@xwiki.com> wrote:
+> >
+> >> We are working on it !
+> >> 1.0B1 is scheduled for sometime in the next 15 days
+> >>
+> >> Ludovic
+> >>
+> >> Duke Tantiprasut a =E9crit :
+> >>
+> >>> Hi All, any news on when the 1.0 candidates will be available?
+> >>>
+> >>> Cheers
+> >>>
+> >>> Duke
+> >>>
+> --------------------------------------------------------------------
+> >>> ----
+> >>>
+> >>>
+> >>> --
+> >>> You receive this message as a subscriber of the
+> xwiki-users@objectweb.org mailing list.
+> >>> To unsubscribe: mailto:xwiki-users-unsubscribe@objectweb.org
+> >>> For general help: mailto:sympa@objectweb.org?subject=3Dhelp
+> >>> ObjectWeb mailing lists service home page:
+> >>> http://www.objectweb.org/wws
+> >>>
+> >>>
+> >> --
+> >> Ludovic Dubost
+> >> XPertNet: http://www.xpertnet.fr/
+> >> Blog: http://www.ludovic.org/blog/
+> >> XWiki: http://www.xwiki.com
+> >> Skype: ldubost AIM: nvludo Yahoo: ludovic
+> >>
+> >>
+> >>
+> >>
+> >>
+> >> --
+> >> You receive this message as a subscriber of the
+> xwiki-users@objectweb.org mailing list.
+> >> To unsubscribe: mailto:xwiki-users-unsubscribe@objectweb.org
+> >> For general help: mailto:sympa@objectweb.org?subject=3Dhelp
+> >> ObjectWeb mailing lists service home page:
+> >> http://www.objectweb.org/wws
+> >>
+> >>
+> >>
+> >>
+> >
+> >
+> >
+> ----------------------------------------------------------------------
+> > --
+> >
+> >
+> > --
+> > You receive this message as a subscriber of the
+> xwiki-users@objectweb.org mailing list.
+> > To unsubscribe: mailto:xwiki-users-unsubscribe@objectweb.org
+> > For general help: mailto:sympa@objectweb.org?subject=3Dhelp
+> > ObjectWeb mailing lists service home page:
+> > http://www.objectweb.org/wws
+> >
+>
+>
+> --
+> Ludovic Dubost
+> XPertNet: http://www.xpertnet.fr/
+> Blog: http://www.ludovic.org/blog/
+> XWiki: http://www.xwiki.com
+> Skype: ldubost AIM: nvludo Yahoo: ludovic
+>
+>
+>

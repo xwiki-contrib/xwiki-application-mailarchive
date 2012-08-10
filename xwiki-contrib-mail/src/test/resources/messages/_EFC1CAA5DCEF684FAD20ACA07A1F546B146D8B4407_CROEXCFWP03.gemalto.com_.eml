@@ -1,0 +1,107 @@
+From: BOUSQUET Jeremie <Jeremie.BOUSQUET@gemalto.com>
+To: "xwiki-users@objectweb.org" <xwiki-users@objectweb.org>
+Date: Thu, 23 Nov 2006 09:34:10 +0100
+Subject: RE: [xwiki-users] Dates and Groovy
+Thread-Topic: [xwiki-users] Dates and Groovy
+Thread-Index: AccNvM0zhM7ISG1RTU+UxB8OVx3+HQAlLNsgACIlQMA=
+Message-ID:
+ <EFC1CAA5DCEF684FAD20ACA07A1F546B146D8B4407@CROEXCFWP03.gemalto.com>
+In-Reply-To:
+ <A05BB3524E11D445985947A33477E31001193CB4@GMSEXC03.CORP.DS.GEMPLUS.COM>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; charset=3Diso-8859-1"=
+>
+<META content=3D"MSHTML 6.00.2900.2912" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV dir=3Dltr align=3Dleft><SPAN class=3D198433308-23112006><FONT face=3DA=
+rial=20
+color=3D#0000ff size=3D2>Sorry, I forgot to tell that I'm using a local ins=
+tallation=20
+of xwiki 0.9.840</FONT></SPAN></DIV>
+<DIV dir=3Dltr align=3Dleft><SPAN class=3D198433308-23112006><FONT face=3DA=
+rial=20
+color=3D#0000ff size=3D2></FONT></SPAN>&nbsp;</DIV>
+<DIV dir=3Dltr align=3Dleft><SPAN class=3D198433308-23112006><FONT face=3DA=
+rial=20
+color=3D#0000ff size=3D2>BR</FONT></SPAN></DIV>
+<DIV dir=3Dltr align=3Dleft><SPAN class=3D198433308-23112006><FONT face=3DA=
+rial=20
+color=3D#0000ff size=3D2>J=E9r=E9mie</FONT></SPAN></DIV><BR>
+<BLOCKQUOTE dir=3Dltr=20
+style=3D"PADDING-LEFT: 5px; MARGIN-LEFT: 5px; BORDER-LEFT: #0000ff 2px soli=
+d; MARGIN-RIGHT: 0px">
+  <DIV class=3DOutlookMessageHeader lang=3Den-us dir=3Dltr align=3Dleft>
+  <HR tabIndex=3D-1>
+  <FONT face=3DTahoma size=3D2><B>From:</B> BOUSQUET Jeremie=20
+  [mailto:Jeremie.BOUSQUET@gemalto.com] <BR><B>Sent:</B> mercredi 22 novemb=
+re=20
+  2006 17:31<BR><B>To:</B> xwiki-users@objectweb.org<BR><B>Subject:</B>=20
+  [xwiki-users] Dates and Groovy<BR></FONT><BR></DIV>
+  <DIV></DIV>
+  <DIV dir=3Dltr align=3Dleft><SPAN class=3D642011616-22112006><FONT face=
+=3DArial=20
+  color=3D#0000ff size=3D2>Hello,</FONT></SPAN></DIV>
+  <DIV dir=3Dltr align=3Dleft><SPAN class=3D642011616-22112006><FONT face=
+=3DArial=20
+  color=3D#0000ff size=3D2></FONT></SPAN>&nbsp;</DIV>
+  <DIV dir=3Dltr align=3Dleft><SPAN class=3D642011616-22112006><FONT face=
+=3DArial=20
+  color=3D#0000ff size=3D2>I'm having a hard time manipulating Date objects=
+ in=20
+  Groovy implementation ...</FONT></SPAN></DIV>
+  <DIV dir=3Dltr align=3Dleft><SPAN class=3D642011616-22112006><FONT face=
+=3DArial=20
+  color=3D#0000ff size=3D2>I basically want to get a timestamp of a month a=
+go. For=20
+  example I get a timestamp "200611" for now, and I want to retrieve the=20
+  "200610" string.</FONT></SPAN></DIV>
+  <DIV dir=3Dltr align=3Dleft><SPAN class=3D642011616-22112006><FONT face=
+=3DArial=20
+  color=3D#0000ff size=3D2></FONT></SPAN>&nbsp;</DIV>
+  <DIV dir=3Dltr align=3Dleft><SPAN class=3D642011616-22112006><FONT face=
+=3DArial=20
+  color=3D#0000ff size=3D2>This is what I'm doing:</FONT></SPAN></DIV>
+  <DIV dir=3Dltr align=3Dleft><SPAN class=3D642011616-22112006><FONT face=
+=3DArial=20
+  color=3D#0000ff size=3D2></FONT></SPAN>&nbsp;</DIV>
+  <DIV dir=3Dltr align=3Dleft><SPAN class=3D642011616-22112006><FONT=20
+  face=3D"Courier New" color=3D#0000ff size=3D2>&lt;%<BR>timestamp =3D=20
+  $xwiki.formatDate($xwiki.getCurrentDate(),"yyyyMM")<BR>oldtime =3D=20
+  $xwiki.getDate().getTime()-(1000*60*60*24*30)<BR>def olddate =3D new=20
+  java.util.Date(oldtime)<BR>oldtimestamp =3D $xwiki.formatDate(olddate,=20
+  "yyyyMM")<BR>%&gt;</FONT></SPAN></DIV>
+  <DIV dir=3Dltr align=3Dleft><SPAN class=3D642011616-22112006><FONT=20
+  face=3D"Courier New" color=3D#0000ff size=3D2></FONT></SPAN>&nbsp;</DIV>
+  <DIV dir=3Dltr align=3Dleft><SPAN class=3D642011616-22112006><FONT face=
+=3DArial=20
+  color=3D#0000ff size=3D2>olddate contains a modified date (maybe the comp=
+utation=20
+  is wrong but for now it's not my problem). I get an error on last line, a=
+=20
+  NullPointerException occurring in the formatDate method. But I logged tha=
+t=20
+  olddate is not null (it contains a Date), so I don't really understand fr=
+om=20
+  where would come the NullPointerException ?????</FONT></SPAN></DIV>
+  <DIV dir=3Dltr align=3Dleft><SPAN class=3D642011616-22112006><FONT face=
+=3DArial=20
+  color=3D#0000ff size=3D2></FONT></SPAN>&nbsp;</DIV>
+  <DIV dir=3Dltr align=3Dleft><SPAN class=3D642011616-22112006><FONT face=
+=3DArial=20
+  color=3D#0000ff size=3D2>Many thanks in advance,</FONT></SPAN></DIV>
+  <DIV dir=3Dltr align=3Dleft><SPAN class=3D642011616-22112006><FONT face=
+=3DArial=20
+  color=3D#0000ff size=3D2></FONT></SPAN>&nbsp;</DIV>
+  <DIV dir=3Dltr align=3Dleft><SPAN class=3D642011616-22112006><FONT face=
+=3DArial=20
+  color=3D#0000ff size=3D2>J=E9r=E9mie</FONT></SPAN></DIV></BLOCKQUOTE></BO=
+DY></HTML>

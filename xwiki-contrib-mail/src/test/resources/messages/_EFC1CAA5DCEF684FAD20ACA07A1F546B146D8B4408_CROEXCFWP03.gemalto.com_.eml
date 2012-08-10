@@ -1,0 +1,110 @@
+From: BOUSQUET Jeremie <Jeremie.BOUSQUET@gemalto.com>
+To: "xwiki-users@objectweb.org" <xwiki-users@objectweb.org>
+Date: Thu, 23 Nov 2006 17:31:29 +0100
+Subject: RE: [xwiki-users] Dates and Groovy
+Thread-Topic: [xwiki-users] Dates and Groovy
+Thread-Index: AccO4LnH62oyiQg+RoSKYtFBH8WSMgAPAFWA
+Message-ID:
+ <EFC1CAA5DCEF684FAD20ACA07A1F546B146D8B4408@CROEXCFWP03.gemalto.com>
+In-Reply-To: <970abc0611230120ra01acbat3d5f7c8fe20aec0@mail.gmail.com>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Hi,
+
+Ok, many thanks, I understand better the lot of strange errors I got ... ;)
+
+J=E9r=E9mie
+
+> -----Original Message-----
+> From: jeremi23@gmail.com [mailto:jeremi23@gmail.com] On
+> Behalf Of jeremi joslin
+> Sent: jeudi 23 novembre 2006 10:21
+> To: xwiki-users@objectweb.org
+> Subject: Re: [xwiki-users] Dates and Groovy
+>
+> hi,
+> this is not groovy. in groovy, you don't have to put a $ in
+> front of a variable. Because velocity is the first parser to
+> render the page, the code $xwiki... is executed.
+>
+> your script should be like this :
+> <%
+> def timestamp =3D xwiki.formatDate(xwiki.getCurrentDate(),"yyyyMM")
+> def oldtime =3D xwiki.getDate().getTime()-(1000*60*60*24*30)
+> def olddate =3D new java.util.Date(oldtime) def oldtimestamp =3D
+> xwiki.formatDate(olddate, "yyyyMM") %>
+>
+>
+> jeremi
+>
+> On 11/23/06, BOUSQUET Jeremie <Jeremie.BOUSQUET@gemalto.com> wrote:
+> >
+> >
+> > Sorry, I forgot to tell that I'm using a local installation
+> of xwiki
+> > 0.9.840
+> >
+> > BR
+> > J=E9r=E9mie
+> >
+> >
+> >  ________________________________
+> >  From: BOUSQUET Jeremie [mailto:Jeremie.BOUSQUET@gemalto.com]
+> > Sent: mercredi 22 novembre 2006 17:31
+> > To: xwiki-users@objectweb.org
+> > Subject: [xwiki-users] Dates and Groovy
+> >
+> >
+> >
+> > Hello,
+> >
+> > I'm having a hard time manipulating Date objects in Groovy
+> > implementation ...
+> > I basically want to get a timestamp of a month ago. For
+> example I get
+> > a timestamp "200611" for now, and I want to retrieve the
+> "200610" string.
+> >
+> > This is what I'm doing:
+> >
+> > <%
+> > timestamp =3D
+> > $xwiki.formatDate($xwiki.getCurrentDate(),"yyyyMM")
+> > oldtime =3D $xwiki.getDate().getTime()-(1000*60*60*24*30)
+> > def olddate =3D new java.util.Date(oldtime) oldtimestamp =3D
+> > $xwiki.formatDate(olddate, "yyyyMM") %>
+> >
+> > olddate contains a modified date (maybe the computation is
+> wrong but
+> > for now it's not my problem). I get an error on last line, a
+> > NullPointerException occurring in the formatDate method.
+> But I logged
+> > that olddate is not null (it contains a Date), so I don't really
+> > understand from where would come the NullPointerException ?????
+> >
+> > Many thanks in advance,
+> >
+> > J=E9r=E9mie
+> >
+> > --
+> > You receive this message as a subscriber of the
+> > xwiki-users@objectweb.org mailing list.
+> > To unsubscribe:
+> > mailto:xwiki-users-unsubscribe@objectweb.org
+> > For general help: mailto:sympa@objectweb.org?subject=3Dhelp
+> > ObjectWeb mailing lists service home page:
+> > http://www.objectweb.org/wws
+> >
+> >
+> >
+>
+>
+> --
+> jeremi
+>

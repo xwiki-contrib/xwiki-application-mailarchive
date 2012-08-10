@@ -28,12 +28,12 @@
   <parent>
     <groupId>org.xwiki.contrib</groupId>
     <artifactId>xwiki-contrib-mailarchive</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-contrib-mail</artifactId>
   <name>XWiki - Mail Component</name>
   <description>${project.name} - API wrapped around Javamail for basic features.</description>
-
+  
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -77,4 +77,28 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
+  <profiles>
+  	<profile>
+  		<id>integration-tests</id>
+  		  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.12.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  	</profile>
+  </profiles>
+  
 </project>

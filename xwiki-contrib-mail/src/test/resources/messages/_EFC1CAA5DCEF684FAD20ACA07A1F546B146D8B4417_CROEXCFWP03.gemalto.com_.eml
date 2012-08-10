@@ -1,0 +1,72 @@
+From: BOUSQUET Jeremie <Jeremie.BOUSQUET@gemalto.com>
+To: XWiki Users <users@xwiki.org>
+Date: Tue, 11 Dec 2007 15:55:25 +0100
+Subject: RE: [xwiki-users] [xwiki-devs] New xwiki.org web site
+Thread-Topic: [xwiki-users] [xwiki-devs] New xwiki.org web site
+Thread-Index: Acg78biGFCe78wGKQSmEAm84TdAzSAAE/p+A
+Message-ID:
+ <EFC1CAA5DCEF684FAD20ACA07A1F546B146D8B4417@CROEXCFWP03.gemalto.com>
+References:
+ <E8DA5EF3-6C65-457E-9970-6D4A2FB18730@massol.net><475E7DD0.8090701@ics.muni.cz>
+ <C5136C38-1D08-4A86-8B4D-F1AF2C98A8F3@massol.net>
+In-Reply-To: <C5136C38-1D08-4A86-8B4D-F1AF2C98A8F3@massol.net>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+
+>> Halo,
+>>
+>> is the new (an beautifull) skin created only for xwiki.org or will =20
+>> be in
+>> standard instalation of XWiki Enterprise.
+
+>It'll be available for everyone in the near future. we need to make it =20
+>generic, save it in SVN and package it but then this is done it'll be =20
+>made available to all as the main skin by default.
+
+Will the albatross skin still be available and maintained?
+
+
+Jeremie
+
+
+
+> Vincent Massol napsal(a):
+>> Hi everyone,
+>>
+>> We now have a new version of the xwiki.org web site up and running =20
+>> on http://xwiki.org
+>>
+>> Let us know if you find any issue.
+>>
+>> I'd like to thank the following persons who helped:
+>>
+>> - Laurent Lunati for the skin
+>> - Thomas Mortagne for helping me with the migration
+>> - Guillaume Lerouge also for helping with the migration
+>> - Raffaello for the admin part
+>>
+>> I really like the new site, hope you'll like it too :)
+>>
+>> -Vincent, on behalf of the xwiki dev team
+>>
+>> _______________________________________________
+>> devs mailing list
+>> devs@xwiki.org
+>> http://lists.xwiki.org/mailman/listinfo/devs
+>>
+>
+> _______________________________________________
+> devs mailing list
+> devs@xwiki.org
+> http://lists.xwiki.org/mailman/listinfo/devs
+
+_______________________________________________
+users mailing list
+users@xwiki.org
+http://lists.xwiki.org/mailman/listinfo/users

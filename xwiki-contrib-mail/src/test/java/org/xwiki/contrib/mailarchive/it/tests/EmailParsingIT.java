@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.test;
+package org.xwiki.contrib.mailarchive.it.tests;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -35,12 +35,14 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.contrib.mail.MailContent;
+import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mail.internal.JavamailMessageParser;
+import org.xwiki.contrib.mailarchive.it.ITUtils;
 
 /**
  * @version $Id$
  */
-public class LoadMailsIT
+public class EmailParsingIT
 {
     private JavamailMessageParser parser;
 
@@ -49,6 +51,30 @@ public class LoadMailsIT
     {
         Logger logger = LoggerFactory.getLogger("org.xwiki.contrib.test.LoadMailsIT");
         parser = new JavamailMessageParser(logger);
+
+    }
+
+    @Test
+    public void testParseHeaders() throws Exception
+    {
+        URL url = Thread.currentThread().getContextClassLoader().getResource("messages/dummy.txt");
+        File f;
+        try {
+            f = new File(url.toURI());
+        } catch (URISyntaxException e) {
+            f = new File(url.getPath());
+        }
+        File dir = f.getParentFile();
+
+        for (File file : dir.listFiles(new EmlFilter())) {
+            Message message = ITUtils.read("messages/" + file.getName());
+
+            MailItem m = parser.parseHeaders(message);
+
+            System.out.println("PARSING RESULT for " + file.getName() + " [" + m + "]");
+            // TODO: these are very minimal checks ...
+            assertNotNull("Failed to parse headers for " + file.getName(), m);
+        }
 
     }
 
@@ -65,11 +91,12 @@ public class LoadMailsIT
         File dir = f.getParentFile();
 
         for (File file : dir.listFiles(new EmlFilter())) {
-            Message message = ReadEmailFromFile.read("messages/" + file.getName());
+            Message message = ITUtils.read("messages/" + file.getName());
 
             MailContent content = parser.extractMailContent(message);
 
             System.out.println("PARSING RESULT for " + file.getName() + " [" + content + "]");
+            // TODO: these are very minimal checks ...
             assertNotNull("Failed to parse content for " + file.getName(), content);
             assertFalse("No text nor html content for " + file.getName(), StringUtils.isBlank(content.getText())
                 && StringUtils.isBlank(content.getHtml()));

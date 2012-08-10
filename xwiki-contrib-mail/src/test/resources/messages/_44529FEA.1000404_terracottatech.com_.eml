@@ -1,0 +1,83 @@
+Received: from GMSEXC01.CORP.DS.GEMPLUS.COM ([10.2.158.60]) by GMSEXC03.CORP.DS.GEMPLUS.COM with Microsoft SMTPSVC(6.0.3790.1830);
+	 Sat, 29 Apr 2006 01:07:39 +0200
+Received: from croot.gemplus.com ([195.25.133.234]) by GMSEXC01.CORP.DS.GEMPLUS.COM with Microsoft SMTPSVC(6.0.3790.1830);
+	 Sat, 29 Apr 2006 01:07:37 +0200
+Received: from mars.objectweb.org (mars.objectweb.org [194.199.16.17])
+	by croot.gemplus.com (Postfix) with ESMTP id 0B2D0226EC4
+	for <jeremie.bousquet@gemplus.com>; Fri, 28 Apr 2006 23:07:34 +0000 (GMT)
+Received: from sympa by mars.objectweb.org with local (Exim 3.36 #1 (Debian))
+	id 1FZc3F-000160-00; Sat, 29 Apr 2006 01:07:05 +0200
+Received: from prod.terracottatech.com ([69.20.13.229])
+	by mars.objectweb.org with esmtp (Exim 3.36 #1 (Debian))
+	id 1FZc3B-00011T-00
+	for <xwiki-users@objectweb.org>; Sat, 29 Apr 2006 01:07:01 +0200
+Received: from [10.0.0.151] (pnapgw.terracottatech.com [72.5.115.161])
+	(authenticated bits=0)
+	by prod.terracottatech.com (8.13.6/8.13.6) with ESMTP id k3SN6HSD005740
+	(version=TLSv1/SSLv3 cipher=RC4-MD5 bits=128 verify=NO)
+	for <xwiki-users@objectweb.org>; Fri, 28 Apr 2006 16:06:18 -0700
+From: Dave Mangot <dmangot@terracottatech.com>
+To: "xwiki-users@objectweb.org" <xwiki-users@objectweb.org>
+Date: Sat, 29 Apr 2006 01:06:18 +0200
+Subject: [xwiki-users] can't see blog entries
+Thread-Topic: [xwiki-users] can't see blog entries
+Thread-Index: AcZrGIveywCdZ2rQSwGXxrkua2Qo9A==
+Message-ID: <44529FEA.1000404@terracottatech.com>
+List-Help: <mailto:sympa@objectweb.org?subject=help>
+List-Subscribe: <mailto:sympa@objectweb.org?subject=subscribe%20xwiki-users>
+List-Unsubscribe:
+ <mailto:sympa@objectweb.org?subject=unsubscribe%20xwiki-users>
+Reply-To: "xwiki-users@objectweb.org" <xwiki-users@objectweb.org>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-Auto-Response-Suppress: All
+X-MS-TNEF-Correlator:
+Content-Type: multipart/mixed;
+	boundary="_002_44529FEA1000404terracottatechcom_"
+MIME-Version: 1.0
+
+--_002_44529FEA1000404terracottatechcom_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+I haven't heard anything back, so perhaps my last post wasn't explained
+very well.
+
+When I enter a new page using "Add a News" on the front page of my
+Xwiki, my page shows up on the front page as a new entry, but never
+appears in the category I had assigned to it.
+
+What could that be?
+
+                                                                        -Da=
+ve
+
+--
+Dave Mangot
+Terracotta Inc.
+650 Townsend St. Suite 325
+San Francisco, CA 94103 USA
++1 415 738 4059
+dmangot@terracottatech.com
+
+This e-mail incorporates Terracotta's confidentiality policy, which is
+online at http://www.terracottatech.com/emailconfidentiality.shtml
+
+
+--_002_44529FEA1000404terracottatechcom_
+Content-Type: text/plain; name="message-footer.txt"
+Content-Description: message-footer.txt
+Content-Disposition: attachment; filename="message-footer.txt"; size=353;
+	creation-date="Tue, 02 May 2006 07:07:56 GMT";
+	modification-date="Tue, 02 May 2006 07:07:56 GMT"
+Content-Transfer-Encoding: base64
+
+DQotLQ0KWW91IHJlY2VpdmUgdGhpcyBtZXNzYWdlIGFzIGEgc3Vic2NyaWJlciBvZiB0aGUgeHdp
+a2ktdXNlcnNAb2JqZWN0d2ViLm9yZyBtYWlsaW5nIGxpc3QuDQpUbyB1bnN1YnNjcmliZTogbWFp
+bHRvOnh3aWtpLXVzZXJzLXVuc3Vic2NyaWJlQG9iamVjdHdlYi5vcmcNCkZvciBnZW5lcmFsIGhl
+bHA6IG1haWx0bzpzeW1wYUBvYmplY3R3ZWIub3JnP3N1YmplY3Q9aGVscA0KT2JqZWN0V2ViIG1h
+aWxpbmcgbGlzdHMgc2VydmljZSBob21lIHBhZ2U6IGh0dHA6Ly93d3cub2JqZWN0d2ViLm9yZy93
+d3MNCg==
+
+--_002_44529FEA1000404terracottatechcom_--

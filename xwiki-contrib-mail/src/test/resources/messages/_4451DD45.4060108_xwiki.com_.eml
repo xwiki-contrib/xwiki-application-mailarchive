@@ -1,0 +1,100 @@
+Received: from GMSEXC04.CORP.DS.GEMPLUS.COM ([10.2.158.52]) by GMSEXC03.CORP.DS.GEMPLUS.COM with Microsoft SMTPSVC(6.0.3790.1830);
+	 Fri, 28 Apr 2006 11:17:21 +0200
+Received: from GMSEXC01.CORP.DS.GEMPLUS.COM ([10.2.158.60]) by GMSEXC04.CORP.DS.GEMPLUS.COM with Microsoft SMTPSVC(6.0.3790.1830);
+	 Fri, 28 Apr 2006 11:17:21 +0200
+Received: from croot.gemplus.com ([195.25.133.234]) by GMSEXC01.CORP.DS.GEMPLUS.COM with Microsoft SMTPSVC(6.0.3790.1830);
+	 Fri, 28 Apr 2006 11:17:21 +0200
+Received: from mars.objectweb.org (mars.objectweb.org [194.199.16.17])
+	by croot.gemplus.com (Postfix) with ESMTP id B527D226EC4
+	for <jeremie.bousquet@gemplus.com>; Fri, 28 Apr 2006 09:17:12 +0000 (GMT)
+Received: from sympa by mars.objectweb.org with local (Exim 3.36 #1 (Debian))
+	id 1FZP5V-00027w-00; Fri, 28 Apr 2006 11:16:33 +0200
+Received: from revol2.enst.fr ([137.194.2.14] helo=smtp2.enst.fr)
+	by mars.objectweb.org with esmtp (Exim 3.36 #1 (Debian))
+	id 1FZP5N-0001iq-00
+	for <xwiki-users@objectweb.org>; Fri, 28 Apr 2006 11:16:25 +0200
+Received: from localhost (localhost.enst.fr [127.0.0.1])
+	by smtp2.enst.fr (Postfix) with ESMTP id 0EE68519
+	for <xwiki-users@objectweb.org>; Fri, 28 Apr 2006 11:15:51 +0200 (CEST)
+Received: from smtp2.enst.fr ([127.0.0.1])
+ by localhost (revol2.enst.fr [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 38014-07 for <xwiki-users@objectweb.org>;
+ Fri, 28 Apr 2006 11:15:50 +0200 (CEST)
+Received: from [192.168.1.105] (dhcp26-122.enst.fr [137.194.26.122])
+	by smtp2.enst.fr (Postfix) with ESMTP id 0CEDA2A1
+	for <xwiki-users@objectweb.org>; Fri, 28 Apr 2006 11:15:50 +0200 (CEST)
+From: Ludovic Dubost <ludovic@xwiki.com>
+To: "xwiki-users@objectweb.org" <xwiki-users@objectweb.org>
+Date: Fri, 28 Apr 2006 11:15:49 +0200
+Subject: Re: [xwiki-users] any news on 1.0 release date
+Thread-Topic: [xwiki-users] any news on 1.0 release date
+Thread-Index: AcZqpI4bJfP0TOSzS8mS933JQP70aQ==
+Message-ID: <4451DD45.4060108@xwiki.com>
+References: <824028f0604271252i2f4792dck45aa9012866e3943@mail.gmail.com>
+List-Help: <mailto:sympa@objectweb.org?subject=help>
+List-Subscribe: <mailto:sympa@objectweb.org?subject=subscribe%20xwiki-users>
+List-Unsubscribe:
+ <mailto:sympa@objectweb.org?subject=unsubscribe%20xwiki-users>
+In-Reply-To: <824028f0604271252i2f4792dck45aa9012866e3943@mail.gmail.com>
+Reply-To: "xwiki-users@objectweb.org" <xwiki-users@objectweb.org>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-Auto-Response-Suppress: All
+X-MS-TNEF-Correlator:
+Content-Type: multipart/mixed; boundary="_002_4451DD454060108xwikicom_"
+MIME-Version: 1.0
+
+--_002_4451DD454060108xwikicom_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+
+We are working on it !
+1.0B1 is scheduled for sometime in the next 15 days
+
+Ludovic
+
+Duke Tantiprasut a =E9crit :
+> Hi All, any news on when the 1.0 candidates will be available?
+>
+> Cheers
+>
+> Duke
+> ------------------------------------------------------------------------
+>
+>
+> --
+> You receive this message as a subscriber of the xwiki-users@objectweb.org=
+ mailing list.
+> To unsubscribe: mailto:xwiki-users-unsubscribe@objectweb.org
+> For general help: mailto:sympa@objectweb.org?subject=3Dhelp
+> ObjectWeb mailing lists service home page: http://www.objectweb.org/wws
+>
+
+
+--
+Ludovic Dubost
+XPertNet: http://www.xpertnet.fr/
+Blog: http://www.ludovic.org/blog/
+XWiki: http://www.xwiki.com
+Skype: ldubost AIM: nvludo Yahoo: ludovic
+
+
+
+--_002_4451DD454060108xwikicom_
+Content-Type: text/plain; name="message-footer.txt"
+Content-Description: message-footer.txt
+Content-Disposition: attachment; filename="message-footer.txt"; size=353;
+	creation-date="Tue, 02 May 2006 07:08:05 GMT";
+	modification-date="Tue, 02 May 2006 07:08:05 GMT"
+Content-Transfer-Encoding: base64
+
+DQotLQ0KWW91IHJlY2VpdmUgdGhpcyBtZXNzYWdlIGFzIGEgc3Vic2NyaWJlciBvZiB0aGUgeHdp
+a2ktdXNlcnNAb2JqZWN0d2ViLm9yZyBtYWlsaW5nIGxpc3QuDQpUbyB1bnN1YnNjcmliZTogbWFp
+bHRvOnh3aWtpLXVzZXJzLXVuc3Vic2NyaWJlQG9iamVjdHdlYi5vcmcNCkZvciBnZW5lcmFsIGhl
+bHA6IG1haWx0bzpzeW1wYUBvYmplY3R3ZWIub3JnP3N1YmplY3Q9aGVscA0KT2JqZWN0V2ViIG1h
+aWxpbmcgbGlzdHMgc2VydmljZSBob21lIHBhZ2U6IGh0dHA6Ly93d3cub2JqZWN0d2ViLm9yZy93
+d3MNCg==
+
+--_002_4451DD454060108xwikicom_--

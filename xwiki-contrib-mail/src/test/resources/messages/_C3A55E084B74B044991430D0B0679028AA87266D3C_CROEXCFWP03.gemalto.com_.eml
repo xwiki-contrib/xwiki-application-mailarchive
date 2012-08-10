@@ -1,0 +1,145 @@
+Received: from CROEXCFWP03.gemalto.com ([10.3.0.244]) by
+ CROHUBBWP01.gemalto.com ([10.3.0.241]) with mapi; Thu, 11 Jun 2009 09:58:43
+ +0200
+From: BOUSQUET Jeremie <Jeremie.BOUSQUET@gemalto.com>
+To: BOUSQUET Jeremie <Jeremie.BOUSQUET@gemalto.com>, 'Arnaud bourree'
+	<arnaud.bourree@gmail.com>, 'Jeremie Bousquet' <jeremie.bousquet@gmail.com>
+Date: Thu, 11 Jun 2009 09:58:42 +0200
+Subject: RE: [xwiki-users] [ANN] XWiki Enterprise 1.9 Released
+Thread-Topic: [xwiki-users] [ANN] XWiki Enterprise 1.9 Released
+Thread-Index: AcnqYmPduZRhPKlrSXSQbMT8GdN/lwAB9kfwAAAKLFA=
+Message-ID:
+ <C3A55E084B74B044991430D0B0679028AA87266D3C@CROEXCFWP03.gemalto.com>
+References: <c58832290906100830p68549156ufa6ae15603d4fddc@mail.gmail.com>
+ <ac06429e0906110001md6c6af6udaa80f089b04446d@mail.gmail.com>
+ <C3A55E084B74B044991430D0B0679028AA87266D3B@CROEXCFWP03.gemalto.com>
+In-Reply-To:
+ <C3A55E084B74B044991430D0B0679028AA87266D3B@CROEXCFWP03.gemalto.com>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Exchange-Organization-AuthAs: Internal
+X-MS-Exchange-Organization-AuthMechanism: 03
+X-MS-Exchange-Organization-AuthSource: CROHUBBWP01.gemalto.com
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+acceptlanguage: fr-FR, en-US
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+Par contre je sais pas si je laisse la syntaxe 2.0 par d=E9faut ?
+
+A voir ...
+
+
+
+BOUSQUET Jeremie
+GGS Europe Solution CMO & PMO
+Gemalto
+Tel: +33 4 42 36 42 93
+Avenue du Jujubier Z.I. Ath=E9lia IV BP 90
+13705 LA CIOTAT CEDEX
+jeremie.bousquet@gemalto.com
+cmo-gse@gemplus.com
+www.gemalto.com
+
+
+
+
+
+
+
+
+-----Original Message-----
+From: BOUSQUET Jeremie
+Sent: jeudi 11 juin 2009 09:58
+To: Arnaud bourree; Jeremie Bousquet
+Subject: RE: [xwiki-users] [ANN] XWiki Enterprise 1.9 Released
+
+=C7a tombe bien , vanille ne r=E9pond pas (trop lent), je vais en profiter =
+... ;-)
+
+
+
+BOUSQUET Jeremie
+GGS Europe Solution CMO & PMO
+Gemalto
+Tel: +33 4 42 36 42 93
+Avenue du Jujubier Z.I. Ath=E9lia IV BP 90
+13705 LA CIOTAT CEDEX
+jeremie.bousquet@gemalto.com
+cmo-gse@gemplus.com
+www.gemalto.com
+
+
+
+
+
+
+
+
+-----Original Message-----
+From: Arnaud bourree [mailto:arnaud.bourree@gmail.com]
+Sent: jeudi 11 juin 2009 09:01
+To: Jeremie Bousquet; BOUSQUET Jeremie
+Subject: Fwd: [xwiki-users] [ANN] XWiki Enterprise 1.9 Released
+
+Jerem'
+
+Y a plus qua ;-)
+
+Arnaud.
+
+
+---------- Forwarded message ----------
+From: Jean-Vincent Drean <jv@xwiki.com>
+Date: 2009/6/10
+Subject: [xwiki-users] [ANN] XWiki Enterprise 1.9 Released
+To: XWiki Users <users@xwiki.org>, XWiki Developers <devs@xwiki.org>
+
+
+The XWiki development team is pleased to announce the release of XWiki Ente=
+rprise 1.9.
+
+Go grab it at http://www.xwiki.org/xwiki/bin/view/Main/Download
+
+Final release of the XWiki Enterprise 1.9 version.
+
+Main changes:
+
+* UI improvements
+** Quick Jump to any Page navigation
+** Faster Save and Continue using AJAX
+** Improved Full Screen editing
+** New Live Table UI
+** Improved comments UI and functionality
+** Multiple attachment upload in one request
+** New UI for the Class and Object editors
+** Improved toolbar in the wiki editor
+** Preliminary support for Autosave
+* PDF export improvements
+* JavaScript improvements
+* Switched to UTF-8 as the default encoding
+* Mailsender improvements
+* New Office Importer feature: document splitting
+* XWiki 2.0 Syntax is enabled by default
+
+For more information see the Release notes at:
+http://www.xwiki.org/xwiki/bin/view/Main/ReleaseNotesXWikiEnterprise19
+
+Thanks,
+The XWiki dev team
+_______________________________________________
+users mailing list
+users@xwiki.org
+http://lists.xwiki.org/mailman/listinfo/users
+
+Internal Virus Database is out of date.
+Checked by AVG - http://www.avg.com
+Version: 8.0.175 / Virus Database: 270.9.1/1781 - Release Date: 11/11/2008 =
+8:59 AM
+
+Internal Virus Database is out of date.
+Checked by AVG - http://www.avg.com
+Version: 8.0.175 / Virus Database: 270.9.1/1781 - Release Date: 11/11/2008 =
+8:59 AM

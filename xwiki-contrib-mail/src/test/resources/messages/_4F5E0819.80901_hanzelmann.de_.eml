@@ -1,0 +1,313 @@
+Received: from smtp1.gemalto.com (193.56.114.194) by ABSHUBBWP01.gemalto.com
+ (10.3.0.231) with Microsoft SMTP Server id 8.3.192.1; Mon, 12 Mar 2012
+ 15:29:03 +0100
+Received: from mail.sonatype.org (207-223-241-82.contegix.com
+ [207.223.241.82])	by smtp1.gemalto.com (envelope-from
+ nexus-user-return-6772-Jeremie.BOUSQUET=gemalto.com@sonatype.org)
+ (8.14.3/8.14.3) with ESMTP id q2CERQYx031573	(version=TLSv1/SSLv3
+ cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT)	for
+ <Jeremie.BOUSQUET@gemalto.com>; Mon, 12 Mar 2012 15:27:30 +0100
+Received: (qmail 22029 invoked by uid 89); 12 Mar 2012 14:28:49 -0000
+Received: (qmail 22023 invoked by uid 89); 12 Mar 2012 14:28:49 -0000
+From: Benjamin Hanzelmann <benjamin@hanzelmann.de>
+To: "nexus-user@sonatype.org" <nexus-user@sonatype.org>
+Date: Mon, 12 Mar 2012 15:28:41 +0100
+Subject: Re: [nexus-user] Problem upgrading to 2.0.1 from 1.9.x:
+ IllegalArgumentException: Prefix string too short
+Thread-Topic: [nexus-user] Problem upgrading to 2.0.1 from 1.9.x:
+ IllegalArgumentException: Prefix string too short
+Thread-Index: Ac0AXHlImlQR0e6AS9mpkyKyijkm2w==
+Message-ID: <4F5E0819.80901@hanzelmann.de>
+References: <20120312112853.698ed584@tux-btj.asp-as.no>
+ <CAPLpRQ+raaieA3v5n1E3pPUKY07MsKFTMCqLRMrvD=vSW1vfzA@mail.gmail.com>
+ <20120312143551.10a785f2@tux-btj.asp-as.no>
+List-Help: <mailto:nexus-user-help@sonatype.org>
+List-Subscribe: <mailto:nexus-user-subscribe@sonatype.org>
+List-Unsubscribe: <mailto:nexus-user-unsubscribe@sonatype.org>
+In-Reply-To: <20120312143551.10a785f2@tux-btj.asp-as.no>
+Reply-To: "nexus-user@sonatype.org" <nexus-user@sonatype.org>
+Accept-Language: fr-FR, en-US
+Content-Language: fr-FR
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Exchange-Organization-AuthSource: ABSHUBBWP01.gemalto.com
+X-MS-Has-Attach:
+X-Auto-Response-Suppress: All
+X-MS-TNEF-Correlator:
+x-pm-nine: Xy1rY2FCZXJlaHdvTmduaW9HXC8zaW5pbWVHbW9yRmdub3J0U25PZ25pbW9DLV8K
+x-spam-free: -8.738 ()
+ BAYES_00,GEM_XTNDSET1,GEM_XTNDSET7,GEM_XTNDSET8,GEM_XTNDSET9,RDNS_DYNAMIC,RPL_XTNDSET0,RPL_XTNDSET7,RPL_XTNDSET8,RPL_XTNDSET9,RP_BONK_01,RP_PONK_01,RP_PONK_02,SPF_PASS,X_AUTH_WARN_FAKED
+x-scanned-by: MIMEDefang 2.70 on 193.56.114.194
+delivered-to: mailing list nexus-user@sonatype.org
+x-no-archive: yes
+list-post: <mailto:nexus-user@sonatype.org>
+user-agent: Mozilla/5.0 (X11; Linux i686; rv:10.0.2) Gecko/20120216
+ Thunderbird/10.0.2
+received-spf: none (207-223-240-94.contegix.com: domain at hanzelmann.de
+ does not designate permitted sender hosts)
+mailing-list: contact nexus-user-help@sonatype.org; run by ezmlm
+x-enigmail-version: 1.3.5
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+For example with GNU find:
+
+find sonatype-work \( -name "??" -or -name "?" \) -and -type f
+
+Ben
+
+On 12.03.2012 14:35, Bj=F8rn T Johansen wrote:
+> Thx.... Not sure how to find this file(s) though... But I will
+> wait to upgrade until this bug is fixed... :)
+>=20
+> BTJ
+>=20
+> On Mon, 12 Mar 2012 13:13:29 +0100 Tam=E1s Cserven=E1k=20
+> <tamas@cservenak.net> wrote:
+>=20
+>> Hi Bj=F8rn,
+>>=20
+>> the exception happens here:=20
+>> https://github.com/sonatype/nexus/blob/982f62b530768e490cf83c916d3aa2692=
+d38ede2/nexus/nexus-proxy/src/main/java/org/sonatype/nexus/proxy/storage/lo=
+cal/fs/DefaultFSPeer.java#L316
+>>
+>>
+>>
+>>=20
+And while I really consider this a bug (target name is shorter than 3
+>> characters it seems), this raises a question. While truly, this=20
+>> is a bug as code "assumes" the file name will be not shorter
+>> than 3 characters, it seems you do have some file in repository
+>> "3rd party" [id=3Dthirdparty] that has name less then 3
+>> characters. According to repository maven layout, this could
+>> never happen (either maven-metadata.xml or the artifact, but it
+>> is "G-A.ext", so the dash and dot and at least one char should be
+>> present for sure).
+>>=20
+>> Please find this file and simply delete it (if it is a wasteful=20
+>> one, at least it's sure it is not a maven artifact!). If you did=20
+>> find it but you cannot delete it, then this bug below is a=20
+>> blocker for you.
+>>=20
+>> I recorded an issue here=20
+>> https://issues.sonatype.org/browse/NEXUS-4955
+>>=20
+>>=20
+>> Thanks, ~t~
+>>=20
+>> 2012/3/12 Bj=F8rn T Johansen <btj@havleik.no>:
+>>> When I tried to uupgrade to Nexus 2.0.1 this weekend, I kept=20
+>>> getting the following error..:
+>>>=20
+>>>=20
+>>>=20
+>>> 2012-03-10 16:44:38 INFO  [ributesUpgrader] -=20
+>>> org.sonatype.nexus.proxy.attributes.upgrade.AttributeUpgraderThread
+>>>
+>>>=20
+- Upgrading legacy attributes of repository "3rd party"
+>>> [id=3Dthirdparty]. 2012-03-10 16:44:38 INFO  [ributesUpgrader] -=20
+>>> org.sonatype.nexus.proxy.maven.maven2.M2Repository -
+>>> Rebuilding item attributes in repository "3rd party"
+>>> [id=3Dthirdparty] from path=3D"/" 2012-03-10 16:44:39 INFO
+>>> [ributesUpgrader] -=20
+>>> org.sonatype.nexus.proxy.walker.DefaultWalker - Aborted
+>>> walking on repository "3rd party" [id=3Dthirdparty] from path
+>>> "/", cause: Prefix string too short 2012-03-10 16:44:39 ERROR=20
+>>> [ributesUpgrader] -=20
+>>> org.sonatype.nexus.proxy.attributes.upgrade.AttributeUpgraderThread
+>>>
+>>>=20
+- Problems during legacy attribute upgrade of repository "3rd
+>>> party" [id=3Dthirdparty], skipping it. Please fix the problems=20
+>>> and retry the upgrade.=20
+>>> org.sonatype.nexus.proxy.walker.WalkerException: Aborted=20
+>>> walking on repository ID=3D'thirdparty' from path=3D'/'. at=20
+>>> org.sonatype.nexus.proxy.walker.DefaultWalker.reportWalkEnd(DefaultWalk=
+er.java:167)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.walker.DefaultWalker.walk(DefaultWalker.java:1=
+26)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.repository.AbstractRepository.recreateAttribut=
+es(AbstractRepository.java:523)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.attributes.upgrade.AttributeUpgraderThread.run=
+(AttributeUpgraderThread.java:117)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] Caused by:
+>>> java.lang.IllegalArgumentException: Prefix string too short at=20
+>>> java.io.File.createTempFile(File.java:1860) ~[na:1.7.0_03] at=20
+>>> org.sonatype.nexus.proxy.storage.local.fs.DefaultFSPeer.getHiddenTarget=
+(DefaultFSPeer.java:321)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.storage.local.fs.DefaultFSPeer.storeItem(Defau=
+ltFSPeer.java:84)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.storage.local.fs.DefaultFSLocalRepositoryStora=
+ge.storeItem(DefaultFSLocalRepositoryStorage.java:362)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.attributes.DefaultLSAttributeStorage.putAttrib=
+utes(DefaultLSAttributeStorage.java:182)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.attributes.TransitioningAttributeStorage.putAt=
+tributes(TransitioningAttributeStorage.java:97)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.attributes.DelegatingAttributeStorage.putAttri=
+butes(DelegatingAttributeStorage.java:62)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.attributes.DefaultAttributesHandler.storeAttri=
+butes(DefaultAttributesHandler.java:266)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.attributes.DefaultAttributesHandler.storeAttri=
+butes(DefaultAttributesHandler.java:298)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.repository.RecreateAttributesWalker.doProcessF=
+ileItem(RecreateAttributesWalker.java:102)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.repository.RecreateAttributesWalker.processIte=
+m(RecreateAttributesWalker.java:78)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.walker.DefaultWalker.processItem(DefaultWalker=
+.java:318)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.walker.DefaultWalker.walkRecursive(DefaultWalk=
+er.java:227)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.walker.DefaultWalker.walkRecursive(DefaultWalk=
+er.java:239)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.walker.DefaultWalker.walkRecursive(DefaultWalk=
+er.java:239)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.walker.DefaultWalker.walkRecursive(DefaultWalk=
+er.java:239)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.walker.DefaultWalker.walkRecursive(DefaultWalk=
+er.java:239)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.walker.DefaultWalker.walkRecursive(DefaultWalk=
+er.java:239)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.walker.DefaultWalker.walkRecursive(DefaultWalk=
+er.java:239)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.walker.DefaultWalker.walkRecursive(DefaultWalk=
+er.java:239)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.walker.DefaultWalker.walkRecursive(DefaultWalk=
+er.java:239)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.walker.DefaultWalker.walkRecursive(DefaultWalk=
+er.java:239)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] at
+>>> org.sonatype.nexus.proxy.walker.DefaultWalker.walk(DefaultWalker.java:9=
+3)
+>>>
+>>>=20
+~[nexus-proxy-2.0.1.jar:na] ... 2 common frames omitted
+>>> 2012-03-10 16:44:39 INFO  [ributesUpgrader] -=20
+>>> org.sonatype.nexus.proxy.attributes.upgrade.AttributeUpgraderThread
+>>>
+>>>=20
+- Legacy attribute directory upgrade was partially completed.
+>>> Please see prior log messages for details. Total runtime=20
+>>> 0:00:01.492
+>>>=20
+>>>=20
+>>>=20
+>>>=20
+>>> It this a known problem or?
+>>>=20
+>>>=20
+>>> Regards,
+>>>=20
+>>> BTJ
+>>>=20
+>>> --=20
+>>> -----------------------------------------------------------------------=
+------------------------
+>>>
+>>>
+>>>=20
+Bj=F8rn T Johansen
+>>>=20
+>>> btj@havleik.no=20
+>>> -----------------------------------------------------------------------=
+------------------------
+>>>
+>>>
+>>>=20
+Someone wrote:
+>>> "I understand that if you play a Windows CD backwards you hear=20
+>>> strange Satanic messages" To which someone replied: "It's even=20
+>>> worse than that; play it forwards and it installs Windows"=20
+>>> -----------------------------------------------------------------------=
+------------------------
+>
+>>>
+>>>=20
+> ---------------------------------------------------------------------
+>
+>
+>=20
+To unsubscribe, e-mail: nexus-user-unsubscribe@sonatype.org
+> For additional commands, e-mail: nexus-user-help@sonatype.org
+>=20
+>=20
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: nexus-user-unsubscribe@sonatype.org
+For additional commands, e-mail: nexus-user-help@sonatype.org
+

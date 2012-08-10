@@ -1,0 +1,127 @@
+Received: from smtp2.gemalto.com (193.56.114.195) by ABSHUBBWP01.gemalto.com
+ (10.3.0.231) with Microsoft SMTP Server id 8.3.192.1; Sat, 14 Jul 2012
+ 06:56:43 +0200
+Received: from borabora.xwiki.com (borabora.xwiki.com [87.98.166.189])	by
+ smtp2.gemalto.com (envelope-from users-bounces@xwiki.org) (8.14.3/8.14.3)
+ with ESMTP id q6E4sOm6016839	for <jeremie.bousquet@gemplus.com>; Sat, 14 Jul
+ 2012 06:54:34 +0200
+Received: from localhost (localhost [127.0.0.1])	by borabora.xwiki.com
+ (Postfix) with ESMTP id 832CF6A6000F;	Sat, 14 Jul 2012 04:59:52 +0000 (UTC)
+Received: from borabora.xwiki.com ([127.0.0.1])	by localhost
+ (borabora.xpertnet.org [127.0.0.1]) (amavisd-new, port 10024)	with ESMTP id
+ R-YEEhiMDpF8; Sat, 14 Jul 2012 04:59:52 +0000 (UTC)
+Received: from xwiki.localdomain.com (localhost [127.0.0.1])	by
+ borabora.xwiki.com (Postfix) with ESMTP id F12936A601A1;	Sat, 14 Jul 2012
+ 04:59:50 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])	by borabora.xwiki.com
+ (Postfix) with ESMTP id 3408E6A6007A	for <users@xwiki.org>; Sat, 14 Jul 2012
+ 04:59:47 +0000 (UTC)
+Received: from borabora.xwiki.com ([127.0.0.1])	by localhost
+ (borabora.xpertnet.org [127.0.0.1]) (amavisd-new,	port 10024) with ESMTP id
+ tTTg5StjTPUN for <users@xwiki.org>;	Sat, 14 Jul 2012 04:59:45 +0000 (UTC)
+Received: from mail-wg0-f49.google.com (mail-wg0-f49.google.com
+ [74.125.82.49])	by borabora.xwiki.com (Postfix) with ESMTPS id 525706A6000F
+	for <users@xwiki.org>; Sat, 14 Jul 2012 04:59:45 +0000 (UTC)
+Received: by wgbez12 with SMTP id ez12so2792723wgb.6	for <users@xwiki.org>;
+ Fri, 13 Jul 2012 21:56:21 -0700 (PDT)
+Received: by 10.216.24.133 with SMTP id x5mr2101910wex.129.1342241780942;	Fri,
+ 13 Jul 2012 21:56:20 -0700 (PDT)
+Received: from [10.41.145.154] ([92.90.16.94])	by mx.google.com with ESMTPS id
+ cl8sm7145454wib.10.2012.07.13.21.56.18	(version=TLSv1/SSLv3 cipher=OTHER);
+	Fri, 13 Jul 2012 21:56:19 -0700 (PDT)
+From: Ludovic Dubost <ludovic@xwiki.com>
+To: XWiki Users <users@xwiki.org>
+CC: XWiki Users <users@xwiki.org>
+Sender: "users-bounces@xwiki.org" <users-bounces@xwiki.org>
+Date: Sat, 14 Jul 2012 06:56:14 +0200
+Subject: Re: [xwiki-users] severe trouble with web crawlers
+Thread-Topic: [xwiki-users] severe trouble with web crawlers
+Thread-Index: Ac1hfRBbLQ6BrFArRxOS7I9YzmxdyQ==
+Message-ID: <F61195B4-C1DA-4892-90C7-F7B5946BDF52@xwiki.com>
+References: <1335575908160-7507847.post@n2.nabble.com>
+	<4F9B48AB.5030804@xwiki.com>	<1335577306030-7507875.post@n2.nabble.com>
+	<1335629315401-7509174.post@n2.nabble.com>
+	<1339017318866-7579432.post@n2.nabble.com>
+	<22A4BB54-6AB4-4B96-9856-0907E81ED4DD@xwiki.com>
+	<1339019979032-7579435.post@n2.nabble.com>
+	<1339021576805-7579436.post@n2.nabble.com>	<4FCFE2CE.1010900@xwiki.com>
+	<1339123128211-7579457.post@n2.nabble.com>
+	<1342215110362-7580349.post@n2.nabble.com>	<5000C82F.3020601@xwiki.com>
+List-Help: <mailto:users-request@xwiki.org?subject=help>
+List-Subscribe: <http://lists.xwiki.org/mailman/listinfo/users>,
+	<mailto:users-request@xwiki.org?subject=subscribe>
+List-Unsubscribe: <http://lists.xwiki.org/mailman/options/users>,
+	<mailto:users-request@xwiki.org?subject=unsubscribe>
+In-Reply-To: <5000C82F.3020601@xwiki.com>
+Reply-To: XWiki Users <users@xwiki.org>
+Accept-Language: fr-FR, en-US
+Content-Language: fr-FR
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Exchange-Organization-AuthSource: ABSHUBBWP01.gemalto.com
+X-MS-Has-Attach:
+X-Auto-Response-Suppress: All
+X-MS-TNEF-Correlator:
+list-id: XWiki Users <users.xwiki.org>
+x-pm-nine: Xy1rY2FCZXJlaHdvTmduaW9HXC8zaW5pbWVHbW9yRmdub3J0U25PZ25pbW9DLV8K
+x-spam-free: -9.488 ()
+ BAYES_00,GEM_XTNDSET7,GEM_XTNDSET8,GEM_XTNDSET9,RPL_XTNDSET7,RPL_XTNDSET8,RPL_XTNDSET9,RP_BONK_01,X_AUTH_WARN_FAKED
+x-scanned-by: MIMEDefang 2.70 on 193.56.114.195
+x-original-to: users@xwiki.org
+delivered-to: users@localhost
+errors-to: users-bounces@xwiki.org
+list-archive: <http://lists.xwiki.org/pipermail/users>
+list-post: <mailto:users@xwiki.org>
+x-virus-scanned: Debian amavisd-new at xpertnet.org
+x-beenthere: users@xwiki.org
+x-mailman-version: 2.1.13
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+
+SGkgCgpUaGlzIGNvdWxkIGhhdmUgc2hvd2VkIHVwIGJlY2F1c2Ugb2YuIENoYW5nZXMgYSB3aGls
+ZSBhZ28gdGhhdCBmbHVzaCBkb2N1bWVudHMgZnJvbSB0aGUgY2FjaGUgYWZ0ZXIgc2F2ZS4gU28g
+Y29tYmluZWQgd2l0aCBhIGNyYXdsZXIgdHJpZ2VycmluZyBzYXZlcyBpdCBjb3VsZCB0cmlnZ2Vy
+IHRoZSBiZWhhdmlvciBzZWVuIGhlcmUgd2hlcmUgZmx1c2hDYWNoZSB0aGUgcmVzdG9yZXMgZXZl
+cnl0aGluZy4gCgpNYXliZSB0aGVyZSBpcyBhIHJlYWRpbmcgZmFpbHVyZSB3aGljaCBpcyBub3Qg
+ZGV0ZWN0ZWQgcHJvcGVybHkgYW5kIHRoZSBjb2RlIGZhbGxzIGJhY2sgdG8gYSBkZWZhdWx0IGNs
+YXNzID8KCkVudm95w6kgZGUgbW9uIGlQaG9uZQoKTGUgMTQganVpbC4gMjAxMiDDoCAwMzoxNSwg
+U2VyZ2l1IER1bWl0cml1IDxzZXJnaXVAeHdpa2kuY29tPiBhIMOpY3JpdCA6Cgo+IE9uIDA3LzEz
+LzIwMTIgMDU6MzEgUE0sIEphbi1QaGlsaXAgTG9vcyB3cm90ZToKPj4gSGVsbG8sCj4+IAo+PiBJ
+IGhhdmUgYW4gcmVhbGx5IGltcG9ydGFudCB1cGRhdGUgZm9yIHRoaXMgaXNzdWUuCj4+IAo+PiBM
+YXN0IG1vbnRoIEkgaW5zdGFsbGVkIHRoZSB0aGUgIkFkbWluIFRvb2xzIEFwcGxpY2F0aW9uIiBh
+cyByZWNvbW1lbmRlZCBieQo+PiBMdWRvdmljIER1Ym9zdC4gSSByYW4gdGhlICJQcm9ncmFtbWlu
+ZyBSaWdodHMgQ2hlY2siIHNjcmlwdCBhbmQgaW5zcGVjdGVkCj4+IHRoZSAiVXNlciBSaWdodHMg
+Q2hlY2siIHBhZ2UuIE5vIHJpZ2h0IGFub21hbGllcywgYXMgZmFyIGFzIEkgY2FuIHNlZS4KPj4g
+Cj4+IEEgZmV3IG1pbnV0ZXMgYWdvLCBvdXIgWFdpa2kgc3VmZmVyZWQgdW5kZXIgYSBuZXcsIGJ1
+dCBjb3JyZWxhdGluZywgcHJvYmxlbS4KPj4gSSB2aXNpdGVkIG91ciBXaWtpIGFuZCBub3RpY2Vk
+IHRoYXQgdGhlIFdpa2kgd2FzIHJlbmRlcmVkIHdpdGggdGhlIGRlZmF1bHQKPj4gdGhlbWUgYW5k
+IHdpdGggdGhlIGRlZmF1bHQgaGVhZGVyIGltYWdlLiBGdXJ0aGVybW9yZSwgYXMgYSBndWVzdCwg
+SSBoYWQgdGhlCj4+IG9wcG9ydHVuaXR5IHRvIGRlbGV0ZSBzcGFjZXMvZG9jdW1lbnRzIGFuZCB2
+aXNpdCByZXN0cmljdGVkIGFyZWFzLgo+PiAKPj4gSSBpbnNwZWN0ZWQgdGhpcyBpc3N1ZSB3aXRo
+IHRoZSBBZG1pbiBUb29sczoKPj4gSSBjaGVja2VkIHRoZSBtZW1vcnkgdXNhZ2Ugb2Ygb3VyIFhF
+TTogMSw1R0IgRnJlZQo+PiBBY3RpdmUgREIgQ29ubmVjdGlvbnM6IDEzIG9mIDUwCj4+IElkbGUg
+REIgQ29ubmVjdGlvbnM6IDUgb2YgNQo+PiAKPj4gQWZ0ZXIgSSB0cmllZCB0aGUgIkZsdXNoIENh
+Y2hlIiBzY3JpcHQgb2YgdGhlICJBZG1pbiBUb29scyBBcHBsaWNhdGlvbiIsIHRoZQo+PiBXaWtp
+IHRoZW1lIGFuZCBoZWFkZXIgaW1hZ2Ugd2FzIGluc3RhbnQgcmVzdG9yZWQsIGFuZCBhbGwgcmln
+aHRzIHNlZW1lZAo+PiB3b3JraW5nLgo+PiAKPj4gSSBoYXZlIGEgc3Ryb25nIGd1ZXNzIHRoYXQg
+dGhpcyBpc3N1ZSBpcyBjb25uZWN0ZWQgdG8gb3VyIGluaXRpYWwgcHJvYmxlbS4gSQo+PiBndWVz
+cyB0aGlzIHByb2JsZW0gZml4ZWQgaXRzZWxmIGEgY291cGxlIG9mIHRpbWVzIGFmdGVyIGEgcGVy
+aW9kIG9mIHRpbWUuCj4+IER1cmluZyB0aGlzIHBlcmlvZCwgdGhlIFdpa2kgaXMgZXhwb3NlZCBh
+bmQgdGhlIGNyYXdsZXIgY2FuIHRyaWdnZXIKPj4gdW5kZXNpcmVkIGFjdGlvbnMuCj4+IAo+PiBJ
+IGhvcGUgc29tZW9uZSBoYXZlIGFuIGlkZWEgd2h5IG91ciBXaWtpIGJlaGF2ZXMgbGlrZSB0aGlz
+Lgo+PiAKPj4gR3JlZXRpbmdzCj4+IAo+PiBKYW4KPiAKPiBPSywgdGhpcyBpcyBhIHByb21pc2lu
+ZyBkaXJlY3Rpb24sIGF0IGxlYXN0IEkga25vdyB3aGF0J3MgZ29pbmcgb24uCj4gCj4gU28sIHRo
+ZSBwcm9ibGVtIGlzIHRoYXQgdGhlIFhXaWtpUHJlZmVyZW5jZXMgZG9jdW1lbnQgZ2V0cyBpbiBh
+IHZlcnkgYmFkIHN0YXRlIGluIHRoZSBkb2N1bWVudCBjYWNoZS4gVGhlIGNhY2hlIGNvaGVyZW5j
+ZSBpbiBtdWx0aXdpa2kgbW9kZSBoYXMgYmVlbiBpbXByb3ZlZCBhIHdoaWxlIGFnbywgc28gaXQg
+c2hvdWxkbid0IGhhcHBlbiB3aXRoIG5vcm1hbCBkb2N1bWVudHMsIGJ1dCB0aGVyZSdzIHN0aWxs
+IGh0dHA6Ly9qaXJhLnh3aWtpLm9yZy9icm93c2UvWFdJS0ktODA0NiB3aGljaCBpcyBvcGVuIGFu
+ZCB3aGljaCBoYXMgdG9wIHByaW9yaXR5IChpdCBtaWdodCBnZXQgZml4ZWQgaW4gYSBmZXcgZGF5
+cyBmb3IgNC4xLjQpLgo+IAo+IFVuZm9ydHVuYXRlbHksIEkgZG9uJ3QgaGF2ZSBhIHF1aWNrIHNv
+bHV0aW9uIGZvciB5b3UgYXQgdGhlIG1vbWVudC4gV2F0Y2ggdGhhdCBpc3N1ZSBmb3IgbW9yZSBk
+ZXRhaWxzLgo+IC0tIAo+IFNlcmdpdSBEdW1pdHJpdQo+IGh0dHA6Ly9wdXJsLm9yZy9uZXQvc2Vy
+Z2l1Lwo+IAo+IAo+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCj4gdXNlcnMgbWFpbGluZyBsaXN0Cj4gdXNlcnNAeHdpa2kub3JnCj4gaHR0cDovL2xpc3Rz
+Lnh3aWtpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3VzZXJzCl9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fCnVzZXJzIG1haWxpbmcgbGlzdAp1c2Vyc0B4d2lraS5v
+cmcKaHR0cDovL2xpc3RzLnh3aWtpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3VzZXJzCg==

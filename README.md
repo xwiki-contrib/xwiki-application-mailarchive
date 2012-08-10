@@ -12,6 +12,8 @@ Build
 
 2. run "mvn clean install" at root folder
 
+3. to run also "integration tests", run "mvn clean install -P integration-tests"
+
 
 For testing
 -----------

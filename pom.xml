@@ -30,7 +30,7 @@
     <artifactId>xwiki-commons-pom</artifactId>
     <version>3.5.1</version>
   </parent>
-  <groupId>org.xwiki.contrib</groupId>
+  <groupId>org.xwiki.contrib.mailarchive</groupId>
   <artifactId>xwiki-contrib-mailarchive</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>pom</packaging>

@@ -11,14 +11,14 @@
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
 <creationDate>1322820507000</creationDate>
-<date>1344333709000</date>
-<contentUpdateDate>1344333709000</contentUpdateDate>
-<version>13.1</version>
+<date>1344963137000</date>
+<contentUpdateDate>1344963137000</contentUpdateDate>
+<version>5.1</version>
 <title>Mail Archive Administration</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>add email suffix to ignore</comment>
+<comment></comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.1</syntaxId>
 <hidden>false</hidden>
@@ -643,8 +643,7 @@
 #else
 * Loading user : $!loadingUser
 #end
-#set($groovy=$xwiki.parseGroovyFromPage("${spacecode}.LoadingGroovy"))
-#if($groovy.isInstalled() != "yes" || $msg.mailarchive_home_title=="mailarchive_home_title" || !$xwiki.hasAccessLevel("admin", $loadinguser, "${spacehome}.WebHome"))
+#if("$!msg.mailarchive_home_title"=="") ## does not work ? || !$xwiki.hasAccessLevel("edit", $loadinguser, "${spacehome}.WebHome"))
 
 {{warning}}Please visit [[Install&gt;&gt;MailArchiveCode.Install]] page to finish installation{{/warning}}
 

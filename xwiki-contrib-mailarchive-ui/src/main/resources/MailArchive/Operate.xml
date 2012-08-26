@@ -11,14 +11,14 @@
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
 <creationDate>1326704927000</creationDate>
-<date>1344337499000</date>
-<contentUpdateDate>1344337499000</contentUpdateDate>
-<version>3.1</version>
+<date>1344762920000</date>
+<contentUpdateDate>1344762920000</contentUpdateDate>
+<version>1.1</version>
 <title>Mail Archive Operations</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment></comment>
+<comment>Imported from XAR</comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>

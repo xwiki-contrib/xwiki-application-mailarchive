@@ -11,15 +11,15 @@
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
 <creationDate>1342079757000</creationDate>
-<date>1342444057000</date>
-<contentUpdateDate>1342444057000</contentUpdateDate>
-<version>2.2</version>
+<date>1344762920000</date>
+<contentUpdateDate>1344762920000</contentUpdateDate>
+<version>1.1</version>
 <title>LoadingSession Class</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Updated class property</comment>
-<minorEdit>true</minorEdit>
+<comment>Imported from XAR</comment>
+<minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
 <class>

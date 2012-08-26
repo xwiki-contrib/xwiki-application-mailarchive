@@ -40,11 +40,17 @@ import org.xwiki.contrib.mail.internal.JavamailMessageParser;
 import org.xwiki.contrib.mailarchive.it.ITUtils;
 
 /**
+ * These tests load and create Message objects by importing .eml files from test resources. Parsing methods are fed with
+ * all created Message, not allowing for strict content verification, but only ensuring overall success of parsing
+ * methods.
+ * 
  * @version $Id$
  */
 public class EmailParsingIT
 {
     private JavamailMessageParser parser;
+
+    private File dir;
 
     @Before
     public void setUp()
@@ -52,11 +58,7 @@ public class EmailParsingIT
         Logger logger = LoggerFactory.getLogger("org.xwiki.contrib.test.LoadMailsIT");
         parser = new JavamailMessageParser(logger);
 
-    }
-
-    @Test
-    public void testParseHeaders() throws Exception
-    {
+        // Init .eml input files folder
         URL url = Thread.currentThread().getContextClassLoader().getResource("messages/dummy.txt");
         File f;
         try {
@@ -64,9 +66,19 @@ public class EmailParsingIT
         } catch (URISyntaxException e) {
             f = new File(url.getPath());
         }
-        File dir = f.getParentFile();
+        this.dir = f.getParentFile();
 
-        for (File file : dir.listFiles(new EmlFilter())) {
+    }
+
+    /**
+     * Tests parsing of email headers, using messages created from .eml files.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testParseHeaders() throws Exception
+    {
+        for (File file : this.dir.listFiles(new EmlFilter())) {
             Message message = ITUtils.read("messages/" + file.getName());
 
             MailItem m = parser.parseHeaders(message);
@@ -78,19 +90,15 @@ public class EmailParsingIT
 
     }
 
+    /**
+     * Tests parsing of emails content (body), using emails created from .eml files.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testExtractMailContent() throws Exception
     {
-        URL url = Thread.currentThread().getContextClassLoader().getResource("messages/dummy.txt");
-        File f;
-        try {
-            f = new File(url.toURI());
-        } catch (URISyntaxException e) {
-            f = new File(url.getPath());
-        }
-        File dir = f.getParentFile();
-
-        for (File file : dir.listFiles(new EmlFilter())) {
+        for (File file : this.dir.listFiles(new EmlFilter())) {
             Message message = ITUtils.read("messages/" + file.getName());
 
             MailContent content = parser.extractMailContent(message);

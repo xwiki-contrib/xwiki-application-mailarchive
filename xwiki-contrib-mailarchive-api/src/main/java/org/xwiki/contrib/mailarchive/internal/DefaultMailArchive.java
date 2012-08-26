@@ -49,6 +49,7 @@ import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Part;
+import javax.mail.Session;
 import javax.mail.internet.MimeBodyPart;
 
 import org.apache.commons.lang.StringUtils;
@@ -61,7 +62,7 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.contrib.mail.ConnectionErrors;
-import org.xwiki.contrib.mail.MailComponent;
+import org.xwiki.contrib.mail.IMailComponent;
 import org.xwiki.contrib.mail.MailContent;
 import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mail.Utils;
@@ -178,7 +179,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
     /** Provides access to low-level mail api component */
     @Inject
-    private MailComponent mailManager;
+    private IMailComponent mailManager;
 
     // Other global objects
 
@@ -355,7 +356,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                     logger.info("[{}] Can't retrieve messages from server", server.getId());
                     messages = new ArrayList<Message>();
                 }
-                logger.info("[{}] Number of messages to treat : ", new Object[] {server.getId(), messages.size()});
+                logger.info("[{}] Number of messages to treat : {}", new Object[] {server.getId(), messages.size()});
                 currentMsg = 0;
                 LoadingSessionResult result = null;
                 while ((currentMsg < session.getLimit() || session.getLimit() < 0) && currentMsg < messages.size()) {
@@ -386,7 +387,11 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                             if (me instanceof MessagingException || me instanceof IOException) {
                                 logger.debug("[" + server.getId() + "] Could not load email because of", me);
                                 logger.info("[{}] Could not load email, trying to load a clone", server.getId());
-                                Message clone = mailManager.cloneEmail(message, server.getProtocol(), server.getHost());
+                                // Retrieve the Session object established during server connection
+                                Session jsession =
+                                    mailManager.getSession(server.getHost(), server.getPort(), server.getProtocol(),
+                                        server.getFolder(), server.getUser());
+                                Message clone = mailManager.cloneEmail(message, jsession);
                                 message = clone;
                                 if (message != null) {
                                     result = loadMail(message, !session.isSimulationMode(), false, null);
@@ -1395,6 +1400,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         ch.qos.logback.classic.Logger myLogger = (ch.qos.logback.classic.Logger) this.logger;
         this.logLevel = myLogger.getLevel();
         myLogger.setLevel(Level.DEBUG);
+
         logger.debug("DEBUG MODE ON");
     }
 

@@ -41,7 +41,7 @@ import org.xwiki.script.service.ScriptService;
 public class MailScriptService implements ScriptService
 {
     @Inject
-    private MailComponent mailComp;
+    private IMailComponent mailComp;
 
     List<Message> fetch(String hostname, int port, String protocol, String folder, String username, String password,
         Properties additionalProperties, boolean onlyUnread)

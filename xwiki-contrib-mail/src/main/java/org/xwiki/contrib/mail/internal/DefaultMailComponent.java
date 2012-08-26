@@ -52,14 +52,14 @@ import org.slf4j.Logger;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mail.ConnectionErrors;
-import org.xwiki.contrib.mail.MailComponent;
+import org.xwiki.contrib.mail.IMailComponent;
 import org.xwiki.contrib.mail.MailContent;
 import org.xwiki.contrib.mail.MailItem;
 
 /**
  * @version $Id$
  */
-public class DefaultMailComponent implements MailComponent, Initializable
+public class DefaultMailComponent implements IMailComponent, Initializable
 {
     private String storeLocation = "storage";
 
@@ -74,7 +74,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
      * Store Session objects (values) related to a server id (keys). Only last Session created for fetching email(s) is
      * kept.
      **/
-    private HashMap<String, Session> sessions = new HashMap<String, Session>();
+    private HashMap<Integer, Session> sessions = new HashMap<Integer, Session>();
 
     @Inject
     private Logger logger;
@@ -94,7 +94,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
      * {@inheritDoc}
      * 
      * @throws MessagingException
-     * @see org.xwiki.contrib.mail.MailComponent#fetch(java.lang.String, int, java.lang.String, java.lang.String,
+     * @see org.xwiki.contrib.mail.IMailComponent#fetch(java.lang.String, int, java.lang.String, java.lang.String,
      *      java.lang.String, java.lang.String, boolean)
      */
     @Override
@@ -110,7 +110,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
      * @throws MessagingException
      * @throws
      * @throws Exception
-     * @see org.xwiki.contrib.mail.MailComponent#fetch(java.lang.String, int, java.lang.String, java.lang.String,
+     * @see org.xwiki.contrib.mail.IMailComponent#fetch(java.lang.String, int, java.lang.String, java.lang.String,
      *      java.lang.String, java.lang.String, boolean, int)
      */
     @Override
@@ -127,6 +127,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
         logger.info("Trying to retrieve mails from server " + hostname);
 
         Session session = createSession(protocol, additionalProperties, isGmail);
+        this.sessions.put(computeSessionID(hostname, port, protocol, folder, username), session);
 
         // Get a Store object
         Store store = session.getStore();
@@ -169,7 +170,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mail.MailComponent#check(java.lang.String, int, java.lang.String, java.lang.String,
+     * @see org.xwiki.contrib.mail.IMailComponent#check(java.lang.String, int, java.lang.String, java.lang.String,
      *      java.lang.String, java.lang.String, boolean)
      */
     @Override
@@ -183,6 +184,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
         try {
             // Create the session
             Session session = createSession(protocol, additionalProperties, isGmail);
+            this.sessions.put(computeSessionID(hostname, port, protocol, folder, username), session);
 
             // Get a Store object
             store = session.getStore();
@@ -246,6 +248,22 @@ public class DefaultMailComponent implements MailComponent, Initializable
         return nbMessages;
     }
 
+    /**
+     * Computes a unique ID (hash) for these specific connection parameters.
+     * 
+     * @param server
+     * @param port
+     * @param protocol
+     * @param folder
+     * @param username
+     * @return
+     */
+    private int computeSessionID(String server, int port, String protocol, String folder, String username)
+    {
+        final String str = server + port + protocol + folder + username;
+        return str.hashCode();
+    }
+
     private Session createSession(String protocol, Properties additionalProperties, boolean isGmail)
     {
         // Get a session. Use a blank Properties object.
@@ -269,12 +287,17 @@ public class DefaultMailComponent implements MailComponent, Initializable
         return session;
     }
 
+    public Session getSession(String hostname, int port, String protocol, String folder, String username)
+    {
+        return this.sessions.get(computeSessionID(hostname, port, protocol, folder, username));
+    }
+
     /**
      * {@inheritDoc}
      * 
      * @throws IOException
      * @throws MessagingException
-     * @see org.xwiki.contrib.mail.MailComponent#parse(javax.mail.Message)
+     * @see org.xwiki.contrib.mail.IMailComponent#parse(javax.mail.Message)
      */
     @Override
     public MailItem parseHeaders(Part mail) throws MessagingException, IOException
@@ -306,7 +329,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
      * {@inheritDoc}
      * 
      * @throws MessagingException
-     * @see org.xwiki.contrib.mail.MailComponent#writeToStore(javax.mail.Message, java.lang.String)
+     * @see org.xwiki.contrib.mail.IMailComponent#writeToStore(javax.mail.Message, java.lang.String)
      */
     @Override
     public void writeToStore(String folder, Message message) throws MessagingException
@@ -346,7 +369,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
      * {@inheritDoc}
      * 
      * @throws MessagingException
-     * @see org.xwiki.contrib.mail.MailComponent#readFromStore(java.lang.String)
+     * @see org.xwiki.contrib.mail.IMailComponent#readFromStore(java.lang.String)
      */
     @Override
     public Message readFromStore(String folder, String messageid) throws MessagingException
@@ -382,7 +405,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mail.MailComponent#readFromStore(java.lang.String)
+     * @see org.xwiki.contrib.mail.IMailComponent#readFromStore(java.lang.String)
      */
     @Override
     public Message[] readFromStore(String folder) throws MessagingException
@@ -415,7 +438,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mail.MailComponent#readFromStore(java.lang.String, javax.mail.search.SearchTerm)
+     * @see org.xwiki.contrib.mail.IMailComponent#readFromStore(java.lang.String, javax.mail.search.SearchTerm)
      */
     @Override
     public Message[] readFromStore(String folder, SearchTerm term) throws MessagingException
@@ -448,7 +471,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mail.MailComponent#createTopicPage(org.xwiki.contrib.mail.MailItem)
+     * @see org.xwiki.contrib.mail.IMailComponent#createTopicPage(org.xwiki.contrib.mail.MailItem)
      */
     @Override
     public String createTopicPage(MailItem m)
@@ -460,7 +483,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mail.MailComponent#updateTopicPage(java.lang.String, org.xwiki.contrib.mail.MailItem)
+     * @see org.xwiki.contrib.mail.IMailComponent#updateTopicPage(java.lang.String, org.xwiki.contrib.mail.MailItem)
      */
     @Override
     public boolean updateTopicPage(String topicId, MailItem m)
@@ -472,7 +495,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mail.MailComponent#createMailPage(org.xwiki.contrib.mail.MailItem)
+     * @see org.xwiki.contrib.mail.IMailComponent#createMailPage(org.xwiki.contrib.mail.MailItem)
      */
     @Override
     public String createMailPage(MailItem m)
@@ -484,7 +507,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mail.MailComponent#updateMailPage(org.xwiki.contrib.mail.MailItem)
+     * @see org.xwiki.contrib.mail.IMailComponent#updateMailPage(org.xwiki.contrib.mail.MailItem)
      */
     @Override
     public boolean updateMailPage(MailItem m)
@@ -496,7 +519,7 @@ public class DefaultMailComponent implements MailComponent, Initializable
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mail.MailComponent#parseAddressHeader(java.lang.String)
+     * @see org.xwiki.contrib.mail.IMailComponent#parseAddressHeader(java.lang.String)
      */
     @Override
     public String parseAddressHeader(String header)
@@ -512,20 +535,19 @@ public class DefaultMailComponent implements MailComponent, Initializable
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mail.MailComponent#cloneEmail(javax.mail.Message, java.lang.String, java.lang.String)
+     * @see org.xwiki.contrib.mail.IMailComponent#cloneEmail(javax.mail.Message, java.lang.String, java.lang.String)
      */
-    public MimeMessage cloneEmail(Message mail, String protocol, String hostname)
+    public MimeMessage cloneEmail(Message mail, Session session)
     {
         MimeMessage cmail;
         try {
-            boolean isGmail = hostname != null && hostname.endsWith(".gmail.com");
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             mail.writeTo(bos);
             bos.close();
             SharedByteArrayInputStream bis = new SharedByteArrayInputStream(bos.toByteArray());
             // FIXME: cloning needs the Session object that was used to read initial mail, but this is not persisted
             // (yet)
-            cmail = new MimeMessage(createSession(protocol, null, isGmail), bis);
+            cmail = new MimeMessage(session, bis);
             bis.close();
         } catch (Exception e) {
             logger.warn("Could not clone email", e);

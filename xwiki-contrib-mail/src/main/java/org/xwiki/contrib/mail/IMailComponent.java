@@ -29,6 +29,7 @@ import javax.inject.Singleton;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Part;
+import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.SearchTerm;
 
@@ -39,7 +40,7 @@ import org.xwiki.component.annotation.ComponentRole;
  */
 @Singleton
 @ComponentRole
-public interface MailComponent
+public interface IMailComponent
 {
     List<Message> fetch(String hostname, int port, String protocol, String folder, String username, String password,
         Properties additionalProperties, boolean onlyUnread) throws MessagingException;
@@ -67,6 +68,16 @@ public interface MailComponent
         Properties additionalProperties, boolean onlyUnread);
 
     /**
+     * @param hostname
+     * @param port
+     * @param protocol
+     * @param folder
+     * @param username
+     * @return
+     */
+    Session getSession(String hostname, int port, String protocol, String folder, String username);
+
+    /**
      * Clones an email.
      * 
      * @param mail the message to clone.
@@ -74,7 +85,7 @@ public interface MailComponent
      * @param hostname the hostname to connect to.
      * @return
      */
-    MimeMessage cloneEmail(Message mail, String protocol, String hostname);
+    MimeMessage cloneEmail(Message mail, Session session);
 
     MailItem parseHeaders(Part message) throws MessagingException, IOException;
 

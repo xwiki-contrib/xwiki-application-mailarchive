@@ -50,7 +50,7 @@
 
   <scm>
     <connection>scm:git:git://github.com/xwiki-contrib/${extensionrepository}.git</connection>
-    <developerConnection>scm:git:git@github.com:xwiki-contrib/${extensionrepository}.git</developerConnection>
+    <developerConnection>scm:git:https://github.com/xwiki-contrib/${extensionrepository}.git</developerConnection>
     <url>https://github.com/xwiki-contrib/${extensionrepository}</url>
   </scm>
 

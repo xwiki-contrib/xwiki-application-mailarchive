@@ -27,7 +27,7 @@
   <parent>
     <groupId>org.xwiki.contrib.mailarchive</groupId>
     <artifactId>xwiki-contrib-mailarchive</artifactId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-contrib-mailarchive-ui</artifactId>
   <name>XWiki - MailArchive UI Extension</name>

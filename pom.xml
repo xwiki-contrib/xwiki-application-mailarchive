@@ -31,7 +31,7 @@
   </parent>
   <groupId>org.xwiki.contrib.mailarchive</groupId>
   <artifactId>xwiki-contrib-mailarchive</artifactId>
-  <version>0.1</version>
+  <version>0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Mail Archive Application - Aggregator pom</name>
   <description>${project.name}</description>
@@ -51,7 +51,7 @@
     <connection>scm:git:git://github.com/xwiki-contrib/${extensionrepository}.git</connection>
     <developerConnection>scm:git:git@github.com:xwiki-contrib/${extensionrepository}.git</developerConnection>
     <url>https://github.com/xwiki-contrib/${extensionrepository}</url>
-    <tag>xwiki-contrib-mailarchive-0.1</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <modules>

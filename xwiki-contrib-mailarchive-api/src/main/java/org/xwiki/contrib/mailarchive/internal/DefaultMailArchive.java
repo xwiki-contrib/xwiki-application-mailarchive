@@ -117,7 +117,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     /**
      * Name of the space that contains end-user targeted pages.
      */
-    public static final String SPACE_HOME = "IMailArchive";
+    public static final String SPACE_HOME = "MailArchive";
 
     /**
      * Name of the space that contains technical code.

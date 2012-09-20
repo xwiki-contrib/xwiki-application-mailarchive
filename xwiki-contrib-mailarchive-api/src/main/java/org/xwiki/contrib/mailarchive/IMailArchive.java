@@ -19,9 +19,15 @@
  */
 package org.xwiki.contrib.mailarchive;
 
+import java.io.IOException;
+
 import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mail.ConnectionErrors;
+import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadableMessage;
+
+import com.xpn.xwiki.XWikiException;
 
 /**
  * Interface (aka Role) of the Component
@@ -65,6 +71,25 @@ public interface IMailArchive
      * @return a wiki user profile if one was found.
      */
     public String parseUser(String internetAddress);
+
+    /**
+     * Retrieves the html and/or plain text content from a persisted email page, and decodes it accordingly. Returns
+     * html format in favor of plain text format if possible. Html content is expected to be stored in GZIP format,
+     * converted to textual representation in hexadecimal form. It is up to the caller to detect if returned string
+     * represents html or plain text.
+     * 
+     * @param mailPage The wiki page name.
+     * @param cut Indicates wether to "cut" or not the reply history from returned text/html. <br/>
+     *            Note that algorithm to cut this history is very simple, and merely relies on presence of "From:" text
+     *            in mail content.
+     * @return
+     * @throws IOException
+     * @throws XWikiException
+     * @throws MailArchiveException
+     * @throws InitializationException
+     */
+    public String getDecodedMailText(String mailPage, boolean cut) throws IOException, XWikiException,
+        InitializationException, MailArchiveException;
 
     public IType getType(String name);
 

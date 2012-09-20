@@ -78,14 +78,15 @@ import org.xwiki.contrib.mailarchive.internal.data.MailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
 import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
+import org.xwiki.contrib.mailarchive.internal.persistence.IPersistence;
+import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 import org.xwiki.contrib.mailarchive.internal.threads.MessagesThreader;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadableMessage;
 import org.xwiki.contrib.mailarchive.internal.timeline.TimeLine;
 import org.xwiki.contrib.mailarchive.internal.utils.MailUtils;
 import org.xwiki.contrib.mailarchive.internal.utils.TextUtils;
-import org.xwiki.contrib.mailarchive.internal.xwiki.IPersistence;
-import org.xwiki.contrib.mailarchive.internal.xwiki.XWikiPersistence;
 import org.xwiki.environment.Environment;
+import org.xwiki.logging.LoggerManager;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -138,6 +139,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      */
     public static final String UNKNOWN_USER = "XWiki.UserDoesNotExist";
 
+    public boolean isConfigured = false;
+
     // Components injected by the Component Manager
 
     /** Provides access to documents. */
@@ -162,6 +165,9 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     /** Provides access to log facility */
     @Inject
     Logger logger;
+
+    @Inject
+    LoggerManager loggerManager;
 
     /**
      * The component used to parse XHTML obtained after cleaning, when transformations are not executed.
@@ -233,7 +239,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             this.context = (XWikiContext) context.getProperty("xwikicontext");
             this.xwiki = this.context.getWiki();
             this.factory = new Factory(dab);
-            this.store = new ItemsManager(queryManager, logger, factory);
+            this.store = new ItemsManager(queryManager, logger);
             this.persistence = new XWikiPersistence(this.context, this.xwiki, this.logger);
             logger.info("Mail archive initiliazed !");
             logger.debug("PERMANENT DATA DIR : " + this.environment.getPermanentDirectory());
@@ -494,6 +500,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
         mailutils = new MailUtils(xwiki, context, logger, queryManager);
         TextUtils.setLogger(this.logger);
+
+        this.isConfigured = true;
     }
 
     protected void loadItems() throws MailArchiveException
@@ -1391,9 +1399,48 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IOException
+     * @throws XWikiException
+     * @throws MailArchiveException
+     * @throws InitializationException
+     * @see org.xwiki.contrib.mailarchive.IMailArchive#getDecodedMailText(java.lang.String, boolean)
+     */
+    @SuppressWarnings("deprecation")
+    @Override
+    public String getDecodedMailText(String mailPage, boolean cut) throws IOException, XWikiException,
+        InitializationException, MailArchiveException
+    {
+        if (!this.isConfigured) {
+            configure();
+        }
+        if (!StringUtils.isBlank(mailPage)) {
+            XWikiDocument htmldoc = xwiki.getDocument(mailPage, this.context);
+            if (htmldoc != null) {
+                BaseObject htmlobj = htmldoc.getObject("MailArchiveCode.MailClass");
+                if (htmlobj != null) {
+                    String ziphtml = htmlobj.getLargeStringValue("bodyhtml");
+                    String body = htmlobj.getLargeStringValue("body");
+
+                    return (mailutils.decodeMailContent(ziphtml, body, cut));
+                }
+            }
+        }
+
+        return "";
+
+    }
+
     // FIXME: is that absolutely needed ? triggering an dependency on log implementation is pretty bad since it make
     // impossible to switch it to something else. If that's really needed you could add this feature to
     // xwiki-commons-log module maybe.
+    // FIXME: Starting with 4.2.M2 it is possible to manipulate log level from LoggerManager, so when migrating to this
+    // version
+    // following code could be adapted. Meanwhile it should either be removed (and the feature along with it), or
+    // described in the MailArchive release notes that this debug mode is only supported for logback and does not user
+    // LoggerManager. This is tracked down by XMAILARCH-13.
     public void enterDebugMode()
     {
         // Logs level

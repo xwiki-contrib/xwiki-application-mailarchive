@@ -144,4 +144,56 @@ public class TextUtils
         }
         return s;
     }
+
+    // FIXME: find equivalent methods in xwiki utilities libraries
+    public static byte charToByte(char c)
+    {
+        return (byte) "0123456789ABCDEF".indexOf("" + c);
+    }
+
+    // FIXME: find equivalent methods in xwiki utilities libraries
+    /**
+     * BD : Used to transfer hex string into byte array. two hex string combines one byte. So that means the length of
+     * hex string should be even. Or the null will be returned.
+     * 
+     * @param hexStr
+     * @return
+     */
+    public static byte[] hex2byte(String hexStr)
+    {
+        if (hexStr == null || hexStr.isEmpty() || (hexStr.length() % 2 > 1)) {
+            return null;
+        }
+        String hexStrUp = hexStr.toUpperCase();
+        int length = hexStrUp.length() / 2;
+        char[] hexChars = hexStrUp.toCharArray();
+        byte[] resultByte = new byte[length];
+        for (int i = 0; i < length; i++) {
+            int pos = i * 2;
+            resultByte[i] = (byte) (charToByte(hexChars[pos]) << 4 | charToByte(hexChars[pos + 1]));
+        }
+        return resultByte;
+    }
+
+    // FIXME: find equivalent methods in xwiki utilities libraries
+    /**
+     * BD : Used to transfer byte array into hex string.
+     * 
+     * @param b
+     * @return
+     */
+    public static String byte2hex(byte[] b)
+    {
+        StringBuffer hexStr = new StringBuffer("");
+        String stmp = "";
+        for (int i = 0; i < b.length; i++) {
+            stmp = (java.lang.Integer.toHexString(b[i] & 0xFF));
+            if (stmp.length() == 1) {
+                hexStr.append("0" + stmp);
+            } else {
+                hexStr.append(stmp);
+            }
+        }
+        return hexStr.toString().toUpperCase();
+    }
 }

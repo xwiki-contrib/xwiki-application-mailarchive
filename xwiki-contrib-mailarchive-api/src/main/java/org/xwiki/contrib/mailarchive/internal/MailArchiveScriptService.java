@@ -101,4 +101,13 @@ public class MailArchiveScriptService implements ScriptService
 
         return timelineFeed;
     }
+
+    public String getDecodedMailText(String mailPage, boolean cut)
+    {
+        try {
+            return this.mailArchive.getDecodedMailText(mailPage, cut);
+        } catch (Exception e) {
+            return "<<invalid content>>";
+        }
+    }
 }

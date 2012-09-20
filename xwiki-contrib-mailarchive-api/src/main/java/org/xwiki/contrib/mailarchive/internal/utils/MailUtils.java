@@ -19,7 +19,15 @@
  */
 package org.xwiki.contrib.mailarchive.internal.utils;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -154,4 +162,64 @@ public class MailUtils
 
     }
 
+    /**
+     * @param mailPage
+     * @param cut
+     * @return
+     * @throws IOException
+     * @throws XWikiException
+     */
+    public String decodeMailContent(String originalHtml, String originalBody, boolean cut) throws IOException,
+        XWikiException
+    {
+        String html = "";
+        String body = "";
+
+        String ziphtml = originalHtml;
+        if (!StringUtils.isEmpty(ziphtml)) {
+            InputStream is = new ByteArrayInputStream(TextUtils.hex2byte(ziphtml));
+            GZIPInputStream zis = new GZIPInputStream(is);
+            html = "";
+            if (zis != null) {
+                StringBuilder sb = new StringBuilder();
+                String line;
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(zis, "UTF-8"));
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line).append("\n");
+                    }
+                } finally {
+                    zis.close();
+                }
+                html = sb.toString();
+            }
+
+            // body is only plain text
+        } else {
+            if (!StringUtils.isBlank(originalBody)) {
+                if (originalBody.startsWith("<html") || originalBody.startsWith("<meta")
+                    || originalBody.contains("<br>") || originalBody.contains("<br/>")) {
+                    html = originalBody;
+                }
+            }
+        }
+
+        if (!StringUtils.isBlank(html)) {
+            Matcher m = Pattern.compile("<span [^>]*>From:<\\\\/span>", Pattern.MULTILINE).matcher(html);
+            if (cut && m.find()) {
+                html = html.substring(0, m.start() - 1);
+            } else if (cut && html.contains("<b>From:</b>")) {
+                html = html.substring(0, html.indexOf("<b>From:</b>") - 1);
+            }
+            return html;
+        } else {
+            body = originalBody;
+            Matcher m = Pattern.compile("\\n[\\s]*From:", Pattern.MULTILINE).matcher(body);
+            if (cut && m.find()) {
+                body = body.substring(0, m.start() + 1);
+            }
+            return body;
+        }
+
+    }
 }

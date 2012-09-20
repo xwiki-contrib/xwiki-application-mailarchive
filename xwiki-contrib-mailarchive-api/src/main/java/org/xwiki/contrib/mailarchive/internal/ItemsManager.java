@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
-import org.xwiki.contrib.mailarchive.internal.data.Factory;
 import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
 import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
@@ -43,13 +42,10 @@ public class ItemsManager
 
     private Logger logger;
 
-    private Factory factory;
-
-    public ItemsManager(final QueryManager queryManager, final Logger logger, final Factory factory)
+    public ItemsManager(final QueryManager queryManager, final Logger logger)
     {
         this.queryManager = queryManager;
         this.logger = logger;
-        this.factory = factory;
     }
 
     /**

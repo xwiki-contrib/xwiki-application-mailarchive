@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package>
 <infos/>
-<name>MailingListArchive-0.1-SNAPSHOT</name>
+<name>MailingListArchive-0.2-SNAPSHOT</name>
 <description></description>
 <licence>LGPL</licence>
 <author>XWiki</author>
@@ -56,6 +56,7 @@
 <file defaultAction="0" language="">Extensions.Mail Archive Admin Guide</file>
 <file defaultAction="0" language="">MailArchive.ViewUserMessages</file>
 <file defaultAction="0" language="">MailArchiveCode.TypePatternClass</file>
+<file defaultAction="0" language="">MailArchiveCode.UIExtension</file>
 <file defaultAction="0" language="">MailArchiveCode.AdminClass</file>
 <file defaultAction="0" language="">MailArchiveCode.LoadMails</file>
 <file defaultAction="0" language="">Scheduler.MailArchiveLoadingJob</file>
@@ -69,6 +70,7 @@
 <file defaultAction="0" language="">MailArchiveCode.CreateWikiUsersFromMails</file>
 <file defaultAction="0" language="">MailArchiveCode.UsersSuggestService</file>
 <file defaultAction="0" language="">MailArchiveCode.TestInstall</file>
+<file defaultAction="0" language="">MailArchive.Legend</file>
 <file defaultAction="0" language="">MailArchiveCode.BatchPopulateBodyText</file>
 <file defaultAction="0" language="">MailArchiveCode.ReplySheet</file>
 <file defaultAction="0" language="">MailArchiveCode.ServerSettingsClass</file>

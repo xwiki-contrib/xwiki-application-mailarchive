@@ -94,7 +94,8 @@ public class XWikiPersistence implements IPersistence
         topicObj.set("sensitivity", m.getSensitivity(), context);
         topicObj.set("importance", m.getImportance(), context);
 
-        topicObj.set("type", m.getType(), context);
+        String types = StringUtils.join(m.getTypes().toArray(new String[] {}), ',');
+        topicObj.set("type", types, context);
         topicDoc.setParent(DefaultMailArchive.SPACE_HOME + ".WebHome");
         topicDoc.setTitle("Topic " + m.getTopic());
         topicDoc.setComment("Created topic from mail [" + m.getMessageId() + "]");

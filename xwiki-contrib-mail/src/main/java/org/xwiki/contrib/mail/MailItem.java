@@ -81,6 +81,7 @@ public class MailItem
 
     private String sensitivity;
 
+    // FIXME manage multiple types
     private String type;
 
     private String wikiuser;

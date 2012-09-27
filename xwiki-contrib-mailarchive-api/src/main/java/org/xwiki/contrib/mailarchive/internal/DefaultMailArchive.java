@@ -524,9 +524,10 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         List<IType> foundTypes = extractTypes(config.getMailTypes().values(), m);
         foundTypes.remove(getType(IType.TYPE_MAIL));
         if (foundTypes.size() > 0) {
-            m.setType(foundTypes.get(0).getName());
+            // FIXME: manage multiple types
+            m.setType(foundTypes.get(0).getDisplayName());
         } else {
-            m.setType(IType.TYPE_MAIL);
+            m.setType(getType(IType.TYPE_MAIL).getDisplayName());
         }
 
         // User
@@ -770,6 +771,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
         // Materialize mailing-lists information and mail IType in Tags
         ArrayList<String> taglist = extractMailingListsTags(m);
+        // FIXME manage multiple types
         taglist.add(m.getType());
 
         String createdTopicName = persistence.createTopic(pageName, m, taglist, config.getLoadingUser(), create);

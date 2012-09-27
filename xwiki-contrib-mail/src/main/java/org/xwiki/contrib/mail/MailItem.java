@@ -19,6 +19,7 @@
  */
 package org.xwiki.contrib.mail;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -39,7 +40,7 @@ import javax.mail.Message;
  * <ul>
  * <li>decodedDate : is the "date" string parsed to a Date object</li>
  * <li>isFirstInTopic : is true if message is supposedly the first for this topic, meaning it has no value for in-reply-to</li>
- * <li>type</li>
+ * <li>types</li>
  * <li>wikiUser</li>
  * </ul>
  * 
@@ -82,7 +83,7 @@ public class MailItem
     private String sensitivity;
 
     // FIXME manage multiple types
-    private String type;
+    private ArrayList<String> types;
 
     private String wikiuser;
 
@@ -325,19 +326,27 @@ public class MailItem
     }
 
     /**
-     * @return the type
+     * @return the types
      */
-    public String getType()
+    public ArrayList<String> getTypes()
     {
-        return type;
+        return types;
     }
 
     /**
-     * @param type the type to set
+     * @param types the types to set
      */
-    public void setType(String type)
+    public void addType(String type)
     {
-        this.type = type;
+        this.types.add(type);
+    }
+
+    /**
+     * @param type
+     */
+    public void removeType(String type)
+    {
+        this.types.remove(type);
     }
 
     /**
@@ -421,7 +430,7 @@ public class MailItem
             .append(messageId).append("'\n").append("\t, replyToId:'").append(replyToId).append("'\n")
             .append("\t, refs:'").append(refs).append("'\n").append("\t, contentType:'").append(contentType)
             .append("'\n").append("\t, sensitivity:'").append(sensitivity).append("'\n").append("\t, locale:'")
-            .append(locale).append("'\n").append("\t, type:'").append(type).append("'\n").append("\t, wikiuser:'")
+            .append(locale).append("'\n").append("\t, types:'").append(types).append("'\n").append("\t, wikiuser:'")
             .append(wikiuser).append("'\n").append("\t, isFirstInTopic:'").append(isFirstInTopic).append("'\n")
             .append("]");
 

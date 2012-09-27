@@ -524,10 +524,9 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         List<IType> foundTypes = extractTypes(config.getMailTypes().values(), m);
         foundTypes.remove(getType(IType.TYPE_MAIL));
         if (foundTypes.size() > 0) {
-            // FIXME: manage multiple types
-            m.setType(foundTypes.get(0).getDisplayName());
+            m.addType(foundTypes.get(0).getDisplayName());
         } else {
-            m.setType(getType(IType.TYPE_MAIL).getDisplayName());
+            m.addType(getType(IType.TYPE_MAIL).getDisplayName());
         }
 
         // User
@@ -771,8 +770,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
         // Materialize mailing-lists information and mail IType in Tags
         ArrayList<String> taglist = extractMailingListsTags(m);
-        // FIXME manage multiple types
-        taglist.add(m.getType());
+
+        taglist.addAll(m.getTypes());
 
         String createdTopicName = persistence.createTopic(pageName, m, taglist, config.getLoadingUser(), create);
 
@@ -995,10 +994,18 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         if (attachedMails.size() != 0) {
             msgObj.set("attachedMails", StringUtils.join(attachedMailsPages, ','), context);
         }
-        if (!isAttachedMail) {
-            msgObj.set("type", m.getType(), context);
-        } else {
-            msgObj.set("type", "Attached Mail", context);
+        if (isAttachedMail) {
+            // FIXME: should be a built-in type, or something else maybe (ie mail/topic/attached mail ?)
+            // For example, add field "topicType"=Topic|Calendar Event and "mailType"=Mail|Attached mail|Calendar Item
+            // A Calendar Event could be a MailItem + some specific fields (start date, end date, id,...)
+            // The MailItem could be stored as usual with specific type, and an additional object CalendarEvent could
+            // store the calendary information
+            // with a link to the related email(s) (for cancelled, update meeting,...)
+            m.addType("Attached Mail");
+        }
+        if (m.getTypes().size() > 0) {
+            String types = StringUtils.join(m.getTypes().toArray(new String[] {}), ',');
+            msgObj.set("type", types, context);
         }
         if (parentMail != null) {
             msgDoc.setParent(parentMail);
@@ -1041,7 +1048,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         if (!StringUtils.isBlank(htmlcontent)) {
             logger.debug("Original HTML length " + htmlcontent.length());
 
-            // Replace "&nbsp;" to avoid issue of "A circumflex" characters displayed (???)
+            // Replacement to avoid issue of "A circumflex" characters displayed (???)
             htmlcontent = htmlcontent.replaceAll("&Acirc;", " ");
 
             // Replace attachment URLs in HTML content for images to be shown

@@ -61,7 +61,6 @@
 <file defaultAction="0" language="">MailArchiveCode.LoadMails</file>
 <file defaultAction="0" language="">Scheduler.MailArchiveLoadingJob</file>
 <file defaultAction="0" language="">MailArchiveCode.IconsSuggest</file>
-<file defaultAction="0" language="">MailArchive.RemoteIntegration</file>
 <file defaultAction="0" language="">Extensions.Mail Archive Operations Guide</file>
 <file defaultAction="0" language="">MailArchiveCode.ToolsGroovyClass</file>
 <file defaultAction="0" language="">MailArchiveCode.ReassignAuthors</file>
@@ -81,4 +80,5 @@
 <file defaultAction="0" language="">MailArchiveCode.TypesSettingsSheet</file>
 <file defaultAction="0" language="">MailArchiveCode.StatisticsData</file>
 <file defaultAction="0" language="">MailArchiveCode.MailTopicSheet</file>
-<file defaultAction="0" language="">MailArchiveCode.CalendarEventClass</file></files></package>
+<file defaultAction="0" language="">MailArchiveCode.CalendarEventClass</file>
+<file defaultAction="0" language="">MailArchive.FeedsGenerator</file></files></package>

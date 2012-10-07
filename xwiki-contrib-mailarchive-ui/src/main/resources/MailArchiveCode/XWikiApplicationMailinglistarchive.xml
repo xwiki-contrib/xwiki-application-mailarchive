@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xwikidoc>
-<web>XApp</web>
+<web>MailArchiveCode</web>
 <name>XWikiApplicationMailinglistarchive</name>
 <language></language>
 <defaultLanguage></defaultLanguage>
@@ -11,9 +11,9 @@
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
 <creationDate>1265883999000</creationDate>
-<date>1348737537000</date>
-<contentUpdateDate>1348737537000</contentUpdateDate>
-<version>4.1</version>
+<date>1349624900000</date>
+<contentUpdateDate>1349624900000</contentUpdateDate>
+<version>9.1</version>
 <title></title>
 <template></template>
 <defaultTemplate></defaultTemplate>
@@ -234,10 +234,10 @@
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </translationdocs>
 </class>
-<name>XApp.XWikiApplicationMailinglistarchive</name>
+<name>MailArchiveCode.XWikiApplicationMailinglistarchive</name>
 <number>0</number>
 <className>XAppClasses.XWikiApplicationClass</className>
-<guid>0306c2bf-e71a-4f96-9d40-2284eba9b6fa</guid>
+<guid>54c35f9d-1a27-4db9-a3d2-6bf2d6b5e24d</guid>
 <property>
 <appauthors>jbousque</appauthors>
 </property>
@@ -262,20 +262,7 @@
 <property>
 <docstoinclude>
 <value>[MailArchiveCode.%]</value>
-<value>[Extensions.Mail Archive%]</value>
-<value>MailArchive.ListsSettings</value>
-<value>MailArchive.Loading</value>
-<value>MailArchive.Settings</value>
-<value>MailArchive.Statistics</value>
-<value>MailArchive.WebHome</value>
-<value>MailArchive.LiveTable</value>
-<value>MailArchive.Admin</value>
-<value>MailArchive.Operate</value>
-<value>MailArchive.ViewUserMessages</value>
-<value>MailArchive.FeedsGenerator</value>
-<value>Scheduler.MailArchiveLoadingJob</value>
-<value>MailArchive.TroubleShooting</value>
-<value>MailArchive.Legend</value>
+<value>[MailArchive.%]</value>
 </docstoinclude>
 </property>
 <property>
@@ -284,24 +271,11 @@
 <property>
 <documents>
 <value>[MailArchiveCode.%]</value>
-<value>[Extensions.Mail Archive%]</value>
-<value>MailArchive.ListsSettings</value>
-<value>MailArchive.Loading</value>
-<value>MailArchive.Settings</value>
-<value>MailArchive.Statistics</value>
-<value>MailArchive.WebHome</value>
-<value>MailArchive.LiveTable</value>
-<value>MailArchive.Admin</value>
-<value>MailArchive.Operate</value>
-<value>MailArchive.ViewUserMessages</value>
-<value>MailArchive.FeedsGenerator</value>
-<value>Scheduler.MailArchiveLoadingJob</value>
-<value>MailArchive.TroubleShooting</value>
-<value>MailArchive.Legend</value>
+<value>[MailArchive.%]</value>
 </documents>
 </property>
 <property>
-<license>Gemalto</license>
+<license>xwiki</license>
 </property>
 <property>
 <translationdocs>
@@ -336,10 +310,10 @@
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </tags>
 </class>
-<name>XApp.XWikiApplicationMailinglistarchive</name>
+<name>MailArchiveCode.XWikiApplicationMailinglistarchive</name>
 <number>0</number>
 <className>XWiki.TagClass</className>
-<guid>77da3ff5-2cfb-4a73-a36f-df22b6bf1d78</guid>
+<guid>b3ec6145-f4f6-48ff-a565-d376f9a91742</guid>
 </object>
 <content>#includeForm("XAppSheets.XWikiApplicationClassSheet")
 </content></xwikidoc>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xwikidoc>
-<web>Scheduler</web>
+<web>MailArchiveCode</web>
 <name>MailArchiveLoadingJob</name>
 <language></language>
 <defaultLanguage></defaultLanguage>
@@ -18,7 +18,7 @@
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Imported from XAR</comment>
+<comment>Copied from xwiki:Scheduler.MailArchiveLoadingJob</comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.1</syntaxId>
 <hidden>false</hidden>
@@ -117,10 +117,10 @@
 <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
 </status>
 </class>
-<name>Scheduler.MailArchiveLoadingJob</name>
+<name>MailArchiveCode.MailArchiveLoadingJob</name>
 <number>0</number>
 <className>XWiki.SchedulerJobClass</className>
-<guid>a0ba1b6e-2df2-49c5-a259-959aa06af11b</guid>
+<guid>e558ff65-b33d-41c6-992f-af72ef996021</guid>
 <property>
 <contextDatabase>xwiki</contextDatabase>
 </property>
@@ -192,10 +192,10 @@ To configure options for loading sessions from this scheduled job, please visit 
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </tags>
 </class>
-<name>Scheduler.MailArchiveLoadingJob</name>
+<name>MailArchiveCode.MailArchiveLoadingJob</name>
 <number>0</number>
 <className>XWiki.TagClass</className>
-<guid>5bb0e512-e4ed-40ec-b289-862499a59b54</guid>
+<guid>c651475a-2682-4f52-a7cf-575019f3e5ff</guid>
 <property>
 <tags/>
 </property>
@@ -266,10 +266,10 @@ To configure options for loading sessions from this scheduled job, please visit 
 <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
 </users>
 </class>
-<name>Scheduler.MailArchiveLoadingJob</name>
+<name>MailArchiveCode.MailArchiveLoadingJob</name>
 <number>0</number>
 <className>XWiki.XWikiRights</className>
-<guid>001b4249-e359-4e19-9f50-a44f676ddfe5</guid>
+<guid>32c8482e-0076-463a-b955-b27ad5ec0a68</guid>
 <property>
 <allow>1</allow>
 </property>

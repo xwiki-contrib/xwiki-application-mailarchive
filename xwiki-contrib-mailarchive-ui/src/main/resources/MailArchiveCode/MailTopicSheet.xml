@@ -11,15 +11,15 @@
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
 <creationDate>1258472505000</creationDate>
-<date>1344762921000</date>
-<contentUpdateDate>1344762921000</contentUpdateDate>
-<version>1.1</version>
+<date>1349449431000</date>
+<contentUpdateDate>1349449431000</contentUpdateDate>
+<version>2.17</version>
 <title></title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Imported from XAR</comment>
-<minorEdit>false</minorEdit>
+<comment></comment>
+<minorEdit>true</minorEdit>
 <syntaxId>xwiki/2.1</syntaxId>
 <hidden>false</hidden>
 <object>
@@ -147,6 +147,10 @@
   
   //border-bottom-color:grey !important;
   //border-bottom-width:2px !important;
+}
+.forum-message-author img {
+  width:100px;
+  text-align:center;
 }
 .forum-message-content-header-left {
   background-color:$theme.backgroundSecondaryColor !important;
@@ -322,7 +326,7 @@ function initialize() {
 #if($mode == "table")
   #set($discard = $xwiki.ssx.use("MailArchiveCode.TopicsLiveTableResults"))
   #set($discard = $xwiki.jsx.use("MailArchiveCode.TopicsLiveTableResults"))
-  #set($collist = [ "from", "messagesubject", "date"])
+  #set($collist = [ "date", "from", "messagesubject"])
   #if($showRatings)
     #set($discard = $collist.add("_ratings"))
   #end
@@ -332,7 +336,7 @@ function initialize() {
    "_ratings" : { "sortable" : "false" },
    "date" : { "displayName":"Date", "type" : "date", "link" : "view" }
                  })
-  #set($url = "$xwiki.getDocument('MailArchiveCode.TopicsLiveTableResults').getExternalURL('view')?topicid=${doc.topicid}&amp;collist=from,messagesubject,date,_ratings&amp;classname=MailArchiveCode.MailClass&amp;outputSyntax=plain&amp;xpage=plain")
+  #set($url = "$xwiki.getDocument('MailArchiveCode.TopicsLiveTableResults').getExternalURL('view')?topicid=${doc.topicid}&amp;collist=date,from,messagesubject,_ratings&amp;classname=MailArchiveCode.MailClass&amp;outputSyntax=plain&amp;xpage=plain")
   #set($options = { "className":"MailArchiveCode.MailTopicClass",
                   "url":"$url",
                   "selectedColumn":"date",
@@ -353,7 +357,8 @@ function initialize() {
     #set($star="")
     #if($!message.user)
       #foreach($i in [$start..$message.level]) #set($star="$!{star}*") #end
-$star #if($message.page) [[$message.subject&gt;&gt;$message.page]] #else $message.subject #end $message.date
+$star $datetool.format('short', $message.date) - $message.user ${services.mail.parseAddressHeader("toto &lt;toto&gt;")} - #if($message.page) [[$message.subject&gt;&gt;$message.page]] #else $message.subject #end
+
       #end
     #end
 #elseif ($mode == "forum")

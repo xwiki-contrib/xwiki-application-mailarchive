@@ -25,28 +25,30 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.slf4j.Logger;
-import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IServer;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 import org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration;
+import org.xwiki.contrib.mailarchive.internal.bridge.IBridge;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
 
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
 
 /**
  * @version $Id$
  */
-public class MailArchiveConfiguration implements IMailArchiveConfiguration
+@Component
+@Singleton
+public class MailArchiveConfiguration implements IMailArchiveConfiguration, Initializable
 {
     private static final String CLASS_ADMIN = DefaultMailArchive.SPACE_CODE + ".AdminClass";
 
@@ -90,58 +92,57 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration
 
     private boolean useStore;
 
+    private String emailIgnoredText;
+
     // Components
 
-    /** Provides access to documents. Injected by the Component Manager. */
     @Inject
-    private static DocumentAccessBridge dab;
-
     private QueryManager queryManager;
 
+    @Inject
     private Logger logger;
 
-    private Factory factory;
+    @Inject
+    private IFactory factory;
 
-    private XWikiContext context;
+    @Inject
+    private IBridge bridge;
 
-    private XWiki xwiki;
-
-    public MailArchiveConfiguration(String adminPrefsPage, XWikiContext context, final QueryManager queryManager,
-        final Logger logger, final Factory factory) throws MailArchiveException
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.component.phase.Initializable#initialize()
+     */
+    @Override
+    public void initialize() throws InitializationException
     {
-        this.adminPrefsPage = adminPrefsPage;
-        this.context = context;
-        this.xwiki = context.getWiki();
-        this.queryManager = queryManager;
-        this.logger = logger;
-        this.factory = factory;
-
-        load();
+        logger.debug("initialize()");
+        this.adminPrefsPage = DefaultMailArchive.SPACE_PREFS + ".GlobalParameters";
     }
 
-    public void load() throws MailArchiveException
+    @Override
+    public void reloadConfiguration() throws MailArchiveException
     {
-        if (!xwiki.exists(adminPrefsPage, context)) {
+        if (!bridge.existsDoc(adminPrefsPage)) {
             throw new MailArchiveException("Preferences page does not exist");
         }
         try {
-            XWikiDocument prefsdoc = xwiki.getDocument(adminPrefsPage, context);
-            BaseObject prefsobj = prefsdoc.getObject(CLASS_ADMIN);
-            this.loadingUser = prefsobj.getStringValue("user");
-            this.defaultHomeView = prefsobj.getStringValue("defaulthomeview");
-            this.defaultTopicsView = prefsobj.getStringValue("defaulttopicsview");
-            this.defaultMailsOpeningMode = prefsobj.getStringValue("mailsopeningmode");
-            this.manageTimeline = prefsobj.getIntValue("timeline") != 0;
-            this.maxTimelineItemsToLoad = prefsobj.getIntValue("timelinemaxload");
-            this.matchProfiles = prefsobj.getIntValue("matchwikiprofiles") != 0;
-            this.matchLdap = prefsobj.getIntValue("matchldap") != 0;
-            this.ldapCreateMissingProfiles = prefsobj.getIntValue("createmissingprofiles") != 0;
-            this.ldapForcePhotoUpdate = prefsobj.getIntValue("ldapphotoforceupdate") != 0;
-            this.ldapPhotoFieldName = prefsobj.getStringValue("ldapphotofield");
-            this.ldapPhotoFieldContent = prefsobj.getStringValue("ldapphototype");
-            this.cropTopicIds = prefsobj.getIntValue("adv_croptopicid") != 0;
-            this.itemsSpaceName = prefsobj.getStringValue("adv_itemsspace");
-            this.useStore = prefsobj.getIntValue("store") != 0;
+            this.loadingUser = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "user");
+            this.defaultHomeView = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "defaulthomeview");
+            this.defaultTopicsView = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "defaulttopicsview");
+            this.defaultMailsOpeningMode = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "mailsopeningmode");
+            this.manageTimeline = bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "timeline") != 0;
+            this.maxTimelineItemsToLoad = bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "timelinemaxload");
+            this.matchProfiles = bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "matchwikiprofiles") != 0;
+            this.matchLdap = bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "matchldap") != 0;
+            this.ldapCreateMissingProfiles =
+                bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "createmissingprofiles") != 0;
+            this.ldapForcePhotoUpdate = bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "ldapphotoforceupdate") != 0;
+            this.ldapPhotoFieldName = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "ldapphotofield");
+            this.ldapPhotoFieldContent = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "ldapphototype");
+            this.cropTopicIds = bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "adv_croptopicid") != 0;
+            this.itemsSpaceName = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "adv_itemsspace");
+            this.useStore = bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "store") != 0;
 
         } catch (XWikiException e) {
             throw new MailArchiveException("Error occurred while accessing configuration page", e);
@@ -393,16 +394,42 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration
         return this.types;
     }
 
-    public static Object getPropertyValue(String docname, String classname, String propname)
+    /**
+     * @return The page from which configuration is retrieved.
+     */
+    public String getAdminPrefsPage()
     {
-        return dab.getProperty(docname, classname, 0, propname);
+        return adminPrefsPage;
+    }
+
+    /**
+     * Update page to load configuration from, and triggers a reload of configuration from this page.
+     * 
+     * @param adminPrefsPage
+     * @throws MailArchiveException
+     */
+    public void setAdminPrefsPage(String adminPrefsPage) throws MailArchiveException
+    {
+        this.adminPrefsPage = adminPrefsPage;
+        reloadConfiguration();
+    }
+
+    public String getEmailIgnoredText()
+    {
+        return emailIgnoredText;
+    }
+
+    public void setEmailIgnoredText(String emailIgnoredText)
+    {
+        this.emailIgnoredText = emailIgnoredText;
     }
 
     @Override
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("MailArchiveConfigurationImpl [adminPrefsPage=").append(adminPrefsPage).append(", loadingUser=")
+        builder.append("MailArchiveConfiguration [adminPrefsPage=").append(adminPrefsPage).append(", servers=")
+            .append(servers).append(", lists=").append(lists).append(", types=").append(types).append(", loadingUser=")
             .append(loadingUser).append(", defaultHomeView=").append(defaultHomeView).append(", defaultTopicsView=")
             .append(defaultTopicsView).append(", defaultMailsOpeningMode=").append(defaultMailsOpeningMode)
             .append(", manageTimeline=").append(manageTimeline).append(", maxTimelineItemsToLoad=")
@@ -411,8 +438,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration
             .append(", ldapForcePhotoUpdate=").append(ldapForcePhotoUpdate).append(", ldapPhotoFieldName=")
             .append(ldapPhotoFieldName).append(", ldapPhotoFieldContent=").append(ldapPhotoFieldContent)
             .append(", cropTopicIds=").append(cropTopicIds).append(", itemsSpaceName=").append(itemsSpaceName)
-            .append(", useStore=").append(useStore).append(", servers=").append(servers).append(", lists=")
-            .append(lists).append(", types=").append(types).append("]");
+            .append(", useStore=").append(useStore).append(", emailIgnoredText=").append(emailIgnoredText).append("]");
         return builder.toString();
     }
 

@@ -19,29 +19,11 @@
  */
 package org.xwiki.contrib.mailarchive.internal.persistence;
 
-import java.util.ArrayList;
-
-import org.xwiki.component.annotation.ComponentRole;
-import org.xwiki.contrib.mail.MailItem;
-
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
-
 /**
- * Defines a layer above XWiki API for persistence of Mail Archive items as XWiki pages and objects.
  * 
  * @version $Id$
  */
-@ComponentRole
-public interface IPersistence
+public class TopicEntity
 {
-
-    String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
-        final String loadingUser, final boolean create) throws Exception;
-
-    void updateMailServerState(String serverPrefsDoc, int status) throws Exception;
-
-    void saveAsUser(final XWikiDocument doc, final String user, final String contentUser, final String comment)
-        throws XWikiException;
 
 }

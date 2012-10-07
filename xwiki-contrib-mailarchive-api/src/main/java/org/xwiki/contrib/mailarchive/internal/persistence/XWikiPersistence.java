@@ -22,8 +22,16 @@ package org.xwiki.contrib.mailarchive.internal.persistence;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
 import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 
@@ -36,7 +44,9 @@ import com.xpn.xwiki.objects.BaseObject;
 /**
  * @version $Id$
  */
-public class XWikiPersistence implements IPersistence
+@Component
+@Singleton
+public class XWikiPersistence implements IPersistence, Initializable
 {
     /**
      * XWiki profile name of a non-existing user.
@@ -45,17 +55,28 @@ public class XWikiPersistence implements IPersistence
 
     public static final int MAX_PAGENAME_LENGTH = 30;
 
-    private XWikiContext context;
+    @Inject
+    private Logger logger;
+
+    @Inject
+    private Execution execution;
 
     private XWiki xwiki;
 
-    private Logger logger;
+    private XWikiContext context;
 
-    public XWikiPersistence(XWikiContext context, XWiki xwiki, Logger logger)
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.component.phase.Initializable#initialize()
+     */
+    @Override
+    public void initialize() throws InitializationException
     {
-        this.context = context;
-        this.xwiki = xwiki;
-        this.logger = logger;
+        ExecutionContext context = execution.getContext();
+        this.context = (XWikiContext) context.getProperty("xwikicontext");
+        this.xwiki = this.context.getWiki();
+
     }
 
     /**
@@ -115,7 +136,7 @@ public class XWikiPersistence implements IPersistence
     }
 
     @Override
-    public void updateServerState(String serverPrefsDoc, int status) throws XWikiException
+    public void updateMailServerState(String serverPrefsDoc, int status) throws XWikiException
     {
         logger.debug("Updating server state in " + serverPrefsDoc);
         XWikiDocument serverDoc = context.getWiki().getDocument(serverPrefsDoc, context);
@@ -132,7 +153,8 @@ public class XWikiPersistence implements IPersistence
      * @param comment
      * @throws XWikiException
      */
-    private void saveAsUser(final XWikiDocument doc, final String user, final String contentUser, final String comment)
+    @Override
+    public void saveAsUser(final XWikiDocument doc, final String user, final String contentUser, final String comment)
         throws XWikiException
     {
         String luser = user;
@@ -155,4 +177,5 @@ public class XWikiPersistence implements IPersistence
         doc.setMetaDataDirty(false);
         xwiki.getXWiki(context).saveDocument(doc, comment, context);
     }
+
 }

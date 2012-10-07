@@ -17,31 +17,37 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal.persistence;
+package org.xwiki.contrib.mailarchive.internal;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.xwiki.component.annotation.ComponentRole;
-import org.xwiki.contrib.mail.MailItem;
-
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
+import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
+import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
+import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
+import org.xwiki.query.QueryException;
 
 /**
- * Defines a layer above XWiki API for persistence of Mail Archive items as XWiki pages and objects.
- * 
  * @version $Id$
  */
 @ComponentRole
-public interface IPersistence
+public interface IItemsManager
 {
 
-    String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
-        final String loadingUser, final boolean create) throws Exception;
+    /**
+     * Loads existing topics minimal information from database.
+     * 
+     * @return a map of existing topics, with key = topicId
+     * @throws QueryException
+     */
+    HashMap<String, TopicDescriptor> loadStoredTopics() throws MailArchiveException;
 
-    void updateMailServerState(String serverPrefsDoc, int status) throws Exception;
-
-    void saveAsUser(final XWikiDocument doc, final String user, final String contentUser, final String comment)
-        throws XWikiException;
+    /**
+     * Loads existing mails minimal information from database.
+     * 
+     * @return a map of existing mails, with key = messageId
+     * @throws MailArchiveException
+     */
+    HashMap<String, MailDescriptor> loadStoredMessages() throws MailArchiveException;
 
 }

@@ -17,31 +17,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal.persistence;
-
-import java.util.ArrayList;
+package org.xwiki.contrib.mailarchive.internal.ldap;
 
 import org.xwiki.component.annotation.ComponentRole;
-import org.xwiki.contrib.mail.MailItem;
 
-import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
+import com.novell.ldap.LDAPException;
+import com.xpn.xwiki.plugin.ldap.XWikiLDAPUtils;
 
 /**
- * Defines a layer above XWiki API for persistence of Mail Archive items as XWiki pages and objects.
- * 
  * @version $Id$
  */
 @ComponentRole
-public interface IPersistence
+interface ILDAPHelper
 {
 
-    String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
-        final String loadingUser, final boolean create) throws Exception;
+    LDAPUser searchLDAPUser(String uid, XWikiLDAPUtils ldaputils);
 
-    void updateMailServerState(String serverPrefsDoc, int status) throws Exception;
+    LDAPUser searchLDAPUserByMail(String mail, XWikiLDAPUtils ldaputils);
 
-    void saveAsUser(final XWikiDocument doc, final String user, final String contentUser, final String comment)
-        throws XWikiException;
+    byte[] searchLDAPPhoto(String uid, XWikiLDAPUtils ldaputils) throws LDAPException;
 
 }

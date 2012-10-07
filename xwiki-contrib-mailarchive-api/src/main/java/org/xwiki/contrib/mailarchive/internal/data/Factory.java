@@ -27,30 +27,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.xwiki.bridge.DocumentAccessBridge;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IServer;
 import org.xwiki.contrib.mailarchive.IType;
-import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 
 /**
  * @version $Id$
  */
-public class Factory
+@Component
+@Singleton
+public class Factory implements IFactory
 {
+    @Inject
     private DocumentAccessBridge dab;
 
-    public Factory(final DocumentAccessBridge dab)
-    {
-        this.dab = dab;
-    }
-
     /**
-     * Creates a IServer from preferences document.
+     * {@inheritDoc}
      * 
-     * @param serverPrefsDoc wiki page name of preferences document.
-     * @return a IServer object, or null if preferences document does not exist
+     * @see org.xwiki.contrib.mailarchive.internal.data.IFactory#createMailServer(java.lang.String)
      */
+    @SuppressWarnings("deprecation")
+    @Override
     public Server createMailServer(final String serverPrefsDoc)
     {
         if (!dab.exists(serverPrefsDoc)) {
@@ -90,14 +93,12 @@ public class Factory
     }
 
     /**
-     * Creates a IType from name, icon and patterns list
+     * {@inheritDoc}
      * 
-     * @param name
-     * @param icon
-     * @param patternsList a list of carriage-return separated patterns : each pattern occupies 2 lines, first line
-     *            being the fields to match against (comma separated), second line is the regular expression to match
-     * @return a IType object or null if patternsList could not be parsed
+     * @see org.xwiki.contrib.mailarchive.internal.data.IFactory#createMailType(java.lang.String, java.lang.String,
+     *      java.lang.String, java.lang.String)
      */
+    @Override
     public IType createMailType(final String name, final String displayName, final String icon,
         final String patternsList)
     {
@@ -125,6 +126,13 @@ public class Factory
         return typeobj;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.internal.data.IFactory#createMailingList(java.lang.String, java.lang.String,
+     *      java.lang.String, java.lang.String)
+     */
+    @Override
     public IMailingList createMailingList(final String pattern, final String displayName, final String tag,
         final String color)
     {

@@ -32,14 +32,10 @@ import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import java.util.zip.GZIPOutputStream;
 
 import javax.inject.Inject;
@@ -73,20 +69,18 @@ import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IServer;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.LoadingSession;
-import org.xwiki.contrib.mailarchive.internal.data.Factory;
-import org.xwiki.contrib.mailarchive.internal.data.MailArchiveConfiguration;
+import org.xwiki.contrib.mailarchive.internal.data.IFactory;
 import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
 import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.persistence.IPersistence;
 import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
-import org.xwiki.contrib.mailarchive.internal.threads.MessagesThreader;
+import org.xwiki.contrib.mailarchive.internal.threads.IMessagesThreader;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadableMessage;
-import org.xwiki.contrib.mailarchive.internal.timeline.TimeLine;
-import org.xwiki.contrib.mailarchive.internal.utils.MailUtils;
+import org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineGenerator;
+import org.xwiki.contrib.mailarchive.internal.utils.IMailUtils;
 import org.xwiki.contrib.mailarchive.internal.utils.TextUtils;
 import org.xwiki.environment.Environment;
-import org.xwiki.logging.LoggerManager;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -166,9 +160,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     @Inject
     Logger logger;
 
-    @Inject
-    LoggerManager loggerManager;
-
     /**
      * The component used to parse XHTML obtained after cleaning, when transformations are not executed.
      */
@@ -197,19 +188,30 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     private XWiki xwiki;
 
     /** Provides access to Mail archive configuration items */
-    private ItemsManager store;
+    @Inject
+    private IItemsManager store;
 
     /** Factory to convert raw conf to POJO */
-    private Factory factory;
+    @Inject
+    private IFactory factory;
 
     /** Provides access to the Mail archive configuration */
+    @Inject
     private IMailArchiveConfiguration config;
 
+    @Inject
+    private IMessagesThreader threads;
+
+    @Inject
+    private ITimeLineGenerator timelineGenerator;
+
     /** Used to persist pages for mails and topics */
+    @Inject
     private IPersistence persistence;
 
     /** Some utilities */
-    public MailUtils mailutils;
+    @Inject
+    public IMailUtils mailutils;
 
     /** Already archived topics, loaded from database */
     private HashMap<String, TopicDescriptor> existingTopics;
@@ -238,9 +240,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             ExecutionContext context = execution.getContext();
             this.context = (XWikiContext) context.getProperty("xwikicontext");
             this.xwiki = this.context.getWiki();
-            this.factory = new Factory(dab);
-            this.store = new ItemsManager(queryManager, logger);
-            this.persistence = new XWikiPersistence(this.context, this.xwiki, this.logger);
             logger.info("Mail archive initiliazed !");
             logger.debug("PERMANENT DATA DIR : " + this.environment.getPermanentDirectory());
         } catch (Throwable e) {
@@ -285,7 +284,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         // Persist connection state
 
         try {
-            persistence.updateServerState(server.getWikiDoc(), nbMessages);
+            persistence.updateMailServerState(server.getWikiDoc(), nbMessages);
         } catch (Exception e) {
             logger.info("Failed to persist server connection state", e);
         }
@@ -300,8 +299,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      */
     public ThreadableMessage computeThreads(String topicId)
     {
-        MessagesThreader threads = new MessagesThreader(queryManager, logger);
-
         try {
             if (topicId == null) {
                 return threads.thread();
@@ -309,8 +306,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 return threads.thread(topicId);
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Could not compute threads", e);
         }
         return null;
     }
@@ -372,6 +368,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                         Message message = messages.get(currentMsg);
                         try {
                             logger.debug("DEBUG MODE ? " + session.isDebugMode());
+                            // FIXME: remove true condition
                             if (session.isDebugMode() || true) {
                                 try {
                                     final String id =
@@ -419,7 +416,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                                 }
                             }
                         }
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         logger.warn("Failed to load mail", e);
                     }
                     currentMsg++;
@@ -431,8 +428,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             try {
                 // Compute timeline feed
                 if (config.isManageTimeline() && nbMessages > 0) {
-                    TimeLine timeline = new TimeLine(config, xwiki, context, queryManager, logger);
-                    String timelineFeed = timeline.compute();
+                    String timelineFeed = timelineGenerator.compute();
                     if (!StringUtils.isBlank(timelineFeed)) {
                         File timelineFeedLocation =
                             new File(environment.getPermanentDirectory(), "mailarchive/timeline");
@@ -469,8 +465,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     public String computeTimeline() throws XWikiException, InitializationException, MailArchiveException
     {
         configure();
-        TimeLine timeline = new TimeLine(config, xwiki, context, queryManager, logger);
-        return timeline.compute();
+        return timelineGenerator.compute();
     }
 
     /**
@@ -484,9 +479,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             initialize();
         }
 
-        config =
-            new MailArchiveConfiguration(SPACE_PREFS + ".GlobalParameters", this.context, this.queryManager,
-                this.logger, this.factory);
+        config.reloadConfiguration();
 
         if (config.getItemsSpaceName() != null && !"".equals(config.getItemsSpaceName())) {
             SPACE_ITEMS = config.getItemsSpaceName();
@@ -498,7 +491,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             mailManager.setStore(maStoreLocation.getAbsolutePath(), "mstor");
         }
 
-        mailutils = new MailUtils(xwiki, context, logger, queryManager);
         TextUtils.setLogger(this.logger);
 
         this.isConfigured = true;
@@ -520,91 +512,36 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      */
     public void setMailSpecificParts(final MailItem m)
     {
-        // Types
-        List<IType> foundTypes = extractTypes(config.getMailTypes().values(), m);
-        foundTypes.remove(getType(IType.TYPE_MAIL));
-        if (foundTypes.size() > 0) {
-            m.addType(foundTypes.get(0).getDisplayName());
-        } else {
-            m.addType(getType(IType.TYPE_MAIL).getDisplayName());
-        }
-
-        // User
-        String userwiki = null;
-        if (config.isMatchProfiles()) {
-            userwiki = mailutils.parseUser(m.getFrom(), config.isMatchLdap());
-        }
-        if (StringUtils.isBlank(userwiki)) {
-            userwiki = UNKNOWN_USER;
-        }
-        m.setWikiuser(userwiki);
-
-        // Compatibility: crop ids
-        if (config.isCropTopicIds() && m.getTopicId().length() >= 30) {
-            m.setTopicId(m.getTopicId().substring(0, 29));
-        }
-    }
-
-    /**
-     * Find matching types for this mail.
-     * 
-     * @param m
-     */
-    protected List<IType> extractTypes(final Collection<IType> types, final MailItem m)
-    {
-        List<IType> result = new ArrayList<IType>();
-
-        if (types == null || m == null) {
-            throw new IllegalArgumentException("extractTypes: Types and mailitem can't be null");
-        }
-
-        // set IType
-        for (IType type : types) {
-            logger.info("Checking for type " + type);
-            boolean matched = true;
-            for (Entry<List<String>, String> entry : type.getPatterns().entrySet()) {
-                logger.info("  Checking for entry " + entry);
-                List<String> fields = entry.getKey();
-                String regexp = entry.getValue();
-                Pattern pattern = null;
-                try {
-                    pattern = Pattern.compile(regexp);
-                } catch (PatternSyntaxException e) {
-                    logger.warn("Invalid Pattern " + regexp + "can't be compiled, skipping this mail type");
-                    break;
-                }
-                Matcher matcher = null;
-                boolean fieldMatch = false;
-                for (String field : fields) {
-                    logger.info("  Checking field " + field);
-                    String fieldValue = "";
-                    if ("from".equals(field)) {
-                        fieldValue = m.getFrom();
-                    } else if ("to".equals(field)) {
-                        fieldValue = m.getTo();
-                    } else if ("cc".equals(field)) {
-                        fieldValue = m.getCc();
-                    } else if ("subject".equals(field)) {
-                        fieldValue = m.getSubject();
-                    }
-                    matcher = pattern.matcher(fieldValue);
-                    if (matcher != null) {
-                        fieldMatch = matcher.find();
-                    }
-                    if (fieldMatch) {
-                        logger.info("Field " + field + " value [" + fieldValue + "] matches pattern [" + regexp + "]");
-                        break;
-                    }
-                }
-                matched = matched && fieldMatch;
+        logger.debug("Extracting types");
+        try {
+            // Types
+            List<IType> foundTypes = mailutils.extractTypes(config.getMailTypes().values(), m);
+            foundTypes.remove(getType(IType.TYPE_MAIL));
+            if (foundTypes.size() > 0) {
+                m.addType(foundTypes.get(0).getDisplayName());
+            } else {
+                m.addType(getType(IType.TYPE_MAIL).getDisplayName());
             }
-            if (matched) {
-                logger.info("Matched type " + type.getDisplayName());
-                result.add(type);
-                matched = true;
+
+            // User
+            logger.debug("Extracting user information");
+            String userwiki = null;
+            if (config.isMatchProfiles()) {
+                userwiki = mailutils.parseUser(m.getFrom(), config.isMatchLdap());
             }
+            if (StringUtils.isBlank(userwiki)) {
+                userwiki = UNKNOWN_USER;
+            }
+            m.setWikiuser(userwiki);
+
+            // Compatibility: crop ids
+            if (config.isCropTopicIds() && m.getTopicId().length() >= 30) {
+                m.setTopicId(m.getTopicId().substring(0, 29));
+            }
+        } catch (Throwable t) {
+            logger.warn("Exception ", t);
+            t.printStackTrace();
         }
-        return result;
     }
 
     @Override
@@ -638,7 +575,9 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     {
         MailItem m = null;
 
+        logger.warn("Parsing headers");
         m = mailManager.parseHeaders(mail);
+        logger.warn("Parsing specific parts");
         setMailSpecificParts(m);
         // Compatibility option with old version of the mail archive
         if (config.isCropTopicIds() && m.getTopicId().length() > 30) {
@@ -750,7 +689,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 msgObj.set("topicid", existingTopicId, context);
                 if (confirm) {
                     logger.debug("saving message " + m.getSubject());
-                    saveAsUser(msgDoc, null, config.getLoadingUser(), "Updated mail with existing topic id found");
+                    persistence.saveAsUser(msgDoc, null, config.getLoadingUser(),
+                        "Updated mail with existing topic id found");
                 }
             }
 
@@ -857,7 +797,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
             if (create && dirty) {
                 logger.debug("     Updated existing topic");
-                saveAsUser(topicDoc, newuser, config.getLoadingUser(), comment);
+                persistence.saveAsUser(topicDoc, newuser, config.getLoadingUser(), comment);
             }
             existingTopics.put(m.getTopicId(),
                 new TopicDescriptor(topicDoc.getFullName(), topicObj.getStringValue("subject")));
@@ -1027,7 +967,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
         if (create && !checkMsgIdExistence(m.getMessageId())) {
             logger.debug("saving message " + m.getSubject());
-            saveAsUser(msgDoc, m.getWikiuser(), config.getLoadingUser(), "Created message from mailing-list");
+            persistence.saveAsUser(msgDoc, m.getWikiuser(), config.getLoadingUser(),
+                "Created message from mailing-list");
         }
         existingMessages.put(m.getMessageId(),
             new MailDescriptor(m.getSubject(), existingTopicId, msgDoc.getFullName()));
@@ -1229,37 +1170,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         }
 
         return taglist;
-    }
-
-    /**
-     * @param doc
-     * @param user
-     * @param contentUser
-     * @param comment
-     * @throws XWikiException
-     */
-    protected void saveAsUser(final XWikiDocument doc, final String user, final String contentUser, final String comment)
-        throws XWikiException
-    {
-        String luser = user;
-        // If user is not provided we leave existing one
-        if (luser == null) {
-            if (xwiki.exists(doc.getFullName(), context)) {
-                luser = doc.getCreator();
-            } else {
-                luser = UNKNOWN_USER;
-            }
-        }
-        // We set creator only at document creation
-        if (!xwiki.exists(doc.getFullName(), context)) {
-            doc.setCreator(luser);
-        }
-        doc.setAuthor(luser);
-        doc.setContentAuthor(contentUser);
-        // avoid automatic set of update date to current date
-        doc.setContentDirty(false);
-        doc.setMetaDataDirty(false);
-        xwiki.getXWiki(context).saveDocument(doc, comment, context);
     }
 
     /**

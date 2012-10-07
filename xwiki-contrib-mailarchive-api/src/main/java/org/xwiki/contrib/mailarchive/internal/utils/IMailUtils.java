@@ -17,31 +17,46 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal.persistence;
+package org.xwiki.contrib.mailarchive.internal.utils;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.contrib.mail.MailItem;
+import org.xwiki.contrib.mailarchive.IType;
 
 import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Defines a layer above XWiki API for persistence of Mail Archive items as XWiki pages and objects.
- * 
  * @version $Id$
  */
 @ComponentRole
-public interface IPersistence
+public interface IMailUtils
 {
 
-    String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
-        final String loadingUser, final boolean create) throws Exception;
+    /**
+     * parseUser Parses a user string of the form "user <usermail@com>" - extract mail and if matched in xwiki user
+     * profiles, returns page name for this profile - returns null string if no match is found - tries to return profile
+     * of a user that's authenticated from LDAP, if any, or else first profile found
+     */
+    String parseUser(String user, boolean isMatchLdap);
 
-    void updateMailServerState(String serverPrefsDoc, int status) throws Exception;
+    /**
+     * @param mailPage
+     * @param cut
+     * @return
+     * @throws IOException
+     * @throws XWikiException
+     */
+    String decodeMailContent(String originalHtml, String originalBody, boolean cut) throws IOException, XWikiException;
 
-    void saveAsUser(final XWikiDocument doc, final String user, final String contentUser, final String comment)
-        throws XWikiException;
+    /**
+     * @param types
+     * @param m
+     * @return
+     */
+    List<IType> extractTypes(Collection<IType> types, MailItem m);
 
 }

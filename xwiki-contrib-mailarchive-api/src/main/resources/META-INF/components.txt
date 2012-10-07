@@ -1,2 +1,11 @@
 org.xwiki.contrib.mailarchive.internal.DefaultMailArchive
 org.xwiki.contrib.mailarchive.internal.MailArchiveScriptService
+org.xwiki.contrib.mailarchive.internal.bridge.XWikiBridge
+org.xwiki.contrib.mailarchive.internal.ItemsManager
+org.xwiki.contrib.mailarchive.internal.ldap.LDAPHelper
+org.xwiki.contrib.mailarchive.internal.data.Factory
+org.xwiki.contrib.mailarchive.internal.data.MailArchiveConfiguration
+org.xwiki.contrib.mailarchive.internal.utils.MailUtils
+org.xwiki.contrib.mailarchive.internal.threads.MessagesThreader
+org.xwiki.contrib.mailarchive.internal.timeline.TimeLineGenerator
+org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence

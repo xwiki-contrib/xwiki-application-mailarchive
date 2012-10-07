@@ -26,7 +26,11 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.slf4j.Logger;
+import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.query.Query;
@@ -38,35 +42,22 @@ import org.xwiki.query.QueryManager;
  * 
  * @version $Id$
  */
-public class MessagesThreader
+@Component
+@Singleton
+public class MessagesThreader implements IMessagesThreader
 {
+    @Inject
     private QueryManager queryManager;
 
+    @Inject
     private Logger logger;
 
     /**
-     * @param context
-     * @param xwiki
-     * @param queryManager
-     * @param logger
-     * @param mailutils
-     */
-    public MessagesThreader(QueryManager queryManager, Logger logger)
-    {
-        super();
-        this.queryManager = queryManager;
-        this.logger = logger;
-    }
-
-    /**
-     * Threads the whole archive.
+     * {@inheritDoc}
      * 
-     * @return The root of the threaded message tree.
-     * @throws QueryException If there was a problem to retrieve the messages from db.
-     * @throws MailArchiveException If there was a problem to retrieve the messages from db.
-     * @throws QueryException If there was a problem to retrieve the messages from db.
-     * @throws MailArchiveException If there was a problem during threading.
+     * @see org.xwiki.contrib.mailarchive.internal.threads.IMessagesThreader#thread()
      */
+    @Override
     public ThreadableMessage thread() throws QueryException, MailArchiveException
     {
         String xwql =
@@ -83,13 +74,11 @@ public class MessagesThreader
     }
 
     /**
-     * Threads a specific topic.
+     * {@inheritDoc}
      * 
-     * @param topicId ID of the topic to be threaded.
-     * @return The root of the threaded message tree.
-     * @throws QueryException If there was a problem to retrieve the messages from db.
-     * @throws MailArchiveException If there was a problem during threading.
+     * @see org.xwiki.contrib.mailarchive.internal.threads.IMessagesThreader#thread(java.lang.String)
      */
+    @Override
     public ThreadableMessage thread(String topicId) throws QueryException, MailArchiveException
     {
         String xwql =
@@ -108,12 +97,11 @@ public class MessagesThreader
     }
 
     /**
-     * Threads a list of messages.
+     * {@inheritDoc}
      * 
-     * @param messages The list of messages to thread, in no particular order.
-     * @return The root of the threaded messages tree.
-     * @throws MailArchiveException If a problem occurred while threading.
+     * @see org.xwiki.contrib.mailarchive.internal.threads.IMessagesThreader#thread(java.util.List)
      */
+    @Override
     public ThreadableMessage thread(List<ThreadableMessage> messages) throws MailArchiveException
     {
 

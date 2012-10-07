@@ -17,31 +17,25 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal.persistence;
-
-import java.util.ArrayList;
+package org.xwiki.contrib.mailarchive.internal.timeline;
 
 import org.xwiki.component.annotation.ComponentRole;
-import org.xwiki.contrib.mail.MailItem;
 
 import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Defines a layer above XWiki API for persistence of Mail Archive items as XWiki pages and objects.
- * 
  * @version $Id$
  */
 @ComponentRole
-public interface IPersistence
+public interface ITimeLineGenerator
 {
 
-    String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
-        final String loadingUser, final boolean create) throws Exception;
-
-    void updateMailServerState(String serverPrefsDoc, int status) throws Exception;
-
-    void saveAsUser(final XWikiDocument doc, final String user, final String contentUser, final String comment)
-        throws XWikiException;
+    /**
+     * Computes timeline XML feed from topics and mails, and returns it as a string.
+     * 
+     * @return
+     * @throws XWikiException
+     */
+    String compute() throws XWikiException;
 
 }

@@ -20,22 +20,32 @@
 package org.xwiki.contrib.mailarchive.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.xwiki.contrib.mailarchive.internal.utils.MailUtils;
+import org.xwiki.contrib.mail.MailItem;
+import org.xwiki.contrib.mailarchive.IType;
+import org.xwiki.contrib.mailarchive.internal.data.Type;
+import org.xwiki.contrib.mailarchive.internal.utils.IMailUtils;
+import org.xwiki.test.AbstractMockingComponentTestCase;
+import org.xwiki.test.annotation.MockingRequirement;
 
 import com.xpn.xwiki.XWikiException;
 
 /**
  * @version $Id$
  */
-public class MailUtilsTest
+public class MailUtilsTest extends AbstractMockingComponentTestCase
 {
-    private MailUtils mailutils;
+    @MockingRequirement
+    private IMailUtils mailutils;
 
     private static final String HTML_ENCODED_CONTENT_NO_HISTORY =
         "1F8B0800000000000000ED5A6D6FDB3812FE7C06FC1FA62EB66917962DD94E622B71"
@@ -118,8 +128,7 @@ public class MailUtilsTest
     @Before
     public void setUp() throws Exception
     {
-        // not all methods from MailUtils make uses of xwiki apis
-        this.mailutils = new MailUtils(null, null, null, null);
+        super.setUp();
     }
 
     @Test
@@ -178,5 +187,179 @@ public class MailUtilsTest
     public void decodeMailContentForHtmlAndNoBodyAndCut() throws IOException, XWikiException
     {
         fail("To be implemented");
+    }
+
+    @Test
+    public void extractTypesWithLimitValues()
+    {
+        try {
+            mailutils.extractTypes(null, null);
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+
+        try {
+            List<IType> types = new ArrayList<IType>();
+            mailutils.extractTypes(types, null);
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+
+        try {
+            MailItem mail = new MailItem();
+            mailutils.extractTypes(null, mail);
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
+
+    }
+
+    @Test
+    public void extractTypesForNominalCases_MailType()
+    {
+        // Check with a unique "mail" type
+        List<IType> types = new ArrayList<IType>();
+
+        Type typeMail = new Type();
+        typeMail.setName(IType.TYPE_MAIL);
+        typeMail.setDisplayName("Mail");
+        HashMap<List<String>, String> patterns = new HashMap<List<String>, String>();
+        List<String> fields = new ArrayList<String>();
+        fields.add("subject");
+        patterns.put(fields, "^.*$");
+        typeMail.setPatterns(patterns);
+        typeMail.setIcon("email");
+        types.add(typeMail);
+
+        MailItem m = new MailItem();
+        m.setSubject("lorem ipsum");
+
+        List<IType> foundTypes;
+        foundTypes = mailutils.extractTypes(types, m);
+        assertNotNull(foundTypes);
+        assertEquals(1, foundTypes.size());
+        assertEquals(typeMail, foundTypes.get(0));
+
+    }
+
+    @Test
+    public void extractTypesForNominalCases_OtherType()
+    {
+        // Check with a unique "mail" type
+        List<IType> types = new ArrayList<IType>();
+
+        Type typeProposal = new Type();
+        typeProposal.setName("proposal");
+        typeProposal.setDisplayName("Proposal");
+        HashMap<List<String>, String> patterns = new HashMap<List<String>, String>();
+        List<String> fields = new ArrayList<String>();
+        fields.add("subject");
+        patterns.put(fields, "(?mi)^.*\\[proposal\\].*$");
+        typeProposal.setPatterns(patterns);
+        typeProposal.setIcon("proposal");
+        types.add(typeProposal);
+
+        List<IType> foundTypes;
+
+        // Non-matching test
+        MailItem m = new MailItem();
+        m.setSubject("lorem ipsum");
+
+        foundTypes = mailutils.extractTypes(types, m);
+        assertNotNull(foundTypes);
+        assertEquals(0, foundTypes.size());
+
+        // Matching test
+        m.setSubject("[xwiki-user][Proposal] Add more unitary tests");
+        foundTypes = mailutils.extractTypes(types, m);
+        assertNotNull(foundTypes);
+        assertEquals(1, foundTypes.size());
+        assertEquals(typeProposal, foundTypes.get(0));
+
+        // With pattern at line start - non-matching test
+        patterns.put(fields, "(?mi)^\\[proposal\\].*$");
+        foundTypes = mailutils.extractTypes(types, m);
+        assertNotNull(foundTypes);
+        assertEquals(0, foundTypes.size());
+
+        // With pattern at line start - matching test
+        m.setSubject("[prOposaL] Too low");
+
+        foundTypes = mailutils.extractTypes(types, m);
+        assertNotNull(foundTypes);
+        assertEquals(1, foundTypes.size());
+        assertEquals(typeProposal, foundTypes.get(0));
+
+    }
+
+    @Test
+    public void extractTypesForMultiplePatternsAndTypes()
+    {
+        // Check with a unique "mail" type
+        List<IType> types = new ArrayList<IType>();
+
+        // First setup a type "proposal" that matches subject field
+        Type typeProposal = new Type();
+        typeProposal.setName("proposal");
+        typeProposal.setDisplayName("Proposal");
+        HashMap<List<String>, String> patterns = new HashMap<List<String>, String>();
+        List<String> fields = new ArrayList<String>();
+        fields.add("subject");
+        patterns.put(fields, "(?mi)^.*\\[proposal\\].*$");
+        typeProposal.setPatterns(patterns);
+        typeProposal.setIcon("proposal");
+        types.add(typeProposal);
+
+        // Type release : matches subject for a token, and a specific originating from
+        Type typeRelease = new Type();
+        typeRelease.setName("release");
+        typeRelease.setDisplayName("Release");
+        HashMap<List<String>, String> patternsRelease = new HashMap<List<String>, String>();
+        List<String> fieldsReleaseSubject = new ArrayList<String>();
+        fieldsReleaseSubject.add("subject");
+        patternsRelease.put(fieldsReleaseSubject, "(?mi)^\\[release\\].*$");
+        List<String> fieldsReleaseFrom = new ArrayList<String>();
+        fieldsReleaseFrom.add("from");
+        patternsRelease.put(fieldsReleaseFrom, "(?mi)^.*vmassol.*$");
+        typeRelease.setPatterns(patternsRelease);
+        typeRelease.setIcon("release");
+        types.add(typeRelease);
+
+        List<IType> foundTypes;
+
+        // Non-matching test
+        MailItem m = new MailItem();
+        m.setSubject("lorem ipsum");
+        m.setFrom("toto");
+
+        foundTypes = mailutils.extractTypes(types, m);
+        assertNotNull(foundTypes);
+        assertEquals(0, foundTypes.size());
+
+        // Match only proposal type
+        m.setSubject("[Proposal] This is a proposal");
+        m.setFrom("vmassol");
+        foundTypes = mailutils.extractTypes(types, m);
+        assertNotNull(foundTypes);
+        assertEquals(1, foundTypes.size());
+        assertEquals(typeProposal, foundTypes.get(0));
+
+        // Match only release type
+        m.setSubject("[Release] This is a release");
+        m.setFrom("Vincent Massol <vmassol@mailarchive.net");
+        foundTypes = mailutils.extractTypes(types, m);
+        assertNotNull(foundTypes);
+        assertEquals(1, foundTypes.size());
+        assertEquals(typeRelease, foundTypes.get(0));
+
+        // Match both types
+        m.setSubject("[Release] [PROPOSAL] A new released proposal, whatever it could mean");
+        m.setFrom("vmassol@xwiki.xwiki");
+        foundTypes = mailutils.extractTypes(types, m);
+        assertEquals(2, foundTypes.size());
+        if ((!typeProposal.equals(foundTypes.get(0)) && !typeRelease.equals(foundTypes.get(0)))
+            || (!typeProposal.equals(foundTypes.get(1)) && !typeRelease.equals(foundTypes.get(1)))) {
+            fail("Invalid types found");
+        }
     }
 }

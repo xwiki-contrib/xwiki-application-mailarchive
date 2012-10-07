@@ -27,9 +27,17 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContext;
 import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 import org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration;
 import org.xwiki.query.Query;
@@ -45,34 +53,46 @@ import com.xpn.xwiki.objects.BaseObject;
 /**
  * @version $Id$
  */
-public class TimeLine
+@Component
+@Singleton
+public class TimeLineGenerator implements Initializable, ITimeLineGenerator
 {
+    @Inject
     private IMailArchiveConfiguration config;
+
+    @Inject
+    private Logger logger;
+
+    @Inject
+    private QueryManager queryManager;
+
+    /** Provides access to the request context. */
+    @Inject
+    public Execution execution;
 
     private XWiki xwiki;
 
     private XWikiContext context;
 
-    private Logger logger;
-
-    private QueryManager queryManager;
-
-    public TimeLine(IMailArchiveConfiguration config, XWiki xwiki, XWikiContext context, QueryManager queryManager,
-        Logger logger)
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.component.phase.Initializable#initialize()
+     */
+    @Override
+    public void initialize() throws InitializationException
     {
-        this.config = config;
-        this.xwiki = xwiki;
-        this.context = context;
-        this.logger = logger;
-        this.queryManager = queryManager;
+        ExecutionContext context = execution.getContext();
+        this.context = (XWikiContext) context.getProperty("xwikicontext");
+        this.xwiki = this.context.getWiki();
     }
 
     /**
-     * Computes timeline XML feed from topics and mails, and returns it as a string.
+     * {@inheritDoc}
      * 
-     * @return
-     * @throws XWikiException
+     * @see org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineGenerator#compute()
      */
+    @Override
     public String compute() throws XWikiException
     {
 
@@ -291,4 +311,5 @@ public class TimeLine
         return returnVal;
 
     }
+
 }

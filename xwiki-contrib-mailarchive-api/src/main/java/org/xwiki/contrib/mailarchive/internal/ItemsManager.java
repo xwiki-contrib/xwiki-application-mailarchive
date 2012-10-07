@@ -22,7 +22,11 @@ package org.xwiki.contrib.mailarchive.internal;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.slf4j.Logger;
+import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
 import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
@@ -36,24 +40,22 @@ import org.xwiki.query.QueryManager;
  * 
  * @version $Id$
  */
-public class ItemsManager
+@Component
+@Singleton
+public class ItemsManager implements IItemsManager
 {
+    @Inject
     private QueryManager queryManager;
 
+    @Inject
     private Logger logger;
 
-    public ItemsManager(final QueryManager queryManager, final Logger logger)
-    {
-        this.queryManager = queryManager;
-        this.logger = logger;
-    }
-
     /**
-     * Loads existing topics minimal information from database.
+     * {@inheritDoc}
      * 
-     * @return a map of existing topics, with key = topicId
-     * @throws QueryException
+     * @see org.xwiki.contrib.mailarchive.internal.IItemsManager#loadStoredTopics()
      */
+    @Override
     public HashMap<String, TopicDescriptor> loadStoredTopics() throws MailArchiveException
     {
 
@@ -81,11 +83,11 @@ public class ItemsManager
     }
 
     /**
-     * Loads existing mails minimal information from database.
+     * {@inheritDoc}
      * 
-     * @return a map of existing mails, with key = messageId
-     * @throws MailArchiveException
+     * @see org.xwiki.contrib.mailarchive.internal.IItemsManager#loadStoredMessages()
      */
+    @Override
     public HashMap<String, MailDescriptor> loadStoredMessages() throws MailArchiveException
     {
 

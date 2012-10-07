@@ -17,31 +17,35 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal.persistence;
+package org.xwiki.contrib.mailarchive.internal.bridge;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.xwiki.component.annotation.ComponentRole;
-import org.xwiki.contrib.mail.MailItem;
 
 import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Defines a layer above XWiki API for persistence of Mail Archive items as XWiki pages and objects.
+ * A component to bridge access to old core services.
  * 
  * @version $Id$
  */
 @ComponentRole
-public interface IPersistence
+public interface IBridge
 {
+    // FIXME : Missing methods should be added to DocumentAccessBridge instead.
 
-    String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
-        final String loadingUser, final boolean create) throws Exception;
+    boolean existsDoc(String docname);
 
-    void updateMailServerState(String serverPrefsDoc, int status) throws Exception;
+    boolean existsObject(String docname, String classname) throws XWikiException;
 
-    void saveAsUser(final XWikiDocument doc, final String user, final String contentUser, final String comment)
-        throws XWikiException;
+    String getStringValue(String docname, String classname, String fieldname) throws XWikiException;
 
+    int getIntValue(String docname, String classname, String fieldname) throws XWikiException;
+
+    boolean getBooleanValue(String docname, String classname, String fieldname) throws XWikiException;
+
+    boolean createDocObject(String docname, String title, String classname, HashMap<String, Object> fields, String user);
+
+    boolean updateDocObject(String docname, String title, String classname, HashMap<String, Object> fields, String user);
 }

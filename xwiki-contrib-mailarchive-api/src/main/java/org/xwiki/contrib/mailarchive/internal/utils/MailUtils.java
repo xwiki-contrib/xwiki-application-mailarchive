@@ -24,45 +24,51 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.zip.GZIPInputStream;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.contrib.mail.MailItem;
+import org.xwiki.contrib.mailarchive.IType;
+import org.xwiki.contrib.mailarchive.internal.bridge.IBridge;
+import org.xwiki.contrib.mailarchive.internal.persistence.IPersistence;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 
-import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 
 /**
  * @version $Id$
  */
-public class MailUtils
+@Component
+@Singleton
+public class MailUtils implements IMailUtils
 {
-
+    @Inject
     private QueryManager queryManager;
 
+    @Inject
     private Logger logger;
 
-    private XWikiContext context;
+    @Inject
+    private IPersistence persistence;
 
-    private XWiki xwiki;
-
-    public MailUtils(XWiki xwiki, XWikiContext context, Logger logger, QueryManager queryManager)
-    {
-        this.xwiki = xwiki;
-        this.context = context;
-        this.logger = logger;
-        this.queryManager = queryManager;
-    }
+    @Inject
+    private IBridge bridge;
 
     /**
      * Parses an ID-type mail header, and extracts address part. An ID mail header usually is of the form:<br/>
@@ -87,7 +93,6 @@ public class MailUtils
      * profiles, returns page name for this profile - returns null string if no match is found - tries to return profile
      * of a user that's authenticated from LDAP, if any, or else first profile found
      */
-    @SuppressWarnings("deprecation")
     public String parseUser(String user, boolean isMatchLdap)
     {
         logger.debug("parseUser {}, {}", user, isMatchLdap);
@@ -136,7 +141,7 @@ public class MailUtils
                     // If there exists one, we prefer the user that's been authenticated through LDAP
                     for (String usr : profiles) {
                         try {
-                            if (xwiki.getDocument(usr, context).getObject("XWiki.LDAPProfileClass") != null) {
+                            if (bridge.existsObject(usr, "XWiki.LDAPProfileClass")) {
                                 parsedUser = usr;
                                 logger.debug("parseUser Found LDAP authenticated profile {}", parsedUser);
                             }
@@ -221,5 +226,68 @@ public class MailUtils
             return body;
         }
 
+    }
+
+    /**
+     * Find matching types for this mail.
+     * 
+     * @param m
+     */
+    @Override
+    public List<IType> extractTypes(final Collection<IType> types, final MailItem m)
+    {
+        List<IType> result = new ArrayList<IType>();
+
+        if (types == null || m == null) {
+            throw new IllegalArgumentException("extractTypes: Types and mailitem can't be null");
+        }
+
+        // set IType
+        for (IType type : types) {
+            logger.info("Checking for type " + type);
+            boolean matched = true;
+            for (Entry<List<String>, String> entry : type.getPatterns().entrySet()) {
+                logger.info("  Checking for entry " + entry);
+                List<String> fields = entry.getKey();
+                String regexp = entry.getValue();
+                Pattern pattern = null;
+                try {
+                    pattern = Pattern.compile(regexp);
+                } catch (PatternSyntaxException e) {
+                    logger.warn("Invalid Pattern " + regexp + "can't be compiled, skipping this mail type");
+                    break;
+                }
+                Matcher matcher = null;
+                boolean fieldMatch = false;
+                for (String field : fields) {
+                    logger.info("  Checking field " + field);
+                    String fieldValue = "";
+                    if ("from".equals(field)) {
+                        fieldValue = m.getFrom();
+                    } else if ("to".equals(field)) {
+                        fieldValue = m.getTo();
+                    } else if ("cc".equals(field)) {
+                        fieldValue = m.getCc();
+                    } else if ("subject".equals(field)) {
+                        fieldValue = m.getSubject();
+                    }
+                    matcher = pattern.matcher(fieldValue);
+                    if (matcher != null) {
+                        fieldMatch = matcher.find();
+                    }
+                    if (fieldMatch) {
+                        logger.info("Field " + field + " value [" + fieldValue + "] matches pattern [" + regexp + "]");
+                        break;
+                    }
+                }
+                matched = matched && fieldMatch;
+            }
+            if (matched) {
+                logger.info("Matched type " + type.getDisplayName());
+                result.add(type);
+                matched = true;
+            }
+        }
+        return result;
     }
 }

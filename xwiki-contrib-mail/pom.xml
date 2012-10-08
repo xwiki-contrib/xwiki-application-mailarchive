@@ -32,7 +32,6 @@
   <artifactId>xwiki-contrib-mail</artifactId>
   <name>XWiki - Mail Component</name>
   <description>${project.name} - API wrapped around Javamail for basic features.</description>
-  
   <dependencies>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -48,26 +47,22 @@
     <groupId>commons-io</groupId>
     <artifactId>commons-io</artifactId>
     </dependency>
-
     <!-- Needed to access some core features -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-oldcore</artifactId>
       <version>${platform.version}</version>
     </dependency>
-
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mailapi</artifactId>
     </dependency>
-
     <!-- For Local Store : MSTOR -->
     <dependency>
       <groupId>org.mnode.mstor</groupId>
       <artifactId>mstor</artifactId>
       <version>0.9.13</version>
     </dependency>
-
     <!-- Testing dependencies -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -76,28 +71,25 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
   <profiles>
-  	<profile>
-  		<id>integration-tests</id>
-  		  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.12.1</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-  	</profile>
+    <profile>
+      <id>integration-tests</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
-  
 </project>

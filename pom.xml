@@ -102,6 +102,7 @@
 				<groupId>org.xwiki.contrib.mailarchive</groupId>
 				<artifactId>xwiki-contrib-mailarchive-api</artifactId>
 				<version>${project.version}</version>
+				<scope>runtime</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

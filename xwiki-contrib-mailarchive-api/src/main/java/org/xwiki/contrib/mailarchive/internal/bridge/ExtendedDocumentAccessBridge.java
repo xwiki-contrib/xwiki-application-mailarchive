@@ -23,6 +23,7 @@ import java.util.HashMap;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
@@ -34,16 +35,22 @@ import org.xwiki.context.ExecutionContext;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.DefaultDocumentAccessBridge;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
+ * XWiki implementation of IExtendedDocumentAccessBridge.
+ * 
  * @version $Id$
  */
 @Component
 @Singleton
-public class XWikiBridge implements IBridge, Initializable
+public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge implements IExtendedDocumentAccessBridge,
+    Initializable
 {
+    public static final int MAX_PAGENAME_LENGTH = 30;
+
     @Inject
     private Logger logger;
 
@@ -65,20 +72,54 @@ public class XWikiBridge implements IBridge, Initializable
         ExecutionContext context = execution.getContext();
         this.context = (XWikiContext) context.getProperty("xwikicontext");
         this.xwiki = this.context.getWiki();
-
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#exists(java.lang.String)
+     */
     @Override
-    public boolean existsDoc(String docname)
+    public boolean exists(String docname)
     {
         return xwiki.exists(docname, context);
     }
 
-    public boolean existsObject(String docname, String classname) throws XWikiException
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#exists(java.lang.String,
+     *      java.lang.String)
+     */
+    public boolean exists(String docname, String classname) throws XWikiException
     {
         return xwiki.getDocument(docname, context).getObject(classname) != null;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#getValidUniqueName(java.lang.String,
+     *      java.lang.String)
+     */
+    @Override
+    public String getValidUniqueName(String pagename, String space)
+    {
+        String wikiname = context.getWiki().clearName(pagename, context);
+        if (wikiname.length() >= MAX_PAGENAME_LENGTH) {
+            wikiname = wikiname.substring(0, MAX_PAGENAME_LENGTH);
+        }
+        String uniquePageName = context.getWiki().getUniquePageName(space, wikiname, context);
+
+        return uniquePageName;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#getStringValue(java.lang.String,
+     *      java.lang.String, java.lang.String)
+     */
     @Override
     public String getStringValue(String docname, String classname, String fieldname) throws XWikiException
     {
@@ -87,6 +128,12 @@ public class XWikiBridge implements IBridge, Initializable
         return prefsobj.getStringValue(fieldname);
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#getIntValue(java.lang.String,
+     *      java.lang.String, java.lang.String)
+     */
     @Override
     public int getIntValue(String docname, String classname, String fieldname) throws XWikiException
     {
@@ -95,6 +142,12 @@ public class XWikiBridge implements IBridge, Initializable
         return prefsobj.getIntValue(fieldname);
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#getBooleanValue(java.lang.String,
+     *      java.lang.String, java.lang.String)
+     */
     @Override
     public boolean getBooleanValue(String docname, String classname, String fieldname) throws XWikiException
     {
@@ -104,8 +157,8 @@ public class XWikiBridge implements IBridge, Initializable
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.bridge.IBridge#createDocObject(java.lang.String, java.lang.String,
-     *      java.lang.String, java.util.HashMap, java.lang.String)
+     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#createDocObject(java.lang.String,
+     *      java.lang.String, java.lang.String, java.util.HashMap, java.lang.String)
      */
     @Override
     public boolean createDocObject(String docname, String title, String classname, HashMap<String, Object> fields,
@@ -118,8 +171,8 @@ public class XWikiBridge implements IBridge, Initializable
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.bridge.IBridge#updateDocObject(java.lang.String, java.lang.String,
-     *      java.lang.String, java.util.HashMap, java.lang.String)
+     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#updateDocObject(java.lang.String,
+     *      java.lang.String, java.lang.String, java.util.HashMap, java.lang.String)
      */
     @Override
     public boolean updateDocObject(String docname, String title, String classname, HashMap<String, Object> fields,

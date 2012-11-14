@@ -69,12 +69,12 @@ import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IServer;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.LoadingSession;
+import org.xwiki.contrib.mailarchive.internal.bridge.ExtendedDocumentAccessBridge;
 import org.xwiki.contrib.mailarchive.internal.data.IFactory;
 import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
 import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.persistence.IPersistence;
-import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 import org.xwiki.contrib.mailarchive.internal.threads.IMessagesThreader;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadableMessage;
 import org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineGenerator;
@@ -838,8 +838,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             prefix = 'A';
         }
         String msgwikiname = xwiki.clearName(prefix + m.getTopic().replaceAll(" ", ""), context);
-        if (msgwikiname.length() >= XWikiPersistence.MAX_PAGENAME_LENGTH) {
-            msgwikiname = msgwikiname.substring(0, XWikiPersistence.MAX_PAGENAME_LENGTH);
+        if (msgwikiname.length() >= ExtendedDocumentAccessBridge.MAX_PAGENAME_LENGTH) {
+            msgwikiname = msgwikiname.substring(0, ExtendedDocumentAccessBridge.MAX_PAGENAME_LENGTH);
         }
         String pagename = xwiki.getUniquePageName(SPACE_ITEMS, msgwikiname, context);
         msgDoc = xwiki.getDocument(SPACE_ITEMS + '.' + pagename, context);

@@ -24,6 +24,7 @@ import java.util.Date;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -34,6 +35,7 @@ import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
+import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -46,6 +48,7 @@ import com.xpn.xwiki.objects.BaseObject;
  */
 @Component
 @Singleton
+@Named("extended")
 public class XWikiPersistence implements IPersistence, Initializable
 {
     /**
@@ -53,13 +56,15 @@ public class XWikiPersistence implements IPersistence, Initializable
      */
     public static final String UNKNOWN_USER = "XWiki.UserDoesNotExist";
 
-    public static final int MAX_PAGENAME_LENGTH = 30;
-
     @Inject
     private Logger logger;
 
     @Inject
     private Execution execution;
+
+    @Inject
+	@Named("extended")
+    private IExtendedDocumentAccessBridge bridge;
 
     private XWiki xwiki;
 
@@ -88,16 +93,9 @@ public class XWikiPersistence implements IPersistence, Initializable
     public String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
         final String loadingUser, final boolean create) throws XWikiException
     {
-
-        XWikiDocument topicDoc;
-
-        String topicwikiname = context.getWiki().clearName(pagename, context);
-        if (topicwikiname.length() >= MAX_PAGENAME_LENGTH) {
-            topicwikiname = topicwikiname.substring(0, MAX_PAGENAME_LENGTH);
-        }
-        String uniquePageName =
-            context.getWiki().getUniquePageName(DefaultMailArchive.SPACE_ITEMS, topicwikiname, context);
-        topicDoc = xwiki.getDocument(DefaultMailArchive.SPACE_ITEMS + "." + uniquePageName, context);
+        final String uniquePageName = bridge.getValidUniqueName(pagename, DefaultMailArchive.SPACE_ITEMS);
+        final XWikiDocument topicDoc =
+            xwiki.getDocument(DefaultMailArchive.SPACE_ITEMS + "." + uniquePageName, context);
         BaseObject topicObj = topicDoc.newObject(DefaultMailArchive.SPACE_CODE + ".MailTopicClass", context);
 
         topicObj.set("topicid", m.getTopicId(), context);

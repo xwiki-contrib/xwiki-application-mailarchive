@@ -43,7 +43,7 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mailarchive.IType;
-import org.xwiki.contrib.mailarchive.internal.bridge.IBridge;
+import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
 import org.xwiki.contrib.mailarchive.internal.persistence.IPersistence;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -68,7 +68,7 @@ public class MailUtils implements IMailUtils
     private IPersistence persistence;
 
     @Inject
-    private IBridge bridge;
+    private IExtendedDocumentAccessBridge bridge;
 
     /**
      * Parses an ID-type mail header, and extracts address part. An ID mail header usually is of the form:<br/>
@@ -141,7 +141,7 @@ public class MailUtils implements IMailUtils
                     // If there exists one, we prefer the user that's been authenticated through LDAP
                     for (String usr : profiles) {
                         try {
-                            if (bridge.existsObject(usr, "XWiki.LDAPProfileClass")) {
+                            if (bridge.exists(usr, "XWiki.LDAPProfileClass")) {
                                 parsedUser = usr;
                                 logger.debug("parseUser Found LDAP authenticated profile {}", parsedUser);
                             }

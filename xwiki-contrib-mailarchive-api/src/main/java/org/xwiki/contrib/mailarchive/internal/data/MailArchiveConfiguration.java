@@ -36,7 +36,7 @@ import org.xwiki.contrib.mailarchive.IServer;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 import org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration;
-import org.xwiki.contrib.mailarchive.internal.bridge.IBridge;
+import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
@@ -106,7 +106,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     private IFactory factory;
 
     @Inject
-    private IBridge bridge;
+    private IExtendedDocumentAccessBridge bridge;
 
     /**
      * {@inheritDoc}
@@ -123,7 +123,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     @Override
     public void reloadConfiguration() throws MailArchiveException
     {
-        if (!bridge.existsDoc(adminPrefsPage)) {
+        if (!bridge.exists(adminPrefsPage)) {
             throw new MailArchiveException("Preferences page does not exist");
         }
         try {

@@ -21,7 +21,7 @@ package org.xwiki.contrib.mailarchive.internal.persistence;
 
 import java.util.ArrayList;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.contrib.mail.MailItem;
 
 import com.xpn.xwiki.XWikiException;
@@ -32,7 +32,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
  * 
  * @version $Id$
  */
-@ComponentRole
+@Role
 public interface IPersistence
 {
 

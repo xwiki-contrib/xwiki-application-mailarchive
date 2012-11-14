@@ -22,7 +22,7 @@ package org.xwiki.contrib.mailarchive.internal;
 import java.util.List;
 import java.util.Map;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IServer;
 import org.xwiki.contrib.mailarchive.IType;
@@ -31,7 +31,7 @@ import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 /**
  * Interface (aka Role) of the Component
  */
-@ComponentRole
+@Role
 public interface IMailArchiveConfiguration
 {
     public static final String LDAP_PHOTO_CONTENT_BINARY = "binary";

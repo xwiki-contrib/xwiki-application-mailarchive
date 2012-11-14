@@ -36,6 +36,7 @@ import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IServer;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
+import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 
 /**
  * @version $Id$
@@ -52,7 +53,7 @@ public class Factory implements IFactory
      * 
      * @see org.xwiki.contrib.mailarchive.internal.data.IFactory#createMailServer(java.lang.String)
      */
-    @SuppressWarnings("deprecation")
+    //@SuppressWarnings("deprecation")
     @Override
     public Server createMailServer(final String serverPrefsDoc)
     {
@@ -62,7 +63,7 @@ public class Factory implements IFactory
         Server server = new Server();
 
         // Retrieve connection properties from prefs
-        String className = DefaultMailArchive.SPACE_CODE + ".ServerSettingsClass";
+        String className = XWikiPersistence.CLASS_MAIL_SERVERS;
         server.setId((String) dab.getProperty(serverPrefsDoc, className, "id"));
         server.setHost((String) dab.getProperty(serverPrefsDoc, className, "hostname"));
         try {

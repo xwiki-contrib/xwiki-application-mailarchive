@@ -75,6 +75,7 @@ import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
 import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.persistence.IPersistence;
+import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 import org.xwiki.contrib.mailarchive.internal.threads.IMessagesThreader;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadableMessage;
 import org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineGenerator;
@@ -92,8 +93,6 @@ import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
 import org.xwiki.rendering.renderer.printer.WikiPrinter;
 import org.xwiki.rendering.syntax.Syntax;
 
-import ch.qos.logback.classic.Level;
-
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -110,25 +109,7 @@ import com.xpn.xwiki.util.Util;
 public class DefaultMailArchive implements IMailArchive, Initializable
 {
 
-    /**
-     * Name of the space that contains end-user targeted pages.
-     */
-    public static final String SPACE_HOME = "MailArchive";
 
-    /**
-     * Name of the space that contains technical code.
-     */
-    public static final String SPACE_CODE = "MailArchiveCode";
-
-    /**
-     * Name of the space that contains configuration / preferences
-     */
-    public static final String SPACE_PREFS = "MailArchivePrefs";
-
-    /**
-     * Name of the space that contains created objects
-     */
-    public static String SPACE_ITEMS = "MailArchiveItems";
 
     /**
      * XWiki profile name of a non-existing user.
@@ -169,7 +150,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * The component used to parse XHTML obtained after cleaning, when transformations are not executed.
      */
     @Inject
-    @Named("html/4.01")
+    @Named("xhtml/1.0")
     private StreamParser htmlStreamParser;
 
     /**
@@ -462,7 +443,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             }
         }
 
-        inProgress = false;
         return nbSuccess;
 
     }
@@ -487,7 +467,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         config.reloadConfiguration();
 
         if (config.getItemsSpaceName() != null && !"".equals(config.getItemsSpaceName())) {
-            SPACE_ITEMS = config.getItemsSpaceName();
+            XWikiPersistence.SPACE_ITEMS = config.getItemsSpaceName();
         }
         if (config.isUseStore()) {
             File maStoreLocation = new File(environment.getPermanentDirectory(), "mailarchive/storage");
@@ -690,7 +670,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 + " are different ?" + (!msg.getTopicId().equals(existingTopicId)));
             if (!msg.getTopicId().equals(existingTopicId)) {
                 msgDoc = xwiki.getDocument(existingMessages.get(m.getMessageId()).getFullName(), context);
-                BaseObject msgObj = msgDoc.getObject(SPACE_CODE + ".MailClass");
+                BaseObject msgObj = msgDoc.getObject(XWikiPersistence.SPACE_CODE + ".MailClass");
                 msgObj.set("topicid", existingTopicId, context);
                 if (confirm) {
                     logger.debug("saving message " + m.getSubject());
@@ -749,7 +729,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         }
         XWikiDocument topicDoc = xwiki.getDocument(existingTopics.get(existingTopicId).getFullName(), context);
         logger.debug("Existing topic " + topicDoc);
-        BaseObject topicObj = topicDoc.getObject(SPACE_CODE + ".MailTopicClass");
+        BaseObject topicObj = topicDoc.getObject(XWikiPersistence.SPACE_CODE + ".MailTopicClass");
         Date lastupdatedate = topicObj.getDateValue("lastupdatedate");
         Date startdate = topicObj.getDateValue("startdate");
         String originalAuthor = topicObj.getStringValue("author");
@@ -846,8 +826,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         if (msgwikiname.length() >= ExtendedDocumentAccessBridge.MAX_PAGENAME_LENGTH) {
             msgwikiname = msgwikiname.substring(0, ExtendedDocumentAccessBridge.MAX_PAGENAME_LENGTH);
         }
-        String pagename = xwiki.getUniquePageName(SPACE_ITEMS, msgwikiname, context);
-        msgDoc = xwiki.getDocument(SPACE_ITEMS + '.' + pagename, context);
+        String pagename = xwiki.getUniquePageName(XWikiPersistence.SPACE_ITEMS, msgwikiname, context);
+        msgDoc = xwiki.getDocument(XWikiPersistence.SPACE_ITEMS + '.' + pagename, context);
         logger.debug("NEW MSG msgwikiname=" + msgwikiname + " pagename=" + pagename);
 
         Object bodypart = m.getBodypart();
@@ -899,7 +879,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
                 WikiPrinter printer = new DefaultWikiPrinter();
                 PrintRendererFactory printRendererFactory =
-                		componentManager.lookup(PrintRendererFactory.class, Syntax.PLAIN_1_0.toIdString());
+                    componentManager.getInstance(PrintRendererFactory.class, Syntax.PLAIN_1_0.toIdString());
                 htmlStreamParser.parse(new StringReader(htmlcontent), printRendererFactory.createRenderer(printer));
 
                 converted = printer.toString();
@@ -918,7 +898,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         }
 
         // Fill all new object's fields
-        BaseObject msgObj = msgDoc.newObject(SPACE_CODE + ".MailClass", context);
+        BaseObject msgObj = msgDoc.newObject(XWikiPersistence.SPACE_CODE + ".MailClass", context);
         msgObj.set("messageid", m.getMessageId(), context);
         msgObj.set("messagesubject", m.getSubject(), context);
 
@@ -1207,7 +1187,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 e.printStackTrace();
             }
             if (msgDoc != null) {
-                BaseObject msgObj = msgDoc.getObject(SPACE_CODE + ".MailClass");
+                BaseObject msgObj = msgDoc.getObject(XWikiPersistence.SPACE_CODE + ".MailClass");
                 if (msgObj != null) {
                     logger
                         .debug("existsTopic : message " + replyId + " is a reply to " + existingMessages.get(replyId));
@@ -1246,8 +1226,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         // Search with references
         if (foundTopicId == null) {
             String xwql =
-                "select distinct mail.topicid from Document doc, doc.object(" + SPACE_CODE
-                    + ".MailClass) as mail where mail.references like '%" + messageid + "%'";
+                "select distinct mail.topicid from Document doc, doc.object(" + XWikiPersistence.CLASS_MAILS
+                   +") as mail where mail.references like '%" + messageid + "%'";
             try {
                 List<String> topicIds = queryManager.createQuery(xwql, Query.XWQL).execute();
                 // We're not supposed to find several topics related to messages having this id in references ...

@@ -56,7 +56,11 @@ public class MailArchiveScriptService implements ScriptService
     {
         return this.mailArchive.queryServerInfo(serverPrefsDoc);
     }
-
+    
+    public int load(LoadingSession session) {
+    	return this.mailArchive.loadMails(session);
+    }
+    
     /**
      * Threads messages related to a topic, given its topic ID.<br/>
      * The result is an array, and not a recursive structure, in order to facilitate display of the thread.<br/>

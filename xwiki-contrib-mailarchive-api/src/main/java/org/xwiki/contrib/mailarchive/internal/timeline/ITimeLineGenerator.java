@@ -19,14 +19,14 @@
  */
 package org.xwiki.contrib.mailarchive.internal.timeline;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 import com.xpn.xwiki.XWikiException;
 
 /**
  * @version $Id$
  */
-@ComponentRole
+@Role
 public interface ITimeLineGenerator
 {
 

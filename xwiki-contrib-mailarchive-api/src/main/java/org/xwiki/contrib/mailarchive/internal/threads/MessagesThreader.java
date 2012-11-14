@@ -31,8 +31,8 @@ import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
+import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -62,9 +62,9 @@ public class MessagesThreader implements IMessagesThreader
     {
         String xwql =
             "select mail.name, mail.topicsubject, mail.messagesubject, mail.messageid, mail.references, mail.inreplyto, mail.date from Document doc, doc.object("
-                + DefaultMailArchive.SPACE_CODE
-                + ".MailClass) as  mail where doc.space='"
-                + DefaultMailArchive.SPACE_ITEMS + "'";
+                + XWikiPersistence.CLASS_MAILS
+                + ") as  mail where doc.space='"
+                + XWikiPersistence.SPACE_ITEMS + "'";
 
         List<Object[]> msgs = queryManager.createQuery(xwql, Query.XWQL).execute();
 
@@ -83,10 +83,10 @@ public class MessagesThreader implements IMessagesThreader
     {
         String xwql =
             "select mail.name, mail.topicsubject, mail.messagesubject, mail.messageid, mail.references, mail.inreplyto, mail.date, mail.from from Document doc, doc.object("
-                + DefaultMailArchive.SPACE_CODE
-                + ".MailClass) as  mail where  mail.topicid='"
+                + XWikiPersistence.CLASS_MAILS
+                + ") as  mail where  mail.topicid='"
                 + topicId
-                + "' and doc.space='" + DefaultMailArchive.SPACE_ITEMS + "'";
+                + "' and doc.space='" + XWikiPersistence.SPACE_ITEMS + "'";
 
         List<Object[]> msgs = queryManager.createQuery(xwql, Query.XWQL).execute();
 

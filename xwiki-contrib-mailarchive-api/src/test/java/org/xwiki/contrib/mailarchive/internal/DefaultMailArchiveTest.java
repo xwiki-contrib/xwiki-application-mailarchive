@@ -19,17 +19,11 @@
  */
 package org.xwiki.contrib.mailarchive.internal;
 
-import java.io.File;
-
-import javax.servlet.ServletContext;
-
 import org.jmock.Expectations;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.context.Execution;
 import org.xwiki.contrib.mailarchive.IMailArchive;
-import org.xwiki.environment.Environment;
-import org.xwiki.environment.internal.ServletEnvironment;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -52,9 +46,9 @@ public class DefaultMailArchiveTest extends AbstractBridgedComponentTestCase
     {
         super.setUp();
 
-        setupEnvironment();
+        //setupEnvironment();
 
-        execution = getComponentManager().lookup(Execution.class);
+        execution = getComponentManager().getInstance(Execution.class);
         System.out.println("Execution tu " + execution.hashCode());
 
         this.mockXWiki = getMockery().mock(XWiki.class);
@@ -72,17 +66,17 @@ public class DefaultMailArchiveTest extends AbstractBridgedComponentTestCase
 
         getContext().setWiki(this.mockXWiki);
 
-        this.ma = (DefaultMailArchive) getComponentManager().lookup(IMailArchive.class);
+        this.ma = (DefaultMailArchive) getComponentManager().getInstance(IMailArchive.class);
 
     }
 
     // FIXME: this is supposed to be done by AbstractBridgedComponentTestCase already but it seems to be buggy in 3.5.1.
     // Note: works well in 4.1 so it should be removed when upgrading.
-    protected void setupEnvironment() throws Exception
+    /*protected void setupEnvironment() throws Exception
     {
         // Since the oldcore module draws the Servlet Environment in its dependencies we need to ensure it's set up
         // correctly with a Servlet Context.
-        ServletEnvironment environment = (ServletEnvironment) getComponentManager().lookup(Environment.class);
+        ServletEnvironment environment = (ServletEnvironment) getComponentManager().getInstance(Environment.class);
         final ServletContext mockServletContext = environment.getServletContext();
         getMockery().checking(new Expectations()
         {
@@ -93,7 +87,7 @@ public class DefaultMailArchiveTest extends AbstractBridgedComponentTestCase
                 will(returnValue(new File(System.getProperty("java.io.tmpdir"))));
             }
         });
-    }
+    }*/
 
     @Test
     public void testEnvironment()

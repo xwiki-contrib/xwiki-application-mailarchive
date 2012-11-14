@@ -28,10 +28,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.internal.data.Type;
+import org.xwiki.contrib.mailarchive.internal.utils.IMailUtils;
 import org.xwiki.contrib.mailarchive.internal.utils.MailUtils;
 import org.xwiki.test.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.MockingRequirement;
@@ -41,11 +43,18 @@ import com.xpn.xwiki.XWikiException;
 /**
  * @version $Id$
  */
-public class MailUtilsTest extends AbstractMockingComponentTestCase
+@MockingRequirement(MailUtils.class)
+public class MailUtilsTest extends AbstractMockingComponentTestCase<IMailUtils>
 {
-
-    @MockingRequirement
-    private MailUtils mailutils;
+	
+	private IMailUtils mailutils;
+	
+	@Before
+	public void setUp() throws Exception {
+		super.setUp();
+		this.mailutils = getMockedComponent();
+	}
+	
 
     private static final String HTML_ENCODED_CONTENT_NO_HISTORY =
         "1F8B0800000000000000ED5A6D6FDB3812FE7C06FC1FA62EB66917962DD94E622B71"
@@ -128,6 +137,7 @@ public class MailUtilsTest extends AbstractMockingComponentTestCase
     @Test
     public void decodeMailContentForNoHtmlAndNoBodyAndNoCut() throws IOException, XWikiException
     {
+    	
         String decoded = this.mailutils.decodeMailContent("", "", false);
         assertEquals("", decoded);
     }

@@ -22,7 +22,7 @@ package org.xwiki.contrib.mailarchive.internal.bridge;
 import java.util.HashMap;
 
 import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 import com.xpn.xwiki.XWikiException;
 
@@ -31,7 +31,7 @@ import com.xpn.xwiki.XWikiException;
  * 
  * @version $Id$
  */
-@ComponentRole
+@Role
 public interface IExtendedDocumentAccessBridge extends DocumentAccessBridge
 {
     // FIXME : Missing methods should be added to DocumentAccessBridge instead.

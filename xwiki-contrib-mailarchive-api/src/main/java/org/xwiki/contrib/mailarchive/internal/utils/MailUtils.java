@@ -34,6 +34,7 @@ import java.util.regex.PatternSyntaxException;
 import java.util.zip.GZIPInputStream;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -68,6 +69,7 @@ public class MailUtils implements IMailUtils
     private IPersistence persistence;
 
     @Inject
+    @Named("extended")
     private IExtendedDocumentAccessBridge bridge;
 
     /**

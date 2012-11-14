@@ -45,6 +45,7 @@ import com.xpn.xwiki.objects.BaseObject;
  * @version $Id$
  */
 @Component
+@Named("extended")
 @Singleton
 public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge implements IExtendedDocumentAccessBridge,
     Initializable

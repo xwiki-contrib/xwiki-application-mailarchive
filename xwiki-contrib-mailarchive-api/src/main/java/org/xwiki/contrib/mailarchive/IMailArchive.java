@@ -21,7 +21,7 @@ package org.xwiki.contrib.mailarchive;
 
 import java.io.IOException;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mail.ConnectionErrors;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
@@ -32,7 +32,7 @@ import com.xpn.xwiki.XWikiException;
 /**
  * Interface (aka Role) of the Component
  */
-@ComponentRole
+@Role
 public interface IMailArchive
 {
     /**

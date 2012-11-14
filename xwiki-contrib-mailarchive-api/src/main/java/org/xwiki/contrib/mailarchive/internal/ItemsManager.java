@@ -30,8 +30,8 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
 import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
+import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 import org.xwiki.query.Query;
-import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 
 /**
@@ -64,8 +64,8 @@ public class ItemsManager implements IItemsManager
 
         String xwql =
             "select doc.fullName, topic.topicid, topic.subject " + "from Document doc, doc.object("
-                + DefaultMailArchive.SPACE_CODE + ".MailTopicClass) as  topic " + "where doc.space='"
-                + DefaultMailArchive.SPACE_ITEMS + "'";
+                + XWikiPersistence.SPACE_CODE + ".MailTopicClass) as  topic " + "where doc.space='"
+                + XWikiPersistence.SPACE_ITEMS + "'";
 
         try {
             topics = queryManager.createQuery(xwql, Query.XWQL).execute();
@@ -97,8 +97,8 @@ public class ItemsManager implements IItemsManager
         try {
             String xwql =
                 "select mail.messageid, mail.messagesubject, mail.topicid, doc.fullName "
-                    + "from Document doc, doc.object(" + DefaultMailArchive.SPACE_CODE + ".MailClass) as  mail "
-                    + "where doc.space='" + DefaultMailArchive.SPACE_ITEMS + "'";
+                    + "from Document doc, doc.object(" + XWikiPersistence.SPACE_CODE + ".MailClass) as  mail "
+                    + "where doc.space='" + XWikiPersistence.SPACE_ITEMS + "'";
 
             messages = queryManager.createQuery(xwql, Query.XWQL).execute();
 

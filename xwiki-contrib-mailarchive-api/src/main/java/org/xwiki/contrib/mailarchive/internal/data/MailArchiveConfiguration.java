@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 import org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
+import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
 
@@ -50,7 +52,7 @@ import com.xpn.xwiki.XWikiException;
 @Singleton
 public class MailArchiveConfiguration implements IMailArchiveConfiguration, Initializable
 {
-    private static final String CLASS_ADMIN = DefaultMailArchive.SPACE_CODE + ".AdminClass";
+    private static final String CLASS_ADMIN = XWikiPersistence.SPACE_CODE + ".AdminClass";
 
     private String adminPrefsPage;
 
@@ -106,6 +108,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     private IFactory factory;
 
     @Inject
+    @Named("extended")
     private IExtendedDocumentAccessBridge bridge;
 
     /**
@@ -117,7 +120,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     public void initialize() throws InitializationException
     {
         logger.debug("initialize()");
-        this.adminPrefsPage = DefaultMailArchive.SPACE_PREFS + ".GlobalParameters";
+        this.adminPrefsPage = XWikiPersistence.SPACE_PREFS + ".GlobalParameters";
     }
 
     @Override
@@ -165,8 +168,8 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
 
         String xwql =
             "select list.pattern, list.displayname, list.Tag, list.color from Document doc, doc.object('"
-                + DefaultMailArchive.SPACE_CODE + ".ListsSettingsClass') as list where doc.space='"
-                + DefaultMailArchive.SPACE_PREFS + "'";
+                + XWikiPersistence.CLASS_MAIL_LISTS + "') as list where doc.space='"
+                + XWikiPersistence.SPACE_PREFS + "'";
         try {
             List<Object[]> props = this.queryManager.createQuery(xwql, Query.XWQL).execute();
 
@@ -202,8 +205,8 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
 
         String xwql =
             "select type.name, type.displayName, type.icon, type.patternList from Document doc, doc.object("
-                + DefaultMailArchive.SPACE_CODE + ".TypesSettingsClass) as type where doc.space='"
-                + DefaultMailArchive.SPACE_PREFS + "'";
+                + XWikiPersistence.CLASS_MAIL_TYPES+ ") as type where doc.space='"
+                + XWikiPersistence.SPACE_PREFS + "'";
         try {
             List<Object[]> types = this.queryManager.createQuery(xwql, Query.XWQL).execute();
 
@@ -237,8 +240,8 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         final List<IServer> lists = new ArrayList<IServer>();
 
         String xwql =
-            "select doc.fullName from Document doc, doc.object('" + DefaultMailArchive.SPACE_CODE
-                + ".ServerSettingsClass') as server where doc.space='" + DefaultMailArchive.SPACE_PREFS + "'";
+            "select doc.fullName from Document doc, doc.object('" + XWikiPersistence.CLASS_MAIL_SERVERS
+                + "') as server where doc.space='" + XWikiPersistence.SPACE_PREFS + "'";
         try {
             List<String> props = this.queryManager.createQuery(xwql, Query.XWQL).execute();
 

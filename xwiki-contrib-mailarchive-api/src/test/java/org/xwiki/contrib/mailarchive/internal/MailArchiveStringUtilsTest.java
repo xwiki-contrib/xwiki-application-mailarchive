@@ -21,7 +21,6 @@ public class MailArchiveStringUtilsTest {
 		TextUtils.setLogger(logger);
 	}
 	
-    // FIXME : this is a unit test of MailUtils class
     @Test
     public void testGetLevenshteinDistance() throws InitializationException, MailArchiveException, XWikiException
     {   	

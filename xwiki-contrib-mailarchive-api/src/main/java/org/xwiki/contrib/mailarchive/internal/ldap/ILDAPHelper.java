@@ -19,7 +19,7 @@
  */
 package org.xwiki.contrib.mailarchive.internal.ldap;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 import com.novell.ldap.LDAPException;
 import com.xpn.xwiki.plugin.ldap.XWikiLDAPUtils;
@@ -27,7 +27,7 @@ import com.xpn.xwiki.plugin.ldap.XWikiLDAPUtils;
 /**
  * @version $Id$
  */
-@ComponentRole
+@Role
 interface ILDAPHelper
 {
 

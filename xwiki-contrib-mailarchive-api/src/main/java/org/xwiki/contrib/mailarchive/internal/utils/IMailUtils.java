@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mailarchive.IType;
 
@@ -32,7 +32,7 @@ import com.xpn.xwiki.XWikiException;
 /**
  * @version $Id$
  */
-@ComponentRole
+@Role
 public interface IMailUtils
 {
 

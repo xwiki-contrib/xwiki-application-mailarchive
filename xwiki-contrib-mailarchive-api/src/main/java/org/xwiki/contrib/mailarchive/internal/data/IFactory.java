@@ -19,14 +19,14 @@
  */
 package org.xwiki.contrib.mailarchive.internal.data;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IType;
 
 /**
  * @version $Id$
  */
-@ComponentRole
+@Role
 public interface IFactory
 {
 

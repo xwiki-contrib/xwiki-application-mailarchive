@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -34,7 +34,6 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.contrib.mail.MailItem;
-import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
 
 import com.xpn.xwiki.XWiki;
@@ -48,13 +47,42 @@ import com.xpn.xwiki.objects.BaseObject;
  */
 @Component
 @Singleton
-@Named("extended")
 public class XWikiPersistence implements IPersistence, Initializable
 {
     /**
      * XWiki profile name of a non-existing user.
      */
     public static final String UNKNOWN_USER = "XWiki.UserDoesNotExist";
+    
+    /**
+     * Name of the space that contains end-user targeted pages.
+     */
+    public static final String SPACE_HOME = "MailArchive";
+
+    /**
+     * Name of the space that contains technical code.
+     */
+    public static final String SPACE_CODE = "MailArchiveCode";
+
+    /**
+     * Name of the space that contains configuration / preferences
+     */
+    public static final String SPACE_PREFS = "MailArchivePrefs";
+
+    /**
+     * Name of the space that contains created objects
+     */
+    public static String SPACE_ITEMS = "MailArchiveItems";
+    
+    public static final String CLASS_TOPICS = SPACE_CODE + ".MailTopicClass";
+    public static final String CLASS_MAILS = SPACE_CODE + ".MailClass";
+    public static final String CLASS_MAIL_TYPES = SPACE_CODE + ".TypesSettingsClass";
+    public static final String CLASS_MAIL_LISTS = SPACE_CODE + ".ListsSettingsClass";
+    public static final String CLASS_MAIL_SERVERS = SPACE_CODE + ".ServerSettingsClass";
+    
+    public static final String TEMPLATE_MAILS = SPACE_CODE + ".MailClassTemplate";
+    
+    public static final String PAGE_GLOBAL_PARAMETERS = SPACE_PREFS + ".GlobalParameters";
 
     @Inject
     private Logger logger;
@@ -93,10 +121,10 @@ public class XWikiPersistence implements IPersistence, Initializable
     public String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
         final String loadingUser, final boolean create) throws XWikiException
     {
-        final String uniquePageName = bridge.getValidUniqueName(pagename, DefaultMailArchive.SPACE_ITEMS);
+        final String uniquePageName = bridge.getValidUniqueName(pagename, SPACE_ITEMS);
         final XWikiDocument topicDoc =
-            xwiki.getDocument(DefaultMailArchive.SPACE_ITEMS + "." + uniquePageName, context);
-        BaseObject topicObj = topicDoc.newObject(DefaultMailArchive.SPACE_CODE + ".MailTopicClass", context);
+            xwiki.getDocument(SPACE_ITEMS + "." + uniquePageName, context);
+        BaseObject topicObj = topicDoc.newObject(SPACE_CODE + ".MailTopicClass", context);
 
         topicObj.set("topicid", m.getTopicId(), context);
         topicObj.set("subject", m.getTopic(), context);
@@ -115,7 +143,7 @@ public class XWikiPersistence implements IPersistence, Initializable
 
         String types = StringUtils.join(m.getTypes().toArray(new String[] {}), ',');
         topicObj.set("type", types, context);
-        topicDoc.setParent(DefaultMailArchive.SPACE_HOME + ".WebHome");
+        topicDoc.setParent(SPACE_HOME + ".WebHome");
         topicDoc.setTitle("Topic " + m.getTopic());
         topicDoc.setComment("Created topic from mail [" + m.getMessageId() + "]");
 
@@ -138,7 +166,7 @@ public class XWikiPersistence implements IPersistence, Initializable
     {
         logger.debug("Updating server state in " + serverPrefsDoc);
         XWikiDocument serverDoc = context.getWiki().getDocument(serverPrefsDoc, context);
-        BaseObject serverObj = serverDoc.getObject(DefaultMailArchive.SPACE_CODE + ".ServerSettingsClass");
+        BaseObject serverObj = serverDoc.getObject(SPACE_CODE + ".ServerSettingsClass");
         serverObj.set("status", status, context);
         serverObj.setDateValue("lasttest", new Date());
         xwiki.saveDocument(serverDoc, context);

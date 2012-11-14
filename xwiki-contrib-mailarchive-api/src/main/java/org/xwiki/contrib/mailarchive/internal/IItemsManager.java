@@ -21,7 +21,7 @@ package org.xwiki.contrib.mailarchive.internal;
 
 import java.util.HashMap;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
 import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
@@ -30,7 +30,7 @@ import org.xwiki.query.QueryException;
 /**
  * @version $Id$
  */
-@ComponentRole
+@Role
 public interface IItemsManager
 {
 

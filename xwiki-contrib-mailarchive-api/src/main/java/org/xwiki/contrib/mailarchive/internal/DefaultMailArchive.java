@@ -81,6 +81,8 @@ import org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineGenerator;
 import org.xwiki.contrib.mailarchive.internal.utils.IMailUtils;
 import org.xwiki.contrib.mailarchive.internal.utils.TextUtils;
 import org.xwiki.environment.Environment;
+import org.xwiki.logging.LogLevel;
+import org.xwiki.logging.LoggerManager;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -159,6 +161,9 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     /** Provides access to log facility */
     @Inject
     Logger logger;
+    
+    @Inject
+    LoggerManager loggerManager;
 
     /**
      * The component used to parse XHTML obtained after cleaning, when transformations are not executed.
@@ -225,7 +230,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     /** Are we currently in a loading session ? */
     private boolean inProgress = false;
 
-    private Level logLevel;
+    private LogLevel logLevel;
 
     /**
      * {@inheritDoc}
@@ -894,7 +899,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
                 WikiPrinter printer = new DefaultWikiPrinter();
                 PrintRendererFactory printRendererFactory =
-                    componentManager.lookup(PrintRendererFactory.class, Syntax.PLAIN_1_0.toIdString());
+                		componentManager.lookup(PrintRendererFactory.class, Syntax.PLAIN_1_0.toIdString());
                 htmlStreamParser.parse(new StringReader(htmlcontent), printRendererFactory.createRenderer(printer));
 
                 converted = printer.toString();
@@ -1352,29 +1357,18 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
     }
 
-    // FIXME: is that absolutely needed ? triggering an dependency on log implementation is pretty bad since it make
-    // impossible to switch it to something else. If that's really needed you could add this feature to
-    // xwiki-commons-log module maybe.
-    // FIXME: Starting with 4.2.M2 it is possible to manipulate log level from LoggerManager, so when migrating to this
-    // version
-    // following code could be adapted. Meanwhile it should either be removed (and the feature along with it), or
-    // described in the MailArchive release notes that this debug mode is only supported for logback and does not user
-    // LoggerManager. This is tracked down by XMAILARCH-13.
     public void enterDebugMode()
     {
         // Logs level
-        ch.qos.logback.classic.Logger myLogger = (ch.qos.logback.classic.Logger) this.logger;
-        this.logLevel = myLogger.getLevel();
-        myLogger.setLevel(Level.DEBUG);
-
+    	this.logLevel = loggerManager.getLoggerLevel(logger.getName());
+    	loggerManager.setLoggerLevel(logger.getName(), LogLevel.DEBUG);        
         logger.debug("DEBUG MODE ON");
     }
 
     public void quitDebugMode()
     {
         logger.debug("DEBUG MODE OFF");
-        ch.qos.logback.classic.Logger myLogger = (ch.qos.logback.classic.Logger) this.logger;
-        myLogger.setLevel(this.logLevel);
+        loggerManager.setLoggerLevel(logger.getName(), this.logLevel);
     }
 
 }

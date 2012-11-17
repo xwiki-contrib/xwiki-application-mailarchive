@@ -11,15 +11,15 @@
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
 <creationDate>1353148457000</creationDate>
-<date>1353152391000</date>
-<contentUpdateDate>1353152391000</contentUpdateDate>
-<version>2.1</version>
+<date>1353152609000</date>
+<contentUpdateDate>1353152609000</contentUpdateDate>
+<version>2.2</version>
 <title></title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
 <comment></comment>
-<minorEdit>false</minorEdit>
+<minorEdit>true</minorEdit>
 <syntaxId>xwiki/2.1</syntaxId>
 <hidden>false</hidden>
 <object>
@@ -356,8 +356,9 @@ function initialize() {
   #foreach($message in $threadedMessages) 
     #set($star="")
     #if($!message.user)
+      #set($maUser=$services.mailarchive.parseUser($message.user))
       #foreach($i in [$start..$message.level]) #set($star="$!{star}*") #end
-$star $datetool.format('short', $message.date) - $message.user ${services.mail.parseAddressHeader("toto &lt;toto&gt;")} - #if($message.page) [[$message.subject&gt;&gt;$message.page]] #else $message.subject #end
+$star $datetool.format('short', $message.date) - $maUser.displayName - #if($message.page) [[$message.subject&gt;&gt;$message.page]] #else $message.subject #end
 
       #end
     #end

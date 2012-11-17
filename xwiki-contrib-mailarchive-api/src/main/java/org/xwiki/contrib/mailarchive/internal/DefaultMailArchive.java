@@ -64,6 +64,7 @@ import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mail.Utils;
 import org.xwiki.contrib.mail.internal.JavamailMessageParser;
 import org.xwiki.contrib.mail.internal.MailAttachment;
+import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IServer;
@@ -109,8 +110,6 @@ import com.xpn.xwiki.util.Util;
 public class DefaultMailArchive implements IMailArchive, Initializable
 {
 
-
-
     /**
      * XWiki profile name of a non-existing user.
      */
@@ -142,7 +141,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     /** Provides access to log facility */
     @Inject
     Logger logger;
-    
+
     @Inject
     LoggerManager loggerManager;
 
@@ -512,7 +511,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             logger.debug("Extracting user information");
             String userwiki = null;
             if (config.isMatchProfiles()) {
-                userwiki = mailutils.parseUser(m.getFrom(), config.isMatchLdap());
+                IMAUser maUser = mailutils.parseUser(m.getFrom(), config.isMatchLdap());
+                userwiki = maUser.getWikiProfile();
             }
             if (StringUtils.isBlank(userwiki)) {
                 userwiki = UNKNOWN_USER;
@@ -530,7 +530,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     }
 
     @Override
-    public String parseUser(String internetAddress)
+    public IMAUser parseUser(String internetAddress)
     {
         logger.debug("parseUser {}", internetAddress);
         try {
@@ -539,7 +539,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             logger.warn("parseUser: failed to configure the Mail Archive", e);
             return null;
         }
-        String user = mailutils.parseUser(internetAddress, config.isMatchLdap());
+        IMAUser user = mailutils.parseUser(internetAddress, config.isMatchLdap());
         logger.debug("parseUser return {}", user);
         return user;
     }
@@ -723,7 +723,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     {
         logger.debug("updateTopicPage(" + existingTopicId + ")");
 
-        String newuser = mailutils.parseUser(m.getFrom(), config.isMatchLdap());
+        IMAUser maUser = mailutils.parseUser(m.getFrom(), config.isMatchLdap());
+        String newuser = maUser.getWikiProfile();
         if (newuser == null || "".equals(newuser)) {
             newuser = UNKNOWN_USER;
         }
@@ -1227,7 +1228,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         if (foundTopicId == null) {
             String xwql =
                 "select distinct mail.topicid from Document doc, doc.object(" + XWikiPersistence.CLASS_MAILS
-                   +") as mail where mail.references like '%" + messageid + "%'";
+                    + ") as mail where mail.references like '%" + messageid + "%'";
             try {
                 List<String> topicIds = queryManager.createQuery(xwql, Query.XWQL).execute();
                 // We're not supposed to find several topics related to messages having this id in references ...
@@ -1340,8 +1341,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     public void enterDebugMode()
     {
         // Logs level
-    	this.logLevel = loggerManager.getLoggerLevel(logger.getName());
-    	loggerManager.setLoggerLevel(logger.getName(), LogLevel.DEBUG);        
+        this.logLevel = loggerManager.getLoggerLevel(logger.getName());
+        loggerManager.setLoggerLevel(logger.getName(), LogLevel.DEBUG);
         logger.debug("DEBUG MODE ON");
     }
 

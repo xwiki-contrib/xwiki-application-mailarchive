@@ -28,15 +28,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.jmock.Expectations;
 import org.junit.Before;
 import org.junit.Test;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.contrib.mail.MailItem;
+import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.internal.data.Type;
 import org.xwiki.contrib.mailarchive.internal.utils.IMailUtils;
 import org.xwiki.contrib.mailarchive.internal.utils.MailUtils;
+import org.xwiki.query.Query;
+import org.xwiki.query.QueryManager;
 import org.xwiki.test.AbstractMockingComponentTestCase;
 import org.xwiki.test.annotation.MockingRequirement;
+
+import ch.qos.logback.classic.Logger;
 
 import com.xpn.xwiki.XWikiException;
 
@@ -46,15 +53,27 @@ import com.xpn.xwiki.XWikiException;
 @MockingRequirement(MailUtils.class)
 public class MailUtilsTest extends AbstractMockingComponentTestCase<IMailUtils>
 {
-	
-	private IMailUtils mailutils;
-	
-	@Before
-	public void setUp() throws Exception {
-		super.setUp();
-		this.mailutils = getMockedComponent();
-	}
-	
+
+    private IMailUtils mailutils;
+
+    @Before
+    public void setUp() throws Exception
+    {
+        super.setUp();
+        this.mailutils = getMockedComponent();
+
+        getMockery().checking(new Expectations()
+        {
+            {
+                // Ignore all calls to debug() and enable all logs so that we can assert info(), warn() and error()
+                // calls.
+                ignoring(any(Logger.class)).method("debug");
+                allowing(any(Logger.class)).method("is.*Enabled");
+                will(returnValue(true));
+                ignoring(any(Logger.class)).method("info");
+            }
+        });
+    }
 
     private static final String HTML_ENCODED_CONTENT_NO_HISTORY =
         "1F8B0800000000000000ED5A6D6FDB3812FE7C06FC1FA62EB66917962DD94E622B71"
@@ -137,7 +156,7 @@ public class MailUtilsTest extends AbstractMockingComponentTestCase<IMailUtils>
     @Test
     public void decodeMailContentForNoHtmlAndNoBodyAndNoCut() throws IOException, XWikiException
     {
-    	
+
         String decoded = this.mailutils.decodeMailContent("", "", false);
         assertEquals("", decoded);
     }
@@ -366,4 +385,65 @@ public class MailUtilsTest extends AbstractMockingComponentTestCase<IMailUtils>
             fail("Invalid types found");
         }
     }
+
+    @Test
+    public void parseUser() throws ComponentLookupException, Exception
+    {
+        final QueryManager mockQueryManager = getComponentManager().getInstance(QueryManager.class);
+        final Query mockQuery = getMockery().mock(Query.class);
+        final List<Object> queryResult = new ArrayList<Object>();
+        queryResult.add("toto");
+        queryResult.add("titi");
+        getMockery().checking(new Expectations()
+        {
+            {
+                allowing(mockQueryManager)
+                    .createQuery(
+                        "select doc.fullName from Document doc, doc.object(XWiki.XWikiUsers) as user where LOWER(user.email) like :pattern",
+                        Query.XWQL);
+                will(returnValue(mockQuery));
+                allowing(mockQuery).bindValue("pattern", "auser@host.org");
+                will(returnValue(mockQuery));
+                allowing(mockQuery).execute();
+                will(returnValue(queryResult));
+            }
+        });
+
+        IMAUser maUser = mailutils.parseUser("A User <auser@host.org>", false);
+        assertEquals("auser@host.org", maUser.getAddress());
+        assertEquals("A User", maUser.getDisplayName());
+        assertEquals("A User <auser@host.org>", maUser.getOriginalAddress());
+        assertEquals("toto", maUser.getWikiProfile());
+    }
+
+    @Test
+    public void parseUserForEmptyPersonal() throws ComponentLookupException, Exception
+    {
+        final QueryManager mockQueryManager = getComponentManager().getInstance(QueryManager.class);
+        final Query mockQuery = getMockery().mock(Query.class);
+        final List<Object> queryResult = new ArrayList<Object>();
+        queryResult.add("toto");
+        queryResult.add("titi");
+        getMockery().checking(new Expectations()
+        {
+            {
+                allowing(mockQueryManager)
+                    .createQuery(
+                        "select doc.fullName from Document doc, doc.object(XWiki.XWikiUsers) as user where LOWER(user.email) like :pattern",
+                        Query.XWQL);
+                will(returnValue(mockQuery));
+                allowing(mockQuery).bindValue("pattern", "auser@host.org");
+                will(returnValue(mockQuery));
+                allowing(mockQuery).execute();
+                will(returnValue(queryResult));
+            }
+        });
+
+        IMAUser maUser = mailutils.parseUser("<auser@host.org>", false);
+        assertEquals("auser@host.org", maUser.getAddress());
+        assertEquals("auser", maUser.getDisplayName());
+        assertEquals("<auser@host.org>", maUser.getOriginalAddress());
+        assertEquals("toto", maUser.getWikiProfile());
+    }
+
 }

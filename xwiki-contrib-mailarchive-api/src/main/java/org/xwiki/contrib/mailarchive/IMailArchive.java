@@ -68,9 +68,9 @@ public interface IMailArchive
      * Parses an internet address and returns a wiki user.
      * 
      * @param internetAddress
-     * @return a wiki user profile if one was found.
+     * @return a wiki user profile if one was found, along with a display name and an email address.
      */
-    public String parseUser(String internetAddress);
+    public IMAUser parseUser(String internetAddress);
 
     /**
      * Retrieves the html and/or plain text content from a persisted email page, and decodes it accordingly. Returns

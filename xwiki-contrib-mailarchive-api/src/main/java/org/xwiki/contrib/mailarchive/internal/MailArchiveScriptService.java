@@ -26,6 +26,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.LoadingSession;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadMessageBean;
@@ -47,20 +48,21 @@ public class MailArchiveScriptService implements ScriptService
         return new LoadingSession(this.mailArchive);
     }
 
-    public LoadingSession session(String serverPrefsDoc)
+    public LoadingSession session(final String serverPrefsDoc)
     {
         return new LoadingSession(this.mailArchive, serverPrefsDoc);
     }
 
-    public int check(String serverPrefsDoc)
+    public int check(final String serverPrefsDoc)
     {
         return this.mailArchive.queryServerInfo(serverPrefsDoc);
     }
-    
-    public int load(LoadingSession session) {
-    	return this.mailArchive.loadMails(session);
+
+    public int load(final LoadingSession session)
+    {
+        return this.mailArchive.loadMails(session);
     }
-    
+
     /**
      * Threads messages related to a topic, given its topic ID.<br/>
      * The result is an array, and not a recursive structure, in order to facilitate display of the thread.<br/>
@@ -76,7 +78,7 @@ public class MailArchiveScriptService implements ScriptService
      * @param topicid A topic ID, as can be found in a MailTopicClass object instance in "topicId" field.
      * @return An array of threaded messages.
      */
-    public ArrayList<ThreadMessageBean> thread(String topicid)
+    public ArrayList<ThreadMessageBean> thread(final String topicid)
     {
         // We "flatten" the output to avoid needing recursivity to display the thread(s).
         return this.mailArchive.computeThreads(topicid).flatten();
@@ -87,7 +89,7 @@ public class MailArchiveScriptService implements ScriptService
         return thread(null);
     }
 
-    public String parseUser(String internetAddress)
+    public IMAUser parseUser(final String internetAddress)
     {
         return this.mailArchive.parseUser(internetAddress);
     }
@@ -106,7 +108,7 @@ public class MailArchiveScriptService implements ScriptService
         return timelineFeed;
     }
 
-    public String getDecodedMailText(String mailPage, boolean cut)
+    public String getDecodedMailText(final String mailPage, final boolean cut)
     {
         try {
             return this.mailArchive.getDecodedMailText(mailPage, cut);

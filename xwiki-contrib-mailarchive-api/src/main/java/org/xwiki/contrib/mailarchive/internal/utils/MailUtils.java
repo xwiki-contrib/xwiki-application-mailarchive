@@ -43,8 +43,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.mail.MailItem;
+import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
+import org.xwiki.contrib.mailarchive.internal.data.MAUser;
 import org.xwiki.contrib.mailarchive.internal.persistence.IPersistence;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -95,48 +97,79 @@ public class MailUtils implements IMailUtils
      * profiles, returns page name for this profile - returns null string if no match is found - tries to return profile
      * of a user that's authenticated from LDAP, if any, or else first profile found
      */
-    public String parseUser(String user, boolean isMatchLdap)
+    public IMAUser parseUser(String user, boolean isMatchLdap)
     {
         logger.debug("parseUser {}, {}", user, isMatchLdap);
-        String mail = null;
+
+        MAUser maUser = new MAUser();
+        maUser.setOriginalAddress(user);
+
+        if (StringUtils.isBlank(user)) {
+            return maUser;
+        }
+
+        String address = null;
+        String personal = null;
+        // Do our best to extract an address and a personal
         try {
             InternetAddress ia = null;
             InternetAddress[] result = InternetAddress.parse(user, true);
             if (result != null && result.length > 0) {
                 ia = result[0];
-                mail = ia.getAddress();
+                if (!StringUtils.isBlank(ia.getAddress())) {
+                    address = ia.getAddress();
+                }
+                if (!StringUtils.isBlank(ia.getPersonal())) {
+                    personal = ia.getPersonal();
+                }
             }
         } catch (AddressException e) {
-            mail = user;
+            logger.warn("Address does not follow standards : " + user);
         }
-        if (mail == null) {
-            mail = user;
+        if (StringUtils.isBlank(address)) {
+            String[] substrs = StringUtils.substringsBetween(user, "<", ">");
+            if (substrs != null && substrs.length > 0) {
+                address = substrs[0];
+            } else {
+                // nothing matches, we suppose recipient only contains email address
+                address = user;
+            }
         }
-        if (mail.contains("<") && mail.contains(">")) {
-            mail = mail.substring(mail.indexOf('<'), mail.indexOf('>'));
+        if (StringUtils.isBlank(personal)) {
+            if (user.contains("<")) {
+                personal = StringUtils.substringBeforeLast(user, "<");
+                if (StringUtils.isBlank(personal)) {
+                    personal = StringUtils.substringBefore(address, "@");
+                }
+            }
+
         }
-        logger.debug("parseUser extracted email {}", mail);
+        maUser.setAddress(address);
+        maUser.setDisplayName(personal);
+
+        // Now to match a wiki profile
+        logger.debug("parseUser extracted email {}", address);
         String parsedUser = null;
-        if (!StringUtils.isBlank(mail)) {
+        if (!StringUtils.isBlank(address)) {
             // to match "-external" emails and old mails with '@gemplus.com'...
-            mail = mail.toLowerCase();
-            mail = mail.replace("-external", "").replaceAll("^(.*)@.*[.]com$", "$1%@%.com");
-            logger.debug("parseUser pattern applied {}", mail);
+            String pattern = address.toLowerCase();
+            pattern = pattern.replace("-external", "").replaceAll("^(.*)@.*[.]com$", "$1%@%.com");
+            logger.debug("parseUser pattern applied {}", pattern);
             // Try to find a wiki profile with this email as parameter.
             // TBD : do this in the loading phase, and only try to search db if it was not found ?
             String xwql =
-                "select doc.fullName from Document doc, doc.object(XWiki.XWikiUsers) as user where LOWER(user.email) like :mail";
+                "select doc.fullName from Document doc, doc.object(XWiki.XWikiUsers) as user where LOWER(user.email) like :pattern";
 
             List<String> profiles = null;
             try {
-                profiles = queryManager.createQuery(xwql, Query.XWQL).bindValue("mail", mail).execute();
+                profiles = queryManager.createQuery(xwql, Query.XWQL).bindValue("pattern", pattern).execute();
             } catch (QueryException e) {
                 logger.warn("parseUser Query threw exception", e);
                 profiles = null;
             }
             if (profiles == null || profiles.size() == 0) {
                 logger.debug("parseUser found no wiki profile from db");
-                return null;
+                return maUser;
             } else {
                 if (isMatchLdap) {
                     logger.debug("parseUser Checking for LDAP authenticated profile(s) ...");
@@ -152,19 +185,21 @@ public class MailUtils implements IMailUtils
                         }
                     }
                     if (parsedUser != null) {
-                        logger.info("parseUser return {}", parsedUser);
-                        return parsedUser;
+                        maUser.setWikiProfile(parsedUser);
+                        logger.info("parseUser return {}", maUser);
+                        return maUser;
                     }
                 }
             }
 
             // If none has authenticated from LDAP, we return the first user found
-            logger.info("parseUser return {}", profiles.get(0));
-            return profiles.get(0);
+            maUser.setWikiProfile(profiles.get(0));
+            logger.info("parseUser return {}", maUser);
+            return maUser;
 
         } else {
-            logger.info("parseUser No email found to match, return null");
-            return null;
+            logger.info("parseUser No email found to match");
+            return maUser;
         }
 
     }

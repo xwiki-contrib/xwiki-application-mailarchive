@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.contrib.mail.MailItem;
+import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IType;
 
 import com.xpn.xwiki.XWikiException;
@@ -41,7 +42,7 @@ public interface IMailUtils
      * profiles, returns page name for this profile - returns null string if no match is found - tries to return profile
      * of a user that's authenticated from LDAP, if any, or else first profile found
      */
-    String parseUser(String user, boolean isMatchLdap);
+    IMAUser parseUser(String user, boolean isMatchLdap);
 
     /**
      * @param mailPage

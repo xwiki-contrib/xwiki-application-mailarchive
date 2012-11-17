@@ -6,20 +6,20 @@
 <defaultLanguage>en</defaultLanguage>
 <translation>0</translation>
 <parent>MailArchiveCode.MailTopicClass</parent>
-<creator>XWiki.jbousque</creator>
+<creator>XWiki.Admin</creator>
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1258472505000</creationDate>
-<date>1349449431000</date>
-<contentUpdateDate>1349449431000</contentUpdateDate>
-<version>2.17</version>
+<creationDate>1353148457000</creationDate>
+<date>1353152391000</date>
+<contentUpdateDate>1353152391000</contentUpdateDate>
+<version>2.1</version>
 <title></title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
 <comment></comment>
-<minorEdit>true</minorEdit>
+<minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.1</syntaxId>
 <hidden>false</hidden>
 <object>
@@ -386,8 +386,8 @@ $star $datetool.format('short', $message.date) - $message.user ${services.mail.p
      #set($anchor = $escapetool.javascript($link))
      #set($user = "$mail.user")
      #set($userDisplay = $services.mail.parseAddressHeader($!user)[0].getPersonal())
-     #set($userWiki = $services.mailarchive.parseUser($!user))
-
+     #set($maUser = $services.mailarchive.parseUser($!user))
+     #set($userWiki = $maUser.wikiProfile)
      ## Count mails from author
      #set($xwql = "select count(mail.from) from Document doc, doc.object(MailArchiveCode.MailClass) as mail where mail.from = '$xwiki.sqlfilter($user)'")
      #set($result = $services.query.xwql($xwql).execute())
@@ -415,6 +415,7 @@ $star $datetool.format('short', $message.date) - $message.user ${services.mail.p
   &lt;tr&gt;
     &lt;td class="forum-message-author"&gt;
       #if($userWiki) [[image:$xwiki.getDocument($userWiki).fullName@$xwiki.getDocument($userWiki).getObject('XWiki.XWikiUsers').avatar]] &lt;br/&gt;#end
+      **$!maUser.displayName**&lt;br/&gt;&lt;br/&gt;
       **Posts**: $count&lt;br/&gt;&lt;br/&gt;
       &lt;span class="buttonwrapper"&gt;
         &lt;a href="${xwiki.getDocument('MailArchive.ViewUserMessages').getURL()}?user=$escapetool.html("$!{user}")&amp;wikiUser=$escapetool.html("$!{userWiki}")"&gt;Statistics&lt;/a&gt;&lt;br/&gt;

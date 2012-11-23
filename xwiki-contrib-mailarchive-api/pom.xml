@@ -51,7 +51,7 @@
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
-      <artifactId>mailapi</artifactId>
+      <artifactId>mail</artifactId>
     </dependency>
     <!-- Live debug log setup -->
     <dependency>

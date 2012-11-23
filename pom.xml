@@ -19,7 +19,7 @@
 	<parent>
 		<groupId>org.xwiki.commons</groupId>
 		<artifactId>xwiki-commons-pom</artifactId>
-		<version>4.3-milestone-2</version>
+		<version>4.3-rc-1</version>
 	</parent>
 	<groupId>org.xwiki.contrib.mailarchive</groupId>
 	<artifactId>xwiki-contrib-mailarchive</artifactId>
@@ -88,8 +88,8 @@
 			<!-- To manage emails -->
 			<dependency>
 				<groupId>javax.mail</groupId>
-				<artifactId>mailapi</artifactId>
-				<version>1.4.3</version>
+				<artifactId>mail</artifactId>
+				<version>1.4.5</version>
 			</dependency>
 
 			<!-- Might be used for replies - or use xwiki mail sender plugin ... ? -->

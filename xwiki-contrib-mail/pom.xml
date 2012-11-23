@@ -47,7 +47,7 @@
 		</dependency>
 		<dependency>
 			<groupId>javax.mail</groupId>
-			<artifactId>mailapi</artifactId>
+			<artifactId>mail</artifactId>
 		</dependency>
 		<!-- For Local Store : MSTOR -->
 		<!-- FIXME: use non stripped version when conflict with XE is solved -->

@@ -10,15 +10,15 @@
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1345982977000</creationDate>
-<date>1345983560000</date>
-<contentUpdateDate>1345983560000</contentUpdateDate>
-<version>9.1</version>
+<creationDate>1353417881000</creationDate>
+<date>1353417881000</date>
+<contentUpdateDate>1353417881000</contentUpdateDate>
+<version>1.1</version>
 <title>Mail Archive Legend</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment></comment>
+<comment>Import</comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.1</syntaxId>
 <hidden>false</hidden>

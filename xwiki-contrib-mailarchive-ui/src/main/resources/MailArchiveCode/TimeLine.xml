@@ -3,30 +3,30 @@
 <web>MailArchiveCode</web>
 <name>TimeLine</name>
 <language></language>
-<defaultLanguage>en</defaultLanguage>
+<defaultLanguage></defaultLanguage>
 <translation>0</translation>
 <parent></parent>
-<creator>XWiki.jbousque</creator>
+<creator>XWiki.Admin</creator>
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1268420234000</creationDate>
-<date>1344762921000</date>
-<contentUpdateDate>1344762921000</contentUpdateDate>
-<version>1.1</version>
+<creationDate>1353417892000</creationDate>
+<date>1353417892000</date>
+<contentUpdateDate>1353417892000</contentUpdateDate>
+<version>3.1</version>
 <title>Mail Archive Time-Line</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Imported from XAR</comment>
+<comment>Import: final save</comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.1</syntaxId>
 <hidden>false</hidden><attachment>
 <filename>TimeLineFeed-MailArchiver.xml</filename>
 <filesize>11914</filesize>
-<author>XWiki.jbousque</author>
-<date>1319551594000</date>
-<version>1.2</version>
+<author>XWiki.Admin</author>
+<date>1353417892000</date>
+<version>1.1</version>
 <comment></comment><content>PGRhdGEgd2lraS11cmw9IiIgd2lraS1zZWN0aW9uPSIiPjxldmVudCBzdGFydD0iSmFuIDExLCAy
 MDEwIDQ6NTM6NTUgUE0iIHRpdGxlPSJSRTogbmVlZCBoZWxwIG9uIE9TRyBjb25maWd1cmF0aW9u
 IiBpY29uPSJodHRwOi8vci13aWtpZ2dzLmdlbWFsdG8uY29tL3h3aWtpL2Jpbi9kb3dubG9hZC9Y
@@ -240,9 +240,9 @@ Pg==
 </content></attachment><attachment>
 <filename>timeline-api.js</filename>
 <filesize>8630</filesize>
-<author>XWiki.jbousque</author>
-<date>1319551594000</date>
-<version>1.11</version>
+<author>XWiki.Admin</author>
+<date>1353417892000</date>
+<version>1.1</version>
 <comment></comment><content>Lyo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQogKiAg
 VGltZWxpbmUgQVBJCiAqCiAqICBUaGlzIGZpbGUgd2lsbCBsb2FkIGFsbCB0aGUgSmF2YXNjcmlw
 dCBmaWxlcwogKiAgbmVjZXNzYXJ5IHRvIG1ha2UgdGhlIHN0YW5kYXJkIHRpbWVsaW5lIHdvcmsu

@@ -6,19 +6,19 @@
 <defaultLanguage>en</defaultLanguage>
 <translation>0</translation>
 <parent></parent>
-<creator>XWiki.jbousque</creator>
+<creator>XWiki.Admin</creator>
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1264058144000</creationDate>
-<date>1347980194000</date>
-<contentUpdateDate>1347980194000</contentUpdateDate>
-<version>3.1</version>
+<creationDate>1353417890000</creationDate>
+<date>1353417890000</date>
+<contentUpdateDate>1353417890000</contentUpdateDate>
+<version>1.1</version>
 <title>Provides HTML to be displayed in mail messages</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment></comment>
+<comment>Import</comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>

@@ -10,15 +10,15 @@
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1331540833000</creationDate>
-<date>1344762921000</date>
-<contentUpdateDate>1344762921000</contentUpdateDate>
+<creationDate>1353417891000</creationDate>
+<date>1353417891000</date>
+<contentUpdateDate>1353417891000</contentUpdateDate>
 <version>1.1</version>
 <title>List Settings</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Imported from XAR</comment>
+<comment>Import</comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.1</syntaxId>
 <hidden>false</hidden>

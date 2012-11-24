@@ -3,30 +3,30 @@
 <web>MailArchive</web>
 <name>Mail Archive Admin Guide</name>
 <language></language>
-<defaultLanguage>en</defaultLanguage>
+<defaultLanguage></defaultLanguage>
 <translation>0</translation>
 <parent>MailArchive.Mail Archive Documentation</parent>
 <creator>XWiki.Admin</creator>
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1344763306000</creationDate>
-<date>1349623893000</date>
-<contentUpdateDate>1349623893000</contentUpdateDate>
-<version>32.3</version>
+<creationDate>1353417881000</creationDate>
+<date>1353417883000</date>
+<contentUpdateDate>1353417883000</contentUpdateDate>
+<version>21.1</version>
 <title>Mail Archive Administration Guide</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Copied from xwiki:Extensions.Mail Archive Admin Guide</comment>
+<comment>Import: final save</comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.1</syntaxId>
 <hidden>false</hidden><attachment>
 <filename>MA_Admin_Server_4_addserver.png</filename>
 <filesize>37364</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417881000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAABCYAAAEvCAIAAAAW/lcHAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAJGJSURBVHhe7b0JnBTVuf9dwy7LLMAwOxOJGhVm
 GGBC1Bh3VIILf5M3uRLjxUC48WpyI0m4es1V/9wYjVGyvCQmKJEYl5jX5KKCLIMSUUFxBmYBNGpQ
@@ -687,8 +687,8 @@ AiAAAklE4P8HAJ0/4tWI4DgAAAAASUVORK5CYII=
 <filename>MA_Admin_Server_1.png</filename>
 <filesize>20719</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417881000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAABCcAAACnCAIAAACtqKE4AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAFCESURBVHhe7Z0LfBzFnedbtmzAxvgBtqSRjIlJ
 cmywbPkRh+yxtyTBEMeGc1iOvQ9rWA45zrKYfA4n+BayF1iymCwBZ+8CIXFwIIkT7vLhEq+xAWNC
@@ -1057,8 +1057,8 @@ gAAIlIXA/wc2KlqgAErvjQAAAABJRU5ErkJggg==
 <filename>MA_Admin_Server_2_google.png</filename>
 <filesize>131635</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417882000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAABTYAAAH+CAIAAAApvMalAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe7H0JfFXF9f8gCIKyCOQlCAIhDQgv
 YKs0WNtiSBTFgsUIitQ/rRZZRCmKSAWtWBWKiCKIIKbY+vPHIpjmJ9QFm0dMrVWKtiV5IEQMIFte
@@ -3373,8 +3373,8 @@ QAQQAUQAEUAEEAFEABEYQQSKIqN7BPlRP48AmnoVhFcdKyyJCCACiAAigAggAogAIoAIIAKIQFwI
 <filename>MA_Admin_Server_7_ServersList.png</filename>
 <filesize>17454</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417882000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAABAoAAACiCAIAAABHxrjrAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAEPDSURBVHhe7Z0LcFTHme+PEHqAJCSB0BsUy4Zg
 DCOBZGrtOHhxzLUxNqgSV+2GuLbkFaHCXd9KjMtec51glg2xQwJZJ8Q4LBjKC3ZSa9+IN1jELIqD
@@ -3686,8 +3686,8 @@ AAAAAElFTkSuQmCC
 <filename>MA_Admin_Types_2_add.png</filename>
 <filesize>33680</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417882000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAAA8IAAAH0CAIAAAB5NQNjAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAIMlSURBVHhe7b0JuBzVeaB9558Bxo5t7PmdIeH/
 rUERYCQLCe2gBbTdKyFdP3kyy5PlyXicaCZxLMeZGX6BMcYiGBRjW8YGjFEI1sQTPNiOjXZA2OwC
@@ -4283,8 +4283,8 @@ hgM3OiGqnhrtsI+7cps4cTh0wQTSG3AhJRus0f8/sUGyjiHUrxcAAAAASUVORK5CYII=
 <filename>MA_Admin_Summary.png</filename>
 <filesize>18589</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417882000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAAAfcAAADsCAIAAADmcXicAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAEgySURBVHhe7Z0PeBTV1fCvEBoh5A8JkN0QiIa/
 1QQWiKkKrVhNAAFL/aj2oQhWlBZRv1dAPoF+aq2ArwrtWwX7RqmCNGofXr8UQUmCVRGqxoSEEK3K
@@ -4616,8 +4616,8 @@ RU5ErkJggg==
 <filename>MA_Admin_Server_6_TestOk.png</filename>
 <filesize>26045</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417882000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAAAs4AAAHnCAIAAAAnxUwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAGVSSURBVHhe7d0LdBzXeeD5S0qWH3rQlkygH7AU
 y5YT2QTYIBBkMlJsRyEs0qBmOIn3TEIzMn2AwZg7zCaBxzzmYcLFMuHSgWPa2cU5yCLACa2lYc/E
@@ -5079,8 +5079,8 @@ L0Cqsfqm1IgAAggggAACtgCpBhcDAggggAACCJRR4P8H56dct3wOIsgAAAAASUVORK5CYII=
 <filename>MA_Admin_Lists_2_add.png</filename>
 <filesize>48921</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417882000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAABB0AAAFDCAIAAAD52+HpAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
 AAAOwwAADsMBx2+oZAAAvrtJREFUeF7tnQt8VNWd+E8ChGdIAiSZmQSoKIhKQoBIlVrfqAgof+u/
 Wynt0kLZumW7K1pWq6uUlmqp0u2uLS0SpS5q238fiEQe8bFaBI0J5AEWQVEgyUwSIAkhQMhj/r9z
@@ -5944,8 +5944,8 @@ CwHkAAAAAElFTkSuQmCC
 <filename>MA_Admin_Server_3_addserver.png</filename>
 <filesize>65685</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417882000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAABGEAAAL3CAIAAAClHc8BAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe7L0LfFzVfe+75j2Sxho9LM1Ismxj
 GxuMEbYxTtKEpKQ4BaOQtLen7cmlvWmgKWlp2iS9nKbp5XJyStLDbdL2lNPQFE57TiFtTntOU2xI
@@ -7103,8 +7103,8 @@ f4C7E9352MVAAAAAAElFTkSuQmCC
 <filename>MA_Admin_Types_1.png</filename>
 <filesize>40348</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417882000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAABDAAAAFUCAIAAABdq1uqAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
 AAAOwwAADsMBx2+oZAAAnT5JREFUeF7tvQ2cFNWZ71/DuwIOKDA9PYNscGOMwszAjGziZk1iREVQ
 uSY3d8PiLmYICSvZjSSyet2rrLu+hI1sspcshoXIJqg3+09ykVdhTLwaNyY4M8wMqEQTFZjpnhfk
@@ -7817,8 +7817,8 @@ gEDuEEBAkju2gCQgAAIgAAIgAAIgAAIgMOAI/P9gu9BNiH6exAAAAABJRU5ErkJggg==
 <filename>MA_Admin_Server_5_testserver.png</filename>
 <filesize>29315</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417882000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAAAqoAAAIQCAIAAADGttsuAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAHIYSURBVHhe7b0LeJXVmei/AooXUESF7EuUekcl
 YYfEtFZHrSUVGlTa+p+eUtqDkxymzGF6OukcppYOk9JS2pw27XSYoZNDlMdDcTrTSypEpKG2WrU1
@@ -8338,8 +8338,8 @@ nqb90y8AAAAASUVORK5CYII=
 <filename>MA_Admin_3_GP_LoadingUser.png</filename>
 <filesize>19078</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417882000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAAAksAAAFGCAIAAAD1qUwWAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAEobSURBVHhe7Z1/dFTXde+Pwa2dxFgCGzQzEmhZ
 yfPLSpAYJFV1svL8I0G2MTjWy/LzHwQ3rIBpaYgbE5eE0kUUUmKHOqRpcUkIxLQhuM1Ka2GjYCwM
@@ -8679,8 +8679,8 @@ AALlQQAZrjz8DCtBAARAoPwI/H/KILrscqhfqQAAAABJRU5ErkJggg==
 <filename>MA_Admin_EF.png</filename>
 <filesize>50199</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417882000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAABCsAAAI3CAIAAAA9bUbcAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAMOsSURBVHhe7f0NfFTXeeCPX/GO3xC2QTOSMDHN
 i5MYeUBaNclm7dixEhNwzab95bPrkpZ/IbRsSP42bdhSfn/CukvcpQlJ909LQ6ChG0y2+2tTbCPb
@@ -9566,8 +9566,8 @@ x2wIQAACEIAABCAAAQiMC4H/F4NkGMcA80UGAAAAAElFTkSuQmCC
 <filename>MA_Admin_GP.png</filename>
 <filesize>55962</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417882000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAABCsAAALCCAIAAAB4Ms52AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAANovSURBVHhe7P0LlFTXfeD7H54CyXJ3S4KufggE
 cSzZFq2G7nBnMlnSkqK2JYNskviumcHMmBkI89d/cMbGMWMN/yVhrVGUsGKcjFlLywRsfK9MbtbN
@@ -10554,8 +10554,8 @@ AQIECBAg8AkokM/aEgECBAgQIECAAAECAVOBMjZPZDPeAAAAAElFTkSuQmCC
 <filename>MA_Admin_2.png</filename>
 <filesize>33319</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417882000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAAA64AAAFyCAIAAAB6BxBYAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAIG8SURBVHhe7b0LfFTltff/JCFEGAJJgJCEe7hI
 NUAIaWorp4o2UEQ96KHaD6XoMUoPIr4Vrf+KrYdjC1pvp28R9UVplVJ6+XCUUkBCrHg9tRiSEFKr
@@ -11145,8 +11145,8 @@ AAEQAAEQiEoC/z8DzM9XgJZzPQAAAABJRU5ErkJggg==
 <filename>MA_Admin_Server_TS_UnknownHost.png</filename>
 <filesize>30399</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417883000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAAAuoAAAIgCAIAAABcdtsjAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAHZUSURBVHhe7d0NfFTXfeD9w4uxHQO2cUDzopjE
 sfOKxAgp6mbtxq6LgonwLtv18+mWsA5ZUW1IyXarbfmUsuXRQ0tI6YZ0n7JLV4Et4SFKsnX6YdcQ
@@ -11685,8 +11685,8 @@ fqZZRBVpAAAAAElFTkSuQmCC
 <filename>MA_Admin_Types_3_typeslist.png</filename>
 <filesize>20773</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417883000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAAA8oAAADICAIAAAC/LY/1AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAFC6SURBVHhe7b0LfJTVnf9/JskkgSQkgSRMJoAK
 chFDEiBlV+plvbCWO6vuVqnbHzQpW/uz24r7i1JbRLZUZZVqpeKLEmX7t7B2rXJJRIyXQhFsSMgN
@@ -12056,8 +12056,8 @@ EBAC/z/zYFH9D2m2XAAAAABJRU5ErkJggg==
 <filename>MA_Admin_1_MissingPrerequisites.png</filename>
 <filesize>16319</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.4</version>
+<date>1353417883000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAAAckAAACLCAIAAACFuvX1AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAD9USURBVHhe7V0JXBRH1m+uQblnQI4ojJyiKB4R
 FTAKKp5J1MTEkFM/jTHZ3Ie5zLkxUWPcjWt2kxijMckajUk84oUHYkC8DxRFuUHlZhhuBmbmq6O7
@@ -12349,8 +12349,8 @@ BAGCAEFABALEtooAiRQhCBAECAIWIkBsq4WAkeIEAYIAQUAEAsS2igCJFCEIEAQIAhYiQGyrhYCR
 <filename>MA_Admin_Lists_1_add.png</filename>
 <filesize>26922</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417883000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAAA7EAAAHhCAIAAAA3UK7QAAAABGdBTUEAALGPC/xhBQAAAAlwSFlz
 AAAOwwAADsMBx2+oZAAAaMxJREFUeF7t3Qu0VdWd53t63BvtpJJ4UzfV6UpXCAmKiAoiL+UVRc4R
 4Tj6puumK92je3SqHV3dt6ykapSXGIcaEpPQ5kFiGYsOlTZ02yHXMmXxFAgm+CSKQSJqNKIYg0Hk
@@ -12828,8 +12828,8 @@ DXHEQ+egAAAAAElFTkSuQmCC
 <filename>MA_Admin_4_AdminProfileSet.png</filename>
 <filesize>25821</filesize>
 <author>XWiki.Admin</author>
-<date>1349623963000</date>
-<version>1.3</version>
+<date>1353417883000</date>
+<version>1.1</version>
 <comment></comment><content>iVBORw0KGgoAAAANSUhEUgAAAegAAAFeCAIAAADBoRszAAAAAXNSR0IArs4c6QAAAARnQU1BAACx
 jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAGRySURBVHhe7b0NfBTVufh/IAkRNiEvvOSF8GJ4
 kWqAENLUCreAFhBQL3qp+qEYvVLxKuqtaL0VW8ttS7S+/bwXUS+KVUqx9p+rSAFNUPGNVjEkIUSv

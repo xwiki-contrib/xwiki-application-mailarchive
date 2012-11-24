@@ -3,30 +3,30 @@
 <web>MailArchiveCode</web>
 <name>TimeLineFeed</name>
 <language></language>
-<defaultLanguage>en</defaultLanguage>
+<defaultLanguage></defaultLanguage>
 <translation>0</translation>
 <parent></parent>
-<creator>XWiki.jbousque</creator>
+<creator>XWiki.Admin</creator>
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1268420134000</creationDate>
-<date>1344762921000</date>
-<contentUpdateDate>1344762921000</contentUpdateDate>
-<version>1.1</version>
+<creationDate>1353417893000</creationDate>
+<date>1353417893000</date>
+<contentUpdateDate>1353417893000</contentUpdateDate>
+<version>2.1</version>
 <title></title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Imported from XAR</comment>
+<comment>Import: final save</comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden><attachment>
 <filename>TimeLineFeed-MailArchiver.xml</filename>
 <filesize>13</filesize>
 <author>XWiki.Admin</author>
-<date>1339952700000</date>
-<version>1.600</version>
+<date>1353417893000</date>
+<version>1.1</version>
 <comment></comment><content>PGRhdGE+PC9kYXRhPg==
 </content></attachment>
 <object>
@@ -88,16 +88,16 @@
 <groups>
 <cache>0</cache>
 <disabled>0</disabled>
-<displayType>select</displayType>
+<displayType>input</displayType>
 <multiSelect>1</multiSelect>
 <name>groups</name>
 <number>1</number>
+<picker>1</picker>
 <prettyName>Groups</prettyName>
 <relationalStorage>0</relationalStorage>
 <separator> </separator>
 <size>5</size>
 <unmodifiable>0</unmodifiable>
-<usesList>1</usesList>
 <classType>com.xpn.xwiki.objects.classes.GroupsClass</classType>
 </groups>
 <levels>
@@ -117,16 +117,16 @@
 <users>
 <cache>0</cache>
 <disabled>0</disabled>
-<displayType>select</displayType>
+<displayType>input</displayType>
 <multiSelect>1</multiSelect>
 <name>users</name>
 <number>3</number>
+<picker>1</picker>
 <prettyName>Users</prettyName>
 <relationalStorage>0</relationalStorage>
 <separator> </separator>
 <size>5</size>
 <unmodifiable>0</unmodifiable>
-<usesList>1</usesList>
 <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
 </users>
 </class>

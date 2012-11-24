@@ -10,16 +10,16 @@
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353148456000</creationDate>
-<date>1353151082000</date>
-<contentUpdateDate>1353151082000</contentUpdateDate>
-<version>2.1</version>
+<creationDate>1353417891000</creationDate>
+<date>1353488702000</date>
+<contentUpdateDate>1353488702000</contentUpdateDate>
+<version>1.2</version>
 <title>$msg.get("xe.livetable.resultsmacros")</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment></comment>
-<minorEdit>false</minorEdit>
+<comment>add replacement of 'status' column by icon</comment>
+<minorEdit>true</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
 <object>
@@ -341,7 +341,7 @@
               #else
                 #set($avatar = "#useravatarwithwidth($pwikiuser)") 
                 #set($avatar = $avatar.replaceAll("\r", "").replaceAll("\n",""))
-                #set($fieldDisplayValue = "${avatar} &lt;a href='$xwiki.getDocument('MailArchive.ViewUserMessages').getURL()?user=$!{itemDoc.getValue($colname)}&amp;wikiuser=$!pwikiuser.wikiProfile'&gt;${pwikiuser.displayName}&lt;/a&gt;")
+                #set($fieldDisplayValue = "${avatar} &lt;a href='$xwiki.getDocument('MailArchive.ViewUserMessages').getURL()?user=$!{itemDoc.getValue($colname)}&amp;wikiuser=$!pwikiuser'&gt;${fieldDisplayValue}&lt;/a&gt;")
               #end
             #else
               #set($fieldDisplayValue = "$!itemDoc.display($colname, 'view')")
@@ -360,6 +360,14 @@
               #if($colname=="color")
                 #set($fieldValue = "$!itemDoc.getValue($colname)")
                 #set($fieldDisplayValue = "&lt;span style='background-color:${fieldValue};'&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/span&gt;")
+              #end
+              #if($colname=="status")
+                #set($fieldValue = "$!itemDoc.getValue($colname)")
+                #if($itemDoc.getValue($colname) &gt; 0)
+                  #set($fieldDisplayValue="&lt;img src='/xwiki/resources/icons/silk/accept.png'/&gt;")
+                #else
+                  #set($fieldDisplayValue="&lt;img src='/xwiki/resources/icons/silk/error.png'/&gt;")
+                #end
               #end
               #if($colname=="patternList")
                 ##set($fieldValue = $escapetool.javascript($fieldValue))
@@ -426,7 +434,21 @@
 #end
 
 #macro(parseUser $puser) 
-  #set($pwikiuser = $services.mailarchive.parseUser($puser))
+  #set($pstart = $puser.indexOf('&lt;'))
+  #set($pend = $puser.indexOf('&gt;'))
+  #set($pmail = "")
+  #if ("$pstart"!="-1" &amp;&amp; "$pend" != "-1") 
+    #set($pstart = $pstart + 1)
+    #set($pmail = $puser.substring($pstart, $pend).toLowerCase())
+  #end
+  #set($pwikiuser = "")
+  #if ("$!pmail" != "")
+    #set($phql = "select obj.name from BaseObject as obj, StringProperty as prop where obj.className='XWiki.XWikiUsers' and obj.id=prop.id and prop.name='email' and LOWER(prop.value) ='$pmail'")
+    #set($pwikiuser = $xwiki.search($phql))
+    #if($pwikiuser.size()!=0)
+      #set($pwikiuser = $pwikiuser.get(0))
+    #end
+  #end
 #end
 
 #**

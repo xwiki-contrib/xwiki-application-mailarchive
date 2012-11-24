@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xwikidoc>
+<web>MailArchive</web>
+<name>StatisticsTests</name>
+<language></language>
+<defaultLanguage>en</defaultLanguage>
+<translation>0</translation>
+<parent></parent>
+<creator>XWiki.Admin</creator>
+<author>XWiki.Admin</author>
+<customClass></customClass>
+<contentAuthor>XWiki.Admin</contentAuthor>
+<creationDate>1353325167000</creationDate>
+<date>1353326685000</date>
+<contentUpdateDate>1353326685000</contentUpdateDate>
+<version>31.1</version>
+<title></title>
+<template></template>
+<defaultTemplate></defaultTemplate>
+<validationScript></validationScript>
+<comment></comment>
+<minorEdit>false</minorEdit>
+<syntaxId>xwiki/2.1</syntaxId>
+<hidden>false</hidden>
+<content>{{info}}Please note that these statistics are based on //counts// of mails and topics, and can't be used to evaluate the //quality// of mails and topics ;-){{/info}}
+
+{{velocity}}
+#set($prefsdoc = $xwiki.getDocument('MailArchivePrefs.GlobalParameters'))
+#set($prefs = $prefsdoc.getObject('MailArchiveCode.AdminClass'))
+#set($full = $request.full)
+#set($restrict = $request.restrict)
+#set($nbitemstoshow = 0)
+#if (!$full)
+  #set($nbitemstoshow = 10)
+#end
+#if (!$restrict) 
+  #set($restrict = "All")
+#end
+#set($linksstr = "**Limit view to**: ")
+#if($restrict == "All")
+  #set($linksstr = "$linksstr __**All DLs**__")
+#else
+  #set($linksstr = "$linksstr [[All DLs&gt;&gt;${doc.web}.${doc.name}||queryString='full=$!{full}']]")
+#end
+## List of DL tags
+#set($xwql = "select list.Tag, list.displayname, list.color from Document doc, doc.object(MailArchiveCode.ListsSettingsClass) as list order by list.displayname asc")
+#set($tagslist = $services.query.xwql($xwql).execute())
+#foreach($tagitem in $tagslist)
+  #set($listtag = $tagitem[0])
+  #set($listdisplay = $tagitem[1])
+  #set($listcolor = $tagitem[2])
+DEBUG $listtag $listdisplay $listcolor
+  #set($linksstr = "$linksstr - ")
+  #if($restrict == $listtag)
+    #set($linksstr = "$linksstr __**${listdisplay}**__")
+  #else
+    #set($linksstr = "$linksstr [[${listdisplay}&gt;&gt;${doc.web}.${doc.name}||queryString='restrict=${listtag}&amp;full=$!{full}']]")
+  #end
+#end
+
+
+$linksstr
+
+== Mails Distribution (by list) ==
+
+#foreach($tagitem in $tagslist)
+  #set($listtag = $tagitem[0])
+  #set($listdisplay = $tagitem[1])
+  #set($listcolor = $tagitem[2])
+DEBUG $listtag $listdisplay $listcolor
+  #set($xwql= "select count(topic) from Document doc, doc.object(MailArchiveCode.MailTopicClass) as topic, doc.object(XWiki.TagClass) as tags where '$listtag' MEMBER OF tags.tags")
+DEBUG xwql $xwql
+  #set($results=$services.query.xwql($xwql).execute())
+  DEBUG results $results
+#end
+
+
+#set($sql = "select count(tagsvalue), tagsvalue, str2.value
+             from BaseObject as obj,
+                  DBStringListProperty as tags, IN(tags.list) tagsvalue,
+                  StringProperty str1, StringProperty str2
+            where obj.className='XWiki.TagClass' 
+                  and obj.name like 'MailArchiveItems.T%'
+                  and tags.id.id=obj.id  and tags.id.name='tags'
+                  and tagsvalue in (select settings.value
+                                     from  BaseObject as objsettings,
+                                           StringProperty as settings
+                                    where  objsettings.className='MailArchiveCode.ListsSettingsClass'
+                                           and objsettings.id=settings.id 
+                                           and settings.name='Tag')
+                  and str1.id=str2.id and str1.name='Tag' and str1.value=tagsvalue and str2.name='displayname'
+        group by  tagsvalue, str2.value")
+#set($results = $xwiki.search($sql, 0, 0))
+#set($nb = $results.size())
+DEBUG results $results
+#if ($results.size()&gt;0) 
+{{chart type="pie" source="inline" params="range:B1-B${nb};series:columns;" title="Mails distribution" height="600" width="800"}}
+  #foreach($result in $results)
+|${result[2]}=${result[0]}|${result[0]}
+  #end
+{{/chart}}
+#end
+
+{{/velocity}}</content></xwikidoc>

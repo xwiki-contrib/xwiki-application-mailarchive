@@ -218,6 +218,8 @@ public class DefaultMailComponent implements IMailComponent, Initializable
 
             nbMessages = messages.length;
 
+            // FIXME: instead of converting exceptions to int code, would be better to create new Exception class
+            // (like MailException) with provided error code, message and inner stacktrace, and present that to UI.
         } catch (AuthenticationFailedException e) {
             logger.warn("checkMails : ", e);
             return ConnectionErrors.AUTHENTICATION_FAILED.getCode();

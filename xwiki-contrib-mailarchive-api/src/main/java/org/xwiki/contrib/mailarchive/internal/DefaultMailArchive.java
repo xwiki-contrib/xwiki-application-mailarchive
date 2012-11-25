@@ -602,7 +602,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         String existingTopicId = "";
         // we don't create new topics for attached emails
         if (!isAttachedMail) {
-            existingTopicId = existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId(), m.getMessageId());
+            existingTopicId =
+                existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId(), m.getMessageId(), m.getRefs());
             if (existingTopicId == null) {
                 logger.debug("  did not find existing topic, creating a new one");
                 if (existingTopics.containsKey(m.getTopicId())) {
@@ -631,7 +632,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                     + m.getMessageId() + "]");
                 m.setTopicId(m.getMessageId());
                 m.setReplyToId("");
-                existingTopicId = existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId(), m.getMessageId());
+                existingTopicId =
+                    existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId(), m.getMessageId(), m.getRefs());
                 logger.debug("  creating new topic");
                 topicDocName = createTopicPage(m, dateFormatter, confirm);
 
@@ -1169,7 +1171,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * @param inreplyto
      * @return
      */
-    public String existsTopic(String topicId, String topicSubject, String inreplyto, String messageid)
+    public String existsTopic(String topicId, String topicSubject, String inreplyto, String messageid, String refs)
     {
         String foundTopicId = null;
         String replyId = inreplyto;
@@ -1250,6 +1252,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 if (currentTopic.getSubject().trim().equalsIgnoreCase(topicSubject.trim())) {
                     logger.debug("existsTopic : found subject in loaded topics");
                     if (!StringUtils.isBlank(inreplyto)) {
+                        logger.debug("existsTopic : not first message in topic, so we assume it's linked to it");
                         foundTopicId = currentTopicId;
                     } else {
                         logger.debug("existsTopic : found a topic but it's first message in topic");
@@ -1262,6 +1265,11 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                             logger
                                 .debug("existsTopic : ... but we 'saw' this topicId before, so attach to found topicId "
                                     + currentTopicId + " with same subject");
+                            foundTopicId = currentTopicId;
+                        }
+                        if (!StringUtils.isBlank(refs)) {
+                            logger.debug("existsTopic : ... but references are not empty, so attach to found topicId "
+                                + currentTopicId + " with same subject");
                             foundTopicId = currentTopicId;
                         }
                     }

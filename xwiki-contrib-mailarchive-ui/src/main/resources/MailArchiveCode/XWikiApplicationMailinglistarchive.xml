@@ -10,15 +10,15 @@
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353417894000</creationDate>
-<date>1353417894000</date>
-<contentUpdateDate>1353417894000</contentUpdateDate>
+<creationDate>1353930108000</creationDate>
+<date>1354528935000</date>
+<contentUpdateDate>1354528935000</contentUpdateDate>
 <version>1.1</version>
 <title></title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Import</comment>
+<comment>Imported from XAR</comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/1.0</syntaxId>
 <hidden>false</hidden>
@@ -35,7 +35,7 @@
 <appauthors>
 <disabled>0</disabled>
 <name>appauthors</name>
-<number>5</number>
+<number>10</number>
 <prettyName>Authors</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
@@ -48,7 +48,7 @@
 <displayType>input</displayType>
 <multiSelect>1</multiSelect>
 <name>applications</name>
-<number>8</number>
+<number>5</number>
 <picker></picker>
 <prettyName>Applications</prettyName>
 <relationalStorage>0</relationalStorage>
@@ -69,7 +69,7 @@
 <name>appname</name>
 <number>1</number>
 <prettyName>Application Name</prettyName>
-<size>80</size>
+<size>30</size>
 <tooltip></tooltip>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
@@ -79,7 +79,7 @@
 <appprettyname>
 <disabled>0</disabled>
 <name>appprettyname</name>
-<number>2</number>
+<number>12</number>
 <prettyName>Application Pretty Name</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
@@ -89,7 +89,7 @@
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <name>appversion</name>
-<number>4</number>
+<number>3</number>
 <prettyName>Application Version</prettyName>
 <size>30</size>
 <tooltip></tooltip>
@@ -105,7 +105,7 @@
 <displayType>input</displayType>
 <multiSelect>1</multiSelect>
 <name>dependencies</name>
-<number>7</number>
+<number>4</number>
 <picker></picker>
 <prettyName>Dependencies</prettyName>
 <relationalStorage>0</relationalStorage>
@@ -126,7 +126,7 @@
 <disabled>0</disabled>
 <editor>---</editor>
 <name>description</name>
-<number>3</number>
+<number>2</number>
 <prettyName>Description</prettyName>
 <rows>5</rows>
 <size>40</size>
@@ -143,7 +143,7 @@
 <displayType>input</displayType>
 <multiSelect>1</multiSelect>
 <name>docstoinclude</name>
-<number>10</number>
+<number>7</number>
 <picker></picker>
 <prettyName>Documents to include</prettyName>
 <relationalStorage>0</relationalStorage>
@@ -165,7 +165,7 @@
 <displayType>input</displayType>
 <multiSelect>1</multiSelect>
 <name>docstolink</name>
-<number>11</number>
+<number>8</number>
 <picker></picker>
 <prettyName>Documents to link</prettyName>
 <relationalStorage>0</relationalStorage>
@@ -187,7 +187,7 @@
 <displayType>input</displayType>
 <multiSelect>1</multiSelect>
 <name>documents</name>
-<number>9</number>
+<number>6</number>
 <picker></picker>
 <prettyName>Documents</prettyName>
 <relationalStorage>0</relationalStorage>
@@ -205,7 +205,7 @@
 <license>
 <disabled>0</disabled>
 <name>license</name>
-<number>6</number>
+<number>11</number>
 <prettyName>License</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
@@ -218,7 +218,7 @@
 <displayType>input</displayType>
 <multiSelect>1</multiSelect>
 <name>translationdocs</name>
-<number>12</number>
+<number>9</number>
 <picker></picker>
 <prettyName>Translations documents</prettyName>
 <relationalStorage>0</relationalStorage>

@@ -10,15 +10,15 @@
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353417881000</creationDate>
-<date>1353417881000</date>
-<contentUpdateDate>1353417881000</contentUpdateDate>
+<creationDate>1353930098000</creationDate>
+<date>1354528935000</date>
+<contentUpdateDate>1354528935000</contentUpdateDate>
 <version>1.1</version>
 <title>Mail Archive Administration</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Import</comment>
+<comment>Imported from XAR</comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.1</syntaxId>
 <hidden>false</hidden>
@@ -886,21 +886,21 @@ You should have access to this mail account and folder, as some maintenance migh
 
 #set($collist = [ "id", "hostname", "protocol", "folder", "user", "status", "state", "_actions"])
 #set($colprops = {      
-                   "id" : { "displayName" : "ID", "type" : "text", "link" : "view" },             
-                   "hostname" : { "displayName" : "Host Name", "type" : "text" },
-                   "protocol" : { "displayName" : "Protocol", "type" : "text" },
-                   "folder" : { "displayName" : "Folder", "type" : "text" },
-                   "user" : { "displayName" : "Account", "type" : "text" },
-                   "status" : { "displayName" : "Status", "type" : "text" },
-                   "state" : { "displayName" : "State", "type" : "text" },
-                   "_actions" : {"actions": ["edit","delete"], "displayName" : "Actions"} 
+                   "id" : {"type" : "text", "link" : "view" },             
+                   "hostname" : { "type" : "text" },
+                   "protocol" : { "type" : "text" },
+                   "folder" : { "type" : "text" },
+                   "user" : { "type" : "text" },
+                   "status" : { "type" : "text" },
+                   "state" : { "type" : "text" },
+                   "_actions" : {"actions": ["edit","delete"]} 
                  } )
 #set($options = { "className":"MailArchiveCode.ServerSettingsClass",
                   "resultPage":"MailArchiveCode.LiveTableResults",
                   "selectedColumn":"hostname",
                   "tagCloud":"false",
                   "defaultOrder":"asc",
-                  "translationPrefix" : "xe.mailarchive.",
+                  "translationPrefix" : "mailarchive.server.table.headers.",
                   "rowCount": 10,
                   "extraParams" : "&amp;space=MailArchivePrefs" })
 #livetable("livetable_servers" $collist $colprops $options)
@@ -926,19 +926,19 @@ Mailing-lists are defined independently from mail servers above, so the same mai
 #else
 #set($collist = [ "displayname", "pattern", "Tag", "color", "listId", "_actions"])
 #set($colprops = {                   
-                   "displayname" : { "displayName" : "Display Name", "type" : "text", "link" : "view" },
-                   "pattern" : { "displayName" : "Pattern", "type" : "text" },
-                   "Tag" : { "displayName" : "Tag", "type" : "text" },
-                   "color" : { "displayName" : "Colour", "type" : "html" },
-                   "listId" : { "displayName" : "List-ID", "type" : "text" },
-                   "_actions" : {"actions": ["edit","delete"], "displayName" : "Actions" } 
+                   "displayname" : { "type" : "text", "link" : "view" },
+                   "pattern" : { "type" : "text" },
+                   "Tag" : { "type" : "text" },
+                   "color" : { "type" : "html" },
+                   "listId" : { "type" : "text" },
+                   "_actions" : {"actions": ["edit","delete"] } 
                  } )
 #set($options = { "className":"MailArchiveCode.ListsSettingsClass",
                   "resultPage":"MailArchiveCode.LiveTableResults",
                   "selectedColumn":"displayname",
                   "tagCloud":"false",
                   "defaultOrder":"asc",
-                  "translationPrefix" : "xe.mailarchive.",
+                  "translationPrefix" : "mailarchive.list.table.headers.",
                   "rowCount": 10,
                   "extraParams" : "&amp;space=MailArchivePrefs" })
 #livetable("livetable_lists" $collist $colprops $options)
@@ -961,18 +961,18 @@ Note : icon field should contain the name of an icon from [[XWiki Icon Set&gt;&g
 
 #set($collist = [ "displayName", "name", "patternList", "icon", "_actions"])
 #set($colprops = {                   
-                   "displayName" : { "displayName" : "Display Name", "type" : "text", "link" : "view" },
-                   "name" : { "displayName" : "Name", "type" : "text", "link" : "view" },
-                   "patternList" : { "displayName" : "Pattern(s)", "type" : "text" },
-                   "icon" : { "displayName" : "Icon", "type" : "html" },
-                   "_actions" : {"actions": ["edit","delete"], "displayName" : "Actions" } 
+                   "displayName" : { "type" : "text", "link" : "view" },
+                   "name" : { "type" : "text", "link" : "view" },
+                   "patternList" : { "type" : "text" },
+                   "icon" : { "type" : "html" },
+                   "_actions" : {"actions": ["edit","delete"] } 
                  } )
 #set($options = { "className":"MailArchiveCode.TypesSettingsClass",
                   "resultPage":"MailArchiveCode.LiveTableResults",
                   "selectedColumn":"name",
                   "tagCloud":"false",
                   "defaultOrder":"asc",
-                  "translationPrefix" : "xe.mailarchive.",
+                  "translationPrefix" : "mailarchive.type.table.headers.",
                   "rowCount": 10,
                   "extraParams" : "&amp;space=MailArchivePrefs" })
 #livetable("livetable_types" $collist $colprops $options)

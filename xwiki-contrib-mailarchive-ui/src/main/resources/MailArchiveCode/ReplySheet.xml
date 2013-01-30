@@ -10,15 +10,15 @@
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353417892000</creationDate>
-<date>1353417892000</date>
-<contentUpdateDate>1353417892000</contentUpdateDate>
+<creationDate>1353930107000</creationDate>
+<date>1354528935000</date>
+<contentUpdateDate>1354528935000</contentUpdateDate>
 <version>1.1</version>
 <title>$doc.display("messagesubject")</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Import</comment>
+<comment>Imported from XAR</comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
@@ -238,7 +238,7 @@
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <displayType>select</displayType>
-<idField>name</idField>
+<idField>id</idField>
 <multiSelect>1</multiSelect>
 <name>type</name>
 <number>15</number>
@@ -253,7 +253,7 @@
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
-<valueField>displayName</valueField>
+<valueField>name</valueField>
 <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
 </type>
 </class>

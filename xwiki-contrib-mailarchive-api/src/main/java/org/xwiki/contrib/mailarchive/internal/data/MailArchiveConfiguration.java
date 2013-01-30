@@ -32,10 +32,10 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.contrib.mailarchive.IMailMatcher;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IServer;
 import org.xwiki.contrib.mailarchive.IType;
-import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 import org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
@@ -168,15 +168,13 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
 
         String xwql =
             "select list.pattern, list.displayname, list.Tag, list.color from Document doc, doc.object('"
-                + XWikiPersistence.CLASS_MAIL_LISTS + "') as list where doc.space='"
-                + XWikiPersistence.SPACE_PREFS + "'";
+                + XWikiPersistence.CLASS_MAIL_LISTS + "') as list where doc.space='" + XWikiPersistence.SPACE_PREFS
+                + "'";
         try {
             List<Object[]> props = this.queryManager.createQuery(xwql, Query.XWQL).execute();
 
             for (Object[] prop : props) {
                 if (prop[0] != null && !"".equals(prop[0])) {
-                    // map[pattern] = [displayname, Tag]
-                    // lists.put((String) prop[0], new String[] {(String) prop[1], (String) prop[2]});
                     IMailingList list =
                         factory.createMailingList((String) prop[0], (String) prop[1], (String) prop[2],
                             (String) prop[3]);
@@ -201,21 +199,43 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
      */
     protected Map<String, IType> loadMailTypesDefinitions() throws MailArchiveException
     {
+        logger.info("Loading mail types...");
         Map<String, IType> mailTypes = new HashMap<String, IType>();
 
         String xwql =
-            "select type.name, type.displayName, type.icon, type.patternList from Document doc, doc.object("
-                + XWikiPersistence.CLASS_MAIL_TYPES+ ") as type where doc.space='"
-                + XWikiPersistence.SPACE_PREFS + "'";
+            "select type.id, type.name, type.icon, doc.fullName from Document doc, doc.object("
+                + XWikiPersistence.CLASS_MAIL_TYPES + ") as type where doc.space='" + XWikiPersistence.SPACE_PREFS
+                + "'";
         try {
             List<Object[]> types = this.queryManager.createQuery(xwql, Query.XWQL).execute();
 
             for (Object[] type : types) {
 
-                IType typeobj =
-                    factory.createMailType((String) type[0], (String) type[1], (String) type[2], (String) type[3]);
+                IType typeobj = factory.createMailType((String) type[0], (String) type[1], (String) type[2]);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Loaded type " + typeobj);
+                }
                 if (typeobj != null) {
-                    mailTypes.put((String) type[0], typeobj);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Loading matchers for type...");
+                    }
+                    xwql =
+                        "select matcher.fields, matcher.expression, matcher.isAdvanced, matcher.isIgnoreCase, matcher.isMultiLine "
+                            + "from Document doc, doc.object(" + XWikiPersistence.CLASS_MAIL_MATCHERS
+                            + ") as matcher where " + "doc.fullName='" + (String) type[3] + "'";
+                    List<Object[]> matchers = this.queryManager.createQuery(xwql, Query.XWQL).execute();
+                    for (Object[] matcher : matchers) {
+                        logger.debug("FIELDS " + matcher[0] + " " + matcher[0].getClass());
+                        IMailMatcher matcherobj =
+                            factory.createMailMatcher((String) matcher[0], (String) matcher[1], (Integer) matcher[2],
+                                (Integer) matcher[3], (Integer) matcher[4]);
+                        typeobj.getMatchers().add(matcherobj);
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Loaded matcher " + matcherobj);
+                        }
+                    }
+
+                    mailTypes.put(typeobj.getId(), typeobj);
                     logger.info("Loaded mail type " + typeobj);
                 } else {
                     logger.warn("Invalid type " + type[0]);

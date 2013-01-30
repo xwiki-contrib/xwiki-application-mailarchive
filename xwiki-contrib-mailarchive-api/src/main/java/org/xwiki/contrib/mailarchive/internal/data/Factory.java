@@ -23,7 +23,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -32,10 +31,10 @@ import javax.inject.Singleton;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.contrib.mailarchive.IMailMatcher;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IServer;
 import org.xwiki.contrib.mailarchive.IType;
-import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 
 /**
@@ -53,7 +52,7 @@ public class Factory implements IFactory
      * 
      * @see org.xwiki.contrib.mailarchive.internal.data.IFactory#createMailServer(java.lang.String)
      */
-    //@SuppressWarnings("deprecation")
+    // @SuppressWarnings("deprecation")
     @Override
     public Server createMailServer(final String serverPrefsDoc)
     {
@@ -100,31 +99,46 @@ public class Factory implements IFactory
      *      java.lang.String, java.lang.String)
      */
     @Override
-    public IType createMailType(final String name, final String displayName, final String icon,
-        final String patternsList)
+    public IType createMailType(final String id, final String name, final String icon)
     {
 
         Type typeobj = new Type();
 
+        typeobj.setId(id);
         typeobj.setName(name);
-        typeobj.setDisplayName(displayName);
         typeobj.setIcon(icon);
 
-        HashMap<List<String>, String> patterns = new HashMap<List<String>, String>();
-        String[] splittedPatterns = patternsList.replaceAll("(?m)^\\s+$", "").split("\n", -1);
-        int nbPatterns = splittedPatterns.length % 2;
-
-        for (int i = 0; i < nbPatterns; i += 2) {
-            List<String> fields = Arrays.asList(splittedPatterns[i].split(",", 0));
-            // Trim white-space from fields
-            for (int j = 0; j < fields.size(); j++) {
-                fields.set(j, fields.get(j).trim());
-            }
-            patterns.put(fields, splittedPatterns[i + 1]);
-        }
-        typeobj.setPatterns(patterns);
+        /*
+         * String[] splittedPatterns = patternsList.replaceAll("(?m)^\\s+$", "").split("\n", -1); int nbPatterns =
+         * splittedPatterns.length % 2; for (int i = 0; i < nbPatterns; i += 2) { List<String> fields =
+         * Arrays.asList(splittedPatterns[i].split(",", 0)); // Trim white-space from fields for (int j = 0; j <
+         * fields.size(); j++) { fields.set(j, fields.get(j).trim()); } String pattern = splittedPatterns[i + 1].trim();
+         * typeobj.addMatcher(fields, pattern); }
+         */
 
         return typeobj;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.internal.data.IFactory#createMailMatcher(java.lang.String, java.lang.String,
+     *      java.lang.String, java.lang.String, java.lang.String)
+     */
+    @Override
+    public IMailMatcher createMailMatcher(String fields, String expression, Integer isAdvanced, Integer isIgnoreCase,
+        Integer isMultiLine)
+    {
+        MailMatcher matcherobj = new MailMatcher();
+
+        List<String> fieldsList = Arrays.asList(fields.split(","));
+        matcherobj.setFields(fieldsList);
+        matcherobj.setExpression(expression);
+        matcherobj.setAdvancedMode(isAdvanced != null && isAdvanced != 0);
+        matcherobj.setIgnoreCase(isIgnoreCase != null && isIgnoreCase != 0);
+        matcherobj.setMultiLine(isMultiLine != null && isMultiLine != 0);
+
+        return matcherobj;
     }
 
     /**

@@ -27,7 +27,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -44,6 +43,7 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mailarchive.IMAUser;
+import org.xwiki.contrib.mailarchive.IMailMatcher;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
 import org.xwiki.contrib.mailarchive.internal.data.MAUser;
@@ -211,8 +211,8 @@ public class MailUtils implements IMailUtils
      * @throws IOException
      * @throws XWikiException
      */
-    public String decodeMailContent(String originalHtml, String originalBody, boolean cut) throws IOException,
-        XWikiException
+    public DecodedMailContent decodeMailContent(String originalHtml, String originalBody, boolean cut)
+        throws IOException, XWikiException
     {
         String html = "";
         String body = "";
@@ -253,14 +253,14 @@ public class MailUtils implements IMailUtils
             } else if (cut && html.contains("<b>From:</b>")) {
                 html = html.substring(0, html.indexOf("<b>From:</b>") - 1);
             }
-            return html;
+            return new DecodedMailContent(true, html);
         } else {
             body = originalBody;
             Matcher m = Pattern.compile("\\n[\\s]*From:", Pattern.MULTILINE).matcher(body);
             if (cut && m.find()) {
                 body = body.substring(0, m.start() + 1);
             }
-            return body;
+            return new DecodedMailContent(false, body);
         }
 
     }
@@ -283,21 +283,38 @@ public class MailUtils implements IMailUtils
         for (IType type : types) {
             logger.info("Checking for type " + type);
             boolean matched = true;
-            for (Entry<List<String>, String> entry : type.getPatterns().entrySet()) {
-                logger.info("  Checking for entry " + entry);
-                List<String> fields = entry.getKey();
-                String regexp = entry.getValue();
+            for (IMailMatcher mailMatcher : type.getMatchers()) {
+                logger.info("  Checking for matcher " + mailMatcher);
+                List<String> fields = mailMatcher.getFields();
+                String regexp = mailMatcher.getExpression();
+
                 Pattern pattern = null;
-                try {
-                    pattern = Pattern.compile(regexp);
-                } catch (PatternSyntaxException e) {
-                    logger.warn("Invalid Pattern " + regexp + "can't be compiled, skipping this mail type");
-                    break;
+                if (mailMatcher.isAdvancedMode()) {
+                    // Manage multi line and ignore case in regexp if needed
+                    if (mailMatcher.isIgnoreCase() || mailMatcher.isMultiLine()) {
+                        String prefix = "(?";
+                        if (mailMatcher.isIgnoreCase()) {
+                            prefix += 'i';
+                        }
+                        if (mailMatcher.isMultiLine()) {
+                            prefix += 'm';
+                        }
+                        prefix += ')';
+                        regexp = prefix + regexp;
+                    }
+
+                    try {
+                        pattern = Pattern.compile(regexp);
+                    } catch (PatternSyntaxException e) {
+                        logger.warn("Invalid Pattern " + regexp + "can't be compiled, skipping this mail type");
+                        break;
+                    }
+
                 }
+
                 Matcher matcher = null;
                 boolean fieldMatch = false;
                 for (String field : fields) {
-                    logger.info("  Checking field " + field);
                     String fieldValue = "";
                     if ("from".equals(field)) {
                         fieldValue = m.getFrom();
@@ -308,9 +325,22 @@ public class MailUtils implements IMailUtils
                     } else if ("subject".equals(field)) {
                         fieldValue = m.getSubject();
                     }
-                    matcher = pattern.matcher(fieldValue);
-                    if (matcher != null) {
-                        fieldMatch = matcher.find();
+                    logger.info("  Checking field " + field + " with value [" + fieldValue + "] against pattern ["
+                        + regexp + "] DEBUG [" + TextUtils.byte2hex(regexp.getBytes()) + "]");
+                    if (mailMatcher.isAdvancedMode()) {
+                        matcher = pattern.matcher(fieldValue);
+                        logger.debug("Matcher : " + matcher);
+                        if (matcher != null) {
+                            fieldMatch = matcher.find();
+                            logger.debug("fieldMatch: " + fieldMatch);
+                            logger.debug("matcher.matches : " + matcher.matches());
+                        }
+                    } else {
+                        if (mailMatcher.isIgnoreCase()) {
+                            fieldMatch = StringUtils.containsIgnoreCase(fieldValue, regexp);
+                        } else {
+                            fieldMatch = StringUtils.contains(fieldValue, regexp);
+                        }
                     }
                     if (fieldMatch) {
                         logger.info("Field " + field + " value [" + fieldValue + "] matches pattern [" + regexp + "]");
@@ -320,7 +350,7 @@ public class MailUtils implements IMailUtils
                 matched = matched && fieldMatch;
             }
             if (matched) {
-                logger.info("Matched type " + type.getDisplayName());
+                logger.info("Matched type " + type.getName());
                 result.add(type);
                 matched = true;
             }

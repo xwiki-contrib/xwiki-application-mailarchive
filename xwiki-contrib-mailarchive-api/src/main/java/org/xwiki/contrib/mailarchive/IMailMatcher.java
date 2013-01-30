@@ -22,22 +22,44 @@ package org.xwiki.contrib.mailarchive;
 import java.util.List;
 
 /**
- * Interface for mails types.
- * 
- * @author jbousque
+ * @version $Id$
  */
-public interface IType
+public interface IMailMatcher
 {
-    final String TYPE_MAIL = "mail";
+    /**
+     * The list of fields to match pattern against.
+     * 
+     * @return
+     */
+    List<String> getFields();
 
-    final String TYPE_CALENDAR = "calendar";
+    /**
+     * The pattern to match.
+     * 
+     * @return
+     */
+    String getExpression();
 
-    String getId();
+    /**
+     * Mode for matching pattern against fields. If "true", then pattern is considered to be a regular expression. If
+     * "false", then pattern is matched if field contains the pattern.
+     * 
+     * @return
+     */
+    boolean isAdvancedMode();
 
-    String getName();
+    /**
+     * If the pattern should be matched against the fields values ignoring case or not. Default is true.
+     * 
+     * @return
+     */
+    boolean isIgnoreCase();
 
-    String getIcon();
-
-    List<IMailMatcher> getMatchers();
+    /**
+     * If the pattern should be matched against multiple lines, or is defined for each single line. Default is true.
+     * 
+     * @return
+     */
+    boolean isMultiLine();
 
 }

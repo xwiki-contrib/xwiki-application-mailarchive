@@ -10,40 +10,68 @@
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353417893000</creationDate>
-<date>1353417893000</date>
-<contentUpdateDate>1353417893000</contentUpdateDate>
+<creationDate>1353930108000</creationDate>
+<date>1354528935000</date>
+<contentUpdateDate>1354528935000</contentUpdateDate>
 <version>1.1</version>
-<title></title>
+<title>#if($doc.name == 'TypesSettingsSheet')Types Sheet#{else}$services.display.title($doc, {'displayerHint': 'default'})#end</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Import</comment>
+<comment>Imported from XAR</comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
 <content>{{velocity}}
-#set($number=$request.getParameter('objnumber'))
-#if("$!number"=="")
-#set($number="0")
-#end
-#set($number=$util.parseInt($number))
-#set($typesClass=$doc.getObject('MailArchiveCode.TypesSettingsClass').xWikiClass)
-#set($obj=$doc.getObject('MailArchiveCode.TypesSettingsClass',$number))
+#if($doc.name != "TypesSettingsSheet")
+  #set($number=$request.getParameter('objnumber'))
+  #if("$!number"=="")
+    #set($number="0")
+  #end
+  #set($number=$util.parseInt($number))
+  #set($typesClass=$doc.getObject('MailArchiveCode.TypesSettingsClass').xWikiClass)
+  #set($obj=$doc.getObject('MailArchiveCode.TypesSettingsClass',$number))
 
 == Mail Type ${doc.display('name','view',$obj)} ==
 
 {{html wiki="true"}}
-#foreach ($prop in $typesClass.properties)
+&lt;div class="xform"&gt;
+ &lt;form action="#" class="xform" method="post" name="form_types"&gt;
+  #foreach ($prop in $typesClass.properties)
+    #set($hint = $!{msg.get("mailarchive.types.fields.${prop.name}.hint")})
    &lt;dl&gt;
      &lt;dt&gt;
-       &lt;label for="MailArchiveCode.TypesSettingsClass_$number_$field.getName()"&gt;$prop.prettyName&lt;/label&gt;
+       &lt;label for="MailArchiveCode.TypesSettingsClass_$number_$prop.name"&gt;$prop.prettyName&lt;/label&gt;
+    #if("$!hint" != "mailarchive.types.fields.${prop.name}.hint")
+  &lt;span class="xHint"&gt;$hint&lt;/span&gt;
+    #end
      &lt;/dt&gt;
      &lt;dd&gt;
        $doc.display($prop.getName(), $obj)
      &lt;/dd&gt;
    &lt;/dl&gt;
-#end
+  #end
+
+=== Matchers for this type ===
+
+   &lt;span class="buttonwrapper"&gt;
+     &lt;input class="button" type="submit" value="Add matcher pattern" name="add"/&gt;
+   &lt;/span&gt;
+
+  #if("$!request.add" != "")
+    #set($discard = $doc.newObject('MailArchiveCode.MailMatcherClass'))
+    #set($discard = $doc.save())
+    $response.sendRedirect($doc.getURL('edit', 'editor=inline'))
+  #end
+
+{{include reference="MailArchiveCode.MailMatcherSheet"/}}
+
+ &lt;/form&gt;
+&lt;/div&gt;
+
 {{/html}}
 
+#else
+Mail Type Sheet
+#end
 {{/velocity}}</content></xwikidoc>

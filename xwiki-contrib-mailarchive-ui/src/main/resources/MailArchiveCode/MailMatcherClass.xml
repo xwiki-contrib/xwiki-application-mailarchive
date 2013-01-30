@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xwikidoc>
 <web>MailArchiveCode</web>
-<name>TypePatternClass</name>
+<name>MailMatcherClass</name>
 <language></language>
 <defaultLanguage>en</defaultLanguage>
 <translation>0</translation>
-<parent></parent>
+<parent>MailArchiveCode.WebHome</parent>
 <creator>XWiki.Admin</creator>
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353417893000</creationDate>
-<date>1353417893000</date>
-<contentUpdateDate>1353417893000</contentUpdateDate>
-<version>1.1</version>
-<title>TypePatternClass</title>
+<creationDate>1355078573000</creationDate>
+<date>1355841391000</date>
+<contentUpdateDate>1355841391000</contentUpdateDate>
+<version>1.0</version>
+<title>MailMatcherClass</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Import</comment>
-<minorEdit>false</minorEdit>
+<comment>Updated class property</comment>
+<minorEdit>true</minorEdit>
 <syntaxId>xwiki/2.1</syntaxId>
 <hidden>false</hidden>
 <class>
-<name>MailArchiveCode.TypePatternClass</name>
+<name>MailArchiveCode.MailMatcherClass</name>
 <customClass></customClass>
 <customMapping></customMapping>
 <defaultViewSheet></defaultViewSheet>
@@ -31,18 +31,31 @@
 <defaultWeb></defaultWeb>
 <nameField></nameField>
 <validationScript></validationScript>
+<expression>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>expression</name>
+<number>2</number>
+<picker>0</picker>
+<prettyName>Expression</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</expression>
 <fields>
 <cache>0</cache>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
-<displayType>select</displayType>
-<multiSelect>0</multiSelect>
+<displayType>checkbox</displayType>
+<multiSelect>1</multiSelect>
 <name>fields</name>
 <number>1</number>
 <picker>0</picker>
 <prettyName>Fields</prettyName>
 <relationalStorage>0</relationalStorage>
-<separator> </separator>
+<separator> , </separator>
 <separators> ,|</separators>
 <size>1</size>
 <sort>none</sort>
@@ -52,19 +65,48 @@
 <values>from=From|to=To|cc=CC|subject=Subject|body=Body Text</values>
 <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
 </fields>
-<pattern>
+<isAdvanced>
 <customDisplay></customDisplay>
+<defaultValue>0</defaultValue>
 <disabled>0</disabled>
-<name>pattern</name>
-<number>2</number>
-<picker>0</picker>
-<prettyName>Regular Expression Pattern</prettyName>
-<size>30</size>
+<displayFormType>checkbox</displayFormType>
+<displayType></displayType>
+<name>isAdvanced</name>
+<number>3</number>
+<prettyName>Advanced Mode</prettyName>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</pattern>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</isAdvanced>
+<isIgnoreCase>
+<customDisplay></customDisplay>
+<defaultValue>1</defaultValue>
+<disabled>0</disabled>
+<displayFormType>checkbox</displayFormType>
+<displayType></displayType>
+<name>isIgnoreCase</name>
+<number>4</number>
+<prettyName>Ignore case</prettyName>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</isIgnoreCase>
+<isMultiLine>
+<customDisplay></customDisplay>
+<defaultValue>1</defaultValue>
+<disabled>0</disabled>
+<displayFormType>checkbox</displayFormType>
+<displayType></displayType>
+<name>isMultiLine</name>
+<number>5</number>
+<prettyName>Match multiple lines</prettyName>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</isMultiLine>
 </class>
 <object>
 <class>
@@ -90,10 +132,10 @@
 <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
 </sheet>
 </class>
-<name>MailArchiveCode.TypePatternClass</name>
+<name>MailArchiveCode.MailMatcherClass</name>
 <number>0</number>
 <className>XWiki.DocumentSheetBinding</className>
-<guid>efd35c21-8e93-4281-ae92-26d79e17cf35</guid>
+<guid>23aa93a4-65ac-450d-a7a9-f7b63f9e8c73</guid>
 <property>
 <sheet>XWiki.ClassSheet</sheet>
 </property>

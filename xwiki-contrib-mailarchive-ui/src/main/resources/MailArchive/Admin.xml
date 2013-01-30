@@ -585,19 +585,20 @@
   #set($prefsdoc = $xwiki.getDocument("${spaceprefs}.GlobalParameters"))
   #set($prefsobj = $prefsdoc.newObject("${spacecode}.AdminClass"))
   #set($ok = $prefsdoc.save())
-#end
-#if (!$xwiki.exists("${spaceprefs}.Type_Mail"))
+#end #if (!$xwiki.exists("${spaceprefs}.Type_Mail"))
   #set($mailtypedoc = $xwiki.getDocument("${spaceprefs}.Type_Mail"))
   #set($mailtypeobj = $mailtypedoc.newObject("${spacecode}.TypesSettingsClass"))
-  #set($discard=$mailtypeobj.set('name', 'mail'))
-  #set($discard=$mailtypeobj.set('displayName', 'Mail'))
-  #set($discard=$mailtypeobj.set('patternList', "subject
-.*"))
-  #set($discard=$mailtypeobj.set('fields', 'from'))
+  #set($discard=$mailtypeobj.set('id', 'mail'))
+  #set($discard=$mailtypeobj.set('name', 'Mail'))
   #set($discard=$mailtypeobj.set('icon', 'email'))
+  #set($mailmatcherobj = $mailtypedoc.newObject("${spacecode}.MailMatcherClass"))
+  #set($discard=$mailmatcherobj.set('fields', 'from'))
+  #set($discard=$mailmatcherobj.set('expression', '.*'))
+  #set($discard=$mailmatcherobj.set('isAdvanced', 1))
+  #set($discard=$mailmatcherobj.set('isIgnoreCase', 1))
+  #set($discard=$mailmatcherobj.set('isMultiLine', 1))
   #set($ok = $mailtypedoc.save())
-#end
-#if($!request.save)
+#end #if($!request.save)
   #set($prefsdoc = $xwiki.getDocument("${spaceprefs}.GlobalParameters"))
   #set($prefsobj=$prefsdoc.updateObjectFromRequest("${spacecode}.AdminClass"))
   #set($ok=$prefsdoc.save())
@@ -647,19 +648,16 @@
 
 {{warning}}Please visit [[Install&gt;&gt;MailArchiveCode.Install]] page to finish installation{{/warning}}
 
-#end
-#if (!$xwiki.exists('Macros.AddExcelExportToLivetableMacro'))
+#end #if (!$xwiki.exists('Macros.AddExcelExportToLivetableMacro'))
 
 {{info}}Install [[AddExcelExportToLivetable Macro&gt;&gt;http://extensions.xwiki.org/xwiki/bin/view/Extension/LiveTableExcelExport+Macro]] to add related feature.{{/info}}
 
-#end
-#if(!$xwiki.ratings || !$xwiki.exists('XWiki.Ratings'))
+#end #if(!$xwiki.ratings || !$xwiki.exists('XWiki.Ratings'))
 
 {{info}}Install [[Ratings Application&gt;&gt;http://extensions.xwiki.org/xwiki/bin/view/Extension/Ratings+Application]] and [[Ratings Plugin&gt;&gt;http://extensions.xwiki.org/xwiki/bin/view/Extension/Ratings+Plugin]] to add related feature.
 {{/info}}
 
-#end
-#if($nbServers == 0) 
+#end #if($nbServers == 0) 
 
 {{warning}}Please configure at least one mail server{{/warning}}
 
@@ -668,8 +666,7 @@
 
 {{warning}}Please configure at least one mailing-list{{/warning}}
 
-#end
-#if($scheduled)
+#end #if($scheduled)
 
 {{warning}}Please schedule the crontab job{{/warning}}
 
@@ -893,14 +890,14 @@ You should have access to this mail account and folder, as some maintenance migh
                    "user" : { "type" : "text" },
                    "status" : { "type" : "text" },
                    "state" : { "type" : "text" },
-                   "_actions" : {"actions": ["edit","delete"]} 
+                   "_actions" : {"actions": ["check","edit","delete"]} 
                  } )
 #set($options = { "className":"MailArchiveCode.ServerSettingsClass",
                   "resultPage":"MailArchiveCode.LiveTableResults",
                   "selectedColumn":"hostname",
                   "tagCloud":"false",
                   "defaultOrder":"asc",
-                  "translationPrefix" : "mailarchive.server.table.headers.",
+                  "translationPrefix" : "mailarchive.servers.table.headers.",
                   "rowCount": 10,
                   "extraParams" : "&amp;space=MailArchivePrefs" })
 #livetable("livetable_servers" $collist $colprops $options)
@@ -938,7 +935,7 @@ Mailing-lists are defined independently from mail servers above, so the same mai
                   "selectedColumn":"displayname",
                   "tagCloud":"false",
                   "defaultOrder":"asc",
-                  "translationPrefix" : "mailarchive.list.table.headers.",
+                  "translationPrefix" : "mailarchive.lists.table.headers.",
                   "rowCount": 10,
                   "extraParams" : "&amp;space=MailArchivePrefs" })
 #livetable("livetable_lists" $collist $colprops $options)
@@ -959,11 +956,10 @@ Note : icon field should contain the name of an icon from [[XWiki Icon Set&gt;&g
 
 &lt;i&gt;Default type 'Mail' should not be deleted nor updated (except to set another icon if you wish)&lt;/i&gt;&lt;br/&gt;
 
-#set($collist = [ "displayName", "name", "patternList", "icon", "_actions"])
+#set($collist = [ "id", "name", "icon", "_actions"])
 #set($colprops = {                   
-                   "displayName" : { "type" : "text", "link" : "view" },
+                   "id" : { "type" : "text", "link" : "view" },
                    "name" : { "type" : "text", "link" : "view" },
-                   "patternList" : { "type" : "text" },
                    "icon" : { "type" : "html" },
                    "_actions" : {"actions": ["edit","delete"] } 
                  } )
@@ -972,7 +968,7 @@ Note : icon field should contain the name of an icon from [[XWiki Icon Set&gt;&g
                   "selectedColumn":"name",
                   "tagCloud":"false",
                   "defaultOrder":"asc",
-                  "translationPrefix" : "mailarchive.type.table.headers.",
+                  "translationPrefix" : "mailarchive.types.table.headers.",
                   "rowCount": 10,
                   "extraParams" : "&amp;space=MailArchivePrefs" })
 #livetable("livetable_types" $collist $colprops $options)

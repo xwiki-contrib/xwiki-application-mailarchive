@@ -51,7 +51,8 @@ public interface IMailUtils
      * @throws IOException
      * @throws XWikiException
      */
-    String decodeMailContent(String originalHtml, String originalBody, boolean cut) throws IOException, XWikiException;
+    DecodedMailContent decodeMailContent(String originalHtml, String originalBody, boolean cut) throws IOException,
+        XWikiException;
 
     /**
      * @param types

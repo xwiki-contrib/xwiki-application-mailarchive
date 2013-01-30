@@ -5,23 +5,132 @@
 <language></language>
 <defaultLanguage>en</defaultLanguage>
 <translation>0</translation>
-<parent></parent>
+<parent>MailArchiveCode.WebHome</parent>
 <creator>XWiki.Admin</creator>
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353417893000</creationDate>
-<date>1353417893000</date>
-<contentUpdateDate>1353417893000</contentUpdateDate>
+<creationDate>1353930108000</creationDate>
+<date>1354528933000</date>
+<contentUpdateDate>1354528933000</contentUpdateDate>
 <version>1.1</version>
 <title>Mail Types Creation</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Import</comment>
+<comment>Imported from XAR</comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.1</syntaxId>
 <hidden>false</hidden>
+<object>
+<class>
+<name>MailArchiveCode.MailMatcherClass</name>
+<customClass></customClass>
+<customMapping></customMapping>
+<defaultViewSheet></defaultViewSheet>
+<defaultEditSheet></defaultEditSheet>
+<defaultWeb></defaultWeb>
+<nameField></nameField>
+<validationScript></validationScript>
+<expression>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>expression</name>
+<number>2</number>
+<picker>0</picker>
+<prettyName>Expression</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</expression>
+<fields>
+<cache>0</cache>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<displayType>checkbox</displayType>
+<multiSelect>1</multiSelect>
+<name>fields</name>
+<number>1</number>
+<picker>0</picker>
+<prettyName>Fields</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> , </separator>
+<separators> ,|</separators>
+<size>1</size>
+<sort>none</sort>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<values>from=From|to=To|cc=CC|subject=Subject|body=Body Text</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</fields>
+<isAdvanced>
+<customDisplay></customDisplay>
+<defaultValue>0</defaultValue>
+<disabled>0</disabled>
+<displayFormType>checkbox</displayFormType>
+<displayType></displayType>
+<name>isAdvanced</name>
+<number>3</number>
+<prettyName>Advanced Mode</prettyName>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</isAdvanced>
+<isIgnoreCase>
+<customDisplay></customDisplay>
+<defaultValue>1</defaultValue>
+<disabled>0</disabled>
+<displayFormType>checkbox</displayFormType>
+<displayType></displayType>
+<name>isIgnoreCase</name>
+<number>4</number>
+<prettyName>Ignore case</prettyName>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</isIgnoreCase>
+<isMultiLine>
+<customDisplay></customDisplay>
+<defaultValue>1</defaultValue>
+<disabled>0</disabled>
+<displayFormType>checkbox</displayFormType>
+<displayType></displayType>
+<name>isMultiLine</name>
+<number>5</number>
+<prettyName>Match multiple lines</prettyName>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+</isMultiLine>
+</class>
+<name>MailArchiveCode.TypesSettingsCreation</name>
+<number>0</number>
+<className>MailArchiveCode.MailMatcherClass</className>
+<guid>634a38e2-8252-402d-a41b-8f59d7aac481</guid>
+<property>
+<expression></expression>
+</property>
+<property>
+<fields>
+<value>subject</value>
+</fields>
+</property>
+<property>
+<isAdvanced>0</isAdvanced>
+</property>
+<property>
+<isIgnoreCase>1</isIgnoreCase>
+</property>
+<property>
+<isMultiLine>0</isMultiLine>
+</property>
+</object>
 <object>
 <class>
 <name>MailArchiveCode.TypesSettingsClass</name>
@@ -32,19 +141,6 @@
 <defaultWeb></defaultWeb>
 <nameField></nameField>
 <validationScript></validationScript>
-<displayName>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>displayName</name>
-<number>2</number>
-<picker>0</picker>
-<prettyName>Display Name</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</displayName>
 <icon>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
@@ -58,44 +154,69 @@
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
 </icon>
+<id>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<name>id</name>
+<number>1</number>
+<picker>0</picker>
+<prettyName>id</prettyName>
+<size>30</size>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+</id>
+<matchersComposition>
+<cache>0</cache>
+<customDisplay></customDisplay>
+<disabled>0</disabled>
+<displayType>select</displayType>
+<multiSelect>0</multiSelect>
+<name>matchersComposition</name>
+<number>5</number>
+<picker>0</picker>
+<prettyName>Matchers relation-ship</prettyName>
+<relationalStorage>0</relationalStorage>
+<separator> </separator>
+<separators> ,|</separators>
+<size>1</size>
+<sort>none</sort>
+<unmodifiable>0</unmodifiable>
+<validationMessage></validationMessage>
+<validationRegExp></validationRegExp>
+<values>and|or</values>
+<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+</matchersComposition>
 <name>
 <customDisplay></customDisplay>
 <disabled>0</disabled>
 <name>name</name>
-<number>1</number>
+<number>2</number>
 <picker>0</picker>
-<prettyName>Name</prettyName>
+<prettyName>Display Name</prettyName>
 <size>30</size>
 <unmodifiable>0</unmodifiable>
 <validationMessage></validationMessage>
 <validationRegExp></validationRegExp>
 <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
 </name>
-<patternList>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<editor>PureText</editor>
-<name>patternList</name>
-<number>3</number>
-<picker>0</picker>
-<prettyName>Patterns List</prettyName>
-<rows>5</rows>
-<size>40</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-</patternList>
 </class>
 <name>MailArchiveCode.TypesSettingsCreation</name>
 <number>0</number>
 <className>MailArchiveCode.TypesSettingsClass</className>
 <guid>8e484243-88d6-4fce-bcc2-4321bf006871</guid>
 <property>
-<displayName></displayName>
+<icon></icon>
 </property>
 <property>
-<icon></icon>
+<id></id>
+</property>
+<property>
+<matchersComposition>and</matchersComposition>
+</property>
+<property>
+<name></name>
 </property>
 </object>
 <object>
@@ -125,7 +246,7 @@
 <name>MailArchiveCode.TypesSettingsCreation</name>
 <number>0</number>
 <className>XWiki.DocumentSheetBinding</className>
-<guid>dc3d4c73-78bd-4e38-8e6f-77341acb1f78</guid>
+<guid>ef3e6c23-846b-44a4-bc97-60ee41cccde2</guid>
 <property>
 <sheet></sheet>
 </property>
@@ -136,6 +257,7 @@
   #set($newtypedoc = $xwiki.getDocument("MailArchivePrefs.Type_${name}"))
   $newtypedoc.setParent('MailArchive.Admin')
   #set ($newtypeobj = $newtypedoc.addObjectFromRequest('MailArchiveCode.TypesSettingsClass'))
+  #set ($newtypematcheroj = $newtypedoc.addObjectFromRequest('MailArchiveCode.MailMatcherClass'))
   #set($ok = $newtypedoc.save())
   $response.setContentType('text/xml')
   #if($ok)
@@ -149,12 +271,12 @@
       &lt;message&gt;Could not create new type ${newtypeobj.get('name')}&lt;/message&gt;
     &lt;/response&gt;
   #end
-#else
+#else  
   #set($obj=$doc.getObject('MailArchiveCode.TypesSettingsClass'))
   #if($request.getParameter('newtypename'))
     #set($discard = $obj.set('name', $request.getParameter('newtypename')))
   #end
-  #if($request.get('xpage'))
+  #if(${doc.name.endsWith('Creation')})
     #set($assumeLightbox = true)
   #end
   #set($typesClass=$doc.getObject('MailArchiveCode.TypesSettingsClass').xWikiClass)
@@ -162,24 +284,25 @@
 == New Mail Type Information ==
 
 {{html wiki="true"}}
+&lt;div class="xform"&gt;
 &lt;form action="" class="xform" method="post" name="form_types_settings" onsubmit="return validate(this, 'table-patterns-list');"&gt;
   &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+   #set($prop = $typesClass.get('id'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.TypesSettingsClass_0_${prop.name}"&gt;$prop.prettyName&lt;/label&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $doc.display($prop.name, 'edit', $obj)
+     &lt;/dd&gt;
+   &lt;/dl&gt;
    #set($prop = $typesClass.get('name'))
    &lt;dl&gt;
      &lt;dt&gt;
-       &lt;label for="MailArchiveCode.TypesSettingsClass_0_${prop.getName()}"&gt;$prop.prettyName&lt;/label&gt;
+       &lt;label for="MailArchiveCode.TypesSettingsClass_0_${prop.name}"&gt;$prop.prettyName&lt;/label&gt;
      &lt;/dt&gt;
      &lt;dd&gt;
-       $doc.display($prop.getName(), 'edit', $obj)
-     &lt;/dd&gt;
-   &lt;/dl&gt;
-   #set($prop = $typesClass.get('displayName'))
-   &lt;dl&gt;
-     &lt;dt&gt;
-       &lt;label for="MailArchiveCode.TypesSettingsClass_0_${prop.getName()}"&gt;$prop.prettyName&lt;/label&gt;
-     &lt;/dt&gt;
-     &lt;dd&gt;
-       $doc.display($prop.getName(), 'edit', $obj)
+       $doc.display($prop.name, 'edit', $obj)
      &lt;/dd&gt;
    &lt;/dl&gt;
    #set($prop = $typesClass.get('icon'))
@@ -193,32 +316,11 @@
      &lt;/dd&gt;
    &lt;/dl&gt;
   &lt;br/&gt;
-=== Patterns List ===
-  &lt;table id="table-patterns-list"&gt;
-    &lt;tr&gt;
-      &lt;th&gt;&amp;nbsp;&lt;/th&gt;
-      &lt;th&gt;Matched Field(s)&lt;/th&gt;
-      &lt;th&gt;Pattern (regular expression)&lt;/th&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;&lt;input type="checkbox" id="chk"/&gt;&lt;/td&gt;
-      &lt;td&gt;
-        &lt;input id="fields-from" name="fields-from" value="from" type="checkbox"&gt;From&lt;input id="fields-to" name="fields-to" value="to" type="checkbox"&gt;To&lt;input id="fields-cc" name="fields-cc" value="cc" type="checkbox"&gt;Cc&lt;input id="fields-subject" name="fields-subject" value="messagesubject" type="checkbox"&gt;Subject&lt;input id="fields-body" name="fields-body" value="body" type="checkbox"&gt;Body Text
-      &lt;/td&gt;
-      &lt;td&gt;
-        &lt;input id="pattern" name="pattern" size="50" value="" type="text"&gt;
-      &lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/table&gt;
-  &lt;br/&gt;
-  &lt;span class="buttonwrapper"&gt;
-    &lt;a class="button" href="#" onclick="javascript:addPatternRow('table-patterns-list');"&gt;Add matching pattern&lt;/a&gt;
-    &lt;a class="button" href="#" onclick="javascript:deletePatternRow('table-patterns-list');"&gt;Remove selected pattern(s)&lt;/a&gt;
-  &lt;/span&gt;
-  &lt;input type="hidden" id="MailArchiveCode.TypesSettingsClass_0_patternList" name="MailArchiveCode.TypesSettingsClass_0_patternList" value=""/&gt;
-  &lt;br/&gt;
-  &lt;br/&gt;
-  &lt;br/&gt;
+
+=== Matchers List ===
+
+{{include reference="MailArchiveCode.MailMatcherSheet"/}}
+
 
   &lt;span class="buttonwrapper"&gt;
     #if($assumeLightbox)
@@ -232,7 +334,6 @@
         }
         ## Post the form entry to the page and load the result. (we override lbSaveForm)
         window.lb.lbSaveForm = function() {
-          validate(this.form, 'table-patterns-list');
           var formParams = Form.serialize(this.form);
           Form.disable(this.form);
           var ajaxRequest = new Ajax.Request(this.saveUrl, {
@@ -255,112 +356,7 @@
     #end
   &lt;/span&gt;## ButtonWrapper
 &lt;/form&gt;
-&lt;script type="text/javascript"&gt;
-var patternsList = new Array();
-var addPattern = function() {
-  var from = document.getElementById('fields-from').checked;  
-  var to = document.getElementById('fields-to').checked;  
-  var cc = document.getElementById('fields-cc').checked;  
-  var subject = document.getElementById('fields-subject').checked;  
-  var body = document.getElementById('fields-body').checked;  
-  var pattern = document.getElementById('pattern').value;
-  var patternItem = [from,to,cc,subject,body,pattern];
-  patternsList.push(patternItem);
-
-  document.getElementById('MailArchiveCode.TypesSettingsClass_0_patternList').value = patternsList;
-}
-function addPatternRow(tableID) {
- var table = document.getElementById(tableID); 
- var rowCount = table.rows.length;
- var row = table.insertRow(rowCount);
- 
- var colCount = table.rows[0].cells.length;
- 
- for(var i=0; i&lt;colCount; i++) {
- 
-   var newcell = row.insertCell(i);
- 
-   newcell.innerHTML = table.rows[1].cells[i].innerHTML;
-
-   switch(newcell.childNodes[0].type) {
-     case "text":
-       newcell.childNodes[0].value = "";
-       break;
-     case "checkbox":
-       newcell.childNodes[0].checked = false;
-       break;
-     case "select-one":
-       newcell.childNodes[0].selectedIndex = 0;
-       break;
-   }
- }
-}
-
-function deletePatternRow(tableID) {
-  try {
-    var table = document.getElementById(tableID);
-    var rowCount = table.rows.length;
- 
-    for(var i=0; i&lt;rowCount; i++) {
-      var row = table.rows[i];
-      var chkbox = row.cells[0].childNodes[0];
-      if(null != chkbox &amp;&amp; true == chkbox.checked) {
-        if(rowCount &lt;= 1) {
-          alert("Cannot delete all the rows.");
-          break;
-        }
-        table.deleteRow(i);
-        rowCount = rowCount - 1;
-        i = i - 1;
-      }
- 
-    }
-  }catch(e) {
-    alert(e);
-  }
-}
-
-function validate(form, tableID) {
-  var table = document.getElementById(tableID); 
-  var rowCount = table.rows.length;
-  var list = '';
-
-  for (var i=1; i&lt;rowCount; i++) {
-    var row = table.rows[i];
-    var chkbox = row.cells[0].childNodes[0];
-    var from = row.cells[1].childNodes[1].checked;
-    var to = row.cells[1].childNodes[3].checked;
-    var cc = row.cells[1].childNodes[5].checked;
-    var subject = row.cells[1].childNodes[7].checked;
-    var body = row.cells[1].childNodes[9].checked;
-    var pattern = row.cells[2].childNodes[1].value;
-    if (pattern.trim() == '') {
-      alert('Please specify a pattern.');
-      return false;
-    }
-    if (!from &amp;&amp; !to &amp;&amp; !cc &amp;&amp; !subject &amp;&amp; !body) {
-      alert('Please choose at least one field to match.');
-      return false;
-    }
-    if (from) { list = list + 'from'; }
-    if (from &amp;&amp; to) { list = list + ',';}
-    if (to) { list = list + 'to'; }
-    if ((from||to) &amp;&amp; cc) { list = list + ',';}
-    if (cc) { list = list + 'cc'; }
-    if ((from||to||cc) &amp;&amp; subject) { list = list + ',';}
-    if (subject) { list = list + 'subject'; }
-    if ((from||to||cc||subject) &amp;&amp; body) { list = list + ',';}
-    if (body) { list = list + 'body'; }
-    list = list + '\n' + pattern + '\n';  
-  }
-  document.getElementById('MailArchiveCode.TypesSettingsClass_0_patternList').value = list;
-
-  return true;
-
-}
-
-&lt;/script&gt;
-
+&lt;/div&gt;
 {{/html}}
 
 #end

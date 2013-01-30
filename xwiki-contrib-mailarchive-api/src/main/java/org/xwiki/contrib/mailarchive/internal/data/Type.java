@@ -19,9 +19,10 @@
  */
 package org.xwiki.contrib.mailarchive.internal.data;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.xwiki.contrib.mailarchive.IMailMatcher;
 import org.xwiki.contrib.mailarchive.IType;
 
 /**
@@ -31,22 +32,62 @@ import org.xwiki.contrib.mailarchive.IType;
  */
 public class Type implements IType
 {
-    private String name;
+    private String id;
 
-    private String displayName;
+    private String name;
 
     private String icon;
 
-    private HashMap<List<String>, String> patterns;
+    private List<IMailMatcher> matchers;
 
-    public String getName()
+    public Type()
     {
-        return name;
+        super();
+        this.matchers = new ArrayList<IMailMatcher>();
     }
 
-    public void setName(String name)
+    /**
+     * @param id
+     * @param name
+     * @param icon
+     */
+    public Type(String id, String name, String icon)
     {
+        this();
+        this.id = id;
         this.name = name;
+        this.icon = icon;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.IType#getId()
+     */
+    public String getId()
+    {
+        return id;
+    }
+
+    public void setId(String name)
+    {
+        this.id = name;
+    }
+
+    public void setName(String displayName)
+    {
+        this.name = displayName;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.IType#getName()
+     */
+    @Override
+    public String getName()
+    {
+        return this.name;
     }
 
     public String getIcon()
@@ -59,44 +100,35 @@ public class Type implements IType
         this.icon = icon;
     }
 
-    public HashMap<List<String>, String> getPatterns()
+    public List<IMailMatcher> getMatchers()
     {
-        return patterns;
+        return matchers;
     }
 
-    public void setPatterns(HashMap<List<String>, String> patterns)
+    public void setMatchers(List<IMailMatcher> matchers)
     {
-        this.patterns = patterns;
+        this.matchers = matchers;
     }
 
-    public void addPattern(List<String> fields, String expr)
+    public void addMatcher(final List<String> fields, final String pattern, final boolean advancedMode,
+        final boolean ignoreCase, final boolean multiLine)
     {
-        this.patterns.put(fields, expr);
-    }
-
-    public void setDisplayName(String displayName)
-    {
-        this.displayName = displayName;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.IType#getDisplayName()
-     */
-    @Override
-    public String getDisplayName()
-    {
-        // TODO Auto-generated method stub
-        return this.displayName;
+        if (this.matchers == null) {
+            this.matchers = new ArrayList<IMailMatcher>();
+        }
+        final MailMatcher matcher = new MailMatcher(fields, pattern);
+        matcher.setAdvancedMode(advancedMode);
+        matcher.setIgnoreCase(ignoreCase);
+        matcher.setMultiLine(multiLine);
+        this.matchers.add(matcher);
     }
 
     @Override
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("MailTypeImpl [name=").append(name).append(", displayName=").append(displayName)
-            .append(", icon=").append(icon).append(", patterns=").append(patterns).append("]");
+        builder.append("MailTypeImpl [name=").append(id).append(", displayName=").append(name).append(", icon=")
+            .append(icon).append(", matchers=").append(matchers).append("]");
         return builder.toString();
     }
 

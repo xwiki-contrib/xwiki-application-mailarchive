@@ -20,6 +20,7 @@
 package org.xwiki.contrib.mailarchive.internal.data;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.contrib.mailarchive.IMailMatcher;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IType;
 
@@ -41,14 +42,33 @@ public interface IFactory
     /**
      * Creates a IType from name, icon and patterns list
      * 
+     * @param id
      * @param name
      * @param icon
-     * @param patternsList a list of carriage-return separated patterns : each pattern occupies 2 lines, first line
-     *            being the fields to match against (comma separated), second line is the regular expression to match
-     * @return a IType object or null if patternsList could not be parsed
+     * @return a IType object
      */
-    IType createMailType(String name, String displayName, String icon, String patternsList);
+    IType createMailType(String id, String name, String icon);
 
+    /**
+     * Creates a IMailMatcher.
+     * 
+     * @param fields
+     * @param expression
+     * @param isAdvanced
+     * @param isIgnoreCase
+     * @param isMultiLine
+     * @return
+     */
+    IMailMatcher createMailMatcher(String fields, String expression, Integer isAdvanced, Integer isIgnoreCase,
+        Integer isMultiLine);
+
+    /**
+     * @param pattern
+     * @param displayName
+     * @param tag
+     * @param color
+     * @return
+     */
     IMailingList createMailingList(String pattern, String displayName, String tag, String color);
 
 }

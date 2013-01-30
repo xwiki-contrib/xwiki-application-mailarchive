@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.context.Execution;
 import org.xwiki.contrib.mailarchive.IMailArchive;
+import org.xwiki.logging.LoggerManager;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -46,7 +47,7 @@ public class DefaultMailArchiveTest extends AbstractBridgedComponentTestCase
     {
         super.setUp();
 
-        //setupEnvironment();
+        // setupEnvironment();
 
         execution = getComponentManager().getInstance(Execution.class);
         System.out.println("Execution tu " + execution.hashCode());
@@ -66,28 +67,12 @@ public class DefaultMailArchiveTest extends AbstractBridgedComponentTestCase
 
         getContext().setWiki(this.mockXWiki);
 
+        // Needed because not mocked by MockingComponentManager
+        getComponentManager().registerMockComponent(getMockery(), LoggerManager.class);
+
         this.ma = (DefaultMailArchive) getComponentManager().getInstance(IMailArchive.class);
 
     }
-
-    // FIXME: this is supposed to be done by AbstractBridgedComponentTestCase already but it seems to be buggy in 3.5.1.
-    // Note: works well in 4.1 so it should be removed when upgrading.
-    /*protected void setupEnvironment() throws Exception
-    {
-        // Since the oldcore module draws the Servlet Environment in its dependencies we need to ensure it's set up
-        // correctly with a Servlet Context.
-        ServletEnvironment environment = (ServletEnvironment) getComponentManager().getInstance(Environment.class);
-        final ServletContext mockServletContext = environment.getServletContext();
-        getMockery().checking(new Expectations()
-        {
-            {
-                allowing(mockServletContext).getResourceAsStream("/WEB-INF/cache/infinispan/config.xml");
-                will(returnValue(null));
-                allowing(mockServletContext).getAttribute("javax.servlet.context.tempdir");
-                will(returnValue(new File(System.getProperty("java.io.tmpdir"))));
-            }
-        });
-    }*/
 
     @Test
     public void testEnvironment()

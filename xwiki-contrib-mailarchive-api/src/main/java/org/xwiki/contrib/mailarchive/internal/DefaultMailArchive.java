@@ -80,11 +80,11 @@ import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 import org.xwiki.contrib.mailarchive.internal.threads.IMessagesThreader;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadableMessage;
 import org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineGenerator;
+import org.xwiki.contrib.mailarchive.internal.utils.DecodedMailContent;
 import org.xwiki.contrib.mailarchive.internal.utils.IMailUtils;
 import org.xwiki.contrib.mailarchive.internal.utils.TextUtils;
 import org.xwiki.environment.Environment;
 import org.xwiki.logging.LogLevel;
-import org.xwiki.logging.LoggerManager;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -143,7 +143,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     Logger logger;
 
     @Inject
-    LoggerManager loggerManager;
+    IAggregatedLoggerManager aggregatedLoggerManager;
 
     /**
      * The component used to parse XHTML obtained after cleaning, when transformations are not executed.
@@ -225,7 +225,13 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             ExecutionContext context = execution.getContext();
             this.context = (XWikiContext) context.getProperty("xwikicontext");
             this.xwiki = this.context.getWiki();
-            logger.info("Mail archive initiliazed !");
+            // Initialize switchable logging for main components useful for the mail archive
+            /*
+             * aggregatedLoggerManager.addComponentLogger(IMailArchive.class);
+             * aggregatedLoggerManager.addComponentLogger(IMailComponent.class);
+             * aggregatedLoggerManager.addComponentLogger(StreamParser.class);
+             */
+            logger.info("Mail archive initialized !");
             logger.debug("PERMANENT DATA DIR : " + this.environment.getPermanentDirectory());
         } catch (Throwable e) {
             logger.error("Could not initiliaze mailarchive ", e);
@@ -500,11 +506,16 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         try {
             // Types
             List<IType> foundTypes = mailutils.extractTypes(config.getMailTypes().values(), m);
+            logger.debug("Extracted types " + foundTypes);
             foundTypes.remove(getType(IType.TYPE_MAIL));
             if (foundTypes.size() > 0) {
-                m.addType(foundTypes.get(0).getDisplayName());
+                for (IType foundType : foundTypes) {
+                    logger.debug("Adding extracted type " + foundType);
+                    m.addType(foundType.getId());
+                }
             } else {
-                m.addType(getType(IType.TYPE_MAIL).getDisplayName());
+                logger.debug("No specific type found for this mail");
+                m.addType(getType(IType.TYPE_MAIL).getId());
             }
 
             // User
@@ -696,9 +707,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         String pageName = "T" + m.getTopic().replaceAll(" ", "");
 
         // Materialize mailing-lists information and mail IType in Tags
-        ArrayList<String> taglist = extractMailingListsTags(m);
-
-        taglist.addAll(m.getTypes());
+        ArrayList<String> taglist = extractTags(m);
 
         String createdTopicName = persistence.createTopic(pageName, m, taglist, config.getLoadingUser(), create);
 
@@ -840,17 +849,19 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         logger.debug("Fetching mail content");
         MailContent mailContent = mailManager.parseContent(m.getOriginalMessage());
 
-        logger.debug("Loading attached mails ...");
         attachedMails = mailContent.getAttachedMails();
-        for (Message message : attachedMails) {
-            try {
-                LoadingSessionResult result = loadMail(message, create, true, msgDoc.getFullName());
-                if (result.isSuccess()) {
-                    attachedMailsPages.add(result.getCreatedMailDocumentName());
+        if (attachedMails.size() > 0) {
+            logger.debug("Loading attached mails ...");
+            for (Message message : attachedMails) {
+                try {
+                    LoadingSessionResult result = loadMail(message, create, true, msgDoc.getFullName());
+                    if (result.isSuccess()) {
+                        attachedMailsPages.add(result.getCreatedMailDocumentName());
+                    }
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
         }
 
@@ -881,6 +892,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             try {
 
                 WikiPrinter printer = new DefaultWikiPrinter();
+                // FIXME: we don't really need to lookup a PrintRendererFactory component each time - could be done
+                // during initialize() ?
                 PrintRendererFactory printRendererFactory =
                     componentManager.getInstance(PrintRendererFactory.class, Syntax.PLAIN_1_0.toIdString());
                 htmlStreamParser.parse(new StringReader(htmlcontent), printRendererFactory.createRenderer(printer));
@@ -946,7 +959,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         } else {
             msgDoc.setComment("Attached mail created");
         }
-        ArrayList<String> taglist = extractMailingListsTags(m);
+        ArrayList<String> taglist = extractTags(m);
         if (taglist.size() > 0) {
             BaseObject tagobj = msgDoc.newObject("XWiki.TagClass", context);
             String tags = StringUtils.join(taglist.toArray(new String[] {}), ',');
@@ -983,15 +996,21 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             // Replace attachment URLs in HTML content for images to be shown
             for (Entry<String, MailAttachment> att : attachmentsMap.entrySet()) {
                 // remove starting "<" and finishing ">"
-                // FIXME : NPE
-                String pattern = att.getKey().substring(1, att.getKey().length() - 2);
-                pattern = "cid:" + pattern;
+                final String cid = att.getKey();
+                // If there is no cid, it means this attachment is not INLINE, so there's nothing more to do
+                if (!StringUtils.isEmpty(cid)) {
+                    String pattern = att.getKey().substring(1, att.getKey().length() - 2);
+                    pattern = "cid:" + pattern;
 
-                logger.debug("Testing for CID pattern " + Util.encodeURI(pattern, context) + " " + pattern);
-                // FIXME : should not be done here be sooner, so to remove dependency on msgdoc ...
-                String replacement = msgdoc.getAttachmentURL(att.getValue().getFilename(), context);
-                logger.debug("To be replaced by " + replacement);
-                htmlcontent = htmlcontent.replaceAll(pattern, replacement);
+                    logger.debug("Testing for CID pattern " + Util.encodeURI(pattern, context) + " " + pattern);
+                    // FIXME : should not be done here be sooner, so to remove dependency on msgdoc ...
+                    String replacement = msgdoc.getAttachmentURL(att.getValue().getFilename(), context);
+                    logger.debug("To be replaced by " + replacement);
+                    htmlcontent = htmlcontent.replaceAll(pattern, replacement);
+                } else {
+                    logger.warn("treatHtml: attachment is supposed not inline as cid is null or empty: "
+                        + att.getValue().getFilename());
+                }
             }
 
             logger.debug("Zipping HTML part ...");
@@ -1139,6 +1158,19 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         String filename = fname.substring(i + 1);
         filename = filename.replaceAll("\\+", " ");
         return filename;
+    }
+
+    protected ArrayList<String> extractTags(MailItem m)
+    {
+        // Materialize mailing-lists information and mail IType in Tags
+        ArrayList<String> taglist = extractMailingListsTags(m);
+
+        for (String typeid : m.getTypes()) {
+            IType type = config.getMailTypes().get(typeid);
+            taglist.add(type.getName());
+        }
+
+        return taglist;
     }
 
     /**
@@ -1323,14 +1355,24 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      */
     @SuppressWarnings("deprecation")
     @Override
-    public String getDecodedMailText(String mailPage, boolean cut) throws IOException, XWikiException,
+    public DecodedMailContent getDecodedMailText(String mailPage, boolean cut) throws IOException, XWikiException,
         InitializationException, MailArchiveException
     {
         if (!this.isConfigured) {
             configure();
         }
         if (!StringUtils.isBlank(mailPage)) {
-            XWikiDocument htmldoc = xwiki.getDocument(mailPage, this.context);
+            XWikiDocument htmldoc = null;
+            try {
+                htmldoc = xwiki.getDocument(mailPage, this.context);
+            } catch (Throwable t) {
+                // FIXME Ugly workaround for "org.hibernate.SessionException: Session is closed!"
+                try {
+                    htmldoc = xwiki.getDocument(mailPage, this.context);
+                } catch (Exception e) {
+                    htmldoc = null;
+                }
+            }
             if (htmldoc != null) {
                 BaseObject htmlobj = htmldoc.getObject("MailArchiveCode.MailClass");
                 if (htmlobj != null) {
@@ -1342,22 +1384,21 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             }
         }
 
-        return "";
+        return new DecodedMailContent(false, "");
 
     }
 
     public void enterDebugMode()
     {
         // Logs level
-        this.logLevel = loggerManager.getLoggerLevel(logger.getName());
-        loggerManager.setLoggerLevel(logger.getName(), LogLevel.DEBUG);
+        aggregatedLoggerManager.pushLogLevel(LogLevel.DEBUG);
         logger.debug("DEBUG MODE ON");
     }
 
     public void quitDebugMode()
     {
         logger.debug("DEBUG MODE OFF");
-        loggerManager.setLoggerLevel(logger.getName(), this.logLevel);
+        aggregatedLoggerManager.popLogLevel();
     }
 
 }

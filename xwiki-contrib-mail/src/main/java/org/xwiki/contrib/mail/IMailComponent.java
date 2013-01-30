@@ -33,19 +33,47 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.SearchTerm;
 
-import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.component.annotation.Role;
 
 /**
  * @version $Id$
  */
 @Singleton
-@ComponentRole
+@Role
 public interface IMailComponent
 {
+    /**
+     * Dumps email messages from a server.
+     * 
+     * @param hostname
+     * @param port
+     * @param protocol Could be "imap", "imaps", "pop3", "pop3s", ...
+     * @param folder Folder to get messages from.
+     * @param username
+     * @param password
+     * @param additionalProperties Additional properties for Javamail for this server connection.
+     * @param onlyUnread If true, dumps only messages without 'READ' flag.
+     * @return
+     * @throws MessagingException
+     */
     List<Message> fetch(String hostname, int port, String protocol, String folder, String username, String password,
         Properties additionalProperties, boolean onlyUnread) throws MessagingException;
 
-    // Fetch up to max messages from a server
+    /**
+     * Dumps up to 'max' email messages from a server.
+     * 
+     * @param hostname
+     * @param port
+     * @param protocol
+     * @param folder Folder to get messages from.
+     * @param username
+     * @param password
+     * @param additionalProperties Additional properties for Javamail for this server connection.
+     * @param onlyUnread If true, dumps only messages without 'READ' flag.
+     * @param max Maximum number of email messages to retrieve.
+     * @return
+     * @throws MessagingException
+     */
     List<Message> fetch(String hostname, int port, String protocol, String folder, String username, String password,
         Properties additionalProperties, boolean onlyUnread, int max) throws MessagingException;
 
@@ -68,6 +96,8 @@ public interface IMailComponent
         Properties additionalProperties, boolean onlyUnread);
 
     /**
+     * Returns the javamail Session related to provided server information, if one exists currently.
+     * 
      * @param hostname
      * @param port
      * @param protocol
@@ -78,7 +108,7 @@ public interface IMailComponent
     Session getSession(String hostname, int port, String protocol, String folder, String username);
 
     /**
-     * Clones an email.
+     * Clones an email from a session.
      * 
      * @param mail the message to clone.
      * @param protocol the protocol used to connect to the mail server.
@@ -87,17 +117,45 @@ public interface IMailComponent
      */
     MimeMessage cloneEmail(Message mail, Session session);
 
+    /**
+     * Extracts and parses an email headers.
+     * 
+     * @param message
+     * @return A parsed email.
+     * @throws MessagingException
+     * @throws IOException
+     */
     MailItem parseHeaders(Part message) throws MessagingException, IOException;
 
+    /**
+     * Extracts and parses an email content (ie., bodies).
+     * 
+     * @param message
+     * @return A parsed email content.
+     * @throws MessagingException
+     * @throws IOException
+     */
     MailContent parseContent(Part message) throws MessagingException, IOException;
 
-    // Persistence to FS (backup)
+    /**
+     * Sets store for emails storage on filesystem.
+     * 
+     * @param location
+     * @param provider
+     */
     void setStore(String location, String provider);
 
+    /**
+     * Writes an email into the filesystem store.
+     * 
+     * @param folder
+     * @param message
+     * @throws MessagingException
+     */
     void writeToStore(String folder, Message message) throws MessagingException;
 
     /**
-     * Reads a message with given Message-ID value from the local store.
+     * Reads an email from the local store.
      * 
      * @param folder
      * @param messageid
@@ -107,7 +165,7 @@ public interface IMailComponent
     Message readFromStore(String folder, String messageid) throws MessagingException;
 
     /**
-     * Reads all messages from folder from the local store.
+     * Reads all messages from a folder from the local store.
      * 
      * @param folder
      * @return An empty array if no message was found.
@@ -125,18 +183,11 @@ public interface IMailComponent
      */
     Message[] readFromStore(String folder, SearchTerm term) throws MessagingException;
 
-    // Creates a topic page - returns new page name
-    String createTopicPage(MailItem m);
-
-    // Updates a topic page according to a (new) message information
-    // Returns true if something was updated
-    boolean updateTopicPage(String topicId, MailItem m);
-
-    // Creates mail page - returns new page name
-    String createMailPage(MailItem m);
-
-    // needed ?
-    boolean updateMailPage(MailItem m);
-
+    /**
+     * Extracts Personal part of an internet address header.
+     * 
+     * @param header
+     * @return
+     */
     String parseAddressHeader(String header);
 }

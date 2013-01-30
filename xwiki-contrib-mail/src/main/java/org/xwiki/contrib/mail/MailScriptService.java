@@ -50,6 +50,7 @@ public class MailScriptService implements ScriptService
             return mailComp.fetch(hostname, port, protocol, folder, username, password, additionalProperties,
                 onlyUnread);
         } catch (MessagingException e) {
+            // FIXME that's pretty bad to hide that exception...
             return new ArrayList<Message>();
         }
     }

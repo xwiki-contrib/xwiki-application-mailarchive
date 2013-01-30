@@ -26,6 +26,7 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mail.ConnectionErrors;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadableMessage;
+import org.xwiki.contrib.mailarchive.internal.utils.DecodedMailContent;
 
 import com.xpn.xwiki.XWikiException;
 
@@ -88,7 +89,7 @@ public interface IMailArchive
      * @throws MailArchiveException
      * @throws InitializationException
      */
-    public String getDecodedMailText(String mailPage, boolean cut) throws IOException, XWikiException,
+    public DecodedMailContent getDecodedMailText(String mailPage, boolean cut) throws IOException, XWikiException,
         InitializationException, MailArchiveException;
 
     public IType getType(String name);

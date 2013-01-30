@@ -30,6 +30,7 @@ import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.LoadingSession;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadMessageBean;
+import org.xwiki.contrib.mailarchive.internal.utils.DecodedMailContent;
 import org.xwiki.script.service.ScriptService;
 
 /**
@@ -42,6 +43,12 @@ public class MailArchiveScriptService implements ScriptService
 {
     @Inject
     private IMailArchive mailArchive;
+
+    // @Inject
+    // private Logger logger;
+
+    // TODO: move out the session() and load() to another IMailArchiveLoader component.
+    // Justification: IMailArchive should be Singleton, whereas IMailArchiveLoader should not.
 
     public LoadingSession session()
     {
@@ -108,12 +115,14 @@ public class MailArchiveScriptService implements ScriptService
         return timelineFeed;
     }
 
-    public String getDecodedMailText(final String mailPage, final boolean cut)
+    public DecodedMailContent getDecodedMailText(final String mailPage, final boolean cut)
     {
         try {
             return this.mailArchive.getDecodedMailText(mailPage, cut);
         } catch (Exception e) {
-            return "<<invalid content>>";
+            System.out.println("MailArchiveScriptService: failed to decode mail content");
+            e.printStackTrace();
+            return new DecodedMailContent(false, "<<invalid content>>");
         }
     }
 }

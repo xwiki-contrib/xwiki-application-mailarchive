@@ -17,40 +17,29 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal.persistence;
+package org.xwiki.contrib.mailarchive.internal.bridge;
 
 /**
  * @version $Id$
  */
-public class DocumentEntity
+public enum UpdateMode
 {
-    private String space;
 
-    private String name;
-
-    public String getSpace()
-    {
-        return space;
-    }
-
-    public void setSpace(String space)
-    {
-        this.space = space;
-    }
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    public String getFullName()
-    {
-        return space + '.' + name;
-    }
+    /**
+     * Only creates a new object each time.
+     */
+    ADD,
+    /**
+     * Creates a new object if none exists, or updates it if already existing.
+     */
+    CREATE_OR_UPDATE,
+    /**
+     * Only updates existing object (fails if it does not exist).
+     */
+    UPDATE,
+    /**
+     * Only creates a new object if none exist (fails if an object exists).
+     */
+    CREATE
 
 }

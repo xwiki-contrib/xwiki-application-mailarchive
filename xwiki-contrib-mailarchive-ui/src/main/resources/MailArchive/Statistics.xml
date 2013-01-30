@@ -10,15 +10,15 @@
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353417885000</creationDate>
-<date>1353417885000</date>
-<contentUpdateDate>1353417885000</contentUpdateDate>
+<creationDate>1353930103000</creationDate>
+<date>1354528932000</date>
+<contentUpdateDate>1354528932000</contentUpdateDate>
 <version>1.1</version>
 <title>GGS WW Mailing-lists Statistics</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Import</comment>
+<comment>Imported from XAR</comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
@@ -75,28 +75,20 @@
 #if($restrict == "All")
   #set($linksstr = "$linksstr __**All DLs**__")
 #else
-  #set($linksstr = "$linksstr [[All DLs&gt;&gt;${doc.web}.${doc.name}?full=${full}]]")
-#end
-#set($listsdoc = $xwiki.getDocument('MailArchive.ListsSettings'))
-#set($listsobjs = $listsdoc.getObjects('MailArchiveCode.ListsSettingsClass'))
-#foreach($obj in $listsobjs)
-  #set($restrictfilter = $obj.get('Tag'))
-  #set($restrictdisplay = $obj.get('displayname'))
-  #set($linksstr = "$linksstr - ")
-  #if($restrict == $restrictfilter)
-    #set($linksstr = "$linksstr __**${restrictdisplay}**__")
-  #else
-    #set($linksstr = "$linksstr [[${restrictdisplay}&gt;&gt;${doc.web}.${doc.name}?restrict=${restrictfilter}&amp;full=${full}]]")
-  #end
+  #set($linksstr = "$linksstr [[All DLs&gt;&gt;${doc.web}.${doc.name}?full=$!{full}]]")
 #end
 ## List of DL tags
 #set($xwql = "select list.Tag, list.displayname, list.color from Document doc, doc.object(MailArchiveCode.ListsSettingsClass) as list where doc.name not like '%Sheet' and doc.name not like '%Template' order by list.displayname asc")
 #set($tagslist = $services.query.xwql($xwql).execute())
 #foreach($tagitem in $tagslist)
-  #if($tagitem[0] == $restrict)
-    #set($listtag = $tagitem[0])
-    #set($listdisplay = $tagitem[1])
-    #set($listcolor = $tagitem[2])
+  #set($listtag = $tagitem[0])
+  #set($listdisplay = $tagitem[1])
+  #set($listcolor = $tagitem[2])
+  #set($linksstr = "$linksstr - ")
+  #if($restrict == $listtag)
+    #set($linksstr = "$linksstr __**${listdisplay}**__")
+  #else
+    #set($linksstr = "$linksstr [[${listdisplay}&gt;&gt;${doc.web}.${doc.name}?restrict=${listtag}&amp;full=$!{full}]]")
   #end
 #end
 
@@ -115,7 +107,7 @@ $linksstr
   #set($query = $query.bindValue("tagvalue", $restrict))
 #end
 #set($results = $query.execute())
-#set($nbUnansweredPosts = $results.size())
+#set($nbUnansweredPosts = $results.size() + 1)
 
 ## Number of posts with an answer
 #set($xwql = "select count(mail.topicid) from Document doc, doc.object(MailArchiveCode.MailClass) as mail, doc.object(XWiki.TagClass) as tag where mail.name = tag.name and doc.space&lt;&gt;'MailArchiveCode'")
@@ -128,7 +120,7 @@ $linksstr
   #set($query = $query.bindValue("tagvalue", $restrict))
 #end
 #set($results = $query.execute())
-#set($nbAnsweredPosts = $results.size())
+#set($nbAnsweredPosts = $results.size() + 1)
 
 ## Total Number of posts
 #set($nbTotalPosts = $nbUnansweredPosts + $nbAnsweredPosts)
@@ -146,7 +138,7 @@ Total number of posts : $nbTotalPosts
 
 {{/container}}
 
-#set($xwql = "select count(topic.author) from Document doc, doc.object(MailArchiveCode.MailTopicClass) as topic where doc.space&lt;&gt;'MailArchiveCode'")
+#set($xwql = "select count(topic.author), topic.author from Document doc, doc.object(MailArchiveCode.MailTopicClass) as topic where doc.space&lt;&gt;'MailArchiveCode'")
 #if($restrict != "All")
   #set($xwql = "$xwql and :tagvalue MEMBER OF tag.tags ")
 #end
@@ -157,27 +149,25 @@ Total number of posts : $nbTotalPosts
 #end
 #set($results = $query.setLimit($nbitemstoshow).execute())
 
+
 {{container layoutStyle="columns"}}
 (((
-#if ($results.size() &gt; 0) 
 == Top Posters ==
+#if ($results.size() &gt; 0) 
 (posters are creators of new discussion threads - not newsletters)
 |=Person|=Threads
   #foreach($result in $results)
     #set($author = $result[1])
-    #if(!$author)
-      #set($author = "unknown")
-    #end
-    #parseUser($author)
-    #set($wikiUser = $parsedUser)
+    #set($maUser = $services.mailarchive.parseUser($author))
+    #set($wikiUser = $maUser.wikiProfile)
     #if (!$wikiUser) 
       #set($index = $author.indexOf('&lt;'))
       #if($index != -1)
         #set($wikiUser = $author.substring(0,$index)) 
       #end
     #else
-      #set($prettyName = $xwiki.getLocalUserName($wikiUser, false))
-      #set($wikiUser = "{{useravatar username='${wikiUser}' width='30'/}} [[${prettyName}&gt;&gt;MailArchive.ViewUserMessages?user=${author}&amp;wikiUser=wikiUser]]")
+      #set($prettyName = $xwiki.getLocalUserName(${wikiUser.wikiProfile}, false))
+      #set($wikiUser = "{{useravatar username='${wikiUser.wikiProfile}' width='30'/}} [[${prettyName}&gt;&gt;MailArchive.ViewUserMessages?user=${author}&amp;wikiUser=wikiUser.wikiProfile]]")
     #end
 |${wikiUser}|${result[0]}
   #end
@@ -214,8 +204,8 @@ Total number of posts : $nbTotalPosts
 #set($results = $xwiki.search($sql, $nbitemstoshow, 0))
 
 (((
-#if ($results.size() &gt; 0)
 == Top Contributors ==
+#if ($results.size() &gt; 0)
 (contributors consider all mails sent except newsletters)
 |=Person|=Messages
   #foreach($result in $results)
@@ -248,10 +238,12 @@ Total number of posts : $nbTotalPosts
 
 #set($sql = "select count(tagsvalue), tagsvalue, str2.value
              from BaseObject as obj,
+                  BaseObject as objtopic,
                   DBStringListProperty as tags, IN(tags.list) tagsvalue,
                   StringProperty str1, StringProperty str2
             where obj.className='XWiki.TagClass' 
-                  and obj.name like 'MailArchive.T%'
+                  and obj.name=objtopic.name
+                  and objtopic.className='MailArchiveCode.MailTopicClass'
                   and tags.id.id=obj.id  and tags.id.name='tags'
                   and tagsvalue in (select settings.value
                                      from  BaseObject as objsettings,
@@ -260,7 +252,7 @@ Total number of posts : $nbTotalPosts
                                            and objsettings.id=settings.id 
                                            and settings.name='Tag')
                   and str1.id=str2.id and str1.name='Tag' and str1.value=tagsvalue and str2.name='displayname'
-        group by  tagsvalue")
+        group by  tagsvalue, str2.value")
 #set($results = $xwiki.search($sql, 0, 0))
 #set($nb = $results.size())
 #if ($results.size()&gt;0) 

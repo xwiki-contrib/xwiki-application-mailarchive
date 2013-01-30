@@ -53,7 +53,7 @@ public class XWikiPersistence implements IPersistence, Initializable
      * XWiki profile name of a non-existing user.
      */
     public static final String UNKNOWN_USER = "XWiki.UserDoesNotExist";
-    
+
     /**
      * Name of the space that contains end-user targeted pages.
      */
@@ -73,15 +73,21 @@ public class XWikiPersistence implements IPersistence, Initializable
      * Name of the space that contains created objects
      */
     public static String SPACE_ITEMS = "MailArchiveItems";
-    
+
     public static final String CLASS_TOPICS = SPACE_CODE + ".MailTopicClass";
+
     public static final String CLASS_MAILS = SPACE_CODE + ".MailClass";
+
     public static final String CLASS_MAIL_TYPES = SPACE_CODE + ".TypesSettingsClass";
+
+    public static final String CLASS_MAIL_MATCHERS = SPACE_CODE + ".MailMatcherClass";
+
     public static final String CLASS_MAIL_LISTS = SPACE_CODE + ".ListsSettingsClass";
+
     public static final String CLASS_MAIL_SERVERS = SPACE_CODE + ".ServerSettingsClass";
-    
+
     public static final String TEMPLATE_MAILS = SPACE_CODE + ".MailClassTemplate";
-    
+
     public static final String PAGE_GLOBAL_PARAMETERS = SPACE_PREFS + ".GlobalParameters";
 
     @Inject
@@ -91,7 +97,7 @@ public class XWikiPersistence implements IPersistence, Initializable
     private Execution execution;
 
     @Inject
-	@Named("extended")
+    @Named("extended")
     private IExtendedDocumentAccessBridge bridge;
 
     private XWiki xwiki;
@@ -122,8 +128,7 @@ public class XWikiPersistence implements IPersistence, Initializable
         final String loadingUser, final boolean create) throws XWikiException
     {
         final String uniquePageName = bridge.getValidUniqueName(pagename, SPACE_ITEMS);
-        final XWikiDocument topicDoc =
-            xwiki.getDocument(SPACE_ITEMS + "." + uniquePageName, context);
+        final XWikiDocument topicDoc = xwiki.getDocument(SPACE_ITEMS + "." + uniquePageName, context);
         BaseObject topicObj = topicDoc.newObject(SPACE_CODE + ".MailTopicClass", context);
 
         topicObj.set("topicid", m.getTopicId(), context);

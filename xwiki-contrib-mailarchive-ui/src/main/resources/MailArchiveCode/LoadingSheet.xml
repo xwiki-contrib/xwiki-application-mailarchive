@@ -14,7 +14,7 @@
 <date>1354528934000</date>
 <contentUpdateDate>1354528934000</contentUpdateDate>
 <version>1.1</version>
-<title></title>
+<title>$services.localization.render('mailarchive.load.title')</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
@@ -71,7 +71,7 @@
     #set($msession = $sessionsprefsdoc.newObject('MailArchiveCode.LoadingSessionClass'))
 $msession
     #set($discard = $msession.set('id', 'manual'))
-    #set($discard = $ssession.set('maxMailsNb', '1'))
+    #set($discard = $msession.set('maxMailsNb', '-1'))
     #set($discard = $msession.set('withDelete', '0'))
     #set($discard = $msession.set('loadAll', '0'))
     #set($discard = $msession.set('debugMode', '1'))
@@ -143,46 +143,44 @@ debug SESSION $session
 
 {{html wiki="true"}}
 
-= $msg.mailarchive_loading_title =
-
-$msg.mailarchive_loading_description
+$services.localization.render('mailarchive.load.abstract')
 
 &lt;form class="xform" method="POST" action="#"&gt;
   &lt;dl&gt;
-    &lt;dt&gt;&lt;label for="input-max-nb"&gt;$msg.get('mailarchive.load.maxMailsNb.label')&lt;/label&gt;
-        &lt;span class="xHint"&gt;$msg.get('mailarchive.load.maxMailsNb.hint')&lt;/span&gt;
+    &lt;dt&gt;&lt;label for="input-max-nb"&gt;$services.localization.render('mailarchive.loadingSession.fields.maxMailsNb.label')&lt;/label&gt;
+        &lt;span class="xHint"&gt;$services.localization.render('mailarchive.loadingSession.fields.maxMailsNb.hint')&lt;/span&gt;
     &lt;/dt&gt;
     &lt;dd&gt;&lt;input type="text" name="input-max-nb" id="input-max-nb" value="10"/&gt;&lt;/dd&gt;
     &lt;dt&gt;&lt;label for="input-debug-mode"&gt;
-      &lt;input type="checkbox" name="input-debug-mode" value="input-debug-mode"/&gt; $msg.get('mailarchive_loading_action_debug')
+      &lt;input type="checkbox" name="input-debug-mode" value="input-debug-mode"/&gt; $services.localization.render('mailarchive_loading_action_debug')
      &lt;/label&gt;
     &lt;/dt&gt;
     &lt;dt&gt;&lt;label for="input-simulation-mode"&gt;
-      &lt;input type="checkbox" name="input-simulation-mode" value="input-simulation-mode"/&gt; $msg.get('mailarchive_loading_action_simulate')
+      &lt;input type="checkbox" name="input-simulation-mode" value="input-simulation-mode"/&gt; $services.localization.render('mailarchive_loading_action_simulate')
      &lt;/label&gt;
     &lt;/dt&gt;
     &lt;dt&gt;&lt;label for="input-readflag-mode"&gt;
-      &lt;input type="checkbox" name="input-readflag-mode" value="input-readflag-mode"/&gt; $msg.get('mailarchive_loading_action_readflag')
+      &lt;input type="checkbox" name="input-readflag-mode" value="input-readflag-mode"/&gt; $services.localization.render('mailarchive_loading_action_readflag')
     &lt;/label&gt;&lt;dt&gt;
     &lt;dt&gt;&lt;label for="input-recentflag-mode"&gt;
-      &lt;input type="checkbox" name="input-recentflag-mode" value="input-recentflag-mode"/&gt; $msg.get('mailarchive_loading_action_recentflag')
+      &lt;input type="checkbox" name="input-recentflag-mode" value="input-recentflag-mode"/&gt; $services.localization.render('mailarchive_loading_action_recentflag')
      &lt;/label&gt;
     &lt;/dt&gt;
     &lt;dt&gt;&lt;label for="input-delete-mode"&gt;
-      &lt;input type="checkbox" name="input-delete-mode" value="input-delete-mode"/&gt; $msg.get('mailarchive_loading_action_delete')
+      &lt;input type="checkbox" name="input-delete-mode" value="input-delete-mode"/&gt; $services.localization.render('mailarchive_loading_action_delete')
      &lt;/label&gt;
     &lt;/dt&gt;
   &lt;/dl&gt;
 
 #if($servers.size() &gt; 0)
 #set($total = 0)
-|=$msg.get('mailarchive.load.table.headers.server')|=$msg.get('mailarchive.load.table.headers.server')|=$msg.get('mailarchive.load.table.headers.server')|=$msg.get('mailarchive.load.table.headers.server')
+|=$services.localization.render('mailarchive.load.table.headers.server')|=$services.localization.render('mailarchive.load.table.headers.server')|=$services.localization.render('mailarchive.load.table.headers.server')|=$services.localization.render('mailarchive.load.table.headers.server')
 #foreach($servera in $servers)
   #set($server = $servera[0])
   #set($serverobj = $xwiki.getDocument($server).getObject('MailArchiveCode.ServerSettingsClass'))
   #set($nb=$util.parseInteger($serverobj.status))
   #if($nb &lt; 0) 
-    #set($status = $msg.get("mailarchive.server.connectionStatus.${nb}"))
+    #set($status = $services.localization.render("mailarchive.servers.connectionStatus.${nb}"))
   #else
     #set($status = "$nb")
     #set($total = $total + $nb)
@@ -190,14 +188,14 @@ $msg.mailarchive_loading_description
 |[[$serverobj.id / $serverobj.hostname / $serverobj.port / $serverobj.protocol / $serverobj.user / $serverobj.folder&gt;&gt;$server]]|$serverobj.state|$status|(((
 &lt;div class="buttons"&gt;
   &lt;span class="buttonwrapper"&gt;
-    &lt;input type="submit" name="button-check-${serverobj.id}" $!disabled value="$msg.get('mailarchive.load.check.submit')"/&gt;
-    &lt;input type="submit" name="button-load-${serverobj.id}" $!disabled value="$msg.get('mailarchive.load.load.submit')"/&gt;
-    &lt;input type="submit" name="button-switch-${serverobj.id}" $!disabled value="$msg.get('mailarchive.load.switch.submit')"/&gt;
+    &lt;input type="submit" name="button-check-${serverobj.id}" $!disabled value="$services.localization.render('mailarchive.load.check.submit')"/&gt;
+    &lt;input type="submit" name="button-load-${serverobj.id}" $!disabled value="$services.localization.render('mailarchive.load.load.submit')"/&gt;
+    &lt;input type="submit" name="button-switch-${serverobj.id}" $!disabled value="$services.localization.render('mailarchive.load.switch.submit')"/&gt;
   &lt;/span&gt;
 &lt;/div&gt;
 )))
 #end
-|All Servers|/|$total|&lt;span class="buttonwrapper"&gt;&lt;input type="submit" name="button-check" value="$msg.get('mailarchive.load.check.submit')" $!disabled/&gt;&lt;input type="submit" name="button-load" value="$msg.get('mailarchive.load.load.submit')" $!disabled/&gt;&lt;/span&gt;
+|All Servers|/|$total|&lt;span class="buttonwrapper"&gt;&lt;input type="submit" name="button-check" value="$services.localization.render('mailarchive.load.check.submit')" $!disabled/&gt;&lt;input type="submit" name="button-load" value="$services.localization.render('mailarchive.load.load.submit')" $!disabled/&gt;&lt;/span&gt;
 
 = Automatic loading =
 
@@ -205,12 +203,12 @@ Go to [[Scheduler job page&gt;&gt;Scheduler.MailArchiveLoadingJob]] to activate 
 Scheduled job, once activated, will automatically load mails from servers in ACTIVE state, using the parameters below:&lt;br/&gt;&lt;br/&gt;
 
 |=Parameter|=Value
-|Max number of Mails to load|$ssession.maxMailsNb
-|$msg.get('mailarchive.load.debugMode.label')|$ssession.debugMode
-|$msg.get('mailarchive.load.simulate.label')|$ssession.simulationMode
-|$msg.get('mailarchive.load.loadAll.label')|$ssession.loadAll
-|$msg.get('mailarchive.load.recentMails.label')|$ssession.recentMails
-|$msg.get('mailarchive.load.withDelete.label')|$ssession.withDelete
+|$services.localization.render('mailarchive.loadingSession.fields.maxMailsNb.label')|$ssession.maxMailsNb
+|$services.localization.render('mailarchive.loadingSession.fields.debugMode.label')|$ssession.debugMode
+|$services.localization.render('mailarchive.loadingSession.fields.simulationMode.label')|$ssession.simulationMode
+|$services.localization.render('mailarchive.loadingSession.fields.loadAll.label')|$ssession.loadAll
+|$services.localization.render('mailarchive.loadingSession.fields.recentMails.label')|$ssession.recentMails
+|$services.localization.render('mailarchive.loadingSession.fields.withDelete.label')|$ssession.withDelete
 
 &lt;br/&gt;&lt;br/&gt;
 

@@ -10,16 +10,16 @@
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353417891000</creationDate>
-<date>1353488702000</date>
-<contentUpdateDate>1353488702000</contentUpdateDate>
-<version>1.2</version>
+<creationDate>1353930106000</creationDate>
+<date>1354528934000</date>
+<contentUpdateDate>1354528934000</contentUpdateDate>
+<version>1.1</version>
 <title>$msg.get("xe.livetable.resultsmacros")</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>add replacement of 'status' column by icon</comment>
-<minorEdit>true</minorEdit>
+<comment>Imported from XAR</comment>
+<minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
 <object>
@@ -277,6 +277,7 @@
         #set($deleteUrl = $itemDoc.getURL('delete'))
         #set($renameUrl = $itemDoc.getURL('view', 'xpage=rename&amp;step=1'))
         #set($rightsUrl = $itemDoc.getURL('edit', 'editor=rights'))
+        #set($checkUrl = $itemDoc.getURL('view', 'submit=submit'))
         "doc_name" : "$escapetool.javascript($itemDoc.name)",
         "doc_fullname" : "$escapetool.javascript($fullname)",
         "doc_space" : "$escapetool.javascript(${itemDoc.space})",
@@ -289,11 +290,13 @@
         "doc_hasadmin"  : $xwiki.hasAdminRights(),
         "doc_hasedit" : $xwiki.hasAccessLevel('edit', $context.user, $fullname),
         "doc_hasdelete" : $xwiki.hasAccessLevel('delete', $context.user, $fullname),
+        "doc_hascheck" : $xwiki.hasAccessLevel('edit', $context.user, $fullname),
         "doc_edit_url" : "$escapetool.javascript($editUrl)",
         "doc_copy_url"   : "$escapetool.javascript($copyUrl)",
         "doc_delete_url" : "$escapetool.javascript($deleteUrl)",
         "doc_rename_url" : "$escapetool.javascript($renameUrl)",
         "doc_rights_url" : "$escapetool.javascript($rightsUrl)",
+        "doc_check_url"  : "$escapetool.javascript($checkUrl)",
         "doc_author_url" : "$escapetool.javascript($xwiki.getURL($itemDoc.author))",
         "doc_date" : "$escapetool.javascript(${xwiki.formatDate($itemDoc.date)})",
         "doc_title" : "$escapetool.javascript($escapetool.xml(${itemDoc.plainTitle}))",

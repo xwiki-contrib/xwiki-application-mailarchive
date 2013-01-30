@@ -92,7 +92,31 @@
 <scope>GLOBAL</scope>
 </property>
 </object>
-<content># XObject : mail
+<content># ---- Pages ----
+
+# Home page
+mailarchive.home.title=Mailing-lists Archive Application
+mailarchive.home.abstract=This application aims at storing and showing mailing-lists archives. To know what mailing-lists are available, and what types of mails are configured, please check the [[legend&gt;&gt;MailArchive.Legend]].
+
+# Administration page
+mailarchive.admin.title=Mail Archive Administration
+
+# Loading page
+mailarchive.load.title=Mailing-lists emails loading
+mailarchive.load.abstract=This page will allow you to manually load emails from your configured mailbox(es), and to assign parameters to be used for the loading job.
+mailarchive.load.load.submit=Load
+mailarchive.load.check.submit=Check
+mailarchive.load.switch.submit=Switch State
+mailarchive.load.table.headers.server=Server
+mailarchive.load.table.headers.state=State
+mailarchive.load.table.headers.available=Nb Mails available
+mailarchive.load.table.headers.actions=Actions
+mailarchive.load.schedule.setParameters.submit=Use parameters from top of this page for scheduled job
+
+
+# ---- Objects and Livetables ----
+
+# (mails) XClass MailArchiveCode.MailClass
 MailArchiveCode.MailClass_topicsubject=Topic
 MailArchiveCode.MailClass_topicid=Topic ID
 MailArchiveCode.MailClass_messagesubject=Subject
@@ -108,7 +132,7 @@ MailArchiveCode.MailClass_bodyhtml=HTML Body
 MailArchiveCode.MailClass_attachedMails=Attached Mails
 MailArchiveCode.MailClass_type=Mail Type
 MailArchiveCode.MailClass_sensitivity=Sensitivity
-# XObject : topic
+# (topics) XClass MailArchiveCode.MailTopicClass
 MailArchiveCode.MailTopicClass_topicid=Topic ID
 MailArchiveCode.MailTopicClass_subject=Subject
 MailArchiveCode.MailTopicClass_startdate=Created
@@ -117,35 +141,69 @@ MailArchiveCode.MailTopicClass_status=Status
 MailArchiveCode.MailTopicClass_author=Author
 MailArchiveCode.MailTopicClass_sensitivity=Sensitivity
 MailArchiveCode.MailTopicClass_type=Topic Type
+# (lists) XClass MailArchiveCode.ListsSettingsClass
+## XObject
+MailArchiveCode.ListsSettingsClass_displayname=Display name
+MailArchiveCode.ListsSettingsClass_pattern=Pattern to match from recipients
+MailArchiveCode.ListsSettingsClass_Tag=Tag
+MailArchiveCode.ListsSettingsClass_color=Color
+MailArchiveCode.ListsSettingsClass_listId=List ID
+## Sheet Form
+mailarchive.lists.fields.displayname.label=$msg.get('MailArchiveCode.ListsSettingsClass_displayname')
+mailarchive.lists.fields.pattern.label=$msg.get('MailArchiveCode.ListsSettingsClass_pattern')
+mailarchive.lists.fields.Tag.label=$msg.get('MailArchiveCode.ListsSettingsClass_Tag')
+mailarchive.lists.fields.color.label=$msg.get('MailArchiveCode.ListsSettingsClass_color')
+mailarchive.lists.fields.color.hint=Enter the value as for {0}CSS color properties{1}.
+mailarchive.lists.fields.listId.label=$msg.get('MailArchiveCode.ListsSettingsClass_listId')
+mailarchive.lists.fields.listId.hint=Optionnally referring to the List-ID identifying this list, will allow replying, subscribing and unsubscribing from this list.
+# (types) XClass MailArchiveCode.TypesSettingsClass
+## XObject
+MailArchiveCode.TypesSettingsClass_id=ID
+MailArchiveCode.TypesSettingsClass_name=Display name
+MailArchiveCode.TypesSettingsClass_icon=Icon
+MailArchiveCode.TypesSettingsClass_matchersComposition=Matchers relation-ship
+MailArchiveCode.TypesSettingsClass_matchersComposition_and=AND
+MailArchiveCode.TypesSettingsClass_matchersComposition_or=OR
+## Sheet Form
+mailarchive.types.fields.id.label=$msg.get('MailArchiveCode.TypesSettingsClass_id')
+mailarchive.types.fields.name.label=$msg.get('MailArchiveCode.TypesSettingsClass_name')
+mailarchive.types.fields.icon.label=$msg.get('MailArchiveCode.TypesSettingsClass_icon')
+mailarchive.types.fields.icon.hint=Enter the name of an icon from {0}XWiki Icon Set{1}.
+mailarchive.types.fields.matchersComposition.label==$msg.get('MailArchiveCode.TypesSettingsClass_matchersComposition')
+mailarchive.types.fields.matchersComposition.hint=Choose the condition that applies between defined matchers (only valid of course if more than 1 matcher is defined).
+# (matchers) XClass MailArchiveCode.MailMatcherClass
+## XObject
+MailArchiveCode.MailMatcherClass_fields=Fields
+MailArchiveCode.MailMatcherClass_expression=Expression
+MailArchiveCode.MailMatcherClass_isAdvanced=Advanced mode
+MailArchiveCode.MailMatcherClass_isIgnoreCase=Ignore case
+MailArchiveCode.MailMatcherClass_isMultiLine=Match multiple lines
+## Sheet Form
+mailarchive.matchers.fields.fields.label=$msg.get('MailArchiveCode.MailMatcherClass_fields')
+mailarchive.matchers.fields.expression.label=$msg.get('MailArchiveCode.MailMatcherClass_expression')
+mailarchive.matchers.fields.expression.hint=A pattern to match against selected fields.
+mailarchive.matchers.fields.isAdvanced.label=$msg.get('MailArchiveCode.MailMatcherClass_isAdvanced')
+mailarchive.matchers.fields.isAdvanced.hint=Toggles matching mode, between 'advanced' ('expression' is a regular expression) and 'normal' ('expression' must be contained in selected field(s)).
+mailarchive.matchers.fields.isIgnoreCase.label=$msg.get('MailArchiveCode.MailMatcherClass_isIgnoreCase')
+mailarchive.matchers.fields.isMultiLine.label=$msg.get('MailArchiveCode.MailMatcherClass_isMultiLine')
+# (loading session) XClass MailArchiveCode.LoadingSessionClass
+## XObject
+MailArchiveCode.LoadingSessionClass_id=Session ID
+MailArchiveCode.LoadingSessionClass_maxMailsNb=Max number of mails to load in a session
+MailArchiveCode.LoadingSessionClass_withDelete=Delete mails after successful load
+MailArchiveCode.LoadingSessionClass_loadAll=Load all mails (including already read mails)
+MailArchiveCode.LoadingSessionClass_debugMode=Debug Mode
+MailArchiveCode.LoadingSessionClass_simulationMode=Simulate
+MailArchiveCode.LoadingSessionClass_recentMails=Focus on Recent mails
+## Sheet Form
+mailarchive.loadingSession.fields.maxMailsNb.label=$services.localization.get('MailArchiveCode.LoadingSessionClass_maxMailsNb')
+mailarchive.loadingSession.fields.debugMode.label=$services.localization.get('MailArchiveCode.LoadingSessionClass_debugMode')
+mailarchive.loadingSession.fields.simulationMode.label=$services.localization.get('MailArchiveCode.LoadingSessionClass_simulationMode')
+mailarchive.loadingSession.fields.loadAll.label=$services.localization.get('MailArchiveCode.LoadingSessionClass_loadAll')
+mailarchive.loadingSession.fields.recentMails.label=$services.localization.get('MailArchiveCode.LoadingSessionClass_recentMails')
+mailarchive.loadingSession.fields.withDelete.label=$services.localization.get('MailArchiveCode.LoadingSessionClass_withDelete')
+mailarchive.loadingSession.fields.maxMailsNb.hint=Enter -1 to load all mails - can take a very long time depending on number of emails.
 
-mailarchive_settings_title=Settings for the Mail Archive application
-mailarchive_home_title=Mailing-lists Archive Application
-mailarchive_home_description=This application aims at backuping the "DL GGS WW" and Communities mailing-lists, and allowing you to browse them by subject / mail, or find these topics by using the basic wiki search. Please find the list below - it's updated regularly, please come back later if you don't see a recent mail.
-mailarchive_loading_title=Mailing-lists eMail Loading
-mailarchive_loading_description=This page will allow you to load emails from your configured mailbox(es). Simulation will do everything except effectively saving mails and topics pages. Checking debug mode allows to set log level to DEBUG for this loading session.
-
-# Loading operations
-mailarchive.load.maxMailsNb.label=Max number of mails to load in a session
-mailarchive.load.maxMailsNb.hint=Enter -1 to load all mails - can be very slow
-mailarchive.load.debugMode.label=Debug Mode
-mailarchive.load.simulate.label=Simulate
-mailarchive.load.loadAll.label=Load all mails (including already read mails)
-mailarchive.load.recentMails.label=Focus on Recent mails
-mailarchive.load.withDelete.label=Delete mails after successful load
-mailarchive.load.load.submit=Load
-mailarchive.load.check.submit=Check
-mailarchive.load.switch.submit=Switch State
-mailarchive.load.table.headers.server=Server
-mailarchive.load.table.headers.state=State
-mailarchive.load.table.headers.available=Nb Mails available
-mailarchive.load.table.headers.actions=Actions
-mailarchive.load.schedule.setParameters.submit=Use parameters from top of this page for scheduled job
-
-mailarchive_loading_confirm=Confirm loading mails
-mailarchive_loading_confirm_withdelete=Confirm and delete loading mails
-mailarchive_loading_connect_failure=Failed to connect to mail server
-mailarchive_loading_failure=Failed to load emails. Check the debug information
-mailarchive_loading_success=Emails have been treated successfully. Already loaded emails have not been deleted.
 # Archive livetable column headers
 mailarchive.topics.table.headers.subject=Subject
 mailarchive.topics.table.headers.startdate=Created
@@ -155,47 +213,49 @@ mailarchive.topics.table.headers.author=Author
 mailarchive.topics.table.headers.emptyvalue=unknown
 mailarchive.topics.table.headers._ratings=Ratings
 # Servers 
-mailarchive.server.table.headers.id=ID
-mailarchive.server.table.headers.hostname=Host Name
-mailarchive.server.table.headers.protocol=Protocol
-mailarchive.server.table.headers.folder=Folder
-mailarchive.server.table.headers.user=Account
-mailarchive.server.table.headers.status=Status
-mailarchive.server.table.headers.state=State
-mailarchive.server.table.headers._actions=Actions
-mailarchive.server.connectionStatus.ok=Ok
-mailarchive.server.connectionStatus.-1=Authentication failed
-mailarchive.server.connectionStatus.-2=Connection error
-mailarchive.server.connectionStatus.-3=Illegal State
-mailarchive.server.connectionStatus.-4=Unexpected error
-mailarchive.server.connectionStatus.-5=Folder not found
-mailarchive.server.connectionStatus.-6=Unknown Host
-mailarchive.server.connectionStatus.-7=Unknown Error
-mailarchive.server.connectionStatus.-8=Invalid Configuration
-mailarchive.server.connectionStatus.description.ok=Successfully connected, there are {0} unread messages on this server / folder.
-mailarchive.server.connectionStatus.description.-1=Authentication failed, check your account settings, or need for a specific certificate for Javamail.
-mailarchive.server.connectionStatus.description.-2=Could not connect to this server, check logs for more details.
-mailarchive.server.connectionStatus.description.-3=Illegal state, maybe a previous connection was not properly closed.
-mailarchive.server.connectionStatus.description.-4=Unexpected exception occurred, check logs for more details.
-mailarchive.server.connectionStatus.description.-5=Folder was not found, check it exists and is correctly spelled.
-mailarchive.server.connectionStatus.description.-6=Unknown host : check host name is correctly spelled, and that this host is accessible from this server.
-mailarchive.server.connectionStatus.description.-7=An unknown error occurred, check logs for more details.
-mailarchive.server.connectionStatus.description.-8=Invalid Configuration
+mailarchive.servers.table.headers.id=ID
+mailarchive.servers.table.headers.hostname=Host Name
+mailarchive.servers.table.headers.protocol=Protocol
+mailarchive.servers.table.headers.folder=Folder
+mailarchive.servers.table.headers.user=Account
+mailarchive.servers.table.headers.status=Status
+mailarchive.servers.table.headers.state=State
+mailarchive.servers.table.headers._actions=Actions
+mailarchive.servers.table.headers.emptyvalue=n/a
+mailarchive.servers.connectionStatus.ok=Ok
+mailarchive.servers.connectionStatus.-1=Authentication failed
+mailarchive.servers.connectionStatus.-2=Connection error
+mailarchive.servers.connectionStatus.-3=Illegal State
+mailarchive.servers.connectionStatus.-4=Unexpected error
+mailarchive.servers.connectionStatus.-5=Folder not found
+mailarchive.servers.connectionStatus.-6=Unknown Host
+mailarchive.servers.connectionStatus.-7=Unknown Error
+mailarchive.servers.connectionStatus.-8=Invalid Configuration
+mailarchive.servers.connectionStatus.description.ok=Successfully connected, there are {0} unread messages on this server / folder.
+mailarchive.servers.connectionStatus.description.-1=Authentication failed, check your account settings, or need for a specific certificate for Javamail.
+mailarchive.servers.connectionStatus.description.-2=Could not connect to this server, check logs for more details.
+mailarchive.servers.connectionStatus.description.-3=Illegal state, maybe a previous connection was not properly closed.
+mailarchive.servers.connectionStatus.description.-4=Unexpected exception occurred, check logs for more details.
+mailarchive.servers.connectionStatus.description.-5=Folder was not found, check it exists and is correctly spelled.
+mailarchive.servers.connectionStatus.description.-6=Unknown host : check host name is correctly spelled, and that this host is accessible from this server.
+mailarchive.servers.connectionStatus.description.-7=An unknown error occurred, check logs for more details.
+mailarchive.servers.connectionStatus.description.-8=Invalid Configuration
 # Lists
-mailarchive.list.table.headers.displayName=Display Name
-mailarchive.list.table.headers.pattern=Pattern
-mailarchive.list.table.headers.Tag=Tag
-mailarchive.list.table.headers.color=Colour
-mailarchive.list.table.headers.listId=List-ID
-mailarchive.list.table.headers._actions=Actions
+mailarchive.lists.table.headers.displayname=Display Name
+mailarchive.lists.table.headers.pattern=Pattern
+mailarchive.lists.table.headers.Tag=Tag
+mailarchive.lists.table.headers.color=Colour
+mailarchive.lists.table.headers.listId=List-ID
+mailarchive.lists.table.headers._actions=Actions
+mailarchive.lists.table.headers.emptyvalue=n/a
 # Types
-mailarchive.type.table.headers.displayName=Display Name
-mailarchive.type.table.headers.name=Name
-mailarchive.type.table.headers.patternsList=Pattern(s)
-mailarchive.type.table.headers.icon=Icon
-mailarchive.type.table.headers._actions=Actions
+mailarchive.types.table.headers.name=Display Name
+mailarchive.types.table.headers.id=ID
+mailarchive.types.table.headers.icon=Icon
+mailarchive.types.table.headers._actions=Actions
+mailarchive.types.table.headers.emptyvalue=n/a
 
-## DEPRECATED SECTION ##
+## ---- DEPRECATED SECTION ---- ##
 #@deprecated mailarchive.topics.table.headers.subject
 xe.mailarchive.subject=Subject
 #@deprecated mailarchive.topics.table.headers.startdate
@@ -211,34 +271,34 @@ xe.mailarchive.emptyvalue=unknown
 #@deprecated mailarchive.topics.table.headers._ratings
 xe.mailarchive._ratings=Ratings
 
-#@deprecated mailarchive.server.connectionStatus.ok
+#@deprecated mailarchive.servers.connectionStatus.ok
 mailarchive_server_states.ok=Ok
-#@deprecated mailarchive.server.connectionStatus.-1
+#@deprecated mailarchive.servers.connectionStatus.-1
 mailarchive_server_states.-1=Authentication failed
-#@deprecated mailarchive.server.connectionStatus.-2
+#@deprecated mailarchive.servers.connectionStatus.-2
 mailarchive_server_states.-2=Connection error
-#@deprecated mailarchive.server.connectionStatus.-3
+#@deprecated mailarchive.servers.connectionStatus.-3
 mailarchive_server_states.-3=Illegal State
-#@deprecated mailarchive.server.connectionStatus.-4
+#@deprecated mailarchive.servers.connectionStatus.-4
 mailarchive_server_states.-4=Unexpected error
-#@deprecated mailarchive.server.connectionStatus.-5
+#@deprecated mailarchive.servers.connectionStatus.-5
 mailarchive_server_states.-5=Folder not found
-#@deprecated mailarchive.server.connectionStatus.-6
+#@deprecated mailarchive.servers.connectionStatus.-6
 mailarchive_server_states.-6=Unknown Host
-#@deprecated mailarchive.server.connectionStatus.-7
+#@deprecated mailarchive.servers.connectionStatus.-7
 mailarchive_server_states.-7=Unknown Error
-#@deprecated mailarchive.server.connectionStatus.-8
+#@deprecated mailarchive.servers.connectionStatus.-8
 mailarchive_server_states.-8=Invalid Configuration
 
-#@deprecated mailarchive.load.debugMode.label
+#@deprecated mailarchive.loadingSession.fields.debugMode.label
 mailarchive_loading_action_debug=Debug Mode
-#@deprecated mailarchive.load.simulate.label
+#@deprecated mailarchive.loadingSession.fields.simulate.label
 mailarchive_loading_action_simulate=Simulate
-#@deprecated mailarchive.load.loadAll.label
+#@deprecated mailarchive.loadingSession.fields.loadAll.label
 mailarchive_loading_action_readflag=Load all mails (including already read mails)
-#@deprecated mailarchive.load.recentMails.label
+#@deprecated mailarchive.loadingSession.fields.recentMails.label
 mailarchive_loading_action_recentflag=Focus on Recent mails
-#@deprecated mailarchive.load.withDelete.label
+#@deprecated mailarchive.loadingSession.fields.withDelete.label
 mailarchive_loading_action_delete=Delete mails after successful load
 
 #@deprecated mailarchive.load.load.submit
@@ -246,4 +306,15 @@ mailarchive_loading_action_load=Load
 #@deprecated mailarchive.load.check.submit
 mailarchive_loading_action_check=Check
 #@deprecated mailarchive.load.switch.submit
-mailarchive_loading_action_switch=Switch State</content></xwikidoc>
+mailarchive_loading_action_switch=Switch State
+
+#@deprecated mailarchive.admin.title
+mailarchive_settings_title=Settings for the Mail Archive application
+#@deprecated mailarchive.home.title
+mailarchive_home_title=Mailing-lists Archive Application
+#@deprecated mailarchive.home.abstract
+mailarchive_home_description=This application aims at mirroring mailing-lists, and allowing you to browse them by subject / mail, or find these topics by using the basic wiki search. Please find the list below - it's updated regularly, please come back later if you don't see a recent mail.
+#@deprecated mailarchive.load.title
+mailarchive_loading_title=Mailing-lists eMail Loading
+#@deprecated mailarchive.load.abstract
+mailarchive_loading_description=This page will allow you to load emails from your configured mailbox(es). Simulation will do everything except effectively saving mails and topics pages. Checking debug mode allows to set log level to DEBUG for this loading session.</content></xwikidoc>

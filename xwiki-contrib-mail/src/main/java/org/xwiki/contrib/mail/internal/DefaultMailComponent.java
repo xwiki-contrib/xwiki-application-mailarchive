@@ -473,54 +473,6 @@ public class DefaultMailComponent implements IMailComponent, Initializable
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mail.IMailComponent#createTopicPage(org.xwiki.contrib.mail.MailItem)
-     */
-    @Override
-    public String createTopicPage(MailItem m)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mail.IMailComponent#updateTopicPage(java.lang.String, org.xwiki.contrib.mail.MailItem)
-     */
-    @Override
-    public boolean updateTopicPage(String topicId, MailItem m)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mail.IMailComponent#createMailPage(org.xwiki.contrib.mail.MailItem)
-     */
-    @Override
-    public String createMailPage(MailItem m)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mail.IMailComponent#updateMailPage(org.xwiki.contrib.mail.MailItem)
-     */
-    @Override
-    public boolean updateMailPage(MailItem m)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
      * @see org.xwiki.contrib.mail.IMailComponent#parseAddressHeader(java.lang.String)
      */
     @Override

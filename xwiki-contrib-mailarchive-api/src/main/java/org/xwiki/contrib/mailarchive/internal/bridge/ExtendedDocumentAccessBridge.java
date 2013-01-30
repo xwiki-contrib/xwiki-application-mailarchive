@@ -19,11 +19,9 @@
  */
 package org.xwiki.contrib.mailarchive.internal.bridge;
 
-import java.util.HashMap;
-
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
@@ -35,6 +33,7 @@ import org.xwiki.context.ExecutionContext;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.api.PropertyClass;
 import com.xpn.xwiki.doc.DefaultDocumentAccessBridge;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
@@ -155,31 +154,90 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
         return getIntValue(docname, classname, fieldname) != 0;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#createDocObject(java.lang.String,
-     *      java.lang.String, java.lang.String, java.util.HashMap, java.lang.String)
-     */
-    @Override
-    public boolean createDocObject(String docname, String title, String classname, HashMap<String, Object> fields,
-        String user)
+    public boolean createOrUpdate(final DocumentEntity document)
     {
-        // TODO Auto-generated method stub
         return false;
+    }
+
+    public ObjectEntity getObject(final String xdocument, final String xclass)
+    {
+        return null;
     }
 
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#updateDocObject(java.lang.String,
-     *      java.lang.String, java.lang.String, java.util.HashMap, java.lang.String)
+     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#getObjectEntity(java.lang.String,
+     *      java.lang.String)
      */
     @Override
-    public boolean updateDocObject(String docname, String title, String classname, HashMap<String, Object> fields,
-        String user)
+    public ObjectEntity getObjectEntity(String xdocument, String xclass)
+    {
+        ObjectEntity objectEntity = null;
+        try {
+            XWikiDocument document = xwiki.getDocument(xdocument, context);
+            if (document != null && exists(xdocument)) {
+                BaseObject baseObject = document.getObject(xclass);
+                if (baseObject != null) {
+                    objectEntity = new ObjectEntity();
+                    objectEntity.setXclass(xclass);
+                    objectEntity.setXdoc(xdocument);
+                    for (String propname : baseObject.getPropertyList()) {
+
+                        PropertyClass propclass = (PropertyClass) baseObject.getProperties()[0];
+                        String proptype = propclass.getType();
+                        if ("StringProperty".equals(proptype)) {
+                            objectEntity.setFieldValue(propname, baseObject.getStringValue(propname));
+                        }
+                    }
+
+                } else {
+                    logger.info("Object does not exist: " + xclass + " from " + xdocument);
+                }
+            } else {
+                logger.info("Document does not exist: " + xdocument);
+            }
+        } catch (XWikiException e) {
+            logger.error("Could not retrieve Object", e);
+        }
+        return objectEntity;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#getDocumentEntity(java.lang.String)
+     */
+    @Override
+    public DocumentEntity getDocumentEntity(String xdocument)
     {
         // TODO Auto-generated method stub
-        return false;
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#getDocumentEntity(java.lang.String,
+     *      java.lang.String)
+     */
+    @Override
+    public DocumentEntity getDocumentEntity(String space, String page)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#getDocumentEntity(java.lang.String,
+     *      java.lang.String, java.lang.String)
+     */
+    @Override
+    public DocumentEntity getDocumentEntity(String wiki, String space, String page)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

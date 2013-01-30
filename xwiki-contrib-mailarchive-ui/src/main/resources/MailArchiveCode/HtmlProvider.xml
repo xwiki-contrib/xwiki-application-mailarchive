@@ -10,15 +10,15 @@
 <author>XWiki.Admin</author>
 <customClass></customClass>
 <contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353417890000</creationDate>
-<date>1353417890000</date>
-<contentUpdateDate>1353417890000</contentUpdateDate>
+<creationDate>1353930106000</creationDate>
+<date>1354528935000</date>
+<contentUpdateDate>1354528935000</contentUpdateDate>
 <version>1.1</version>
 <title>Provides HTML to be displayed in mail messages</title>
 <template></template>
 <defaultTemplate></defaultTemplate>
 <validationScript></validationScript>
-<comment>Import</comment>
+<comment>Imported from XAR</comment>
 <minorEdit>false</minorEdit>
 <syntaxId>xwiki/2.0</syntaxId>
 <hidden>false</hidden>
@@ -71,9 +71,10 @@ if (cut != null &amp;&amp; cut != "") {
 def html = null
 def body = null
 
-def text = services.mailarchive.getDecodedMailText(page, cut)
+def decoded= services.mailarchive.getDecodedMailText(page, cut)
+def text=decoded.text
 
-if (text.startsWith("&lt;html") || text.startsWith("&lt;meta")) {
+if (decoded.isHtml()) {
   println("{{html clean='false' wiki='false'}}" + text + "{{/html}}")
 } else {
   println("{{code language='none'}}" + text + "{{/code}}")

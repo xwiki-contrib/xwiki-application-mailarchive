@@ -19,8 +19,6 @@
  */
 package org.xwiki.contrib.mailarchive.internal.bridge;
 
-import java.util.HashMap;
-
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Role;
 
@@ -96,28 +94,13 @@ public interface IExtendedDocumentAccessBridge extends DocumentAccessBridge
      */
     boolean getBooleanValue(String docname, String classname, String fieldname) throws XWikiException;
 
-    /**
-     * Create a document and associated object given document name, type of object, and values to store in object.
-     * 
-     * @param docname The document name
-     * @param title The title of the document
-     * @param classname The type of object to create
-     * @param fields The fields to set in object given their name (key) and value.
-     * @param user The user that should own the document
-     * @return false if document could not be created for any reason
-     */
-    boolean createDocObject(String docname, String title, String classname, HashMap<String, Object> fields, String user);
+    boolean createOrUpdate(DocumentEntity document);
 
-    /**
-     * Updates a document.
-     * 
-     * @param docname
-     * @param title
-     * @param classname
-     * @param fields
-     * @param user
-     * @return false if document could not be updated because it does not exist
-     */
-    boolean updateDocObject(String docname, String title, String classname, HashMap<String, Object> fields, String user);
+    ObjectEntity getObjectEntity(final String xdocument, final String xclass);
 
+    DocumentEntity getDocumentEntity(final String xdocument);
+
+    DocumentEntity getDocumentEntity(final String space, final String page);
+
+    DocumentEntity getDocumentEntity(final String wiki, final String space, final String page);
 }

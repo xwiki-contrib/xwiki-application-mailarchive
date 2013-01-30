@@ -56,7 +56,7 @@ Connection failed, tested on $obj.get('lasttest')
 
 #set($class = $obj.xWikiClass)
 {{html wiki="true"}}
-&lt;form class="xform"&gt;
+&lt;form action="." class="xform" name="form_server"&gt;
 #foreach($prop in $class.properties)
   #if("$prop.name" != "status" &amp;&amp; "$prop.name" != "lasttest") 
   &lt;dl&gt;
@@ -71,11 +71,11 @@ Connection failed, tested on $obj.get('lasttest')
 #if($request.get('submit'))
   #if ($nb &gt;= 0)
 
-{{info}}$msg.get('mailarchive.server.connectionStatus.description.ok', [$nb]){{/info}}
+{{info}}$msg.get('mailarchive.servers.connectionStatus.description.ok', [$nb]){{/info}}
 
   #else
 
-{{error}}$msg.get('mailarchive.server.connectionStatus.description.${nb}'){{/error}}
+{{error}}$msg.get("mailarchive.servers.connectionStatus.description.${nb}"){{/error}}
 
   #end
   #if($nb &lt; 0)

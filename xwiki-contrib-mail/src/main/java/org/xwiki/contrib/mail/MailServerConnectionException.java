@@ -106,4 +106,9 @@ public class MailServerConnectionException extends Exception
         return "";
     }
 
+    public ConnectionErrors getCode()
+    {
+        return this.code;
+    }
+
 }

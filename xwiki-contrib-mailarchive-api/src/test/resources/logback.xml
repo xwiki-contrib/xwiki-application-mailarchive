@@ -51,7 +51,7 @@
       <appender-ref ref="FILE" />
    </logger>
 
-  <logger name="org.xwiki" level="warn"/>
+  <logger name="org.xwiki" level="debug"/>
   <logger name="com.xpn.xwiki" level="info"/>
   <logger name="com.xpn.xwiki.store.migration" level="info"/>
   <logger name="com.xpn.xwiki.render.XWikiRadeoxRenderEngine" level="warn"/>
@@ -78,7 +78,7 @@
        Since the console output is captured and redirected by the servlet container in most cases,
        the logs will end up the container's logs, for example in catalina.out in Tomcat.
   -->
-  <root level="warn">
+  <root level="debug">
     <appender-ref ref="stdout"/>
   </root>
 </configuration>

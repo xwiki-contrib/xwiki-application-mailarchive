@@ -31,7 +31,7 @@
     <version>0.2-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-contrib-mailarchive-ui</artifactId>
-  <name>Mail Archive Application</name>
+  <name>XWiki - MailArchive UI Extension</name>
   <description>${project.name} - Navigation and administration of the Mail archive.</description>
   <packaging>xar</packaging>
   

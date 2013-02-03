@@ -28,9 +28,11 @@ import java.util.List;
  */
 public interface IType
 {
-    final String TYPE_MAIL = "mail";
+    final String BUILTIN_TYPE_MAIL = "mail";
 
-    final String TYPE_CALENDAR = "calendar";
+    final String BUILTIN_TYPE_ATTACHED_MAIL = "attachedMail";
+
+    final String BUILTIN_TYPE_CALENDAR = "calendar";
 
     String getId();
 

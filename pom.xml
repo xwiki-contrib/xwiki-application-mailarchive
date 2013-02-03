@@ -19,7 +19,7 @@
 	<parent>
 		<groupId>org.xwiki.commons</groupId>
 		<artifactId>xwiki-commons-pom</artifactId>
-		<version>4.3</version>
+		<version>4.4.1</version>
 	</parent>
 	<groupId>org.xwiki.contrib.mailarchive</groupId>
 	<artifactId>xwiki-contrib-mailarchive</artifactId>
@@ -105,11 +105,19 @@
 				<version>${project.version}</version>
 				<scope>runtime</scope>
 			</dependency>
-			
+
 			<dependency>
-					<groupId>javax.jcr</groupId>
-					<artifactId>jcr</artifactId>
-					<version>1.0</version>
+				<groupId>javax.jcr</groupId>
+				<artifactId>jcr</artifactId>
+				<version>1.0</version>
+			</dependency>
+
+			<!-- for components tests -->
+			<dependency>
+				<groupId>org.xwiki.commons</groupId>
+				<artifactId>xwiki-commons-test-component</artifactId>
+				<version>${commons.version}</version>
+				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -136,15 +144,16 @@
 				<repository>
 					<id>nexus-local</id>
 					<name>Local Nexus Repository</name>
-					
+
 					<url>http://localhost:8081/nexus/content/repositories/releases</url>
 				</repository>
-			<snapshotRepository>
+				<snapshotRepository>
 					<id>nexus-local-snapshot</id>
 					<name>Local Nexus Repository</name>
-					
+
 					<url>http://localhost:8081/nexus/content/repositories/snapshots</url>
-				</snapshotRepository></distributionManagement>
+				</snapshotRepository>
+			</distributionManagement>
 		</profile>
 	</profiles>
 

@@ -92,7 +92,6 @@ import org.xwiki.rendering.parser.StreamParser;
 import org.xwiki.rendering.renderer.PrintRendererFactory;
 import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
 import org.xwiki.rendering.renderer.printer.WikiPrinter;
-import org.xwiki.rendering.syntax.Syntax;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -151,6 +150,10 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     @Inject
     @Named("xhtml/1.0")
     private StreamParser htmlStreamParser;
+
+    @Inject
+    @Named("plain/1.0")
+    private PrintRendererFactory printRendererFactory;
 
     /**
      * The component manager. We need it because we have to access some components dynamically based on the input
@@ -365,7 +368,9 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                                     final String id =
                                         JavamailMessageParser.extractSingleHeader(message, "Message-ID").replaceAll(
                                             "[^a-zA-Z0-9-_\\.]", "_");
-                                    FileOutputStream fo = new FileOutputStream(id + ".eml");
+                                    final File emlFile =
+                                        new File(environment.getPermanentDirectory(), "mailarchive/dump/" + id + ".eml");
+                                    final FileOutputStream fo = new FileOutputStream(emlFile);
                                     message.writeTo(fo);
                                     fo.flush();
                                     fo.close();
@@ -507,7 +512,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             // Types
             List<IType> foundTypes = mailutils.extractTypes(config.getMailTypes().values(), m);
             logger.debug("Extracted types " + foundTypes);
-            foundTypes.remove(getType(IType.TYPE_MAIL));
+            foundTypes.remove(getType(IType.BUILTIN_TYPE_MAIL));
             if (foundTypes.size() > 0) {
                 for (IType foundType : foundTypes) {
                     logger.debug("Adding extracted type " + foundType);
@@ -515,7 +520,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 }
             } else {
                 logger.debug("No specific type found for this mail");
-                m.addType(getType(IType.TYPE_MAIL).getId());
+                m.addType(getType(IType.BUILTIN_TYPE_MAIL).getId());
             }
 
             // User
@@ -824,8 +829,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         String content = "";
         String htmlcontent = "";
         String zippedhtmlcontent = "";
-        List<Message> attachedMails = new ArrayList<Message>();
-        List<String> attachedMailsPages = new ArrayList<String>();
+
         // a map to store attachment filename = contentId for replacements in HTML retrieved from mails
         HashMap<String, String> attachmentsMap = new HashMap<String, String>();
         ArrayList<MimeBodyPart> attbodyparts = new ArrayList<MimeBodyPart>();
@@ -849,21 +853,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         logger.debug("Fetching mail content");
         MailContent mailContent = mailManager.parseContent(m.getOriginalMessage());
 
-        attachedMails = mailContent.getAttachedMails();
-        if (attachedMails.size() > 0) {
-            logger.debug("Loading attached mails ...");
-            for (Message message : attachedMails) {
-                try {
-                    LoadingSessionResult result = loadMail(message, create, true, msgDoc.getFullName());
-                    if (result.isSuccess()) {
-                        attachedMailsPages.add(result.getCreatedMailDocumentName());
-                    }
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
+        List<Message> attachedMails = mailContent.getAttachedMails();
+        final List<String> attachedMailsPages = loadAttachedMails(attachedMails, msgDoc, create);
 
         content = mailContent.getText();
         htmlcontent = mailContent.getHtml();
@@ -892,10 +883,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             try {
 
                 WikiPrinter printer = new DefaultWikiPrinter();
-                // FIXME: we don't really need to lookup a PrintRendererFactory component each time - could be done
-                // during initialize() ?
-                PrintRendererFactory printRendererFactory =
-                    componentManager.getInstance(PrintRendererFactory.class, Syntax.PLAIN_1_0.toIdString());
                 htmlStreamParser.parse(new StringReader(htmlcontent), printRendererFactory.createRenderer(printer));
 
                 converted = printer.toString();
@@ -942,7 +929,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             // The MailItem could be stored as usual with specific type, and an additional object CalendarEvent could
             // store the calendary information
             // with a link to the related email(s) (for cancelled, update meeting,...)
-            m.addType("Attached Mail");
+            m.addType(IType.BUILTIN_TYPE_ATTACHED_MAIL);
         }
         if (m.getTypes().size() > 0) {
             String types = StringUtils.join(m.getTypes().toArray(new String[] {}), ',');
@@ -978,6 +965,30 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         addAttachmentsFromMail(msgDoc, attbodyparts, attachmentsMap);
 
         return msgDoc;
+    }
+
+    private List<String> loadAttachedMails(List<Message> attachedMails, XWikiDocument msgDoc, boolean create)
+    {
+        final List<String> attachedMailsPages = new ArrayList<String>();
+        if (attachedMails.size() > 0) {
+            logger.debug("Loading attached mails ...");
+            for (Message message : attachedMails) {
+                try {
+                    LoadingSessionResult result = loadMail(message, create, true, msgDoc.getFullName());
+                    if (result.isSuccess()) {
+                        attachedMailsPages.add(result.getCreatedMailDocumentName());
+                    } else {
+                        logger.warn("Could not create attached mail " + message.getSubject());
+                    }
+                } catch (Exception e) {
+                    logger.warn("Could not create attached mail because of " + e.getMessage());
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Could not create attached mail ", e);
+                    }
+                }
+            }
+        }
+        return attachedMailsPages;
     }
 
     /*

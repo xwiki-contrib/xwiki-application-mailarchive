@@ -21,10 +21,13 @@ package org.xwiki.contrib.mailarchive.internal;
 
 import org.jmock.Expectations;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.context.Execution;
 import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.logging.LoggerManager;
+import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -33,8 +36,14 @@ import com.xpn.xwiki.test.AbstractBridgedComponentTestCase;
 /**
  * Tests for the {@link IMailArchive} component.
  */
+@ComponentList({DefaultMailArchive.class})
 public class DefaultMailArchiveTest extends AbstractBridgedComponentTestCase
 {
+
+    @Rule
+    public final MockitoComponentMockingRule<IMailArchive> mocker = new MockitoComponentMockingRule<IMailArchive>(
+        DefaultMailArchive.class);
+
     private DefaultMailArchive ma;
 
     private XWiki mockXWiki;
@@ -47,13 +56,12 @@ public class DefaultMailArchiveTest extends AbstractBridgedComponentTestCase
     {
         super.setUp();
 
-        // setupEnvironment();
-
         execution = getComponentManager().getInstance(Execution.class);
         System.out.println("Execution tu " + execution.hashCode());
 
         this.mockXWiki = getMockery().mock(XWiki.class);
 
+        // Mocking for initialize() part...
         final XWikiDocument mockPrefsPage = getMockery().mock(XWikiDocument.class);
         getMockery().checking(new Expectations()
         {

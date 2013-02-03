@@ -18,7 +18,7 @@
 	<parent>
 		<groupId>org.xwiki.contrib.mailarchive</groupId>
 		<artifactId>xwiki-contrib-mailarchive</artifactId>
-		<version>0.2</version>
+		<version>0.3-SNAPSHOT</version>
 	</parent>
 	<artifactId>mstor</artifactId>
 	<name>XWiki - mstor library TEMPORARY transitivity customization</name>

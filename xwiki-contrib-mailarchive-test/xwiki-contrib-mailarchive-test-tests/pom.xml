@@ -17,9 +17,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-	<groupId>org.xwiki.contrib.mailarchive</groupId>
+    <groupId>org.xwiki.contrib.mailarchive</groupId>
     <artifactId>xwiki-contrib-mailarchive-test</artifactId>
-    <version>0.3-SNAPSHOT</version>    
+    <version>0.3-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-contrib-mailarchive-test-tests</artifactId>
   <name>XWiki Contrib - Mail Archive Application - Tests - Functional Tests</name>
@@ -33,90 +33,76 @@
       <version>0.3-SNAPSHOT</version>
       <type>xar</type>
     </dependency>
-	<!-- Test dependencies -->
-	<dependency>
+    <!-- we need velocity macro -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rendering-macro-velocity</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
+    <!-- we need html macro -->
+    <dependency>
+      <groupId>org.xwiki.rendering</groupId>
+      <artifactId>xwiki-rendering-macro-html</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
+    <!-- we need wiki macros -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rendering-wikimacro-api</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rendering-wikimacro-store</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
+    <!-- we need include macro -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rendering-macro-include</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
+    <!-- we need code macro -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-rendering-macro-code</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
+    <!-- we need box macro -->
+    <dependency>
+      <groupId>org.xwiki.rendering</groupId>
+      <artifactId>xwiki-rendering-macro-box</artifactId>
+      <version>${platform.version}</version>
+    </dependency>
+    <!-- we need message macros (for warning/info/error) -->
+    <dependency>
+      <groupId>org.xwiki.rendering</groupId>
+      <artifactId>xwiki-rendering-macro-message</artifactId>
+      <version>${platform.version}</version>
+    </dependency>    
+    <!-- we need livetables -->
+    <!-- dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-livetable-ui</artifactId>
+      <version>${platform.version}</version>
+      <type>xar</type>
+    </dependency-->
+    <!-- Test dependencies -->
+    <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-test</artifactId>
       <version>${platform.version}</version>
       <scope>test</scope>
     </dependency>
-	<dependency>
-		<groupId>org.xwiki.contrib.mailarchive</groupId>
-		<artifactId>xwiki-contrib-mailarchive-test-pageobjects</artifactId>
-		<version>0.3-SNAPSHOT</version>
-        <scope>test</scope>
-	</dependency>
-	<!-- Needed for Packager plugin to find it -->
-	<!--dependency>
-		<groupId>org.xwiki.platform</groupId>
-		<artifactId>xwiki-platform-tool-jetty-resources</artifactId>
-		<version>${platform.version}</version>
-		<type>zip</type>
-	</dependency>
-	<dependency>
-		<groupId>org.xwiki.platform</groupId>
-		<artifactId>xwiki-platform-tool-rootwebapp</artifactId>
-		<version>${platform.version}</version>
-		<type>war</type>
-	</dependency>
-	<dependency>
-		<groupId>org.xwiki.platform</groupId>
-		<artifactId>xwiki-platform-oldcore</artifactId>
-		<version>${platform.version}</version>
-	</dependency>	
-	<dependency>
-		<groupId>org.xwiki.platform</groupId>
-		<artifactId>xwiki-platform-wysiwyg-server</artifactId>
-		<version>${platform.version}</version>
-	</dependency>		
-		<dependency>
-		<groupId>org.xwiki.platform</groupId>
-		<artifactId>xwiki-platform-localization-script</artifactId>
-		<version>${platform.version}</version>
-	</dependency>	
-	<dependency>
-		<groupId>org.xwiki.platform</groupId>
-		<artifactId>xwiki-platform-uiextension-api</artifactId>
-		<version>${platform.version}</version>
-	</dependency>		
-		<dependency>
-		<groupId>org.xwiki.platform</groupId>
-		<artifactId>xwiki-platform-rest-server</artifactId>
-		<version>${platform.version}</version>
-	</dependency>	
-		<dependency>
-		<groupId>org.xwiki.platform</groupId>
-		<artifactId>xwiki-platform-webdav-server</artifactId>
-		<version>${platform.version}</version>
-	</dependency>	
-		<dependency>
-		<groupId>org.xwiki.platform</groupId>
-		<artifactId>xwiki-platform-wysiwyg-client</artifactId>
-		<version>${platform.version}</version>
-	</dependency>	
-		<dependency>
-		<groupId>org.xwiki.platform</groupId>
-		<artifactId>xwiki-platform-skin-skinx</artifactId>
-		<version>${platform.version}</version>
-	</dependency>	
-		<dependency>
-		<groupId>org.xwiki.platform</groupId>
-		<artifactId>xwiki-platform-localization-source-legacy</artifactId>
-		<version>${platform.version}</version>
-	</dependency>	
-		<dependency>
-		<groupId>org.xwiki.platform</groupId>
-		<artifactId>xwiki-platform-security-bridge</artifactId>
-		<version>${platform.version}</version>
-	</dependency>	
-	<dependency>
-		<groupId>org.xwiki.platform</groupId>
-		<artifactId>xwiki-platform-gwt-api</artifactId>
-		<version>${platform.version}</version>
-	</dependency-->	
+    <dependency>
+      <groupId>org.xwiki.contrib.mailarchive</groupId>
+      <artifactId>xwiki-contrib-mailarchive-test-pageobjects</artifactId>
+      <version>0.3-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
 
-    <!-- Make sure we have the Logback SLF4J binding for client side logging for our tests and make sure other logging
-         systems go through SLF4J -->
+    <!-- Make sure we have the Logback SLF4J binding for client side logging 
+      for our tests and make sure other logging systems go through SLF4J -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
@@ -131,24 +117,24 @@
       <groupId>org.slf4j</groupId>
       <artifactId>log4j-over-slf4j</artifactId>
       <scope>test</scope>
-    </dependency>	
+    </dependency>
     <!-- Used by several tests to send mails -->
     <dependency>
       <groupId>com.icegreen</groupId>
       <artifactId>greenmail</artifactId>
       <version>1.3</version>
       <scope>test</scope>
-    </dependency>	
+    </dependency>
   </dependencies>
-  
-    <build>
-	  <testSourceDirectory>src/test/it</testSourceDirectory>
-	  <plugins>
+
+  <build>
+    <testSourceDirectory>src/test/it</testSourceDirectory>
+    <plugins>
       <!-- TODO: Remove when the following issue is fixed: http://jira.xwiki.org/jira/browse/XWIKI-7683 -->
       <plugin>
         <groupId>org.xwiki.platform</groupId>
         <artifactId>xwiki-platform-tool-packager-plugin</artifactId>
-		<!-- because XWIKI-8960 was fixed from 5.0-SNAPSHOT... -->
+        <!-- because XWIKI-8960 was fixed from 5.0-SNAPSHOT... -->
         <version>5.0-SNAPSHOT</version>
         <executions>
           <execution>
@@ -156,13 +142,13 @@
             <goals>
               <goal>package</goal>
             </goals>
-			<configuration>
-				<platformVersion>${platform.version}</platformVersion>
-			</configuration>
+            <configuration>
+              <platformVersion>${platform.version}</platformVersion>
+            </configuration>
           </execution>
         </executions>
       </plugin>
     </plugins>
-	</build>
-    
+  </build>
+
 </project>

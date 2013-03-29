@@ -30,12 +30,14 @@ public class MailAttachment
 
     private byte[] data;
 
+    private String url;
+
     public String getFilename()
     {
         return filename;
     }
 
-    public void setFilename(String filename)
+    public void setFilename(final String filename)
     {
         this.filename = filename;
     }
@@ -45,7 +47,7 @@ public class MailAttachment
         return cid;
     }
 
-    public void setCid(String cid)
+    public void setCid(final String cid)
     {
         this.cid = cid;
     }
@@ -55,9 +57,25 @@ public class MailAttachment
         return data;
     }
 
-    public void setData(byte[] data)
+    public void setData(final byte[] data)
     {
         this.data = data;
+    }
+
+    /**
+     * @return the url
+     */
+    public String getUrl()
+    {
+        return url;
+    }
+
+    /**
+     * @param url the url to set
+     */
+    public void setUrl(final String url)
+    {
+        this.url = url;
     }
 
 }

@@ -37,7 +37,7 @@ public class MailContent
 {
     private StringBuilder text = new StringBuilder();
 
-    private StringBuilder html = new StringBuilder();;
+    private StringBuilder html = new StringBuilder();
 
     /**
      * Extracted attachments as a map, key being content-ID.

@@ -186,8 +186,8 @@ public class TextUtils
     {
         StringBuffer hexStr = new StringBuffer("");
         String stmp = "";
-        for (int i = 0; i < b.length; i++) {
-            stmp = (java.lang.Integer.toHexString(b[i] & 0xFF));
+        for (byte aB : b) {
+            stmp = (Integer.toHexString(aB & 0xFF));
             if (stmp.length() == 1) {
                 hexStr.append("0" + stmp);
             } else {

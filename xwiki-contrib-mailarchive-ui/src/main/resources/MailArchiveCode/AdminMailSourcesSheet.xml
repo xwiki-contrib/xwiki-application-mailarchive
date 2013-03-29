@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>MailArchiveCode</web>
+  <name>AdminMailSourcesSheet</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchiveCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1361795386000</creationDate>
+  <date>1361884422000</date>
+  <contentUpdateDate>1361884422000</contentUpdateDate>
+  <version>1.1</version>
+  <title>AdminMailSourcesSheet</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
+{{html wiki="true"}}
+
+=== Servers ===
+You need to configure at least one server from where to consume emails.
+A configuration targets a mail server and a specific folder in this server, the one that should contain the mails to be read. You can target several servers with this application.
+You should have access to this mail account and folder, as some maintenance might be needed (removing old mails, forcing reload of badly loaded mails, ...).
+#if ($nbServers == 0) 
+
+{{warning}}&lt;&lt; no mail server defined, please add at least one server configuration&gt;&gt;{{/warning}}
+
+#else
+
+#set($collist = [ "id", "hostname", "protocol", "folder", "user", "status", "state", "_actions"])
+#set($colprops = {      
+                   "id" : {"type" : "text", "link" : "view" },             
+                   "hostname" : { "type" : "text" },
+                   "protocol" : { "type" : "text" },
+                   "folder" : { "type" : "text" },
+                   "user" : { "type" : "text" },
+                   "status" : { "type" : "text" },
+                   "state" : { "type" : "text" },
+                   "_actions" : {"actions": ["check","edit","delete"]} 
+                 } )
+#set($options = { "className":"MailArchiveCode.ServerSettingsClass",
+                  "resultPage":"MailArchiveCode.LiveTableResults",
+                  "selectedColumn":"hostname",
+                  "tagCloud":"false",
+                  "defaultOrder":"asc",
+                  "translationPrefix" : "mailarchive.servers.table.headers.",
+                  "rowCount": 10,
+                  "extraParams" : "&amp;space=MailArchivePrefs" })
+#livetable("livetable_servers" $collist $colprops $options)
+
+#end
+=== Stores ===
+Additionnally, you can configure Stores, to import emails from archives stored on filesystem. They can be used to import threads from existing mailing-lists.
+Note: a Store can be managed exactly as a Server. Store archive file must be present on XWiki server filesystem so you must manually upload or copy it there to start with - for now there is no built-in upload feature.
+
+#if($nbStores == 0)
+
+{{info}}
+No store defined.
+{{/info}}
+
+#else
+#set($collist = [ "id", "format", "location", "folder", "status", "state", "_actions"])
+#set($colprops = {      
+                   "id" : {"type" : "text", "link" : "view" },             
+                   "format" : { "type" : "text" },
+                   "location" : { "type" : "text" },
+                   "folder" : { "type" : "text" },
+                   "status" : { "type" : "text" },
+                   "state" : { "type" : "text" },
+                   "_actions" : {"actions": ["check","edit","delete"]} 
+                 } )
+#set($options = { "className":"MailArchiveCode.StoreClass",
+                  "resultPage":"MailArchiveCode.LiveTableResults",
+                  "selectedColumn":"hostname",
+                  "tagCloud":"false",
+                  "defaultOrder":"asc",
+                  "translationPrefix" : "mailarchive.stores.table.headers.",
+                  "rowCount": 10,
+                  "extraParams" : "&amp;space=MailArchivePrefs" })
+#livetable("livetable_stores" $collist $colprops $options)
+#end
+&lt;form action="#" class="xformInline" method="post" name="form_sources"&gt;
+  &lt;span class="buttonwrapper"&gt;
+    &lt;a href="#" class="button" id="btAddServer"&gt;Add Server...&lt;/a&gt;
+    &lt;a href="#" class="button" id="btAddStore"&gt;Add Store...&lt;/a&gt;
+  &lt;/span&gt;
+&lt;/form&gt;
+{{/html}}
+{{/velocity}}</content>
+</xwikidoc>

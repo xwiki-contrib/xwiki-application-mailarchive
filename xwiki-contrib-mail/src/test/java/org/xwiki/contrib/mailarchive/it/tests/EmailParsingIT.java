@@ -56,7 +56,7 @@ public class EmailParsingIT
     public void setUp()
     {
         Logger logger = LoggerFactory.getLogger("org.xwiki.contrib.test.LoadMailsIT");
-        parser = new JavamailMessageParser(logger);
+        parser = new JavamailMessageParser();
 
         // Init .eml input files folder
         URL url = Thread.currentThread().getContextClassLoader().getResource("messages/dummy.txt");

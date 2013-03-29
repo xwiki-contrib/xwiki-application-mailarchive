@@ -57,7 +57,7 @@
  * holder.
  */
 
-package org.xwiki.contrib.mail.internal;
+package org.xwiki.contrib.mail.internal.util;
 
 import java.text.FieldPosition;
 import java.text.NumberFormat;
@@ -294,8 +294,7 @@ public class GMailMailDateFormat extends SimpleDateFormat
             }
 
             pos.setIndex(p.getIndex());
-            Date d = ourUTC(year, month, day, hours, minutes, seconds, offset, lenient);
-            return d;
+            return ourUTC(year, month, day, hours, minutes, seconds, offset, lenient);
 
         } catch (Exception e) {
             // Catch *all* exceptions, including RuntimeExceptions like

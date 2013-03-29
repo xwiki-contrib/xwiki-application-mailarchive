@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xwikidoc>
-<web>MailArchiveCode</web>
-<name>ToolsGroovyClass</name>
-<language></language>
-<defaultLanguage>en</defaultLanguage>
-<translation>0</translation>
-<parent></parent>
-<creator>XWiki.Admin</creator>
-<author>XWiki.Admin</author>
-<customClass></customClass>
-<contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353417893000</creationDate>
-<date>1353417893000</date>
-<contentUpdateDate>1353417893000</contentUpdateDate>
-<version>1.1</version>
-<title>Mail Archive Utility Class</title>
-<template></template>
-<defaultTemplate></defaultTemplate>
-<validationScript></validationScript>
-<comment>Import</comment>
-<minorEdit>false</minorEdit>
-<syntaxId>xwiki/2.0</syntaxId>
-<hidden>false</hidden>
-<content>/* Groovy Class #* */
+  <web>MailArchiveCode</web>
+  <name>ToolsGroovyClass</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchiveCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1353417893000</creationDate>
+  <date>1353417893000</date>
+  <contentUpdateDate>1353417893000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Mail Archive Utility Class</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <content>/* Groovy Class #* */
 
 class Tools {
 
@@ -201,4 +202,5 @@ class Tools {
 
 }
 
-/* #* */</content></xwikidoc>
+/* #* */</content>
+</xwikidoc>

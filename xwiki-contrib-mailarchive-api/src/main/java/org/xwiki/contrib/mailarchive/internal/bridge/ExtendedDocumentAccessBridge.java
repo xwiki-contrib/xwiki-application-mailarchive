@@ -91,9 +91,14 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
      * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#exists(java.lang.String,
      *      java.lang.String)
      */
-    public boolean exists(String docname, String classname) throws XWikiException
+    public boolean exists(String docname, String classname)
     {
-        return xwiki.getDocument(docname, context).getObject(classname) != null;
+        try {
+            return xwiki.getDocument(docname, context).getObject(classname) != null;
+        } catch (XWikiException e) {
+            logger.info("Document " + docname + " does not exist");
+        }
+        return false;
     }
 
     /**
@@ -109,9 +114,8 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
         if (wikiname.length() >= MAX_PAGENAME_LENGTH) {
             wikiname = wikiname.substring(0, MAX_PAGENAME_LENGTH);
         }
-        String uniquePageName = context.getWiki().getUniquePageName(space, wikiname, context);
 
-        return uniquePageName;
+        return context.getWiki().getUniquePageName(space, wikiname, context);
     }
 
     /**
@@ -121,11 +125,15 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
      *      java.lang.String, java.lang.String)
      */
     @Override
-    public String getStringValue(String docname, String classname, String fieldname) throws XWikiException
+    public String getStringValue(String docname, String classname, String fieldname)
     {
-        XWikiDocument prefsdoc = xwiki.getDocument(docname, context);
-        BaseObject prefsobj = prefsdoc.getObject(classname);
-        return prefsobj.getStringValue(fieldname);
+        try {
+            XWikiDocument prefsdoc = xwiki.getDocument(docname, context);
+            BaseObject prefsobj = prefsdoc.getObject(classname);
+            return prefsobj.getStringValue(fieldname);
+        } catch (XWikiException e) {
+            return null;
+        }
     }
 
     /**
@@ -135,11 +143,15 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
      *      java.lang.String, java.lang.String)
      */
     @Override
-    public int getIntValue(String docname, String classname, String fieldname) throws XWikiException
+    public int getIntValue(String docname, String classname, String fieldname)
     {
-        XWikiDocument prefsdoc = xwiki.getDocument(docname, context);
-        BaseObject prefsobj = prefsdoc.getObject(classname);
-        return prefsobj.getIntValue(fieldname);
+        try {
+            XWikiDocument prefsdoc = xwiki.getDocument(docname, context);
+            BaseObject prefsobj = prefsdoc.getObject(classname);
+            return prefsobj.getIntValue(fieldname);
+        } catch (XWikiException e) {
+            return 0;
+        }
     }
 
     /**
@@ -149,9 +161,9 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
      *      java.lang.String, java.lang.String)
      */
     @Override
-    public boolean getBooleanValue(String docname, String classname, String fieldname) throws XWikiException
+    public boolean getBooleanValue(String docname, String classname, String fieldname)
     {
-        return getIntValue(docname, classname, fieldname) != 0;
+        return getIntValue(docname, classname, fieldname) > 0;
     }
 
     public boolean createOrUpdate(final DocumentEntity document)

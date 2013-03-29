@@ -19,63 +19,39 @@
  */
 package org.xwiki.contrib.mailarchive.internal.data;
 
-import java.util.Properties;
-
-import org.xwiki.contrib.mailarchive.IServer;
+import org.xwiki.contrib.mail.source.IServerSource;
 
 /**
+ * @author jbousque
  * @version $Id$
  */
-/**
- * 
- * @version $Id$
- */
-/**
- * @version $Id$
- */
-public class Server implements IServer
+public class Server extends AbstractMASource implements IServerSource
 {
-    private String id;
+    public static final int DEFAULT_PORT = 993;
 
-    private String host;
+    private String hostname;
 
     private int port;
 
     private String protocol;
 
-    private String user;
+    private String username;
 
     private String password;
-
-    private String folder;
-
-    private String wikiDoc;
-
-    private Properties additionalProperties;
 
     public Server()
     {
         super();
     }
 
-    public String getId()
+    public String getHostname()
     {
-        return id;
+        return hostname;
     }
 
-    public void setId(String id)
+    public void setHostname(final String host)
     {
-        this.id = id;
-    }
-
-    public String getHost()
-    {
-        return host;
-    }
-
-    public void setHost(String host)
-    {
-        this.host = host;
+        this.hostname = host;
     }
 
     public int getPort()
@@ -83,7 +59,7 @@ public class Server implements IServer
         return port;
     }
 
-    public void setPort(int port)
+    public void setPort(final int port)
     {
         this.port = port;
     }
@@ -93,19 +69,19 @@ public class Server implements IServer
         return protocol;
     }
 
-    public void setProtocol(String protocol)
+    public void setProtocol(final String protocol)
     {
         this.protocol = protocol;
     }
 
-    public String getUser()
+    public String getUsername()
     {
-        return user;
+        return username;
     }
 
-    public void setUser(String user)
+    public void setUsername(final String user)
     {
-        this.user = user;
+        this.username = user;
     }
 
     public String getPassword()
@@ -113,61 +89,36 @@ public class Server implements IServer
         return password;
     }
 
-    public void setPassword(String password)
+    public void setPassword(final String password)
     {
         this.password = password;
     }
 
     /**
-     * @return Mail server folder name (label for gmail)
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.IMASource#getType()
      */
-    public String getFolder()
+    @Override
+    public String getType()
     {
-        return folder;
-    }
-
-    /**
-     * @param folder Mail server folder name (label for gmail)
-     */
-    public void setFolder(String folder)
-    {
-        this.folder = folder;
-    }
-
-    public String getWikiDoc()
-    {
-        return wikiDoc;
-    }
-
-    public void setWikiDoc(String wikiDoc)
-    {
-        this.wikiDoc = wikiDoc;
-    }
-
-    public void setAdditionalProperties(Properties properties)
-    {
-        this.additionalProperties = properties;
+        return "SERVER";
     }
 
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.IServer#getAdditionalProperties()
+     * @see java.lang.Object#toString()
      */
-    @Override
-    public Properties getAdditionalProperties()
-    {
-        return additionalProperties;
-    }
-
     @Override
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("IServer [host=").append(host).append(", port=").append(port).append(", protocol=")
-            .append(protocol).append(", user=").append(user).append(", password=").append("*****").append(", folder=")
-            .append(folder).append(", wikiDoc=").append(wikiDoc).append(", additionalProperties=")
-            .append(additionalProperties).append("]");
+        builder.append("Server [hostname=").append(hostname).append(", port=").append(port).append(", protocol=")
+            .append(protocol).append(", username=").append(username).append(", password=*****").append(", getId()=")
+            .append(getId()).append(", getFolder()=").append(getFolder()).append(", getAdditionalProperties()=")
+            .append(getAdditionalProperties()).append(", getWikiDoc()=").append(getWikiDoc()).append(", isEnabled()=")
+            .append(isEnabled()).append("]");
         return builder.toString();
     }
 

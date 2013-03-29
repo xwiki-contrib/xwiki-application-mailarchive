@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xwikidoc>
-<web>MailArchiveCode</web>
-<name>TypesSettingsSheet</name>
-<language></language>
-<defaultLanguage>en</defaultLanguage>
-<translation>0</translation>
-<parent></parent>
-<creator>XWiki.Admin</creator>
-<author>XWiki.Admin</author>
-<customClass></customClass>
-<contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353930108000</creationDate>
-<date>1354528935000</date>
-<contentUpdateDate>1354528935000</contentUpdateDate>
-<version>1.1</version>
-<title>#if($doc.name == 'TypesSettingsSheet')Types Sheet#{else}$services.display.title($doc, {'displayerHint': 'default'})#end</title>
-<template></template>
-<defaultTemplate></defaultTemplate>
-<validationScript></validationScript>
-<comment>Imported from XAR</comment>
-<minorEdit>false</minorEdit>
-<syntaxId>xwiki/2.0</syntaxId>
-<hidden>false</hidden>
-<content>{{velocity}}
+  <web>MailArchiveCode</web>
+  <name>TypesSettingsSheet</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchiveCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1353930108000</creationDate>
+  <date>1354528935000</date>
+  <contentUpdateDate>1354528935000</contentUpdateDate>
+  <version>1.1</version>
+  <title>#if($doc.name == 'TypesSettingsSheet')Types Sheet#{else}$services.display.title($doc, {'displayerHint': 'default'})#end</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
 #if($doc.name != "TypesSettingsSheet")
   #set($number=$request.getParameter('objnumber'))
   #if("$!number"=="")
@@ -74,4 +75,5 @@
 #else
 Mail Type Sheet
 #end
-{{/velocity}}</content></xwikidoc>
+{{/velocity}}</content>
+</xwikidoc>

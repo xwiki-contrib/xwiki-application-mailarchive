@@ -26,9 +26,13 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.LoadingSession;
+import org.xwiki.contrib.mailarchive.internal.data.IFactory;
+import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
+import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadMessageBean;
 import org.xwiki.contrib.mailarchive.internal.utils.DecodedMailContent;
 import org.xwiki.script.service.ScriptService;
@@ -44,25 +48,40 @@ public class MailArchiveScriptService implements ScriptService
     @Inject
     private IMailArchive mailArchive;
 
+    @Inject
+    private IFactory factory;
+
     // @Inject
     // private Logger logger;
 
     // TODO: move out the session() and load() to another IMailArchiveLoader component.
     // Justification: IMailArchive should be Singleton, whereas IMailArchiveLoader should not.
 
+    /**
+     * Creates a loading session based on default session configuration, stored in document
+     * MailArchivePrefs.LoadingSession_default.
+     * 
+     * @return
+     */
     public LoadingSession session()
     {
-        return new LoadingSession(this.mailArchive);
+        return factory.createLoadingSession(XWikiPersistence.SPACE_PREFS + ".LoadingSession_default", mailArchive);
     }
 
-    public LoadingSession session(final String serverPrefsDoc)
+    /**
+     * Creates a loading session, based on configuration stored in specified wiki page.
+     * 
+     * @param serverPrefsDoc
+     * @return
+     */
+    public LoadingSession session(final String sessionPrefsDoc)
     {
-        return new LoadingSession(this.mailArchive, serverPrefsDoc);
+        return factory.createLoadingSession(sessionPrefsDoc, mailArchive);
     }
 
     public int check(final String serverPrefsDoc)
     {
-        return this.mailArchive.queryServerInfo(serverPrefsDoc);
+        return this.mailArchive.checkSource(serverPrefsDoc);
     }
 
     public int load(final LoadingSession session)
@@ -123,6 +142,19 @@ public class MailArchiveScriptService implements ScriptService
             System.out.println("MailArchiveScriptService: failed to decode mail content");
             e.printStackTrace();
             return new DecodedMailContent(false, "<<invalid content>>");
+        }
+    }
+
+    public IMailArchiveConfiguration getConfig()
+    {
+        try {
+            return this.mailArchive.getConfiguration();
+        } catch (InitializationException e) {
+            e.printStackTrace();
+            return null;
+        } catch (MailArchiveException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

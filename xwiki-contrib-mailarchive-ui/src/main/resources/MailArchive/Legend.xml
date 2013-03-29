@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xwikidoc>
-<web>MailArchive</web>
-<name>Legend</name>
-<language></language>
-<defaultLanguage>en</defaultLanguage>
-<translation>0</translation>
-<parent>MailArchive.WebHome</parent>
-<creator>XWiki.Admin</creator>
-<author>XWiki.Admin</author>
-<customClass></customClass>
-<contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353417881000</creationDate>
-<date>1353417881000</date>
-<contentUpdateDate>1353417881000</contentUpdateDate>
-<version>1.1</version>
-<title>Mail Archive Legend</title>
-<template></template>
-<defaultTemplate></defaultTemplate>
-<validationScript></validationScript>
-<comment>Import</comment>
-<minorEdit>false</minorEdit>
-<syntaxId>xwiki/2.1</syntaxId>
-<hidden>false</hidden>
-<content>= Mailing-lists =
+  <web>MailArchive</web>
+  <name>Legend</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchive.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1353417881000</creationDate>
+  <date>1353417881000</date>
+  <contentUpdateDate>1353417881000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Mail Archive Legend</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>= Mailing-lists =
 
 The following mailing-lists are browable from the mail archive:
 
@@ -50,4 +51,5 @@ The following mail types are configured in the mail archive:
 |$type[0]|[[image:icon:$type[1]]]
 #end
 {{/html}}
-{{/velocity}}</content></xwikidoc>
+{{/velocity}}</content>
+</xwikidoc>

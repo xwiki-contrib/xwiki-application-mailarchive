@@ -82,6 +82,8 @@ public class MailItem
 
     private String sensitivity;
 
+    private String builtinType;
+
     private ArrayList<String> types = new ArrayList<String>();
 
     private String wikiuser;

@@ -33,17 +33,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.contrib.mail.MailContent;
+import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 /**
  * @version $Id$
  */
+@ComponentList({JavamailMessageParser.class})
 public class JavamailMessageParserTest
 {
-    final static private Logger logger = LoggerFactory.getLogger(JavamailMessageParserTest.class);
+    @Rule
+    public final MockitoComponentMockingRule<IMessageParser<Part>> mocker =
+        new MockitoComponentMockingRule<IMessageParser<Part>>(JavamailMessageParser.class);
 
     private JavamailMessageParser parser;
 
@@ -52,12 +57,11 @@ public class JavamailMessageParserTest
     private Part message;
 
     @Before
-    public void setUp()
+    public void setUp() throws ComponentLookupException
     {
-        parser = new JavamailMessageParser(logger);
+        parser = (JavamailMessageParser) mocker.getComponentUnderTest();
         context = new Mockery();
         message = context.mock(Part.class);
-        parser = new JavamailMessageParser(logger);
     }
 
     /**
@@ -68,8 +72,7 @@ public class JavamailMessageParserTest
      * @throws IOException
      */
     @Test
-    public void extractPartsContentForSingleTextPart() throws UnsupportedEncodingException, MessagingException,
-        IOException
+    public void extractPartsContentForSingleTextPart() throws MessagingException, IOException
     {
         context.checking(new Expectations()
         {
@@ -105,8 +108,7 @@ public class JavamailMessageParserTest
      * @throws IOException
      */
     @Test
-    public void extractPartsContentForSingleHtmlPart() throws UnsupportedEncodingException, MessagingException,
-        IOException
+    public void extractPartsContentForSingleHtmlPart() throws MessagingException, IOException
     {
         context.checking(new Expectations()
         {

@@ -39,6 +39,8 @@ import com.xpn.xwiki.plugin.ldap.XWikiLDAPSearchAttribute;
 import com.xpn.xwiki.plugin.ldap.XWikiLDAPUtils;
 import com.xpn.xwiki.util.Util;
 
+// XWikiLDAPUtils is a 'hidden' dependency on old core ...
+
 /**
  * @version $Id$
  */

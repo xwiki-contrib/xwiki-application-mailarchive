@@ -1,6 +1,6 @@
 package org.xwiki.contrib.mail;
 
-public enum ConnectionErrors
+public enum SourceConnectionErrors
 {
 
     OK(0),
@@ -11,11 +11,14 @@ public enum ConnectionErrors
     FOLDER_NOT_FOUND(-5),
     UNKNOWN_HOST(-6),
     OTHER_ERROR(-7),
-    INVALID_PREFERENCES(-8);
+    INVALID_PREFERENCES(-8),
+    INVALID_STORE_FILE(-9),
+    INVALID_STORE_FILE_FORMAT(-10),
+    UNKNOWN_SOURCE_TYPE(-11);
 
     private int code;
 
-    private ConnectionErrors(final int code)
+    private SourceConnectionErrors(final int code)
     {
         this.code = code;
     }

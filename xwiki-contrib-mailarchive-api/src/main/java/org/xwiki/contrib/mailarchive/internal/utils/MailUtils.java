@@ -175,13 +175,9 @@ public class MailUtils implements IMailUtils
                     logger.debug("parseUser Checking for LDAP authenticated profile(s) ...");
                     // If there exists one, we prefer the user that's been authenticated through LDAP
                     for (String usr : profiles) {
-                        try {
-                            if (bridge.exists(usr, "XWiki.LDAPProfileClass")) {
-                                parsedUser = usr;
-                                logger.debug("parseUser Found LDAP authenticated profile {}", parsedUser);
-                            }
-                        } catch (XWikiException e) {
-                            // nothing to do
+                        if (bridge.exists(usr, "XWiki.LDAPProfileClass")) {
+                            parsedUser = usr;
+                            logger.debug("parseUser Found LDAP authenticated profile {}", parsedUser);
                         }
                     }
                     if (parsedUser != null) {
@@ -212,14 +208,13 @@ public class MailUtils implements IMailUtils
      * @throws XWikiException
      */
     public DecodedMailContent decodeMailContent(String originalHtml, String originalBody, boolean cut)
-        throws IOException, XWikiException
+        throws IOException
     {
         String html = "";
         String body = "";
 
-        String ziphtml = originalHtml;
-        if (!StringUtils.isEmpty(ziphtml)) {
-            InputStream is = new ByteArrayInputStream(TextUtils.hex2byte(ziphtml));
+        if (!StringUtils.isEmpty(originalHtml)) {
+            InputStream is = new ByteArrayInputStream(TextUtils.hex2byte(originalHtml));
             GZIPInputStream zis = new GZIPInputStream(is);
             html = "";
             if (zis != null) {

@@ -36,6 +36,6 @@ public interface ITimeLineGenerator
      * @return
      * @throws XWikiException
      */
-    String compute() throws XWikiException;
+    String compute();
 
 }

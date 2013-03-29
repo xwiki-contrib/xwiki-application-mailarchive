@@ -28,13 +28,14 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.contrib.mailarchive.IMASource;
 import org.xwiki.contrib.mailarchive.IMailMatcher;
 import org.xwiki.contrib.mailarchive.IMailingList;
-import org.xwiki.contrib.mailarchive.IServer;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
@@ -42,8 +43,6 @@ import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
-
-import com.xpn.xwiki.XWikiException;
 
 /**
  * @version $Id$
@@ -58,7 +57,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
 
     /* ***** GLOBAL PARAMETERS ***** */
 
-    private List<IServer> servers;
+    private List<IMASource> servers;
 
     private Map<String, IMailingList> lists;
 
@@ -129,30 +128,32 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         if (!bridge.exists(adminPrefsPage)) {
             throw new MailArchiveException("Preferences page does not exist");
         }
-        try {
-            this.loadingUser = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "user");
-            this.defaultHomeView = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "defaulthomeview");
-            this.defaultTopicsView = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "defaulttopicsview");
-            this.defaultMailsOpeningMode = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "mailsopeningmode");
-            this.manageTimeline = bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "timeline") != 0;
-            this.maxTimelineItemsToLoad = bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "timelinemaxload");
-            this.matchProfiles = bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "matchwikiprofiles") != 0;
-            this.matchLdap = bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "matchldap") != 0;
-            this.ldapCreateMissingProfiles =
-                bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "createmissingprofiles") != 0;
-            this.ldapForcePhotoUpdate = bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "ldapphotoforceupdate") != 0;
-            this.ldapPhotoFieldName = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "ldapphotofield");
-            this.ldapPhotoFieldContent = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "ldapphototype");
-            this.cropTopicIds = bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "adv_croptopicid") != 0;
-            this.itemsSpaceName = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "adv_itemsspace");
-            this.useStore = bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "store") != 0;
 
-        } catch (XWikiException e) {
-            throw new MailArchiveException("Error occurred while accessing configuration page", e);
-        }
-        this.servers = loadServersDefinitions();
+        this.loadingUser = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "user");
+        this.defaultHomeView = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "defaulthomeview");
+        this.defaultTopicsView = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "defaulttopicsview");
+        this.defaultMailsOpeningMode = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "mailsopeningmode");
+        this.manageTimeline = bridge.getBooleanValue(adminPrefsPage, CLASS_ADMIN, "timeline");
+        this.maxTimelineItemsToLoad = bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "timelinemaxload");
+        this.matchProfiles = bridge.getBooleanValue(adminPrefsPage, CLASS_ADMIN, "matchwikiprofiles");
+        this.matchLdap = bridge.getBooleanValue(adminPrefsPage, CLASS_ADMIN, "matchldap");
+        this.ldapCreateMissingProfiles = bridge.getBooleanValue(adminPrefsPage, CLASS_ADMIN, "createmissingprofiles");
+        this.ldapForcePhotoUpdate = bridge.getIntValue(adminPrefsPage, CLASS_ADMIN, "ldapphotoforceupdate") != 0;
+        this.ldapPhotoFieldName = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "ldapphotofield");
+        this.ldapPhotoFieldContent = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "ldapphototype");
+        this.cropTopicIds = bridge.getBooleanValue(adminPrefsPage, CLASS_ADMIN, "adv_croptopicid");
+        this.itemsSpaceName = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "adv_itemsspace");
+        this.useStore = bridge.getBooleanValue(adminPrefsPage, CLASS_ADMIN, "store");
+
+        List<IMASource> sources = loadServersDefinitions();
+        sources.addAll(loadStoresDefinitions());
+        this.servers = sources;
         this.lists = loadMailingListsDefinitions();
         this.types = loadMailTypesDefinitions();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("loaded mail archive configuration: " + toString());
+        }
     }
 
     /**
@@ -174,7 +175,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
             List<Object[]> props = this.queryManager.createQuery(xwql, Query.XWQL).execute();
 
             for (Object[] prop : props) {
-                if (prop[0] != null && !"".equals(prop[0])) {
+                if (StringUtils.isNotBlank((String) prop[0])) {
                     IMailingList list =
                         factory.createMailingList((String) prop[0], (String) prop[1], (String) prop[2],
                             (String) prop[3]);
@@ -185,7 +186,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
                 }
             }
         } catch (Exception e) {
-            throw new MailArchiveException("Failed to load mailing-lists settings", e);
+            throw new MailArchiveException("Failed to load configured mailing-lists", e);
         }
         return lists;
     }
@@ -243,7 +244,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
             }
 
         } catch (Exception e) {
-            throw new MailArchiveException("Failed to load mail types settings", e);
+            throw new MailArchiveException("Failed to load configured mail types", e);
         }
 
         return mailTypes;
@@ -255,9 +256,9 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
      * @return
      * @throws MailArchiveException
      */
-    protected List<IServer> loadServersDefinitions() throws MailArchiveException
+    protected List<IMASource> loadServersDefinitions() throws MailArchiveException
     {
-        final List<IServer> lists = new ArrayList<IServer>();
+        final List<IMASource> lists = new ArrayList<IMASource>();
 
         String xwql =
             "select doc.fullName from Document doc, doc.object('" + XWikiPersistence.CLASS_MAIL_SERVERS
@@ -267,7 +268,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
 
             for (String serverPrefsDoc : props) {
                 logger.info("Loading server definition from page " + serverPrefsDoc + " ...");
-                if (serverPrefsDoc != null && !"".equals(serverPrefsDoc)) {
+                if (StringUtils.isNotBlank(serverPrefsDoc)) {
                     Server server = factory.createMailServer(serverPrefsDoc);
                     if (server != null) {
                         lists.add(server);
@@ -281,7 +282,44 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
                 }
             }
         } catch (Exception e) {
-            throw new MailArchiveException("Failed to load mailing-lists settings", e);
+            throw new MailArchiveException("Failed to load configured servers", e);
+        }
+        return lists;
+    }
+
+    /**
+     * Loads the mailing-lists
+     * 
+     * @return
+     * @throws MailArchiveException
+     */
+    protected List<IMASource> loadStoresDefinitions() throws MailArchiveException
+    {
+        final List<IMASource> lists = new ArrayList<IMASource>();
+
+        String xwql =
+            "select doc.fullName from Document doc, doc.object('" + XWikiPersistence.CLASS_MAIL_STORES
+                + "') as store where doc.space='" + XWikiPersistence.SPACE_PREFS + "'";
+        try {
+            List<String> props = this.queryManager.createQuery(xwql, Query.XWQL).execute();
+
+            for (String storePrefsDoc : props) {
+                logger.info("Loading store definition from page " + storePrefsDoc + " ...");
+                if (StringUtils.isNotBlank(storePrefsDoc)) {
+                    MailStore store = factory.createMailStore(storePrefsDoc);
+                    if (store != null) {
+                        lists.add(store);
+                        logger.info("Loaded IServer connection definition " + store);
+                    } else {
+                        logger.warn("Invalid server definition from document " + storePrefsDoc);
+                    }
+
+                } else {
+                    logger.info("Incorrect IServer preferences doc found in db");
+                }
+            }
+        } catch (Exception e) {
+            throw new MailArchiveException("Failed to load configured mail stores", e);
         }
         return lists;
     }
@@ -401,7 +439,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
      * @see org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration#getServers()
      */
     @Override
-    public List<IServer> getServers()
+    public List<IMASource> getServers()
     {
         return this.servers;
     }
@@ -447,6 +485,11 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         this.emailIgnoredText = emailIgnoredText;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {

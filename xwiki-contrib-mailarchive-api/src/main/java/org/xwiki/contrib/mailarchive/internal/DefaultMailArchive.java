@@ -32,9 +32,9 @@ import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.GZIPOutputStream;
 
@@ -45,34 +45,38 @@ import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Part;
-import javax.mail.Session;
 import javax.mail.internet.MimeBodyPart;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
-import org.xwiki.contrib.mail.ConnectionErrors;
 import org.xwiki.contrib.mail.IMailComponent;
+import org.xwiki.contrib.mail.IMailReader;
+import org.xwiki.contrib.mail.IStoreManager;
 import org.xwiki.contrib.mail.MailContent;
 import org.xwiki.contrib.mail.MailItem;
-import org.xwiki.contrib.mail.Utils;
+import org.xwiki.contrib.mail.SourceConnectionErrors;
 import org.xwiki.contrib.mail.internal.JavamailMessageParser;
 import org.xwiki.contrib.mail.internal.MailAttachment;
+import org.xwiki.contrib.mail.internal.util.Utils;
+import org.xwiki.contrib.mailarchive.IMASource;
 import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailingList;
-import org.xwiki.contrib.mailarchive.IServer;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.LoadingSession;
 import org.xwiki.contrib.mailarchive.internal.bridge.ExtendedDocumentAccessBridge;
 import org.xwiki.contrib.mailarchive.internal.data.IFactory;
 import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
+import org.xwiki.contrib.mailarchive.internal.data.MailStore;
+import org.xwiki.contrib.mailarchive.internal.data.Server;
 import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.persistence.IPersistence;
@@ -179,6 +183,10 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     @Inject
     private IItemsManager store;
 
+    @Inject
+    @Named("mbox")
+    private IStoreManager builtinStore;
+
     /** Factory to convert raw conf to POJO */
     @Inject
     private IFactory factory;
@@ -213,8 +221,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     /** Are we currently in a loading session ? */
     private boolean inProgress = false;
 
-    private LogLevel logLevel;
-
     /**
      * {@inheritDoc}
      * 
@@ -229,11 +235,9 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             this.context = (XWikiContext) context.getProperty("xwikicontext");
             this.xwiki = this.context.getWiki();
             // Initialize switchable logging for main components useful for the mail archive
-            /*
-             * aggregatedLoggerManager.addComponentLogger(IMailArchive.class);
-             * aggregatedLoggerManager.addComponentLogger(IMailComponent.class);
-             * aggregatedLoggerManager.addComponentLogger(StreamParser.class);
-             */
+            aggregatedLoggerManager.addComponentLogger(IMailArchive.class);
+            aggregatedLoggerManager.addComponentLogger(IMailComponent.class);
+            aggregatedLoggerManager.addComponentLogger(StreamParser.class);
             logger.info("Mail archive initialized !");
             logger.debug("PERMANENT DATA DIR : " + this.environment.getPermanentDirectory());
         } catch (Throwable e) {
@@ -247,33 +251,104 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.IMailArchive#checkMails()
+     * @throws MailArchiveException
+     * @throws InitializationException
+     * @see org.xwiki.contrib.mailarchive.IMailArchive#getConfiguration()
      */
     @Override
-    public int queryServerInfo(String serverPrefsDoc)
+    public IMailArchiveConfiguration getConfiguration() throws InitializationException, MailArchiveException
     {
-        // Retrieve connection properties from prefs
-        IServer server = factory.createMailServer(serverPrefsDoc);
-        if (server == null) {
-            logger.warn("Could not retrieve server information from wiki page " + serverPrefsDoc);
-            return ConnectionErrors.INVALID_PREFERENCES.getCode();
+        configure();
+        return this.config;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.IMailArchive#checkSource(String)
+     */
+    @Override
+    public int checkSource(final String sourcePrefsDoc)
+    {
+        XWikiDocument serverDoc = null;
+        try {
+            serverDoc = xwiki.getDocument(sourcePrefsDoc, context);
+        } catch (XWikiException e) {
+            serverDoc = null;
+        }
+        if (serverDoc == null || !dab.exists(sourcePrefsDoc)) {
+            logger.error("Page " + sourcePrefsDoc + " does not exist");
+            return SourceConnectionErrors.INVALID_PREFERENCES.getCode();
+        }
+        if (serverDoc.getObject(XWikiPersistence.CLASS_MAIL_SERVERS) != null) {
+            // Retrieve connection properties from prefs
+            Server server = factory.createMailServer(sourcePrefsDoc);
+            if (server == null) {
+                logger.warn("Could not retrieve server information from wiki page " + sourcePrefsDoc);
+                return SourceConnectionErrors.INVALID_PREFERENCES.getCode();
+            }
+
+            return checkSource(server);
+        } else if (serverDoc.getObject(XWikiPersistence.CLASS_MAIL_STORES) != null) {
+            // Retrieve connection properties from prefs
+            MailStore store = factory.createMailStore(sourcePrefsDoc);
+            if (store == null) {
+                logger.warn("Could not retrieve store information from wiki page " + sourcePrefsDoc);
+                return SourceConnectionErrors.INVALID_PREFERENCES.getCode();
+            }
+
+            return checkSource(store);
+
+        } else {
+            logger.error("Could not retrieve valid configuration object from page");
+            return SourceConnectionErrors.INVALID_PREFERENCES.getCode();
         }
 
-        return queryServerInfo(server);
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.IMailArchive#checkSource(org.xwiki.contrib.mailarchive.LoadingSession)
+     */
+    @Override
+    public Map<String, Integer> checkSource(final LoadingSession session)
+    {
+        Map<String, Integer> results = new HashMap<String, Integer>();
+        List<IMASource> sources = getSourcesList(session);
+        for (IMASource source : sources) {
+            if ("SERVER".equals(source.getType())) {
+                results.put(source.getWikiDoc(), checkSource((Server) source));
+            } else if ("STORE".equals(source.getType())) {
+                results.put(source.getWikiDoc(), checkSource((MailStore) source));
+            } else {
+                logger.error("Unknown type of source " + source.getType() + " for " + source.getId());
+                results.put(source.getWikiDoc(), SourceConnectionErrors.UNKNOWN_SOURCE_TYPE.getCode());
+            }
+        }
+        return results;
     }
 
     /**
      * @param server
      * @return
      */
-    public int queryServerInfo(IServer server)
+    public int checkSource(final Server server)
     {
         logger.info("Checking server " + server);
 
-        int nbMessages =
-            mailManager.check(server.getHost(), server.getPort(), server.getProtocol(), server.getFolder(),
-                server.getUser(), server.getPassword(), server.getAdditionalProperties(), true);
-        logger.debug("check of server " + server + " returned " + nbMessages);
+        IMailReader mailReader = null;
+        try {
+            mailReader =
+                mailManager.getMailReader(server.getHostname(), server.getPort(), server.getProtocol(),
+                    server.getUsername(), server.getPassword(), server.getAdditionalProperties());
+        } catch (ComponentLookupException e) {
+            logger.error("Could not find appropriate mail reader for server " + server.getId(), e);
+            return -1;
+        }
+
+        int nbMessages = mailReader.check(server.getFolder(), true);
+        logger.debug("check of server " + server.getId() + " returned " + nbMessages);
 
         // Persist connection state
 
@@ -282,6 +357,40 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         } catch (Exception e) {
             logger.info("Failed to persist server connection state", e);
         }
+
+        server.setState(nbMessages);
+
+        return nbMessages;
+    }
+
+    /**
+     * @param store
+     * @return
+     */
+    public int checkSource(final MailStore store)
+    {
+        logger.info("Checking store " + store);
+
+        IMailReader mailReader = null;
+        try {
+            mailReader = mailManager.getStoreManager(store.getFormat(), store.getLocation());
+        } catch (ComponentLookupException e) {
+            logger.error("Could not find appropriate mail reader for store " + store.getId(), e);
+            return SourceConnectionErrors.INVALID_PREFERENCES.getCode();
+        }
+
+        int nbMessages = mailReader.check(store.getFolder(), true);
+        logger.debug("check of server " + store.getId() + " returned " + nbMessages);
+
+        // Persist connection state
+
+        try {
+            persistence.updateMailStoreState(store.getWikiDoc(), nbMessages);
+        } catch (Exception e) {
+            logger.info("Failed to persist server connection state", e);
+        }
+
+        store.setState(nbMessages);
 
         return nbMessages;
     }
@@ -313,117 +422,56 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     @Override
     public int loadMails(LoadingSession session)
     {
-        if (session.isDebugMode()) {
-            enterDebugMode();
-        }
-        logger.info("Starting new MAIL loading session...");
-        int nbMessages = 0;
-        int currentMsg = 0;
         int nbSuccess = 0;
+
+        logger.info("Starting new MAIL loading session...");
 
         if (inProgress) {
             logger.warn("Loading process already in progress ...");
             return -1;
         }
 
+        if (session.isDebugMode()) {
+            enterDebugMode();
+        }
+
         inProgress = true;
         try {
             configure();
-            loadItems();
+            loadTopicsAndMails();
 
-            List<IServer> servers = null;
-            if (!StringUtils.isBlank(session.getServerPrefsDoc())) {
-                IServer server = factory.createMailServer(session.getServerPrefsDoc());
-                if (server != null) {
-                    servers = new ArrayList<IServer>();
-                    servers.add(server);
+            final List<IMASource> servers = getSourcesList(session);
+
+            // Loop on all servers
+            for (IMASource server : servers) {
+                if (!server.isEnabled()) {
+                    logger.info("[{}] Server not enabled, skipping it", server.getId());
+                    break;
                 }
-            } else {
-                servers = config.getServers();
-            }
-
-            for (IServer server : servers) {
                 logger.info("[{}] Loading mails from server", server.getId());
 
-                List<Message> messages;
+                IMailReader mailReader = null;
                 try {
-                    messages = fetchMailsFromServer(server);
-                } catch (Exception e1) {
-                    logger.info("[{}] Can't retrieve messages from server", server.getId());
-                    messages = new ArrayList<Message>();
-                }
-                logger.info("[{}] Number of messages to treat : {}", new Object[] {server.getId(), messages.size()});
-                currentMsg = 0;
-                LoadingSessionResult result = null;
-                while ((currentMsg < session.getLimit() || session.getLimit() < 0) && currentMsg < messages.size()) {
-                    logger.debug("[{}] Loading message {}/{}",
-                        new Object[] {server.getId(), currentMsg, Math.min(messages.size(), session.getLimit())});
-                    try {
-                        Message message = messages.get(currentMsg);
-                        try {
-                            logger.debug("DEBUG MODE ? " + session.isDebugMode());
-                            // FIXME: remove true condition
-                            if (session.isDebugMode() || true) {
-                                try {
-                                    final String id =
-                                        JavamailMessageParser.extractSingleHeader(message, "Message-ID").replaceAll(
-                                            "[^a-zA-Z0-9-_\\.]", "_");
-                                    final File emlFile =
-                                        new File(environment.getPermanentDirectory(), "mailarchive/dump/" + id + ".eml");
-                                    final FileOutputStream fo = new FileOutputStream(emlFile);
-                                    message.writeTo(fo);
-                                    fo.flush();
-                                    fo.close();
+                    if (server instanceof Server) {
+                        Server s = (Server) server;
+                        mailReader =
+                            mailManager.getMailReader(s.getHostname(), s.getPort(), s.getProtocol(), s.getUsername(),
+                                s.getPassword(), server.getAdditionalProperties());
 
-                                    logger.debug("Message dumped into " + id + ".eml");
-                                } catch (Throwable t) {
-                                    // we catch Throwable because we don't want to cause problems in debug mode
-                                    logger.debug("Could not dump message for debug", t);
-                                }
-                            }
-                            result = loadMail(message, !session.isSimulationMode(), false, null);
-                        } catch (Exception me) {
-                            if (me instanceof MessagingException || me instanceof IOException) {
-                                logger.debug("[" + server.getId() + "] Could not load email because of", me);
-                                logger.info("[{}] Could not load email, trying to load a clone", server.getId());
-                                // Retrieve the Session object established during server connection
-                                Session jsession =
-                                    mailManager.getSession(server.getHost(), server.getPort(), server.getProtocol(),
-                                        server.getFolder(), server.getUser());
-                                Message clone = mailManager.cloneEmail(message, jsession);
-                                message = clone;
-                                if (message != null) {
-                                    result = loadMail(message, !session.isSimulationMode(), false, null);
-                                }
-                            }
-
-                        }
-                        if (result != null && result.isSuccess()) {
-                            nbSuccess++;
-                            if (!session.isSimulationMode()) {
-                                message.setFlag(Flags.Flag.SEEN, true);
-
-                                if (config.isUseStore()) {
-                                    try {
-                                        mailManager.writeToStore(server.getFolder(), messages.get(currentMsg));
-                                    } catch (MessagingException e) {
-                                        logger.error("Can't copy mail to local store", e);
-                                    }
-                                }
-                            }
-                        }
-                    } catch (Throwable e) {
-                        logger.warn("Failed to load mail", e);
+                    } else if (server instanceof MailStore) {
+                        MailStore s = (MailStore) server;
+                        mailReader = mailManager.getStoreManager(s.getFormat(), s.getLocation());
                     }
-                    currentMsg++;
+                } catch (Exception e1) {
+                    logger.warn("[{}] Can't retrieve a mail reader", server.getId(), e1);
                 }
 
-                nbMessages += currentMsg;
+                nbSuccess += loadMails(mailReader, server.getFolder(), session, server.getId());
             }
 
             try {
                 // Compute timeline feed
-                if (config.isManageTimeline() && nbMessages > 0) {
+                if (config.isManageTimeline() && nbSuccess > 0) {
                     String timelineFeed = timelineGenerator.compute();
                     if (!StringUtils.isBlank(timelineFeed)) {
                         File timelineFeedLocation =
@@ -457,9 +505,125 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
     }
 
+    private List<IMASource> getSourcesList(final LoadingSession session)
+    {
+        List<IMASource> servers = null;
+        final HashMap<String, String> sources = session.getSources();
+        servers = new ArrayList<IMASource>();
+        boolean hasServers = false;
+        for (Entry<String, String> source : sources.entrySet()) {
+            if ("SERVER".equals(source.getKey())) {
+                Server server = factory.createMailServer(source.getValue());
+                if (server != null) {
+                    hasServers = true;
+                    servers.add(server);
+                }
+            } else if ("STORE".equals(source.getKey())) {
+                MailStore store = factory.createMailStore(source.getValue());
+                if (store != null) {
+                    servers.add(store);
+                }
+            } else {
+                logger.warn("Unknown type of source connection: " + source.getKey());
+            }
+        }
+        if (!hasServers) {
+            // Empty server config means all servers
+            // Empty store config means no store
+            servers.addAll(config.getServers());
+        }
+        return servers;
+    }
+
+    public int loadMails(IMailReader mailReader, final String folder, final LoadingSession session,
+        final String serverId)
+    {
+
+        int currentMsg = 1;
+        int nbSuccess = 0;
+
+        List<Message> messages = null;
+
+        if (mailReader != null) {
+            try {
+                messages = mailReader.read(folder, !session.isLoadAll(), session.getLimit());
+            } catch (MessagingException e) {
+                logger.warn("[{}] Can't read messages from server", serverId, e);
+                messages = new ArrayList<Message>();
+            }
+        }
+        logger.info("[{}] Number of messages to treat : {}", new Object[] {serverId, messages.size()});
+
+        final int total = messages.size();
+        MailLoadingResult result = null;
+        for (Message message : messages) {
+            logger.debug("[{}] Loading message {}/{}", new Object[] {serverId, currentMsg, total});
+            try {
+                try {
+                    logger.debug("DEBUG MODE ? " + session.isDebugMode());
+                    if (session.isDebugMode()) {
+                        try {
+                            final String id =
+                                JavamailMessageParser.extractSingleHeader(message, "Message-ID").replaceAll(
+                                    "[^a-zA-Z0-9-_\\.]", "_");
+                            final File emlFile =
+                                new File(environment.getPermanentDirectory(), "mailarchive/dump/" + id + ".eml");
+                            final FileOutputStream fo = new FileOutputStream(emlFile);
+                            message.writeTo(fo);
+                            fo.flush();
+                            fo.close();
+
+                            logger.debug("Message dumped into " + id + ".eml");
+                        } catch (Throwable t) {
+                            // we catch Throwable because we don't want to cause problems in debug mode
+                            logger.debug("Could not dump message for debug", t);
+                        }
+                    }
+                    result = loadMail(message, !session.isSimulationMode(), false, null);
+                } catch (Exception me) {
+                    if (me instanceof MessagingException || me instanceof IOException) {
+                        logger.debug("[" + serverId + "] Could not load email because of", me);
+                        logger.info("[{}] Could not load email {}, trying to load a clone", currentMsg, serverId);
+
+                        message = mailReader.cloneEmail(message);
+                        if (message != null) {
+                            result = loadMail(message, !session.isSimulationMode(), false, null);
+                        }
+                    }
+
+                }
+                if (result != null && result.isSuccess()) {
+                    nbSuccess++;
+                    if (!session.isSimulationMode()) {
+                        message.setFlag(Flags.Flag.SEEN, true);
+
+                        // Save it in our built-in store, only if we're not already loading emails from that same store
+                        // :-)
+                        if (config.isUseStore() && !builtinStore.equals(mailReader)) {
+                            try {
+                                // Use server id as folder to avoid colliding folders from different servers
+                                builtinStore.write(serverId, message);
+                            } catch (MessagingException e) {
+                                logger.error("Can't copy mail to local store", e);
+                            }
+                        }
+                    }
+                }
+            } catch (Throwable e) {
+                logger.warn("Failed to load mail", e);
+            }
+            currentMsg++;
+        }
+
+        // nbMessages += currentMsg;
+        return nbSuccess;
+    }
+
     public String computeTimeline() throws XWikiException, InitializationException, MailArchiveException
     {
-        configure();
+        if (!this.isConfigured) {
+            configure();
+        }
         return timelineGenerator.compute();
     }
 
@@ -483,7 +647,11 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             File maStoreLocation = new File(environment.getPermanentDirectory(), "mailarchive/storage");
             logger.info("Local Store Location: " + maStoreLocation.getAbsolutePath());
             logger.info("Local Store Provider: mstor");
-            mailManager.setStore(maStoreLocation.getAbsolutePath(), "mstor");
+            try {
+                this.builtinStore = mailManager.getStoreManager("mstor", maStoreLocation.getAbsolutePath());
+            } catch (ComponentLookupException e) {
+                throw new InitializationException("Could not create or connect to built-in store");
+            }
         }
 
         TextUtils.setLogger(this.logger);
@@ -491,7 +659,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         this.isConfigured = true;
     }
 
-    protected void loadItems() throws MailArchiveException
+    protected void loadTopicsAndMails() throws MailArchiveException
     {
         existingTopics = store.loadStoredTopics();
         existingMessages = store.loadStoredMessages();
@@ -531,7 +699,11 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 userwiki = maUser.getWikiProfile();
             }
             if (StringUtils.isBlank(userwiki)) {
-                userwiki = UNKNOWN_USER;
+                if (config.isMatchProfiles()) {
+                    userwiki = UNKNOWN_USER;
+                } else {
+                    userwiki = config.getLoadingUser();
+                }
             }
             m.setWikiuser(userwiki);
 
@@ -571,8 +743,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * @throws IOException
      * @throws MessagingException
      */
-    public LoadingSessionResult loadMail(Part mail, boolean confirm, boolean isAttachedMail, String parentMail)
-        throws Exception, ParseException, MessagingException, IOException
+    public MailLoadingResult loadMail(Part mail, boolean confirm, boolean isAttachedMail, String parentMail)
+        throws XWikiException, ParseException, MessagingException, IOException
     {
         MailItem m = null;
 
@@ -590,20 +762,17 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     }
 
     /**
-     * @param existingTopics
-     * @param existingMessages
-     * @param message
+     * @param m
      * @param confirm
      * @param isAttachedMail
      * @param parentMail
      * @throws XWikiException
      * @throws ParseException
      */
-    public LoadingSessionResult loadMail(MailItem m, boolean confirm, boolean isAttachedMail, String parentMail)
-        throws Exception, ParseException
+    public MailLoadingResult loadMail(MailItem m, boolean confirm, boolean isAttachedMail, String parentMail)
+        throws XWikiException, ParseException
     {
         XWikiDocument msgDoc = null;
-        XWikiDocument topicDoc = null;
         String topicDocName = null;
 
         logger.debug("Loading mail content into wiki objects");
@@ -623,19 +792,24 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             if (existingTopicId == null) {
                 logger.debug("  did not find existing topic, creating a new one");
                 if (existingTopics.containsKey(m.getTopicId())) {
+                    // Topic hack ...
                     logger.debug("  new topic but topicId already loaded, using messageId as new topicId");
                     m.setTopicId(m.getMessageId());
+                    // FIX: "cut" properly mail history when creating a new topic
+                    m.setReplyToId("");
+                    existingTopicId =
+                        existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId(), m.getMessageId(), m.getRefs());
+                } else {
+                    existingTopicId = m.getTopicId();
                 }
-                existingTopicId = m.getTopicId();
-                topicDocName = createTopicPage(m, dateFormatter, confirm);
+                logger.debug("   creating new topic");
+                topicDocName = createTopicPage(m, confirm);
 
-                // FIXME: to be removed when everything has been moved to IPersistence/XWikiPersistence
-                topicDoc = xwiki.getDocument(topicDocName, context);
-
-                logger.debug("  loaded new topic " + topicDoc);
+                logger.debug("  loaded new topic " + topicDocName);
             } else if (TextUtils.similarSubjects(m.getTopic(), existingTopics.get(existingTopicId).getSubject())) {
                 logger.debug("  topic already loaded " + m.getTopicId() + " : " + existingTopics.get(existingTopicId));
-                topicDoc = updateTopicPage(m, existingTopicId, dateFormatter, confirm);
+                topicDocName =
+                    updateTopicPage(m, existingTopics.get(existingTopicId).getFullName(), dateFormatter, confirm);
             } else {
                 // We consider this was a topic hack : someone replied to an existing thread, but to start on another
                 // subject.
@@ -651,10 +825,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 existingTopicId =
                     existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId(), m.getMessageId(), m.getRefs());
                 logger.debug("  creating new topic");
-                topicDocName = createTopicPage(m, dateFormatter, confirm);
+                topicDocName = createTopicPage(m, confirm);
 
-                // FIXME: to be removed when everything has been moved to IPersistence/XWikiPersistence
-                topicDoc = xwiki.getDocument(topicDocName, context);
             }
         } // if not attached email
 
@@ -674,11 +846,10 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 msgDoc = createMailPage(m, existingTopicId, isAttachedMail, parentMail, confirm);
             } catch (Exception e) {
                 logger.error("Could not create mail page for " + m.getMessageId(), e);
-                return new LoadingSessionResult(false, topicDoc != null ? topicDoc.getFullName() : null, null);
+                return new MailLoadingResult(false, topicDocName, null);
             }
 
-            return new LoadingSessionResult(true, topicDoc != null ? topicDoc.getFullName() : null, msgDoc != null
-                ? msgDoc.getFullName() : null);
+            return new MailLoadingResult(true, topicDocName, msgDoc != null ? msgDoc.getFullName() : null);
         } else {
             // message already loaded
             logger.debug("Mail already loaded - checking for updates ...");
@@ -697,8 +868,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 }
             }
 
-            return new LoadingSessionResult(true, topicDoc != null ? topicDoc.getFullName() : null, msgDoc != null
-                ? msgDoc.getFullName() : null);
+            return new MailLoadingResult(true, topicDocName, msgDoc != null ? msgDoc.getFullName() : null);
         }
     }
 
@@ -707,7 +877,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * 
      * @throws XWikiException
      */
-    protected String createTopicPage(MailItem m, SimpleDateFormat dateFormatter, boolean create) throws Exception
+    protected String createTopicPage(MailItem m, boolean create) throws XWikiException
     {
         String pageName = "T" + m.getTopic().replaceAll(" ", "");
 
@@ -722,94 +892,17 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         return createdTopicName;
     }
 
-    /**
-     * updateTopicPage Update topic against new mail taking part to existing topic.
-     */
-    /**
-     * @param m
-     * @param existingTopicId
-     * @param dateFormatter
-     * @param create
-     * @return
-     * @throws XWikiException
-     * @throws ParseException
-     */
-    public XWikiDocument updateTopicPage(MailItem m, String existingTopicId, SimpleDateFormat dateFormatter,
-        boolean create) throws XWikiException, ParseException
+    protected String updateTopicPage(MailItem m, String existingTopicId, SimpleDateFormat dateFormatter, boolean create)
+        throws XWikiException
     {
-        logger.debug("updateTopicPage(" + existingTopicId + ")");
+        final String existingTopicPage = existingTopics.get(existingTopicId).getFullName();
 
-        IMAUser maUser = mailutils.parseUser(m.getFrom(), config.isMatchLdap());
-        String newuser = maUser.getWikiProfile();
-        if (newuser == null || "".equals(newuser)) {
-            newuser = UNKNOWN_USER;
-        }
-        XWikiDocument topicDoc = xwiki.getDocument(existingTopics.get(existingTopicId).getFullName(), context);
-        logger.debug("Existing topic " + topicDoc);
-        BaseObject topicObj = topicDoc.getObject(XWikiPersistence.SPACE_CODE + ".MailTopicClass");
-        Date lastupdatedate = topicObj.getDateValue("lastupdatedate");
-        Date startdate = topicObj.getDateValue("startdate");
-        String originalAuthor = topicObj.getStringValue("author");
-        if (lastupdatedate == null || "".equals(lastupdatedate)) {
-            lastupdatedate = m.getDate();
-        } // note : this should never occur
-        if (startdate == null || "".equals(startdate)) {
-            startdate = m.getDate();
-        }
+        String updatedTopicName =
+            persistence.updateTopicPage(m, existingTopicPage, dateFormatter, config.getLoadingUser(), create);
 
-        boolean isMoreRecent = (m.getDate().getTime() > lastupdatedate.getTime());
-        boolean isMoreAncient = (m.getDate().getTime() < startdate.getTime());
-        logger.debug("mail date = " + m.getDate().getTime() + ", last update date = " + lastupdatedate.getTime()
-            + ", is more recent = " + isMoreRecent + ", is more ancient = " + isMoreAncient + ", first in topic = "
-            + m.isFirstInTopic());
+        existingTopics.put(m.getTopicId(), new TopicDescriptor(updatedTopicName, m.getTopic()));
 
-        // If the first one, we add the startdate to existing topic
-        if (m.isFirstInTopic() || isMoreRecent) {
-            boolean dirty = false;
-            logger.debug("Checking if existing topic has to be updated ...");
-            String comment = "";
-            // if (m.isFirstInTopic) {
-            if ((!originalAuthor.equals(m.getFrom()) && isMoreAncient) || "".equals(originalAuthor)) {
-                logger.debug("     updating author from " + originalAuthor + " to " + m.getFrom());
-                topicObj.set("author", m.getFrom(), context);
-                comment += " Updated author ";
-                dirty = true;
-            }
-            logger.debug("     existing startdate " + topicObj.getDateValue("startdate"));
-            if ((topicObj.getStringValue("startdate") == null || "".equals(topicObj.getStringValue("startdate")))
-                || isMoreAncient) {
-                logger.debug("     checked startdate not already added to topic");
-                topicObj.set("startdate", m.getDate(), context);
-                topicDoc.setCreationDate(m.getDate());
-                comment += " Updated start date ";
-                dirty = true;
-            }
-            // }
-            if (isMoreRecent) {
-                logger.debug("     updating lastupdatedate from " + lastupdatedate + " to "
-                    + dateFormatter.format(m.getDate()));
-                topicObj.set("lastupdatedate", m.getDate(), context);
-                topicDoc.setDate(m.getDate());
-                topicDoc.setContentUpdateDate(m.getDate());
-
-                comment += " Updated last update date ";
-                dirty = true;
-            }
-            topicDoc.setComment(comment);
-
-            if (create && dirty) {
-                logger.debug("     Updated existing topic");
-                persistence.saveAsUser(topicDoc, newuser, config.getLoadingUser(), comment);
-            }
-            existingTopics.put(m.getTopicId(),
-                new TopicDescriptor(topicDoc.getFullName(), topicObj.getStringValue("subject")));
-        } else {
-            logger.debug("     Nothing to update in topic");
-        }
-
-        // return topicDoc
-
-        return null;
+        return updatedTopicName;
     }
 
     /**
@@ -852,6 +945,11 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         // Retrieve mail body(ies)
         logger.debug("Fetching mail content");
         MailContent mailContent = mailManager.parseContent(m.getOriginalMessage());
+        // Resolve attachment urls against wiki document
+        for (MailAttachment wikiAttachment : mailContent.getWikiAttachments().values()) {
+            final String attachmentUrl = msgDoc.getAttachmentURL(wikiAttachment.getFilename(), context);
+            wikiAttachment.setUrl(attachmentUrl);
+        }
 
         List<Message> attachedMails = mailContent.getAttachedMails();
         final List<String> attachedMailsPages = loadAttachedMails(attachedMails, msgDoc, create);
@@ -863,7 +961,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         content = TextUtils.truncateStringForBytes(content, 65500, 65500);
 
         // Treat Html part
-        zippedhtmlcontent = treatHtml(msgDoc, htmlcontent, mailContent.getWikiAttachments());
+        zippedhtmlcontent = treatHtml(htmlcontent, mailContent.getWikiAttachments());
 
         // Treat lengths
         m.setMessageId(TextUtils.truncateForString(m.getMessageId()));
@@ -974,7 +1072,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             logger.debug("Loading attached mails ...");
             for (Message message : attachedMails) {
                 try {
-                    LoadingSessionResult result = loadMail(message, create, true, msgDoc.getFullName());
+                    MailLoadingResult result = loadMail(message, create, true, msgDoc.getFullName());
                     if (result.isSuccess()) {
                         attachedMailsPages.add(result.getCreatedMailDocumentName());
                     } else {
@@ -995,8 +1093,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * Cleans up HTML content and treat it to replace cid tags with correct image urls (targeting attachments), then zip
      * it.
      */
-    String treatHtml(XWikiDocument msgdoc, String htmlcontent, HashMap<String, MailAttachment> attachmentsMap)
-        throws IOException
+    String treatHtml(String htmlcontent, HashMap<String, MailAttachment> attachmentsMap) throws IOException
     {
         if (!StringUtils.isBlank(htmlcontent)) {
             logger.debug("Original HTML length " + htmlcontent.length());
@@ -1014,8 +1111,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                     pattern = "cid:" + pattern;
 
                     logger.debug("Testing for CID pattern " + Util.encodeURI(pattern, context) + " " + pattern);
-                    // FIXME : should not be done here be sooner, so to remove dependency on msgdoc ...
-                    String replacement = msgdoc.getAttachmentURL(att.getValue().getFilename(), context);
+                    String replacement = att.getValue().getUrl();
                     logger.debug("To be replaced by " + replacement);
                     htmlcontent = htmlcontent.replaceAll(pattern, replacement);
                 } else {
@@ -1079,7 +1175,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * Add map of attachments (bodyparts) to a document (doc1)
      */
     public int addAttachmentsFromMail(XWikiDocument doc1, ArrayList<MimeBodyPart> bodyparts,
-        HashMap<String, String> attachmentsMap) throws MessagingException, IOException, XWikiException
+        HashMap<String, String> attachmentsMap) throws MessagingException
     {
         int nb = 0;
         for (MimeBodyPart bodypart : bodyparts) {
@@ -1123,7 +1219,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
                     byte[] data = baos.toByteArray();
                     logger.debug("Ready to attach attachment: " + fileName);
-                    nb += addAttachmentFromMail(doc1, fileName, data);
+                    addAttachmentFromMail(doc1, fileName, data);
+                    nb++;
                 } // end if
             } catch (Exception e) {
                 logger.warn("Attachment " + fileName + " could not be treated", e);
@@ -1136,7 +1233,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * Add to document (doc1) an attached file (afilename) with its content (adata), and fills a map (adata) with
      * relation between contentId (cid) and (afilename)
      */
-    public int addAttachmentFromMail(XWikiDocument doc, String afilename, byte[] adata) throws XWikiException
+    public void addAttachmentFromMail(XWikiDocument doc, String afilename, byte[] adata) throws XWikiException
     {
         String filename = getAttachmentValidName(afilename);
         logger.debug("adding attachment: " + filename);
@@ -1152,8 +1249,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         logger.debug("saving attachment: " + filename);
         doc.setComment("Added attachment " + filename);
         doc.saveAttachmentContent(attachment, context);
-
-        return 1;
     }
 
     /*
@@ -1161,12 +1256,11 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      */
     public String getAttachmentValidName(String afilename)
     {
-        String fname = afilename;
-        int i = fname.lastIndexOf("\\");
+        int i = afilename.lastIndexOf("\\");
         if (i == -1) {
-            i = fname.lastIndexOf("/");
+            i = afilename.lastIndexOf("/");
         }
-        String filename = fname.substring(i + 1);
+        String filename = afilename.substring(i + 1);
         filename = filename.replaceAll("\\+", " ");
         return filename;
     }
@@ -1322,37 +1416,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         }
 
         return foundTopicId;
-    }
-
-    /**
-     * @param server
-     * @return
-     * @throws MailArchiveException
-     */
-    public List<Message> fetchMailsFromServer(IServer server) throws MailArchiveException
-    {
-        assert (server != null);
-
-        List<Message> messages = new ArrayList<Message>();
-
-        if (queryServerInfo(server) >= 0) {
-
-            try {
-                logger.info("Trying to retrieve mails from server " + server.toString());
-                messages =
-                    mailManager.fetch(server.getHost(), server.getPort(), server.getProtocol(), server.getFolder(),
-                        server.getUser(), server.getPassword(), server.getAdditionalProperties(), true);
-            } catch (Exception e) {
-                throw new MailArchiveException("Could not connect to server " + server, e);
-            }
-        } else {
-            throw new MailArchiveException("Connection to server checked as failed, not trying to load mails");
-        }
-
-        logger.info("Found " + messages.size() + " messages");
-
-        return messages;
-
     }
 
     /**

@@ -19,6 +19,9 @@
  */
 package org.xwiki.contrib.mailarchive;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @version $Id$
  */
@@ -32,21 +35,40 @@ public class LoadingSession
 
     private boolean simulationMode = false;
 
+    private boolean recentMails = false;
+
     private int maxMailsNb = -1;
 
-    private String serverPrefsDoc = null;
+    private HashMap<String, String> sources = null;
 
     private final IMailArchive ma;
 
-    public LoadingSession(IMailArchive ma)
+    public LoadingSession(final IMailArchive ma)
     {
         this.ma = ma;
     }
 
-    public LoadingSession(IMailArchive ma, String serverPrefsDoc)
+    public LoadingSession addServer(final String serverPrefsDoc)
     {
-        this(ma);
-        this.serverPrefsDoc = serverPrefsDoc;
+        if (this.sources == null) {
+            this.sources = new HashMap<String, String>();
+        }
+        this.sources.put("SERVER", serverPrefsDoc);
+        return this;
+    }
+
+    public LoadingSession addStore(final String storePrefsDoc)
+    {
+        if (this.sources == null) {
+            this.sources = new HashMap<String, String>();
+        }
+        this.sources.put("STORE", storePrefsDoc);
+        return this;
+    }
+
+    protected void setSources(final HashMap<String, String> sources)
+    {
+        this.sources = sources;
     }
 
     public LoadingSession withDelete()
@@ -70,6 +92,12 @@ public class LoadingSession
     public LoadingSession simulationMode()
     {
         this.simulationMode = true;
+        return this;
+    }
+
+    public LoadingSession recentMails()
+    {
+        this.recentMails = true;
         return this;
     }
 
@@ -99,31 +127,46 @@ public class LoadingSession
         return simulationMode;
     }
 
+    public boolean getRecentMails()
+    {
+        return recentMails;
+    }
+
     public int getLimit()
     {
         return maxMailsNb;
     }
 
-    public String getServerPrefsDoc()
+    public HashMap<String, String> getSources()
     {
-        return serverPrefsDoc;
+        return this.sources;
     }
 
     public int loadMails()
     {
         // clone the session to avoid it to be updated during loading phase ...
-        return this.ma.loadMails(this.clone());
+        try {
+            return this.ma.loadMails(this.clone());
+        } catch (CloneNotSupportedException e) {
+            return this.ma.loadMails(this);
+        }
+    }
+
+    public Map<String, Integer> checkMails()
+    {
+        // clone the session to avoid it to be updated during loading phase ...
+        try {
+            return this.ma.checkSource(this.clone());
+        } catch (CloneNotSupportedException e) {
+            return this.ma.checkSource(this);
+        }
     }
 
     @Override
-    protected LoadingSession clone()
+    protected LoadingSession clone() throws CloneNotSupportedException
     {
-        LoadingSession clone = null;
-        if (serverPrefsDoc != null) {
-            clone = new LoadingSession(ma, serverPrefsDoc);
-        } else {
-            clone = new LoadingSession(ma);
-        }
+        LoadingSession clone = new LoadingSession(ma);
+
         if (debugMode) {
             clone.debugMode();
         }
@@ -136,16 +179,25 @@ public class LoadingSession
         if (withDelete) {
             clone.withDelete();
         }
+        clone.setSources(this.sources);
+
         clone.setLimit(getLimit());
         return clone;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {
-        return "MailLoadingSession [withDelete=" + withDelete + ", loadAll=" + loadAll + ", debugMode=" + debugMode
-            + ", simulationMode=" + simulationMode + ", maxMailsNb=" + maxMailsNb + ", serverPrefsDoc="
-            + serverPrefsDoc + ", ma=" + ma + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("LoadingSession [withDelete=").append(withDelete).append(", loadAll=").append(loadAll)
+            .append(", debugMode=").append(debugMode).append(", simulationMode=").append(simulationMode)
+            .append(", maxMailsNb=").append(maxMailsNb).append(", sources=").append(sources).append("]");
+        return builder.toString();
     }
 
 }

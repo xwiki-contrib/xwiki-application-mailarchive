@@ -19,6 +19,7 @@
  */
 package org.xwiki.contrib.mailarchive.internal.persistence;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import org.xwiki.component.annotation.Role;
@@ -37,11 +38,16 @@ public interface IPersistence
 {
 
     String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
-        final String loadingUser, final boolean create) throws Exception;
+        final String loadingUser, final boolean create) throws XWikiException;
 
-    void updateMailServerState(String serverPrefsDoc, int status) throws Exception;
+    void updateMailServerState(String serverPrefsDoc, int status) throws XWikiException;
+
+    void updateMailStoreState(String storePrefsDoc, int status) throws XWikiException;
 
     void saveAsUser(final XWikiDocument doc, final String user, final String contentUser, final String comment)
         throws XWikiException;
+
+    String updateTopicPage(MailItem m, String existingTopicPage, SimpleDateFormat dateFormatter,
+        final String loadingUser, boolean create) throws XWikiException;
 
 }

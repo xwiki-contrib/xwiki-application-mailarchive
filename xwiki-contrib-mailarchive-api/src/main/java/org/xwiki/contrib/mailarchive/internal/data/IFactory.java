@@ -20,9 +20,11 @@
 package org.xwiki.contrib.mailarchive.internal.data;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailMatcher;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IType;
+import org.xwiki.contrib.mailarchive.LoadingSession;
 
 /**
  * @version $Id$
@@ -32,12 +34,31 @@ public interface IFactory
 {
 
     /**
-     * Creates a IServer from preferences document.
+     * Creates a Server from preferences document.
      * 
      * @param serverPrefsDoc wiki page name of preferences document.
      * @return a IServer object, or null if preferences document does not exist
      */
+    // FIXME: factory should not return concrete implementations
     Server createMailServer(String serverPrefsDoc);
+
+    /**
+     * Creates a MailStore from preferences document.
+     * 
+     * @param storePrefsDoc
+     * @return
+     */
+    // FIXME: factory should not return concrete implementations
+    MailStore createMailStore(String storePrefsDoc);
+
+    /**
+     * Creates a LoadingSession from preferences document.
+     * 
+     * @param sessionPrefsDoc
+     * @param mailArchive
+     * @return
+     */
+    LoadingSession createLoadingSession(String sessionPrefsDoc, IMailArchive mailArchive);
 
     /**
      * Creates a IType from name, icon and patterns list

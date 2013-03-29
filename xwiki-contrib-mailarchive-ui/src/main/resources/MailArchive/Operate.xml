@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xwikidoc>
-<web>MailArchive</web>
-<name>Operate</name>
-<language></language>
-<defaultLanguage>en</defaultLanguage>
-<translation>0</translation>
-<parent>MailArchive.WebHome</parent>
-<creator>XWiki.Admin</creator>
-<author>XWiki.Admin</author>
-<customClass></customClass>
-<contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353417885000</creationDate>
-<date>1353417885000</date>
-<contentUpdateDate>1353417885000</contentUpdateDate>
-<version>1.1</version>
-<title>Mail Archive Operations</title>
-<template></template>
-<defaultTemplate></defaultTemplate>
-<validationScript></validationScript>
-<comment>Import</comment>
-<minorEdit>false</minorEdit>
-<syntaxId>xwiki/2.0</syntaxId>
-<hidden>false</hidden>
-<content>{{velocity wiki="true"}}
+  <web>MailArchive</web>
+  <name>Operate</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchive.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1353417885000</creationDate>
+  <date>1353417885000</date>
+  <contentUpdateDate>1353417885000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Mail Archive Operations</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity wiki="true"}}
 #if(!$hasAdmin)
 {{warning}}You must be logged with admin rights to operate the Mail Archive.
 #else
 
-* [[Load mails&gt;&gt;MailArchive.Loading]]
+* [[Loading page&gt;&gt;MailArchive.Loading]]
+* [[Purge page&gt;&gt;MailArchive.Purge]]
 
 == Topics ==
-
-(work in progress)
 
 $xwiki.jsx.use('MailArchive.LiveTable')
 #set($collist = [ "subject", "count", "author", "startdate", "lastupdatedate", "_actions"])
@@ -53,11 +53,10 @@ $xwiki.jsx.use('MailArchive.LiveTable')
 
 == Mails ==
 
-#set($collist = [ "doc.title", "doc.name", "doc.author", "date", "_attachments"])
+#set($collist = [ "messagesubject", "from", "date", "_attachments"])
 #set($colprops = {                   
-                   "doc.title" : { "type" : "text", "link" : "view", "sortable":"true", "filterable":"true", "html":"true" },
-                   "doc.name" : { "type" : "text", "link" : "view", "sortable":"true", "filterable":"true", "html":"true" },
-                   "doc.author" : { "type" : "text", "sortable":"true", "filterable":"true", "html" : "true" },
+                   "messagesubject" : { "type" : "text", "link" : "view", "sortable":"true", "filterable":"true", "html":"true" },
+                   "from" : { "type" : "text", "sortable":"true", "filterable":"true", "html" : "true" },
                    "date" : { "type" : "date", "link" : "view" }
                  } )
 #set($options = { "className":"MailArchiveCode.MailClass",
@@ -69,29 +68,25 @@ $xwiki.jsx.use('MailArchive.LiveTable')
                   "rowCount": 10 })
 #livetable("mails" $collist $colprops $options)
 
-=== Purge Mails &amp; Topics ===
+{{info}}
+Remaining work:
 
-* [[Purge page&gt;&gt;MailArchive.Purge]]
-* Purge All Mails &amp; Topics (warning : not possible to recover ...)
-* Purge by date (older than ...)
-* Purge 1 Topic &amp; all related mails (by id, title, after search)
-* Purge mails loaded during last loading session ?
-
-=== Split Topics ===
-
-(display list of subjects and select mail for split base, select new title for new topic)
-
-=== Merge Topics ===
-
-Select 2 topics, select 1 title for both
-(replace IDs in mails and topic, in msgid and refs)
-
-=== Others ===
-
-* Refresh timeline explicitely
-* Purge timeline data
-* Force refresh of users photos (if ldap &amp; ldap photo)
-* Force creation of missing users from LDAP (if ldap)
+* Purge Mails &amp; Topics
+** Purge All Mails &amp; Topics (warning : not possible to recover ...)
+** Purge by date (older than ...)
+** Purge 1 Topic &amp; all related mails (by id, title, after search)
+** Purge mails loaded during last loading session ?
+* Split Topics
+** display list of subjects and select mail for split base, select new title for new topic
+* Merge Topics
+** Select 2 topics, select 1 title for both (replace IDs in mails and topic, in msgid and refs)
+* Others
+** Refresh timeline explicitely
+** Purge timeline data
+** Force refresh of users photos (if ldap &amp; ldap photo)
+** Force creation of missing users from LDAP (if ldap)
+{{/info}}
 
 #end
-{{/velocity}}</content></xwikidoc>
+{{/velocity}}</content>
+</xwikidoc>

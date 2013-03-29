@@ -45,14 +45,14 @@ public interface IMailUtils
     IMAUser parseUser(String user, boolean isMatchLdap);
 
     /**
-     * @param mailPage
+     * @param originalHtml
+     * @param originalBody
      * @param cut
      * @return
      * @throws IOException
      * @throws XWikiException
      */
-    DecodedMailContent decodeMailContent(String originalHtml, String originalBody, boolean cut) throws IOException,
-        XWikiException;
+    DecodedMailContent decodeMailContent(String originalHtml, String originalBody, boolean cut) throws IOException;
 
     /**
      * @param types

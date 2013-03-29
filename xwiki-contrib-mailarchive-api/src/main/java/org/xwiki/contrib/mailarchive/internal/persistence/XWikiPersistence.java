@@ -19,6 +19,8 @@
  */
 package org.xwiki.contrib.mailarchive.internal.persistence;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -85,6 +87,10 @@ public class XWikiPersistence implements IPersistence, Initializable
     public static final String CLASS_MAIL_LISTS = SPACE_CODE + ".ListsSettingsClass";
 
     public static final String CLASS_MAIL_SERVERS = SPACE_CODE + ".ServerSettingsClass";
+
+    public static final String CLASS_MAIL_STORES = SPACE_CODE + ".StoreClass";
+
+    public static final String CLASS_LOADING_SESSION = SPACE_CODE + ".LoadingSessionClass";
 
     public static final String TEMPLATE_MAILS = SPACE_CODE + ".MailClassTemplate";
 
@@ -166,12 +172,107 @@ public class XWikiPersistence implements IPersistence, Initializable
         return topicDoc.getFullName();
     }
 
+    /**
+     * updateTopicPage Update topic against new mail taking part to existing topic.
+     */
+    /**
+     * @param m
+     * @param existingTopicId
+     * @param dateFormatter
+     * @param create
+     * @return
+     * @throws XWikiException
+     * @throws ParseException
+     */
+    @Override
+    public String updateTopicPage(MailItem m, String existingTopicPage, SimpleDateFormat dateFormatter,
+        final String loadingUser, boolean create) throws XWikiException
+    {
+        logger.debug("updateTopicPage(" + existingTopicPage + ")");
+
+        XWikiDocument topicDoc = xwiki.getDocument(existingTopicPage, context);
+        logger.debug("Existing topic " + topicDoc);
+        BaseObject topicObj = topicDoc.getObject(XWikiPersistence.SPACE_CODE + ".MailTopicClass");
+        Date lastupdatedate = topicObj.getDateValue("lastupdatedate");
+        Date startdate = topicObj.getDateValue("startdate");
+        String originalAuthor = topicObj.getStringValue("author");
+        if (lastupdatedate == null || "".equals(lastupdatedate)) {
+            lastupdatedate = m.getDate();
+        } // note : this should never occur
+        if (startdate == null || "".equals(startdate)) {
+            startdate = m.getDate();
+        }
+
+        boolean isMoreRecent = (m.getDate().getTime() > lastupdatedate.getTime());
+        boolean isMoreAncient = (m.getDate().getTime() < startdate.getTime());
+        logger.debug("mail date = " + m.getDate().getTime() + ", last update date = " + lastupdatedate.getTime()
+            + ", is more recent = " + isMoreRecent + ", is more ancient = " + isMoreAncient + ", first in topic = "
+            + m.isFirstInTopic());
+
+        // If the first one, we add the startdate to existing topic
+        if (m.isFirstInTopic() || isMoreRecent) {
+            boolean dirty = false;
+            logger.debug("Checking if existing topic has to be updated ...");
+            String comment = "";
+            // if (m.isFirstInTopic) {
+            if ((!originalAuthor.equals(m.getFrom()) && isMoreAncient) || "".equals(originalAuthor)) {
+                logger.debug("     updating author from " + originalAuthor + " to " + m.getFrom());
+                topicObj.set("author", m.getFrom(), context);
+                comment += " Updated author ";
+                dirty = true;
+            }
+            logger.debug("     existing startdate " + topicObj.getDateValue("startdate"));
+            if ((topicObj.getStringValue("startdate") == null || "".equals(topicObj.getStringValue("startdate")))
+                || isMoreAncient) {
+                logger.debug("     checked startdate not already added to topic");
+                topicObj.set("startdate", m.getDate(), context);
+                topicDoc.setCreationDate(m.getDate());
+                comment += " Updated start date ";
+                dirty = true;
+            }
+            // }
+            if (isMoreRecent) {
+                logger.debug("     updating lastupdatedate from " + lastupdatedate + " to "
+                    + dateFormatter.format(m.getDate()));
+                topicObj.set("lastupdatedate", m.getDate(), context);
+                topicDoc.setDate(m.getDate());
+                topicDoc.setContentUpdateDate(m.getDate());
+
+                comment += " Updated last update date ";
+                dirty = true;
+            }
+            topicDoc.setComment(comment);
+
+            if (create && dirty) {
+                logger.debug("     Updated existing topic");
+                saveAsUser(topicDoc, m.getWikiuser(), loadingUser, comment);
+            }
+        } else {
+            logger.debug("     Nothing to update in topic");
+        }
+
+        // return topicDoc
+
+        return topicDoc.getFullName();
+    }
+
     @Override
     public void updateMailServerState(String serverPrefsDoc, int status) throws XWikiException
     {
         logger.debug("Updating server state in " + serverPrefsDoc);
         XWikiDocument serverDoc = context.getWiki().getDocument(serverPrefsDoc, context);
-        BaseObject serverObj = serverDoc.getObject(SPACE_CODE + ".ServerSettingsClass");
+        BaseObject serverObj = serverDoc.getObject(CLASS_MAIL_SERVERS);
+        serverObj.set("status", status, context);
+        serverObj.setDateValue("lasttest", new Date());
+        xwiki.saveDocument(serverDoc, context);
+    }
+
+    @Override
+    public void updateMailStoreState(String storePrefsDoc, int status) throws XWikiException
+    {
+        logger.debug("Updating store state in " + storePrefsDoc);
+        XWikiDocument serverDoc = context.getWiki().getDocument(storePrefsDoc, context);
+        BaseObject serverObj = serverDoc.getObject(CLASS_MAIL_STORES);
         serverObj.set("status", status, context);
         serverObj.setDateValue("lasttest", new Date());
         xwiki.saveDocument(serverDoc, context);

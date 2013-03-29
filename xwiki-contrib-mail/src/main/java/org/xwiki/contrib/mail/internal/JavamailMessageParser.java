@@ -27,6 +27,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -38,23 +40,23 @@ import javax.mail.internet.MimeUtility;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.mail.MailContent;
 import org.xwiki.contrib.mail.MailItem;
-import org.xwiki.contrib.mail.Utils;
+import org.xwiki.contrib.mail.internal.util.GMailMailDateFormat;
+import org.xwiki.contrib.mail.internal.util.Utils;
 
 /**
  * @version $Id$
  */
+@Component
+@Named("javamail")
 public class JavamailMessageParser implements IMessageParser<Part>
 {
     public static final String DEFAULT_SUBJECT = "[no subject]";
 
+    @Inject
     private Logger logger;
-
-    public JavamailMessageParser(Logger logger)
-    {
-        this.logger = logger;
-    }
 
     /**
      * {@inheritDoc}
@@ -247,8 +249,7 @@ public class JavamailMessageParser implements IMessageParser<Part>
      * @throws IOException
      * @throws UnsupportedEncodingException
      */
-    public MailContent extractMailContent(Part part) throws MessagingException, UnsupportedEncodingException,
-        IOException
+    public MailContent extractMailContent(Part part) throws MessagingException, IOException
     {
         logger.debug("extractMailContent...");
 
@@ -316,8 +317,8 @@ public class JavamailMessageParser implements IMessageParser<Part>
     }
 
     /**
-     * Recurssively extracts content of an email. Every Part that has a file name, or is neither multipart, plain text
-     * or html, is considered an attachment.
+     * Recursively extracts content of an email. Every Part that has a file name, or is neither multipart, plain text or
+     * html, is considered an attachment.
      * 
      * @param part
      * @return
@@ -325,8 +326,7 @@ public class JavamailMessageParser implements IMessageParser<Part>
      * @throws UnsupportedEncodingException
      * @throws IOException
      */
-    public MailContent extractPartsContent(Part part) throws MessagingException, UnsupportedEncodingException,
-        IOException
+    public MailContent extractPartsContent(Part part) throws MessagingException, IOException
     {
         MailContent mailContent = new MailContent();
 
@@ -354,18 +354,20 @@ public class JavamailMessageParser implements IMessageParser<Part>
                 // We just ignore the control information
                 logger.debug("Adding SIGNED MULTIPART CONTENT");
                 mailContent.append(extractPartsContent(multipart.getBodyPart(0)));
-            } else if (contentType.startsWith("multipart/related") || contentType.startsWith("multipart/mixed")
-                || contentType.startsWith("multipart/alternative")) {
-                // FIXME multipart/related should be treated differently than other parts, though the same treatment
+            } else if (part.isMimeType("multipart/related") || part.isMimeType("multipart/mixed")
+                || part.isMimeType("multipart/alternative")) {
+                // FIXME multipart/alternative should be treated differently than other parts, though the same treatment
                 // should be ok most of the time
-                // (multipart/related is usually one part text/plain and the alternative text/html, so as text and html
+                // (multipart/alternative is usually one part text/plain and the alternative text/html, so as text and
+                // html
                 // are always considered alternates by this algorithm, it's ok)
                 int i = 0;
                 int mcount = multipart.getCount();
                 while (i < mcount) {
                     logger.debug("Adding MULTIPART #{}", i);
                     try {
-                        mailContent.append(extractPartsContent(multipart.getBodyPart(i)));
+                        final MailContent innerMailContent = extractPartsContent(multipart.getBodyPart(i));
+                        mailContent.append(innerMailContent);
                     } catch (Exception e) {
                         logger.warn("Could not add MULTIPART #{}", i, e);
                     }
@@ -427,12 +429,11 @@ public class JavamailMessageParser implements IMessageParser<Part>
      */
     public String getAttachmentValidName(String afilename)
     {
-        String fname = afilename;
-        int i = fname.lastIndexOf("\\");
+        int i = afilename.lastIndexOf("\\");
         if (i == -1) {
-            i = fname.lastIndexOf("/");
+            i = afilename.lastIndexOf("/");
         }
-        String filename = fname.substring(i + 1);
+        String filename = afilename.substring(i + 1);
         filename = filename.replaceAll("\\+", " ");
         return filename;
     }

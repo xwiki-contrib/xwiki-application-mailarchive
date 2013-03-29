@@ -20,10 +20,12 @@
 package org.xwiki.contrib.mailarchive;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.component.phase.InitializationException;
-import org.xwiki.contrib.mail.ConnectionErrors;
+import org.xwiki.contrib.mail.SourceConnectionErrors;
+import org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadableMessage;
 import org.xwiki.contrib.mailarchive.internal.utils.DecodedMailContent;
@@ -40,13 +42,21 @@ public interface IMailArchive
      * Checks connection to mail server, and count available (UNREAD) emails.
      * 
      * @return value >= 0 is the number of messages to read if connection was ok, negative value indicates connection
-     *         error (see {@link ConnectionErrors}).
+     *         error (see {@link SourceConnectionErrors}).
      */
-    public int queryServerInfo(String serverPrefsDoc);
+    public int checkSource(String serverPrefsDoc);
 
     /**
-     * Fetch mails from a specific server (given page name holding its preferences), or from all configured servers. The
-     * session object provides all needed parameters (Cf {@link LoadingSession}).
+     * Checks connections defined by a loading session, and count available emails.
+     * 
+     * @param session
+     * @return
+     */
+    public Map<String, Integer> checkSource(LoadingSession session);
+
+    /**
+     * Fetch mails from sources specified by a loading session. The session object provides all needed parameters (Cf
+     * {@link LoadingSession}).
      * 
      * @param session
      * @return Number of emails loaded during this session.
@@ -95,4 +105,6 @@ public interface IMailArchive
     public IType getType(String name);
 
     public String computeTimeline() throws Exception;
+
+    public IMailArchiveConfiguration getConfiguration() throws InitializationException, MailArchiveException;
 }

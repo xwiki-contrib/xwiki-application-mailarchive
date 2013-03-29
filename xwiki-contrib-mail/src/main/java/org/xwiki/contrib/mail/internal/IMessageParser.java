@@ -23,12 +23,14 @@ import java.io.IOException;
 
 import javax.mail.MessagingException;
 
+import org.xwiki.component.annotation.Role;
 import org.xwiki.contrib.mail.MailContent;
 import org.xwiki.contrib.mail.MailItem;
 
 /**
  * @version $Id$
  */
+@Role
 public interface IMessageParser<M>
 {
     MailItem parseHeaders(M message) throws MessagingException, IOException;

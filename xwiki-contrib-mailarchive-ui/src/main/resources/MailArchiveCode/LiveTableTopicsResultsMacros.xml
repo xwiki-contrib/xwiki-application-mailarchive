@@ -1,60 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xwikidoc>
-<web>MailArchiveCode</web>
-<name>LiveTableTopicsResultsMacros</name>
-<language></language>
-<defaultLanguage>en</defaultLanguage>
-<translation>0</translation>
-<parent>XWiki.WebHome</parent>
-<creator>XWiki.Admin</creator>
-<author>XWiki.Admin</author>
-<customClass></customClass>
-<contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353417891000</creationDate>
-<date>1353417891000</date>
-<contentUpdateDate>1353417891000</contentUpdateDate>
-<version>1.1</version>
-<title>$msg.get("xe.livetable.resultsmacros")</title>
-<template></template>
-<defaultTemplate></defaultTemplate>
-<validationScript></validationScript>
-<comment>Import</comment>
-<minorEdit>false</minorEdit>
-<syntaxId>xwiki/2.0</syntaxId>
-<hidden>false</hidden>
-<object>
-<class>
-<name>XWiki.TagClass</name>
-<customClass></customClass>
-<customMapping></customMapping>
-<defaultViewSheet></defaultViewSheet>
-<defaultEditSheet></defaultEditSheet>
-<defaultWeb></defaultWeb>
-<nameField></nameField>
-<validationScript></validationScript>
-<tags>
-<cache>0</cache>
-<disabled>0</disabled>
-<displayType>input</displayType>
-<multiSelect>1</multiSelect>
-<name>tags</name>
-<number>1</number>
-<prettyName>Tags</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator>|</separator>
-<separators>|,</separators>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</tags>
-</class>
-<name>MailArchiveCode.LiveTableTopicsResultsMacros</name>
-<number>0</number>
-<className>XWiki.TagClass</className>
-<guid>330504ac-33b4-4ea2-9fe0-4eff5d3d1e8c</guid>
-</object>
-<content>{{velocity}}
+  <web>MailArchiveCode</web>
+  <name>LiveTableTopicsResultsMacros</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchiveCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1353417891000</creationDate>
+  <date>1353417891000</date>
+  <contentUpdateDate>1353417891000</contentUpdateDate>
+  <version>1.1</version>
+  <title>$msg.get("xe.livetable.resultsmacros")</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <object>
+    <class>
+      <name>XWiki.TagClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <tags>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>tags</name>
+        <number>1</number>
+        <prettyName>Tags</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator>|</separator>
+        <separators>|,</separators>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </tags>
+    </class>
+    <name>MailArchiveCode.LiveTableTopicsResultsMacros</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>330504ac-33b4-4ea2-9fe0-4eff5d3d1e8c</guid>
+  </object>
+  <content>{{velocity}}
 ##
 ## Macro to get the results of a grid data call
 ##
@@ -463,4 +464,5 @@
   #end
 #end
 ##
-{{velocity}}</content></xwikidoc>
+{{velocity}}</content>
+</xwikidoc>

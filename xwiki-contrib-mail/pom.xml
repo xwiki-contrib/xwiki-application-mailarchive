@@ -21,7 +21,7 @@
 		<version>0.3-SNAPSHOT</version>
 	</parent>
 	<artifactId>xwiki-contrib-mail</artifactId>
-	<name>XWiki - Mail Component</name>
+	<name>XWiki Contrib - Mail Component</name>
 	<description>${project.name} - API wrapped around Javamail for basic features.</description>
 	<dependencies>
 		<dependency>

@@ -1,202 +1,203 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xwikidoc>
-<web>MailArchiveCode</web>
-<name>ListsSettingsClass</name>
-<language></language>
-<defaultLanguage>en</defaultLanguage>
-<translation>0</translation>
-<parent>MailArchiveCode.ListsSettingsClass</parent>
-<creator>XWiki.Admin</creator>
-<author>XWiki.Admin</author>
-<customClass></customClass>
-<contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353417890000</creationDate>
-<date>1353417891000</date>
-<contentUpdateDate>1353417891000</contentUpdateDate>
-<version>1.1</version>
-<title></title>
-<template></template>
-<defaultTemplate></defaultTemplate>
-<validationScript></validationScript>
-<comment>Import</comment>
-<minorEdit>false</minorEdit>
-<syntaxId>xwiki/2.0</syntaxId>
-<hidden>false</hidden>
-<class>
-<name>MailArchiveCode.ListsSettingsClass</name>
-<customClass></customClass>
-<customMapping></customMapping>
-<defaultViewSheet></defaultViewSheet>
-<defaultEditSheet></defaultEditSheet>
-<defaultWeb></defaultWeb>
-<nameField></nameField>
-<validationScript></validationScript>
-<Tag>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>Tag</name>
-<number>3</number>
-<picker>0</picker>
-<prettyName>Tag</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</Tag>
-<color>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>color</name>
-<number>4</number>
-<picker>0</picker>
-<prettyName>Color</prettyName>
-<size>7</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</color>
-<displayname>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>displayname</name>
-<number>1</number>
-<picker>0</picker>
-<prettyName>Display Name</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</displayname>
-<listId>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>listId</name>
-<number>5</number>
-<picker>0</picker>
-<prettyName>List ID</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</listId>
-<pattern>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>pattern</name>
-<number>2</number>
-<picker>0</picker>
-<prettyName>Pattern to match from recipients</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</pattern>
-</class>
-<object>
-<class>
-<name>XWiki.ClassSheetBinding</name>
-<customClass></customClass>
-<customMapping></customMapping>
-<defaultViewSheet></defaultViewSheet>
-<defaultEditSheet></defaultEditSheet>
-<defaultWeb></defaultWeb>
-<nameField></nameField>
-<validationScript></validationScript>
-<sheet>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>sheet</name>
-<number>1</number>
-<picker>0</picker>
-<prettyName>Sheet</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</sheet>
-</class>
-<name>MailArchiveCode.ListsSettingsClass</name>
-<number>0</number>
-<className>XWiki.ClassSheetBinding</className>
-<guid>5f0bdad0-18ab-46a0-b350-efdab4313d97</guid>
-<property>
-<sheet>MailArchiveCode.ListsSettingsSheet</sheet>
-</property>
-</object>
-<object>
-<class>
-<name>XWiki.DocumentSheetBinding</name>
-<customClass></customClass>
-<customMapping></customMapping>
-<defaultViewSheet></defaultViewSheet>
-<defaultEditSheet></defaultEditSheet>
-<defaultWeb></defaultWeb>
-<nameField></nameField>
-<validationScript></validationScript>
-<sheet>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>sheet</name>
-<number>1</number>
-<picker>0</picker>
-<prettyName>Sheet</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</sheet>
-</class>
-<name>MailArchiveCode.ListsSettingsClass</name>
-<number>0</number>
-<className>XWiki.DocumentSheetBinding</className>
-<guid>976d8774-ac6b-4049-9fec-5a8862e493ef</guid>
-<property>
-<sheet>XWiki.ClassSheet</sheet>
-</property>
-</object>
-<object>
-<class>
-<name>XWiki.TagClass</name>
-<customClass></customClass>
-<customMapping></customMapping>
-<defaultViewSheet></defaultViewSheet>
-<defaultEditSheet></defaultEditSheet>
-<defaultWeb></defaultWeb>
-<nameField></nameField>
-<validationScript></validationScript>
-<tags>
-<cache>0</cache>
-<disabled>0</disabled>
-<displayType>input</displayType>
-<multiSelect>1</multiSelect>
-<name>tags</name>
-<number>1</number>
-<prettyName>Tags</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator>|</separator>
-<separators>|,</separators>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</tags>
-</class>
-<name>MailArchiveCode.ListsSettingsClass</name>
-<number>0</number>
-<className>XWiki.TagClass</className>
-<guid>85aabcca-36d5-4681-91d7-38d1890cbb95</guid>
-<property>
-<tags/>
-</property>
-</object>
-<content>{{velocity}}
+  <web>MailArchiveCode</web>
+  <name>ListsSettingsClass</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchiveCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1353417890000</creationDate>
+  <date>1353417891000</date>
+  <contentUpdateDate>1353417891000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <class>
+    <name>MailArchiveCode.ListsSettingsClass</name>
+    <customClass/>
+    <customMapping/>
+    <defaultViewSheet/>
+    <defaultEditSheet/>
+    <defaultWeb/>
+    <nameField/>
+    <validationScript/>
+    <Tag>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>Tag</name>
+      <number>3</number>
+      <picker>0</picker>
+      <prettyName>Tag</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </Tag>
+    <color>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>color</name>
+      <number>4</number>
+      <picker>0</picker>
+      <prettyName>Color</prettyName>
+      <size>7</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </color>
+    <displayname>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>displayname</name>
+      <number>1</number>
+      <picker>0</picker>
+      <prettyName>Display Name</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </displayname>
+    <listId>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>listId</name>
+      <number>5</number>
+      <picker>0</picker>
+      <prettyName>List ID</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </listId>
+    <pattern>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>pattern</name>
+      <number>2</number>
+      <picker>0</picker>
+      <prettyName>Pattern to match from recipients</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </pattern>
+  </class>
+  <object>
+    <class>
+      <name>XWiki.ClassSheetBinding</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <sheet>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sheet</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Sheet</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </sheet>
+    </class>
+    <name>MailArchiveCode.ListsSettingsClass</name>
+    <number>0</number>
+    <className>XWiki.ClassSheetBinding</className>
+    <guid>5f0bdad0-18ab-46a0-b350-efdab4313d97</guid>
+    <property>
+      <sheet>MailArchiveCode.ListsSettingsSheet</sheet>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.DocumentSheetBinding</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <sheet>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sheet</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Sheet</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </sheet>
+    </class>
+    <name>MailArchiveCode.ListsSettingsClass</name>
+    <number>0</number>
+    <className>XWiki.DocumentSheetBinding</className>
+    <guid>976d8774-ac6b-4049-9fec-5a8862e493ef</guid>
+    <property>
+      <sheet>XWiki.ClassSheet</sheet>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.TagClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <tags>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>tags</name>
+        <number>1</number>
+        <prettyName>Tags</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator>|</separator>
+        <separators>|,</separators>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </tags>
+    </class>
+    <name>MailArchiveCode.ListsSettingsClass</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>85aabcca-36d5-4681-91d7-38d1890cbb95</guid>
+    <property>
+      <tags/>
+    </property>
+  </object>
+  <content>{{velocity}}
 ## Replace Main with the Space where you want your documents to be created.
 ## Replace the default parent with the one of your choice and save the document.
 ##
@@ -238,4 +239,5 @@
 
 #end
 
-{{/velocity}}</content></xwikidoc>
+{{/velocity}}</content>
+</xwikidoc>

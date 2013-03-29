@@ -17,43 +17,38 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal;
+package org.xwiki.contrib.mailarchive.test.po;
+
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.xwiki.test.ui.po.BaseElement;
+import org.xwiki.test.ui.po.LiveTableElement;
 
 /**
- * @version $Id$
+ * Represents the actions possible on the Mail Sources part of the Admin Page.
  */
-public class LoadingSessionResult
+public class MailArchiveAdminMailSourcesPane extends BaseElement
 {
-    // [true,(topicDoc!=null?topicDoc.fullName:topicDoc),(msgDoc!=null?msgDoc.fullName:msgDoc)];
+    @FindBy(id = "btAddStore")
+    private WebElement addStoreButton;
 
-    private boolean success;
-
-    private String createdTopicDocumentName;
-
-    private String createdMailDocumentName;
-
-    public LoadingSessionResult(final boolean success, final String createdTopicDocumentName,
-        final String createdMailDocumentName)
+    public MailArchiveStoreEntryEditPage addStore()
     {
-        super();
-        this.success = success;
-        this.createdTopicDocumentName = createdTopicDocumentName;
-        this.createdMailDocumentName = createdMailDocumentName;
+        this.addStoreButton.click();
+        return new MailArchiveStoreEntryEditPage();
     }
 
-    public boolean isSuccess()
+    public LiveTableElement getServerLiveTable()
     {
-        return success;
+        LiveTableElement lt = new LiveTableElement("livetable_servers");
+        lt.waitUntilReady();
+        return lt;
     }
 
-    public String getCreatedTopicDocumentName()
+    public LiveTableElement getStoreLiveTable()
     {
-        return createdTopicDocumentName;
+        LiveTableElement lt = new LiveTableElement("livetable_stores");
+        lt.waitUntilReady();
+        return lt;
     }
-
-    public String getCreatedMailDocumentName()
-    {
-        return createdMailDocumentName;
-    }
-
 }

@@ -21,7 +21,7 @@
 		<version>0.3-SNAPSHOT</version>
 	</parent>
 	<artifactId>xwiki-contrib-mailarchive-api</artifactId>
-	<name>XWiki - MailArchive Component</name>
+	<name>XWiki Contrib - Mail Archive Application - API</name>
 	<description>${project.name} - Fetch and persist emails in XWiki data model.</description>
 	<dependencies>
 		<dependency>

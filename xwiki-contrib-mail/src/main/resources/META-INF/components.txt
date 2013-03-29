@@ -1,2 +1,6 @@
 org.xwiki.contrib.mail.internal.DefaultMailComponent
 org.xwiki.contrib.mail.MailScriptService
+org.xwiki.contrib.mail.internal.DefaultMailReader
+org.xwiki.contrib.mail.internal.MstorMailStore
+org.xwiki.contrib.mail.internal.MaildirMailStore
+org.xwiki.contrib.mail.internal.JavamailMessageParser

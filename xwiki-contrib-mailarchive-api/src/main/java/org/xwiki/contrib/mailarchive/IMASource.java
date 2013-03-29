@@ -22,28 +22,55 @@ package org.xwiki.contrib.mailarchive;
 import java.util.Properties;
 
 /**
- * Interface (aka Role) of the Component
+ * Defines some characteristics common to a mail source configuration.
  */
-public interface IServer
+public interface IMASource
 {
-    public static final int DEFAULT_PORT = 993;
+    /**
+     * The id of this server connection.
+     * 
+     * @return
+     */
+    String getId();
 
-    public String getId();
+    /**
+     * The type of mail source, ie "SERVER" or "STORE".
+     * 
+     * @return
+     */
+    String getType();
 
-    public String getHost();
+    /**
+     * The folder to load emails from.
+     * 
+     * @return
+     */
+    String getFolder();
 
-    public int getPort();
+    /**
+     * Additional properties to pass to the underlying javamail session.
+     * 
+     * @return
+     */
+    Properties getAdditionalProperties();
 
-    public String getProtocol();
+    /**
+     * The preferences xwiki document holding this store connection parameters.
+     * 
+     * @return
+     */
+    String getWikiDoc();
 
-    public String getFolder();
+    /**
+     * If true, this source is "enabled", meaning it's taken into account by scheduled job.
+     * 
+     * @return
+     */
+    boolean isEnabled();
 
-    public String getUser();
-
-    public String getPassword();
-
-    public Properties getAdditionalProperties();
-
-    public String getWikiDoc();
+    /**
+     * @return
+     */
+    int getState();
 
 }

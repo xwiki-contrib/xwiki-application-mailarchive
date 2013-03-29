@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mail.internal;
+package org.xwiki.contrib.mail.internal.util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -115,7 +115,7 @@ public class MimetypesFileExtensionsMap
         String line = null;
         try {
             while ((line = reader.readLine()) != null) {
-                if (line.startsWith("#") == false) {
+                if (!line.startsWith("#")) {
                     final String[] entries = line.split("\\s+");
                     if (entries != null && entries.length > 1) {
                         List<String> extensions = new ArrayList<String>();

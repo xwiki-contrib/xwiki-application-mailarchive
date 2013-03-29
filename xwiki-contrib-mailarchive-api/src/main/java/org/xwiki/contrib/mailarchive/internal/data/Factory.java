@@ -27,14 +27,18 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.xwiki.bridge.DocumentAccessBridge;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailMatcher;
 import org.xwiki.contrib.mailarchive.IMailingList;
-import org.xwiki.contrib.mailarchive.IServer;
 import org.xwiki.contrib.mailarchive.IType;
+import org.xwiki.contrib.mailarchive.LoadingSession;
+import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
 import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 
 /**
@@ -44,51 +48,111 @@ import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 @Singleton
 public class Factory implements IFactory
 {
+
     @Inject
-    private DocumentAccessBridge dab;
+    private Logger logger;
+
+    @Inject
+    @Named("extended")
+    private IExtendedDocumentAccessBridge dab;
 
     /**
      * {@inheritDoc}
      * 
      * @see org.xwiki.contrib.mailarchive.internal.data.IFactory#createMailServer(java.lang.String)
      */
-    // @SuppressWarnings("deprecation")
+    @SuppressWarnings("deprecation")
     @Override
     public Server createMailServer(final String serverPrefsDoc)
     {
         if (!dab.exists(serverPrefsDoc)) {
+            logger.error("createMailServer: Page " + serverPrefsDoc + " does not exist");
+            return null;
+        }
+        if (!dab.exists(serverPrefsDoc, XWikiPersistence.CLASS_MAIL_SERVERS)) {
+            logger.error("createMailServer: Page " + serverPrefsDoc + " does not contain an object of class "
+                + XWikiPersistence.CLASS_MAIL_SERVERS);
             return null;
         }
         Server server = new Server();
 
         // Retrieve connection properties from prefs
         String className = XWikiPersistence.CLASS_MAIL_SERVERS;
-        server.setId((String) dab.getProperty(serverPrefsDoc, className, "id"));
-        server.setHost((String) dab.getProperty(serverPrefsDoc, className, "hostname"));
-        try {
-            server.setPort(Integer.parseInt((String) dab.getProperty(serverPrefsDoc, className, "port")));
-        } catch (NumberFormatException e1) {
-            server.setPort(IServer.DEFAULT_PORT);
+        server.setId(dab.getStringValue(serverPrefsDoc, className, "id"));
+        server.setHostname(dab.getStringValue(serverPrefsDoc, className, "hostname"));
+        server.setPort(dab.getIntValue(serverPrefsDoc, className, "port"));
+        server.setProtocol(dab.getStringValue(serverPrefsDoc, className, "protocol"));
+        server.setUsername(dab.getStringValue(serverPrefsDoc, className, "user"));
+        server.setPassword(dab.getStringValue(serverPrefsDoc, className, "password"));
+        server.setFolder(dab.getStringValue(serverPrefsDoc, className, "folder"));
+        server.setEnabled("on".equals(dab.getStringValue(serverPrefsDoc, className, "state")));
+        server.setState(dab.getIntValue(serverPrefsDoc, className, "status"));
+        String additionalProperties = dab.getStringValue(serverPrefsDoc, className, "additionalProperties");
+        if (StringUtils.isNotBlank(additionalProperties)) {
+            InputStream is = new ByteArrayInputStream(additionalProperties.getBytes());
+            Properties props = new Properties();
+            try {
+                props.load(is);
+            } catch (IOException e) {
+                // TODO ?
+            }
+            server.setAdditionalProperties(props);
         }
-        server.setProtocol((String) dab.getProperty(serverPrefsDoc, className, "protocol"));
-        server.setUser((String) dab.getProperty(serverPrefsDoc, className, "user"));
-        server.setPassword((String) dab.getProperty(serverPrefsDoc, className, "password"));
-        server.setFolder((String) dab.getProperty(serverPrefsDoc, className, "folder"));
-        String additionalProperties = (String) dab.getProperty(serverPrefsDoc, className, "additionalProperties");
-        InputStream is = new ByteArrayInputStream(additionalProperties.getBytes());
-        Properties props = new Properties();
-        try {
-            props.load(is);
-        } catch (IOException e) {
-            // TODO ?
-        }
-        server.setAdditionalProperties(props);
         server.setWikiDoc(serverPrefsDoc);
 
-        if (server.getId() == null || server.getHost() == null || server.getProtocol() == null) {
+        if (server.getId() == null || server.getHostname() == null || server.getProtocol() == null) {
+            logger.error("createMailServer: Server " + serverPrefsDoc + " miss mandatory parameters");
             return null;
         } else {
             return server;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.internal.data.IFactory#createMailStore(java.lang.String)
+     */
+    @Override
+    public MailStore createMailStore(String storePrefsDoc)
+    {
+        if (!dab.exists(storePrefsDoc)) {
+            logger.error("createMailStore: page " + storePrefsDoc + " does not exist");
+            return null;
+        }
+        if (!dab.exists(storePrefsDoc, XWikiPersistence.CLASS_MAIL_STORES)) {
+            logger.error("createMailServer: Page " + storePrefsDoc + " does not contain an object of class "
+                + XWikiPersistence.CLASS_MAIL_STORES);
+            return null;
+        }
+        MailStore store = new MailStore();
+
+        // Retrieve connection properties from prefs
+        String className = XWikiPersistence.CLASS_MAIL_STORES;
+        store.setLocation(dab.getStringValue(storePrefsDoc, className, "location"));
+        store.setFormat(dab.getStringValue(storePrefsDoc, className, "format"));
+        store.setId(dab.getStringValue(storePrefsDoc, className, "id"));
+        store.setFolder(dab.getStringValue(storePrefsDoc, className, "folder"));
+        store.setEnabled("on".equals(dab.getStringValue(storePrefsDoc, className, "state")));
+        store.setState(dab.getIntValue(storePrefsDoc, className, "status"));
+        String additionalProperties = dab.getStringValue(storePrefsDoc, className, "additionalProperties");
+        if (StringUtils.isNotBlank(additionalProperties)) {
+            InputStream is = new ByteArrayInputStream(additionalProperties.getBytes());
+            Properties props = new Properties();
+            try {
+                props.load(is);
+            } catch (IOException e) {
+                // TODO ?
+            }
+            store.setAdditionalProperties(props);
+        }
+        store.setWikiDoc(storePrefsDoc);
+
+        if (store.getId() == null || store.getLocation() == null || store.getFormat() == null) {
+            logger.error("createMailStore: Store " + storePrefsDoc + " miss mandatory parameters");
+            return null;
+        } else {
+            return store;
         }
     }
 
@@ -107,14 +171,6 @@ public class Factory implements IFactory
         typeobj.setId(id);
         typeobj.setName(name);
         typeobj.setIcon(icon);
-
-        /*
-         * String[] splittedPatterns = patternsList.replaceAll("(?m)^\\s+$", "").split("\n", -1); int nbPatterns =
-         * splittedPatterns.length % 2; for (int i = 0; i < nbPatterns; i += 2) { List<String> fields =
-         * Arrays.asList(splittedPatterns[i].split(",", 0)); // Trim white-space from fields for (int j = 0; j <
-         * fields.size(); j++) { fields.set(j, fields.get(j).trim()); } String pattern = splittedPatterns[i + 1].trim();
-         * typeobj.addMatcher(fields, pattern); }
-         */
 
         return typeobj;
     }
@@ -160,4 +216,54 @@ public class Factory implements IFactory
 
         return list;
     }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.internal.data.IFactory#createLoadingSession(java.lang.String,
+     *      org.xwiki.contrib.mailarchive.IMailArchive)
+     */
+    public LoadingSession createLoadingSession(final String sessionPrefsDoc, final IMailArchive mailArchive)
+    {
+        if (!dab.exists(sessionPrefsDoc)) {
+            logger.error("createLoadingSession: page " + sessionPrefsDoc + " does not exist");
+            return null;
+        }
+        if (!dab.exists(sessionPrefsDoc, XWikiPersistence.CLASS_LOADING_SESSION)) {
+            logger.error("createLoadingSession: Page " + sessionPrefsDoc + " does not contain an object of class "
+                + XWikiPersistence.CLASS_LOADING_SESSION);
+            return null;
+        }
+        LoadingSession session = new LoadingSession(mailArchive);
+
+        // Retrieve connection properties from prefs
+        String className = XWikiPersistence.CLASS_LOADING_SESSION;
+        if (dab.getBooleanValue(sessionPrefsDoc, className, "debugMode")) {
+            session = session.debugMode();
+        }
+        if (dab.getBooleanValue(sessionPrefsDoc, className, "simulationMode")) {
+            session = session.simulationMode();
+        }
+        if (dab.getBooleanValue(sessionPrefsDoc, className, "loadAll")) {
+            session = session.loadAll();
+        }
+        if (dab.getBooleanValue(sessionPrefsDoc, className, "recentMails")) {
+            session = session.recentMails();
+        }
+        if (dab.getBooleanValue(sessionPrefsDoc, className, "withDelete")) {
+            session = session.withDelete();
+        }
+        session = session.setLimit(dab.getIntValue(sessionPrefsDoc, className, "maxMailsNb"));
+        final String servers = dab.getStringValue(sessionPrefsDoc, className, "servers");
+        final String stores = dab.getStringValue(sessionPrefsDoc, className, "stores");
+        for (String serverPrefsDoc : StringUtils.split(servers, ',')) {
+            session = session.addServer(serverPrefsDoc);
+        }
+        for (String storePrefsDoc : StringUtils.split(stores, ',')) {
+            session = session.addStore(storePrefsDoc);
+        }
+
+        return session;
+    }
+
 }

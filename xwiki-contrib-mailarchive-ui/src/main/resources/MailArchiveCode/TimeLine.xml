@@ -1,33 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xwikidoc>
-<web>MailArchiveCode</web>
-<name>TimeLine</name>
-<language></language>
-<defaultLanguage></defaultLanguage>
-<translation>0</translation>
-<parent></parent>
-<creator>XWiki.Admin</creator>
-<author>XWiki.Admin</author>
-<customClass></customClass>
-<contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353417892000</creationDate>
-<date>1353417892000</date>
-<contentUpdateDate>1353417892000</contentUpdateDate>
-<version>3.1</version>
-<title>Mail Archive Time-Line</title>
-<template></template>
-<defaultTemplate></defaultTemplate>
-<validationScript></validationScript>
-<comment>Import: final save</comment>
-<minorEdit>false</minorEdit>
-<syntaxId>xwiki/2.1</syntaxId>
-<hidden>false</hidden><attachment>
-<filename>TimeLineFeed-MailArchiver.xml</filename>
-<filesize>11914</filesize>
-<author>XWiki.Admin</author>
-<date>1353417892000</date>
-<version>1.1</version>
-<comment></comment><content>PGRhdGEgd2lraS11cmw9IiIgd2lraS1zZWN0aW9uPSIiPjxldmVudCBzdGFydD0iSmFuIDExLCAy
+  <web>MailArchiveCode</web>
+  <name>TimeLine</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchiveCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1353417892000</creationDate>
+  <date>1353417892000</date>
+  <contentUpdateDate>1353417892000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Mail Archive Time-Line</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <attachment>
+    <filename>TimeLineFeed-MailArchiver.xml</filename>
+    <filesize>11914</filesize>
+    <author>XWiki.Admin</author>
+    <date>1353417892000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>PGRhdGEgd2lraS11cmw9IiIgd2lraS1zZWN0aW9uPSIiPjxldmVudCBzdGFydD0iSmFuIDExLCAy
 MDEwIDQ6NTM6NTUgUE0iIHRpdGxlPSJSRTogbmVlZCBoZWxwIG9uIE9TRyBjb25maWd1cmF0aW9u
 IiBpY29uPSJodHRwOi8vci13aWtpZ2dzLmdlbWFsdG8uY29tL3h3aWtpL2Jpbi9kb3dubG9hZC9Y
 V2lraS9HU0VTa2luL2VtYWlsLWljb24uR0lGIj5SRTogbmVlZCBoZWxwIG9uIE9TRyBjb25maWd1
@@ -237,13 +240,16 @@ MSwgMjAxMSA0OjA4OjE0IFBNIiB0aXRsZT0iUkU6IFdBUCBwdXNoIGV4YW1wbGVzIiBpY29uPSJo
 dHRwOi8vci13aWtpZ2dzLmdlbWFsdG8uY29tL3h3aWtpL2Jpbi9kb3dubG9hZC9YV2lraS9HU0VT
 a2luL2VtYWlsLWljb24uR0lGIj5SRTogV0FQIHB1c2ggZXhhbXBsZXM8L2V2ZW50Pm5uPC9kYXRh
 Pg==
-</content></attachment><attachment>
-<filename>timeline-api.js</filename>
-<filesize>8630</filesize>
-<author>XWiki.Admin</author>
-<date>1353417892000</date>
-<version>1.1</version>
-<comment></comment><content>Lyo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQogKiAg
+</content>
+  </attachment>
+  <attachment>
+    <filename>timeline-api.js</filename>
+    <filesize>8630</filesize>
+    <author>XWiki.Admin</author>
+    <date>1353417892000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>Lyo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQogKiAg
 VGltZWxpbmUgQVBJCiAqCiAqICBUaGlzIGZpbGUgd2lsbCBsb2FkIGFsbCB0aGUgSmF2YXNjcmlw
 dCBmaWxlcwogKiAgbmVjZXNzYXJ5IHRvIG1ha2UgdGhlIHN0YW5kYXJkIHRpbWVsaW5lIHdvcmsu
 CiAqICBJdCBhbHNvIGRldGVjdHMgdGhlIGRlZmF1bHQgbG9jYWxlLgogKgogKiAgSW5jbHVkZSB0
@@ -395,180 +401,181 @@ ICB9CiAgICAgICAgfQogICAgICAgIAogICAgICAgIFRpbWVsaW5lLlBsYXRmb3JtLnNlcnZlckxv
 Y2FsZSA9IGRlZmF1bHRTZXJ2ZXJMb2NhbGU7CiAgICAgICAgVGltZWxpbmUuUGxhdGZvcm0uY2xp
 ZW50TG9jYWxlID0gZGVmYXVsdENsaWVudExvY2FsZTsKICAgIH0gY2F0Y2ggKGUpIHsKICAgICAg
 ICBhbGVydChlKTsKICAgIH0KfSkoKTs=
-</content></attachment>
-<object>
-<class>
-<name>XWiki.JavaScriptExtension</name>
-<customClass></customClass>
-<customMapping></customMapping>
-<defaultViewSheet></defaultViewSheet>
-<defaultEditSheet></defaultEditSheet>
-<defaultWeb></defaultWeb>
-<nameField></nameField>
-<validationScript></validationScript>
-<cache>
-<cache>0</cache>
-<disabled>0</disabled>
-<displayType>select</displayType>
-<multiSelect>0</multiSelect>
-<name>cache</name>
-<number>5</number>
-<prettyName>Caching policy</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<unmodifiable>0</unmodifiable>
-<values>long|short|default|forbid</values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</cache>
-<code>
-<disabled>0</disabled>
-<name>code</name>
-<number>2</number>
-<prettyName>Code</prettyName>
-<rows>20</rows>
-<size>50</size>
-<unmodifiable>0</unmodifiable>
-<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-</code>
-<name>
-<disabled>0</disabled>
-<name>name</name>
-<number>1</number>
-<prettyName>Name</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</name>
-<parse>
-<disabled>0</disabled>
-<displayFormType>select</displayFormType>
-<displayType>yesno</displayType>
-<name>parse</name>
-<number>4</number>
-<prettyName>Parse content</prettyName>
-<unmodifiable>0</unmodifiable>
-<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-</parse>
-<use>
-<cache>0</cache>
-<disabled>0</disabled>
-<displayType>select</displayType>
-<multiSelect>0</multiSelect>
-<name>use</name>
-<number>3</number>
-<prettyName>Use this extension</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<unmodifiable>0</unmodifiable>
-<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</use>
-</class>
-<name>MailArchiveCode.TimeLine</name>
-<number>0</number>
-<className>XWiki.JavaScriptExtension</className>
-<guid>02499733-b191-4c31-a6b3-d3c845409578</guid>
-<property>
-<cache>default</cache>
-</property>
-<property>
-<code>document.write("{{html clean="false" wiki="true"}}&lt;script src='http://simile.mit.edu/timeline/api/timeline-api.js' type='text/javascript'&gt;&lt;/script&gt;{{/html}}" );</code>
-</property>
-<property>
-<name>TimeLine JS inclusion</name>
-</property>
-<property>
-<parse>1</parse>
-</property>
-<property>
-<use>onDemand</use>
-</property>
-</object>
-<object>
-<class>
-<name>XWiki.StyleSheetExtension</name>
-<customClass></customClass>
-<customMapping></customMapping>
-<defaultViewSheet></defaultViewSheet>
-<defaultEditSheet></defaultEditSheet>
-<defaultWeb></defaultWeb>
-<nameField></nameField>
-<validationScript></validationScript>
-<cache>
-<cache>0</cache>
-<disabled>0</disabled>
-<displayType>select</displayType>
-<multiSelect>0</multiSelect>
-<name>cache</name>
-<number>5</number>
-<prettyName>Caching policy</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<unmodifiable>0</unmodifiable>
-<values>long|short|default|forbid</values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</cache>
-<code>
-<disabled>0</disabled>
-<name>code</name>
-<number>2</number>
-<prettyName>Code</prettyName>
-<rows>20</rows>
-<size>50</size>
-<unmodifiable>0</unmodifiable>
-<classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-</code>
-<name>
-<disabled>0</disabled>
-<name>name</name>
-<number>1</number>
-<prettyName>Name</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</name>
-<parse>
-<disabled>0</disabled>
-<displayFormType>select</displayFormType>
-<displayType>yesno</displayType>
-<name>parse</name>
-<number>4</number>
-<prettyName>Parse content</prettyName>
-<unmodifiable>0</unmodifiable>
-<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-</parse>
-<use>
-<cache>0</cache>
-<disabled>0</disabled>
-<displayType>select</displayType>
-<multiSelect>0</multiSelect>
-<name>use</name>
-<number>3</number>
-<prettyName>Use this extension</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<unmodifiable>0</unmodifiable>
-<values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</use>
-</class>
-<name>MailArchiveCode.TimeLine</name>
-<number>0</number>
-<className>XWiki.StyleSheetExtension</className>
-<guid>24422a0f-5c1e-4978-b8a8-164681a7b039</guid>
-<property>
-<cache>default</cache>
-</property>
-<property>
-<code>.timeline-default {     
+</content>
+  </attachment>
+  <object>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>MailArchiveCode.TimeLine</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>02499733-b191-4c31-a6b3-d3c845409578</guid>
+    <property>
+      <cache>default</cache>
+    </property>
+    <property>
+      <code>document.write("{{html clean="false" wiki="true"}}&lt;script src='http://simile.mit.edu/timeline/api/timeline-api.js' type='text/javascript'&gt;&lt;/script&gt;{{/html}}" );</code>
+    </property>
+    <property>
+      <name>TimeLine JS inclusion</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>MailArchiveCode.TimeLine</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>24422a0f-5c1e-4978-b8a8-164681a7b039</guid>
+    <property>
+      <cache>default</cache>
+    </property>
+    <property>
+      <code>.timeline-default {     
   font-family: Trebuchet MS, Helvetica, Arial, sans serif; 
   font-size: 9pt; 
   border: 1px solid #aaa; 
@@ -599,53 +606,53 @@ ICBhbGVydChlKTsKICAgIH0KfSkoKTs=
 }
 #end
 {{/velocity}}</code>
-</property>
-<property>
-<name>Timeline StyleSheet Extension</name>
-</property>
-<property>
-<parse>1</parse>
-</property>
-<property>
-<use>onDemand</use>
-</property>
-</object>
-<object>
-<class>
-<name>XWiki.TagClass</name>
-<customClass></customClass>
-<customMapping></customMapping>
-<defaultViewSheet></defaultViewSheet>
-<defaultEditSheet></defaultEditSheet>
-<defaultWeb></defaultWeb>
-<nameField></nameField>
-<validationScript></validationScript>
-<tags>
-<cache>0</cache>
-<disabled>0</disabled>
-<displayType>input</displayType>
-<multiSelect>1</multiSelect>
-<name>tags</name>
-<number>1</number>
-<prettyName>Tags</prettyName>
-<relationalStorage>1</relationalStorage>
-<separator>|</separator>
-<separators>|,</separators>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<values></values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</tags>
-</class>
-<name>MailArchiveCode.TimeLine</name>
-<number>0</number>
-<className>XWiki.TagClass</className>
-<guid>9ccdb586-5408-4952-804b-03e16e588cdb</guid>
-<property>
-<tags/>
-</property>
-</object>
-<content>{{velocity filter="none"}}
+    </property>
+    <property>
+      <name>Timeline StyleSheet Extension</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.TagClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <tags>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>tags</name>
+        <number>1</number>
+        <prettyName>Tags</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator>|</separator>
+        <separators>|,</separators>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </tags>
+    </class>
+    <name>MailArchiveCode.TimeLine</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>9ccdb586-5408-4952-804b-03e16e588cdb</guid>
+    <property>
+      <tags/>
+    </property>
+  </object>
+  <content>{{velocity filter="none"}}
 $xwiki.ssx.use('MailArchiveCode.TimeLine')
 {{html clean="false" wiki="false"}}
 &lt;script type="text/javascript"&gt;
@@ -769,4 +776,5 @@ function addJavascriptText(text,pos) {
 
 &lt;div id="my-timeline" class="timeline-default" style="height: 500px; border: 1px solid #aaa"&gt;&lt;/div&gt;
 {{/html}}
-{{/velocity}}</content></xwikidoc>
+{{/velocity}}</content>
+</xwikidoc>

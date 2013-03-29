@@ -30,7 +30,7 @@ public class MailServerConnectionException extends Exception
      */
     private static final long serialVersionUID = 3110149565099510746L;
 
-    private ConnectionErrors code;
+    private SourceConnectionErrors code;
 
     /**
      * 
@@ -38,13 +38,13 @@ public class MailServerConnectionException extends Exception
     public MailServerConnectionException()
     {
         super();
-        this.code = ConnectionErrors.OTHER_ERROR;
+        this.code = SourceConnectionErrors.OTHER_ERROR;
     }
 
     public MailServerConnectionException(final String message)
     {
         super(message);
-        this.code = ConnectionErrors.OTHER_ERROR;
+        this.code = SourceConnectionErrors.OTHER_ERROR;
     }
 
     /**
@@ -54,7 +54,7 @@ public class MailServerConnectionException extends Exception
     public MailServerConnectionException(String message, Throwable throwable)
     {
         super(message, throwable);
-        this.code = ConnectionErrors.OTHER_ERROR;
+        this.code = SourceConnectionErrors.OTHER_ERROR;
     }
 
     /**
@@ -63,28 +63,28 @@ public class MailServerConnectionException extends Exception
     public MailServerConnectionException(Throwable throwable)
     {
         super(throwable);
-        this.code = ConnectionErrors.OTHER_ERROR;
+        this.code = SourceConnectionErrors.OTHER_ERROR;
     }
 
-    public MailServerConnectionException(final ConnectionErrors code)
+    public MailServerConnectionException(final SourceConnectionErrors code)
     {
         super();
         this.code = code;
     }
 
-    public MailServerConnectionException(final String message, final ConnectionErrors code)
+    public MailServerConnectionException(final String message, final SourceConnectionErrors code)
     {
         super(message);
         this.code = code;
     }
 
-    public MailServerConnectionException(final String message, final Throwable throwable, final ConnectionErrors code)
+    public MailServerConnectionException(final String message, final Throwable throwable, final SourceConnectionErrors code)
     {
         super(message, throwable);
         this.code = code;
     }
 
-    public MailServerConnectionException(final Throwable throwable, final ConnectionErrors code)
+    public MailServerConnectionException(final Throwable throwable, final SourceConnectionErrors code)
     {
         super(throwable);
         this.code = code;
@@ -106,7 +106,7 @@ public class MailServerConnectionException extends Exception
         return "";
     }
 
-    public ConnectionErrors getCode()
+    public SourceConnectionErrors getCode()
     {
         return this.code;
     }

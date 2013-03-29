@@ -1,372 +1,374 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xwikidoc>
-<web>MailArchiveCode</web>
-<name>AdminClass</name>
-<language></language>
-<defaultLanguage></defaultLanguage>
-<translation>0</translation>
-<parent></parent>
-<creator>XWiki.Admin</creator>
-<author>XWiki.Admin</author>
-<customClass></customClass>
-<contentAuthor>XWiki.Admin</contentAuthor>
-<creationDate>1353417885000</creationDate>
-<date>1353417885000</date>
-<contentUpdateDate>1353417885000</contentUpdateDate>
-<version>1.1</version>
-<title></title>
-<template></template>
-<defaultTemplate></defaultTemplate>
-<validationScript></validationScript>
-<comment>Import</comment>
-<minorEdit>false</minorEdit>
-<syntaxId>xwiki/2.0</syntaxId>
-<hidden>false</hidden>
-<class>
-<name>MailArchiveCode.AdminClass</name>
-<customClass></customClass>
-<customMapping></customMapping>
-<defaultViewSheet></defaultViewSheet>
-<defaultEditSheet></defaultEditSheet>
-<defaultWeb></defaultWeb>
-<nameField></nameField>
-<validationScript></validationScript>
-<adv_croptopicid>
-<customDisplay></customDisplay>
-<defaultValue></defaultValue>
-<disabled>0</disabled>
-<displayFormType>checkbox</displayFormType>
-<displayType></displayType>
-<name>adv_croptopicid</name>
-<number>15</number>
-<prettyName>Crop topic IDs to 30 characters</prettyName>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-</adv_croptopicid>
-<adv_itemsspace>
-<cache>0</cache>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<displayType>select</displayType>
-<multiSelect>0</multiSelect>
-<name>adv_itemsspace</name>
-<number>16</number>
-<picker>0</picker>
-<prettyName>Space to store new items</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values>MailArchiveItems|MailArchive|MailArchive_${server_id}</values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</adv_itemsspace>
-<createmissingprofiles>
-<customDisplay></customDisplay>
-<defaultValue>0</defaultValue>
-<disabled>0</disabled>
-<displayFormType>checkbox</displayFormType>
-<displayType></displayType>
-<name>createmissingprofiles</name>
-<number>9</number>
-<prettyName>Create missing wiki profiles</prettyName>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-</createmissingprofiles>
-<defaulthomeview>
-<cache>0</cache>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<displayType>select</displayType>
-<multiSelect>0</multiSelect>
-<name>defaulthomeview</name>
-<number>13</number>
-<picker>0</picker>
-<prettyName>Default view for Homepage</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values>table=Table|timeline=Timeline</values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</defaulthomeview>
-<defaulttopicsview>
-<cache>0</cache>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<displayType>select</displayType>
-<multiSelect>0</multiSelect>
-<name>defaulttopicsview</name>
-<number>11</number>
-<picker>0</picker>
-<prettyName>Default view for Topics</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values>threads=Threaded messages|forum=Forum|list=List</values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</defaulttopicsview>
-<emailignoredtext>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>emailignoredtext</name>
-<number>19</number>
-<picker>0</picker>
-<prettyName>Text to ignore when matching emails</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</emailignoredtext>
-<excelexport>
-<customDisplay></customDisplay>
-<defaultValue></defaultValue>
-<disabled>0</disabled>
-<displayFormType>select</displayFormType>
-<displayType></displayType>
-<name>excelexport</name>
-<number>14</number>
-<prettyName>Export to Excel link in livetables</prettyName>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-</excelexport>
-<ldapphoto>
-<customDisplay></customDisplay>
-<defaultValue></defaultValue>
-<disabled>0</disabled>
-<displayFormType>checkbox</displayFormType>
-<displayType></displayType>
-<name>ldapphoto</name>
-<number>5</number>
-<prettyName>Import photo from LDAP ?</prettyName>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-</ldapphoto>
-<ldapphotofield>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>ldapphotofield</name>
-<number>6</number>
-<picker>0</picker>
-<prettyName>LDAP Photo Field Name</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</ldapphotofield>
-<ldapphotoforceupdate>
-<customDisplay></customDisplay>
-<defaultValue></defaultValue>
-<disabled>0</disabled>
-<displayFormType>checkbox</displayFormType>
-<displayType></displayType>
-<name>ldapphotoforceupdate</name>
-<number>11</number>
-<prettyName>Force Update</prettyName>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-</ldapphotoforceupdate>
-<ldapphototype>
-<cache>0</cache>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<displayType>select</displayType>
-<multiSelect>0</multiSelect>
-<name>ldapphototype</name>
-<number>7</number>
-<picker>0</picker>
-<prettyName>LDAP Photo Field Content</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values>binary=Image Binary Content|url=Image URL</values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</ldapphototype>
-<mailsopeningmode>
-<cache>0</cache>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<displayType>select</displayType>
-<multiSelect>0</multiSelect>
-<name>mailsopeningmode</name>
-<number>12</number>
-<picker>0</picker>
-<prettyName>Default method for opening Mail messages from Topics</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators> ,|</separators>
-<size>1</size>
-<sort>none</sort>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<values>popup=Pop-up window|inline=In same page|newpage=In new page</values>
-<classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-</mailsopeningmode>
-<matchldap>
-<customDisplay></customDisplay>
-<defaultValue>0</defaultValue>
-<disabled>0</disabled>
-<displayFormType>checkbox</displayFormType>
-<displayType></displayType>
-<name>matchldap</name>
-<number>8</number>
-<prettyName>Match LDAP users</prettyName>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-</matchldap>
-<matchwikiprofiles>
-<customDisplay></customDisplay>
-<defaultValue>1</defaultValue>
-<disabled>0</disabled>
-<displayFormType>checkbox</displayFormType>
-<displayType></displayType>
-<name>matchwikiprofiles</name>
-<number>7</number>
-<prettyName>Link mails authors with Wiki profiles</prettyName>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-</matchwikiprofiles>
-<ratings>
-<customDisplay></customDisplay>
-<defaultValue>0</defaultValue>
-<disabled>0</disabled>
-<displayFormType>select</displayFormType>
-<displayType></displayType>
-<name>ratings</name>
-<number>17</number>
-<prettyName>Show ratings ?</prettyName>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-</ratings>
-<store>
-<customDisplay></customDisplay>
-<defaultValue></defaultValue>
-<disabled>0</disabled>
-<displayFormType>checkbox</displayFormType>
-<displayType></displayType>
-<name>store</name>
-<number>18</number>
-<prettyName>Use local store</prettyName>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-</store>
-<timeline>
-<customDisplay></customDisplay>
-<defaultValue></defaultValue>
-<disabled>0</disabled>
-<displayFormType>checkbox</displayFormType>
-<displayType></displayType>
-<name>timeline</name>
-<number>3</number>
-<prettyName>Manage a TimeLine ?</prettyName>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-</timeline>
-<timelinemaxload>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>timelinemaxload</name>
-<number>14</number>
-<numberType>long</numberType>
-<prettyName>Number of topics to load in timeline</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
-</timelinemaxload>
-<user>
-<cache>0</cache>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<displayType>select</displayType>
-<multiSelect>0</multiSelect>
-<name>user</name>
-<number>1</number>
-<picker>0</picker>
-<prettyName>Loading user</prettyName>
-<relationalStorage>0</relationalStorage>
-<separator> </separator>
-<separators></separators>
-<size>6</size>
-<sort>value</sort>
-<unmodifiable>0</unmodifiable>
-<usesList>1</usesList>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
-</user>
-</class>
-<object>
-<class>
-<name>XWiki.DocumentSheetBinding</name>
-<customClass></customClass>
-<customMapping></customMapping>
-<defaultViewSheet></defaultViewSheet>
-<defaultEditSheet></defaultEditSheet>
-<defaultWeb></defaultWeb>
-<nameField></nameField>
-<validationScript></validationScript>
-<sheet>
-<customDisplay></customDisplay>
-<disabled>0</disabled>
-<name>sheet</name>
-<number>1</number>
-<picker>0</picker>
-<prettyName>Sheet</prettyName>
-<size>30</size>
-<unmodifiable>0</unmodifiable>
-<validationMessage></validationMessage>
-<validationRegExp></validationRegExp>
-<classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-</sheet>
-</class>
-<name>MailArchiveCode.AdminClass</name>
-<number>0</number>
-<className>XWiki.DocumentSheetBinding</className>
-<guid>95a769e6-4c43-4597-9bd1-188aa5232556</guid>
-<property>
-<sheet>XWiki.ClassSheet</sheet>
-</property>
-</object>
-<content></content></xwikidoc>
+  <web>MailArchiveCode</web>
+  <name>AdminClass</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchiveCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1353417885000</creationDate>
+  <date>1353417885000</date>
+  <contentUpdateDate>1353417885000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <class>
+    <name>MailArchiveCode.AdminClass</name>
+    <customClass/>
+    <customMapping/>
+    <defaultViewSheet/>
+    <defaultEditSheet/>
+    <defaultWeb/>
+    <nameField/>
+    <validationScript/>
+    <adv_croptopicid>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>adv_croptopicid</name>
+      <number>15</number>
+      <prettyName>Crop topic IDs to 30 characters</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </adv_croptopicid>
+    <adv_itemsspace>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>adv_itemsspace</name>
+      <number>16</number>
+      <picker>0</picker>
+      <prettyName>Space to store new items</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>MailArchiveItems|MailArchive|MailArchive_${server_id}</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </adv_itemsspace>
+    <createmissingprofiles>
+      <customDisplay/>
+      <defaultValue>0</defaultValue>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>createmissingprofiles</name>
+      <number>9</number>
+      <prettyName>Create missing wiki profiles</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </createmissingprofiles>
+    <defaulthomeview>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>defaulthomeview</name>
+      <number>13</number>
+      <picker>0</picker>
+      <prettyName>Default view for Homepage</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>table=Table|timeline=Timeline</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </defaulthomeview>
+    <defaulttopicsview>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>defaulttopicsview</name>
+      <number>11</number>
+      <picker>0</picker>
+      <prettyName>Default view for Topics</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>threads=Threaded messages|forum=Forum|list=List</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </defaulttopicsview>
+    <emailignoredtext>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>emailignoredtext</name>
+      <number>19</number>
+      <picker>0</picker>
+      <prettyName>Text to ignore when matching emails</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </emailignoredtext>
+    <excelexport>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>select</displayFormType>
+      <displayType/>
+      <name>excelexport</name>
+      <number>14</number>
+      <prettyName>Export to Excel link in livetables</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </excelexport>
+    <ldapphoto>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>ldapphoto</name>
+      <number>5</number>
+      <prettyName>Import photo from LDAP ?</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </ldapphoto>
+    <ldapphotofield>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>ldapphotofield</name>
+      <number>6</number>
+      <picker>0</picker>
+      <prettyName>LDAP Photo Field Name</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </ldapphotofield>
+    <ldapphotoforceupdate>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>ldapphotoforceupdate</name>
+      <number>11</number>
+      <prettyName>Force Update</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </ldapphotoforceupdate>
+    <ldapphototype>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>ldapphototype</name>
+      <number>7</number>
+      <picker>0</picker>
+      <prettyName>LDAP Photo Field Content</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>binary=Image Binary Content|url=Image URL</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </ldapphototype>
+    <mailsopeningmode>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>mailsopeningmode</name>
+      <number>12</number>
+      <picker>0</picker>
+      <prettyName>Default method for opening Mail messages from Topics</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>popup=Pop-up window|inline=In same page|newpage=In new page</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </mailsopeningmode>
+    <matchldap>
+      <customDisplay/>
+      <defaultValue>0</defaultValue>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>matchldap</name>
+      <number>8</number>
+      <prettyName>Match LDAP users</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </matchldap>
+    <matchwikiprofiles>
+      <customDisplay/>
+      <defaultValue>1</defaultValue>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>matchwikiprofiles</name>
+      <number>7</number>
+      <prettyName>Link mails authors with Wiki profiles</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </matchwikiprofiles>
+    <ratings>
+      <customDisplay/>
+      <defaultValue>0</defaultValue>
+      <disabled>0</disabled>
+      <displayFormType>select</displayFormType>
+      <displayType/>
+      <name>ratings</name>
+      <number>17</number>
+      <prettyName>Show ratings ?</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </ratings>
+    <store>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>store</name>
+      <number>18</number>
+      <prettyName>Use local store</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </store>
+    <timeline>
+      <customDisplay/>
+      <defaultValue/>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>timeline</name>
+      <number>3</number>
+      <prettyName>Manage a TimeLine ?</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </timeline>
+    <timelinemaxload>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>timelinemaxload</name>
+      <number>14</number>
+      <numberType>long</numberType>
+      <prettyName>Number of topics to load in timeline</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+    </timelinemaxload>
+    <user>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
+      <name>user</name>
+      <number>1</number>
+      <picker>0</picker>
+      <prettyName>Loading user</prettyName>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators/>
+      <size>6</size>
+      <sort>value</sort>
+      <unmodifiable>0</unmodifiable>
+      <usesList>1</usesList>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
+    </user>
+  </class>
+  <object>
+    <class>
+      <name>XWiki.DocumentSheetBinding</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <sheet>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sheet</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Sheet</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </sheet>
+    </class>
+    <name>MailArchiveCode.AdminClass</name>
+    <number>0</number>
+    <className>XWiki.DocumentSheetBinding</className>
+    <guid>95a769e6-4c43-4597-9bd1-188aa5232556</guid>
+    <property>
+      <sheet>XWiki.ClassSheet</sheet>
+    </property>
+  </object>
+  <content/>
+</xwikidoc>

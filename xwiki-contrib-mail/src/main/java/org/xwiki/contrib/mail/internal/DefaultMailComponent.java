@@ -19,65 +19,49 @@
  */
 package org.xwiki.contrib.mail.internal;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Properties;
 
 import javax.inject.Inject;
-import javax.mail.AuthenticationFailedException;
-import javax.mail.Flags;
-import javax.mail.Folder;
-import javax.mail.FolderNotFoundException;
-import javax.mail.Message;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.mail.MessagingException;
 import javax.mail.Part;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.URLName;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.mail.search.FlagTerm;
-import javax.mail.search.MessageIDTerm;
-import javax.mail.search.SearchTerm;
-import javax.mail.util.SharedByteArrayInputStream;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
-import org.xwiki.contrib.mail.ConnectionErrors;
 import org.xwiki.contrib.mail.IMailComponent;
+import org.xwiki.contrib.mail.IMailReader;
+import org.xwiki.contrib.mail.IStoreManager;
 import org.xwiki.contrib.mail.MailContent;
 import org.xwiki.contrib.mail.MailItem;
+import org.xwiki.contrib.mail.internal.source.ServerAccountSource;
+import org.xwiki.contrib.mail.internal.source.StoreSource;
 
 /**
  * @version $Id$
  */
+@Singleton
+@Component
 public class DefaultMailComponent implements IMailComponent, Initializable
 {
-    private String storeLocation = "storage";
-
-    private String storeProvider = "mstor";
-
-    private JavamailMessageParser parser;
-
-    // TODO manage topics max length for compatibility
-    private static final int MAIL_HEADER_MAX_LENGTH = 255;
-
-    /**
-     * Store Session objects (values) related to a server id (keys). Only last Session created for fetching email(s) is
-     * kept.
-     **/
-    private HashMap<Integer, Session> sessions = new HashMap<Integer, Session>();
 
     @Inject
     private Logger logger;
+
+    @Inject
+    private ComponentManager componentManager;
+
+    @Inject
+    @Named("javamail")
+    private IMessageParser<Part> parser;
 
     /**
      * {@inheritDoc}
@@ -87,211 +71,81 @@ public class DefaultMailComponent implements IMailComponent, Initializable
     @Override
     public void initialize() throws InitializationException
     {
-        this.parser = new JavamailMessageParser(logger);
+        // this.parser = new JavamailMessageParser(logger);
     }
 
     /**
      * {@inheritDoc}
      * 
-     * @throws MessagingException
-     * @see org.xwiki.contrib.mail.IMailComponent#fetch(java.lang.String, int, java.lang.String, java.lang.String,
-     *      java.lang.String, java.lang.String, boolean)
+     * @throws ComponentLookupException
+     * @see org.xwiki.contrib.mail.IMailComponent#getMailReader(java.lang.String, int, java.lang.String,
+     *      java.lang.String, java.lang.String, java.util.Properties)
      */
     @Override
-    public List<Message> fetch(String hostname, int port, String protocol, String folder, String username,
-        String password, Properties additionalProperties, boolean onlyUnread) throws MessagingException
+    public IMailReader getMailReader(final String hostname, final int port, final String protocol,
+        final String username, final String password, final Properties additionalProperties)
+        throws ComponentLookupException
     {
-        return fetch(hostname, port, protocol, folder, username, password, additionalProperties, onlyUnread, -1);
+        final IMailReader reader = componentManager.getInstance(IMailReader.class);
+        final ServerAccountSource source =
+            new ServerAccountSource(hostname, port, protocol, username, password, additionalProperties);
+        reader.setMailSource(source);
+        return reader;
     }
 
     /**
      * {@inheritDoc}
      * 
-     * @throws MessagingException
-     * @throws
-     * @throws Exception
-     * @see org.xwiki.contrib.mail.IMailComponent#fetch(java.lang.String, int, java.lang.String, java.lang.String,
-     *      java.lang.String, java.lang.String, boolean, int)
+     * @see org.xwiki.contrib.mail.IMailComponent#getMailReader(org.xwiki.contrib.mail.internal.source.ServerAccountSource)
      */
     @Override
-    public List<Message> fetch(String hostname, int port, String protocol, String folder, String username,
-        String password, Properties additionalProperties, boolean onlyUnread, int max) throws MessagingException
+    public IMailReader getMailReader(ServerAccountSource source) throws ComponentLookupException
     {
-        assert (hostname != null);
-
-        List<Message> messages = new ArrayList<Message>();
-        boolean isGmail = hostname != null && hostname.endsWith(".gmail.com");
-
-        // try {
-
-        logger.info("Trying to retrieve mails from server " + hostname);
-
-        Session session = createSession(protocol, additionalProperties, isGmail);
-        this.sessions.put(computeSessionID(hostname, port, protocol, folder, username), session);
-
-        // Get a Store object
-        Store store = session.getStore();
-
-        // Connect to the mail account
-        store.connect(hostname, port, username, password);
-        Folder fldr;
-        // Specifically for GMAIL ...
-        if (hostname.endsWith(".gmail.com")) {
-            fldr = store.getDefaultFolder();
-        }
-        fldr = store.getFolder(folder);
-
-        fldr.open(Folder.READ_WRITE);
-
-        // Searches for mails not already read
-        FlagTerm searchterms = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
-        Message[] msgsArray = fldr.search(searchterms);
-        if (max > 0 && msgsArray.length > max) {
-            for (int index = max - 1; index < msgsArray.length - 1; index++) {
-                ArrayUtils.remove(msgsArray, max - 1);
-            }
-        }
-        messages = new ArrayList<Message>(Arrays.asList(msgsArray));
-        /*
-         * } catch (GeneralSecurityException e) { // TODO Auto-generated catch block e.printStackTrace(); }
-         */
-
-        logger.info("Found " + messages.size() + " messages");
-
-        return messages;
-    }
-
-    @Override
-    public List<Message> fetchFromPst(String pstFileName, String folder)
-    {
-        return null;
+        final IMailReader reader = componentManager.getInstance(IMailReader.class);
+        reader.setMailSource(source);
+        return reader;
     }
 
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mail.IMailComponent#check(java.lang.String, int, java.lang.String, java.lang.String,
-     *      java.lang.String, java.lang.String, boolean)
+     * @throws ComponentLookupException
+     * @see org.xwiki.contrib.mail.IMailComponent#getStoreManager(java.lang.String, java.lang.String)
      */
     @Override
-    public int check(String hostname, int port, String protocol, String folder, String username, String password,
-        Properties additionalProperties, boolean onlyUnread)
+    public IStoreManager getStoreManager(final String format, final String location) throws ComponentLookupException
     {
-        int nbMessages;
-        Store store = null;
-        boolean isGmail = hostname != null && hostname.endsWith(".gmail.com");
+        IStoreManager store = null;
 
-        try {
-            // Create the session
-            Session session = createSession(protocol, additionalProperties, isGmail);
-            this.sessions.put(computeSessionID(hostname, port, protocol, folder, username), session);
-
-            // Get a Store object
-            store = session.getStore();
-
-            // Connect to the mail account
-            if (store.isConnected()) {
-                store.close();
-            }
-            store.connect(hostname, port, username, password);
-            Folder fldr;
-            // Specifically for GMAIL ...
-            if (isGmail) {
-                fldr = store.getDefaultFolder();
-            }
-
-            fldr = store.getFolder(folder);
-            if (!fldr.exists()) {
-                logger.warn("checkMails : Folder " + folder + " does not exist in this mailbox");
-                return ConnectionErrors.FOLDER_NOT_FOUND.getCode();
-            }
-            fldr.open(Folder.READ_ONLY);
-
-            // Searches for mails not already read
-            Message[] messages;
-            if (onlyUnread) {
-                FlagTerm searchterms = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
-                messages = fldr.search(searchterms);
-            } else {
-                messages = fldr.getMessages();
-            }
-
-            nbMessages = messages.length;
-
-            // FIXME: instead of converting exceptions to int code, would be better to create new Exception class
-            // (like MailException) with provided error code, message and inner stacktrace, and present that to UI.
-        } catch (AuthenticationFailedException e) {
-            logger.warn("checkMails : ", e);
-            return ConnectionErrors.AUTHENTICATION_FAILED.getCode();
-        } catch (FolderNotFoundException e) {
-            logger.warn("checkMails : ", e);
-            return ConnectionErrors.FOLDER_NOT_FOUND.getCode();
-        } catch (MessagingException e) {
-            logger.warn("checkMails : ", e);
-            if (e.getCause() instanceof java.net.UnknownHostException) {
-                return ConnectionErrors.UNKNOWN_HOST.getCode();
-            } else {
-                return ConnectionErrors.CONNECTION_ERROR.getCode();
-            }
-        } catch (IllegalStateException e) {
-            return ConnectionErrors.ILLEGAL_STATE.getCode();
-        } catch (Throwable t) {
-            logger.warn("checkMails : ", t);
-            return ConnectionErrors.UNEXPECTED_EXCEPTION.getCode();
-        } finally {
-            try {
-                store.close();
-            } catch (MessagingException e) {
-                logger.debug("checkMails : Could not close connection", e);
-            }
+        final String storeLocation = location.replaceAll("\\\\", "/");
+        File storeRoot = new File(storeLocation);
+        if (!storeRoot.exists()) {
+            storeRoot.mkdirs();
         }
-        logger.debug("checkMails : " + nbMessages + " available from " + hostname);
+        // Component hint is the format supported by provider of this store
+        store = this.componentManager.getInstance(IStoreManager.class, format);
+        StoreSource source = new StoreSource(format, location);
+        store.setMailSource(source);
 
-        return nbMessages;
+        return store;
+
     }
 
     /**
-     * Computes a unique ID (hash) for these specific connection parameters.
+     * {@inheritDoc}
      * 
-     * @param server
-     * @param port
-     * @param protocol
-     * @param folder
-     * @param username
-     * @return
+     * @see org.xwiki.contrib.mail.IMailComponent#getStoreManager(org.xwiki.contrib.mail.internal.source.StoreSource)
      */
-    private int computeSessionID(String server, int port, String protocol, String folder, String username)
+    @Override
+    public IStoreManager getStoreManager(StoreSource source) throws ComponentLookupException
     {
-        final String str = server + port + protocol + folder + username;
-        return str.hashCode();
-    }
+        IStoreManager store = null;
 
-    private Session createSession(String protocol, Properties additionalProperties, boolean isGmail)
-    {
-        // Get a session. Use a blank Properties object.
-        Properties props = new Properties(additionalProperties);
-        // necessary to work with Gmail
-        if (isGmail) {
-            props.put("mail.imap.partialfetch", "false");
-            props.put("mail.imaps.partialfetch", "false");
-        }
-        props.put("mail.store.protocol", protocol);
-        // TODO set this as an option (auto-trust certificates for SSL)
-        props.put("mail.imap.ssl.checkserveridentity", "false");
-        props.put("mail.imaps.ssl.trust", "*");
-        /*
-         * MailSSLSocketFactory socketFactory = new MailSSLSocketFactory(); socketFactory.setTrustAllHosts(true);
-         * props.put("mail.imaps.ssl.socketFactory", socketFactory);
-         */
+        // Component hint is the format supported by provider of this store
+        store = this.componentManager.getInstance(IStoreManager.class, source.getFormat());
+        store.setMailSource(source);
 
-        Session session = Session.getInstance(props, null);
-
-        return session;
-    }
-
-    public Session getSession(String hostname, int port, String protocol, String folder, String username)
-    {
-        return this.sessions.get(computeSessionID(hostname, port, protocol, folder, username));
+        return store;
     }
 
     /**
@@ -299,10 +153,10 @@ public class DefaultMailComponent implements IMailComponent, Initializable
      * 
      * @throws IOException
      * @throws MessagingException
-     * @see org.xwiki.contrib.mail.IMailComponent#parse(javax.mail.Message)
+     * @see org.xwiki.contrib.mail.IMailReader#parse(javax.mail.Message)
      */
     @Override
-    public MailItem parseHeaders(Part mail) throws MessagingException, IOException
+    public MailItem parseHeaders(final Part mail) throws MessagingException, IOException
     {
         return parser.parseHeaders(mail);
     }
@@ -311,172 +165,18 @@ public class DefaultMailComponent implements IMailComponent, Initializable
      * {@inheritDoc}
      */
     @Override
-    public MailContent parseContent(Part mail) throws MessagingException, IOException
+    public MailContent parseContent(final Part mail) throws MessagingException, IOException
     {
         return parser.extractMailContent(mail);
     }
 
-    public void setStore(String location, String provider)
-    {
-        this.storeLocation = location.replaceAll("\\\\", "/");
-        this.storeProvider = provider;
-        File storeRoot = new File(location);
-        if (!storeRoot.exists()) {
-            storeRoot.mkdirs();
-        }
-
-    }
-
     /**
      * {@inheritDoc}
      * 
-     * @throws MessagingException
-     * @see org.xwiki.contrib.mail.IMailComponent#writeToStore(javax.mail.Message, java.lang.String)
+     * @see org.xwiki.contrib.mail.IMailReader#parseAddressHeader(java.lang.String)
      */
     @Override
-    public void writeToStore(String folder, Message message) throws MessagingException
-    {
-        logger.info("Delivering " + message + " to " + this.storeLocation + " / " + folder);
-
-        Properties props = new Properties();
-        if ("maildir".equals(this.storeProvider)) {
-            // the following specifies whether to create maildirpath if it is not existent
-            // if not specified then autocreatedir is false
-            props.put("mail.store.maildir.autocreatedir", "true");
-        }
-        if ("mstor".equals(this.storeProvider)) {
-            props.put("mstor.mbox.metadataStrategy", "XML");
-        }
-        Session session = Session.getInstance(props);
-        session.setDebug(true);
-
-        Store store = session.getStore(new URLName(this.storeProvider + ":" + this.storeLocation));
-        store.connect();
-        Folder mailFolder = store.getDefaultFolder().getFolder(folder);
-        if (!mailFolder.exists()) {
-            mailFolder.create(Folder.HOLDS_MESSAGES);
-        }
-        mailFolder.open(Folder.READ_WRITE);
-        // If message is already archived, delete and re-add it
-        Message existingMessage = readFromStore(folder, message.getHeader("Message-ID")[0]);
-        if (existingMessage != null) {
-
-        }
-        mailFolder.appendMessages(new Message[] {message});
-        mailFolder.close(true);
-        store.close();
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws MessagingException
-     * @see org.xwiki.contrib.mail.IMailComponent#readFromStore(java.lang.String)
-     */
-    @Override
-    public Message readFromStore(String folder, String messageid) throws MessagingException
-    {
-        Properties props = new Properties();
-        if ("maildir".equals(this.storeProvider)) {
-            // the following specifies whether to create maildirpath if it is not existent
-            // if not specified then autocreatedir is false
-            props.put("mail.store.maildir.autocreatedir", "true");
-        }
-        if ("mstor".equals(this.storeProvider)) {
-            props.put("mstor.mbox.metadataStrategy", "XML");
-        }
-
-        Session session = Session.getInstance(props);
-
-        String url = this.storeProvider + ":" + this.storeLocation;
-
-        Store store = session.getStore(new URLName(url));
-
-        store.connect(); // useless with Maildir but included here for consistency
-        Folder mailFolder = store.getDefaultFolder().getFolder(folder);
-        mailFolder.open(Folder.READ_ONLY);
-        Message[] messages = mailFolder.search(new MessageIDTerm(messageid));
-        mailFolder.close(false);
-        store.close();
-        if (messages.length > 0) {
-            return messages[0];
-        }
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mail.IMailComponent#readFromStore(java.lang.String)
-     */
-    @Override
-    public Message[] readFromStore(String folder) throws MessagingException
-    {
-        Properties props = new Properties();
-        if ("maildir".equals(this.storeProvider)) {
-            // the following specifies whether to create maildirpath if it is not existent
-            // if not specified then autocreatedir is false
-            props.put("mail.store.maildir.autocreatedir", "true");
-        }
-        if ("mstor".equals(this.storeProvider)) {
-            props.put("mstor.mbox.metadataStrategy", "XML");
-        }
-
-        Session session = Session.getInstance(props);
-
-        String url = this.storeProvider + ":" + this.storeLocation;
-
-        Store store = session.getStore(new URLName(url));
-
-        store.connect(); // useless with Maildir but included here for consistency
-        Folder mailFolder = store.getFolder(folder);
-        mailFolder.open(Folder.READ_ONLY);
-        Message[] messages = mailFolder.getMessages();
-        mailFolder.close(false);
-        store.close();
-        return messages;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mail.IMailComponent#readFromStore(java.lang.String, javax.mail.search.SearchTerm)
-     */
-    @Override
-    public Message[] readFromStore(String folder, SearchTerm term) throws MessagingException
-    {
-        Properties props = new Properties();
-        if ("maildir".equals(this.storeProvider)) {
-            // the following specifies whether to create maildirpath if it is not existent
-            // if not specified then autocreatedir is false
-            props.put("mail.store.maildir.autocreatedir", "true");
-        }
-        if ("mstor".equals(this.storeProvider)) {
-            props.put("mstor.mbox.metadataStrategy", "XML");
-        }
-
-        Session session = Session.getInstance(props);
-
-        String url = this.storeProvider + ":" + this.storeLocation;
-
-        Store store = session.getStore(new URLName(url));
-
-        store.connect(); // useless with Maildir but included here for consistency
-        Folder mailFolder = store.getFolder(folder);
-        mailFolder.open(Folder.READ_ONLY);
-        Message[] messages = mailFolder.search(term);
-        mailFolder.close(false);
-        store.close();
-        return messages;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mail.IMailComponent#parseAddressHeader(java.lang.String)
-     */
-    @Override
-    public String parseAddressHeader(String header)
+    public String parseAddressHeader(final String header)
     {
         try {
             return InternetAddress.parseHeader(header, false)[0].getPersonal();
@@ -484,36 +184,6 @@ public class DefaultMailComponent implements IMailComponent, Initializable
             logger.error("Could not parse " + header, e);
             return "";
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mail.IMailComponent#cloneEmail(javax.mail.Message, java.lang.String, java.lang.String)
-     */
-    public MimeMessage cloneEmail(Message mail, Session session)
-    {
-        MimeMessage cmail;
-        try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            mail.writeTo(bos);
-            bos.close();
-            SharedByteArrayInputStream bis = new SharedByteArrayInputStream(bos.toByteArray());
-            // FIXME: cloning needs the Session object that was used to read initial mail, but this is not persisted
-            // (yet)
-            cmail = new MimeMessage(session, bis);
-            bis.close();
-        } catch (Exception e) {
-            logger.warn("Could not clone email", e);
-            return null;
-        }
-
-        return cmail;
-    }
-
-    protected static String removeCRLF(String str)
-    {
-        return str == null ? null : str.replaceAll("\n", " ").replaceAll("\r", " ");
     }
 
 }

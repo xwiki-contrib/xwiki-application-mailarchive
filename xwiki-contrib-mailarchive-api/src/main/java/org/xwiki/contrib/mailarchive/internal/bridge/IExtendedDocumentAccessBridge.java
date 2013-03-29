@@ -50,7 +50,7 @@ public interface IExtendedDocumentAccessBridge extends DocumentAccessBridge
      * @return
      * @throws XWikiException
      */
-    boolean exists(String docname, String classname) throws XWikiException;
+    boolean exists(String docname, String classname);
 
     /**
      * Generates a unique and valid name for a document in a space.
@@ -70,7 +70,7 @@ public interface IExtendedDocumentAccessBridge extends DocumentAccessBridge
      * @return
      * @throws XWikiException
      */
-    String getStringValue(String docname, String classname, String fieldname) throws XWikiException;
+    String getStringValue(String docname, String classname, String fieldname);
 
     /**
      * Gets an int value from a document / object of certain type / field.
@@ -81,7 +81,7 @@ public interface IExtendedDocumentAccessBridge extends DocumentAccessBridge
      * @return
      * @throws XWikiException
      */
-    int getIntValue(String docname, String classname, String fieldname) throws XWikiException;
+    int getIntValue(String docname, String classname, String fieldname);
 
     /**
      * Gets a boolean value from a document / object of certain type / field.
@@ -92,7 +92,7 @@ public interface IExtendedDocumentAccessBridge extends DocumentAccessBridge
      * @return
      * @throws XWikiException
      */
-    boolean getBooleanValue(String docname, String classname, String fieldname) throws XWikiException;
+    boolean getBooleanValue(String docname, String classname, String fieldname);
 
     boolean createOrUpdate(DocumentEntity document);
 

@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.contrib.mailarchive.IMASource;
 import org.xwiki.contrib.mailarchive.IMailingList;
-import org.xwiki.contrib.mailarchive.IServer;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 
@@ -64,7 +64,7 @@ public interface IMailArchiveConfiguration
 
     public Map<String, IMailingList> getMailingLists();
 
-    public List<IServer> getServers();
+    public List<IMASource> getServers();
 
     public Map<String, IType> getMailTypes();
 

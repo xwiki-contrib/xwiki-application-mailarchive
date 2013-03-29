@@ -46,7 +46,7 @@ public class ITUtils
 
         Session mailSession = Session.getDefaultInstance(props, null);
         InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream(emlFileName);
-        ;
+
         MimeMessage message = new MimeMessage(mailSession, source);
 
         System.out.println("Subject : " + message.getSubject());
@@ -63,7 +63,7 @@ public class ITUtils
 
         Session mailSession = Session.getDefaultInstance(props, null);
         InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream(emlFileName);
-        ;
+
         MimeMessage message = new MimeMessage(mailSession, source);
 
         return message;

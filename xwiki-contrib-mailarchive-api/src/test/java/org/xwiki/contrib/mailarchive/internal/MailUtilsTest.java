@@ -42,6 +42,7 @@ import org.xwiki.contrib.mailarchive.internal.utils.DecodedMailContent;
 import org.xwiki.contrib.mailarchive.internal.utils.IMailUtils;
 import org.xwiki.contrib.mailarchive.internal.utils.MailUtils;
 import org.xwiki.query.Query;
+import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -64,7 +65,7 @@ public class MailUtilsTest
     @Before
     public void setUp() throws Exception
     {
-        this.mailutils = mocker.getMockedComponent();
+        this.mailutils = mocker.getComponentUnderTest();
 
         /*
          * verify(mocker.getMockedLogger()). mocker.getMockery().checking(new Expectations() { { // Ignore all calls to
@@ -525,7 +526,7 @@ public class MailUtilsTest
     }
 
     @Test
-    public void parseUser() throws ComponentLookupException, Exception
+    public void parseUser() throws ComponentLookupException, QueryException
     {
         final QueryManager mockQueryManager = mocker.getInstance(QueryManager.class);
         final Query mockQuery = mock(Query.class);
@@ -549,7 +550,7 @@ public class MailUtilsTest
     }
 
     @Test
-    public void parseUserForEmptyPersonal() throws ComponentLookupException, Exception
+    public void parseUserForEmptyPersonal() throws ComponentLookupException, QueryException
     {
         final QueryManager mockQueryManager = mocker.getInstance(QueryManager.class);
         final Query mockQuery = mock(Query.class);

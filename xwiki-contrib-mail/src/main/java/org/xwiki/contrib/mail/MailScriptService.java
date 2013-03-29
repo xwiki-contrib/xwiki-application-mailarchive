@@ -30,6 +30,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.script.service.ScriptService;
 
 /**
@@ -41,24 +42,43 @@ import org.xwiki.script.service.ScriptService;
 public class MailScriptService implements ScriptService
 {
     @Inject
-    private IMailComponent mailComp;
+    IMailComponent mailComp;
 
     List<Message> fetch(String hostname, int port, String protocol, String folder, String username, String password,
         Properties additionalProperties, boolean onlyUnread)
     {
         try {
-            return mailComp.fetch(hostname, port, protocol, folder, username, password, additionalProperties,
-                onlyUnread);
+            IMailReader mailReader =
+                mailComp.getMailReader(hostname, port, protocol, username, password, additionalProperties);
+            if (mailReader != null) {
+
+                return mailReader.read(folder, onlyUnread);
+            }
         } catch (MessagingException e) {
             // FIXME that's pretty bad to hide that exception...
             return new ArrayList<Message>();
+        } catch (ComponentLookupException e) {
+            // TODO Auto-generated catch block
+            return new ArrayList<Message>();
         }
+
+        return new ArrayList<Message>();
     }
 
     int check(String hostname, int port, String protocol, String folder, String username, String password,
         Properties additionalProperties, boolean onlyUnread)
     {
-        return mailComp.check(hostname, port, protocol, folder, username, password, additionalProperties, onlyUnread);
+        try {
+            IMailReader mailReader =
+                mailComp.getMailReader(hostname, port, protocol, username, password, additionalProperties);
+            if (mailReader != null) {
+                return mailReader.check(folder, onlyUnread);
+            }
+        } catch (ComponentLookupException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     String parseAddressHeader(String header)

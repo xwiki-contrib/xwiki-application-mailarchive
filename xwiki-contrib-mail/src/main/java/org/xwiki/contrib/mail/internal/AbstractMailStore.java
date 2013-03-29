@@ -38,8 +38,8 @@ import javax.mail.search.MessageIDTerm;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
-import org.xwiki.contrib.mail.SourceConnectionErrors;
 import org.xwiki.contrib.mail.IStoreManager;
+import org.xwiki.contrib.mail.SourceConnectionErrors;
 import org.xwiki.contrib.mail.internal.source.StoreSource;
 
 /**
@@ -227,11 +227,4 @@ public abstract class AbstractMailStore extends AbstractMailReader implements IS
         return copy;
     }
 
-    /*
-     * @Override public Message[] read(String folder, SearchTerm term) throws MessagingException { Properties props =
-     * getStoreProperties(); Session session = Session.getInstance(props); String url = getProvider() + ":" + location;
-     * Store store = session.getStore(new URLName(url)); store.connect(); // useless with Maildir but included here for
-     * consistency Folder mailFolder = store.getFolder(folder); mailFolder.open(Folder.READ_ONLY); Message[] messages =
-     * mailFolder.search(term); mailFolder.close(false); store.close(); return messages; }
-     */
 }

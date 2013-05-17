@@ -40,6 +40,13 @@ public class AdminMailSourcesTest extends AbstractAdminAuthenticatedTest
     public void setUp() throws Exception
     {
         super.setUp();
+        getUtil().deleteSpace("MailArchivePrefs");
+    }
+
+    public void tearDown() throws Exception
+    {
+        // remove any prefs pages that could have been created by tests
+        getUtil().deleteSpace("MailArchivePrefs");
     }
 
     @Test

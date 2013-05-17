@@ -33,60 +33,7 @@
       <version>0.3-SNAPSHOT</version>
       <type>xar</type>
     </dependency>
-    <!-- we need velocity macro -->
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-rendering-macro-velocity</artifactId>
-      <version>${platform.version}</version>
-    </dependency>
-    <!-- we need html macro -->
-    <dependency>
-      <groupId>org.xwiki.rendering</groupId>
-      <artifactId>xwiki-rendering-macro-html</artifactId>
-      <version>${platform.version}</version>
-    </dependency>
-    <!-- we need wiki macros -->
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-rendering-wikimacro-api</artifactId>
-      <version>${platform.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-rendering-wikimacro-store</artifactId>
-      <version>${platform.version}</version>
-    </dependency>
-    <!-- we need include macro -->
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-rendering-macro-include</artifactId>
-      <version>${platform.version}</version>
-    </dependency>
-    <!-- we need code macro -->
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-rendering-macro-code</artifactId>
-      <version>${platform.version}</version>
-    </dependency>
-    <!-- we need box macro -->
-    <dependency>
-      <groupId>org.xwiki.rendering</groupId>
-      <artifactId>xwiki-rendering-macro-box</artifactId>
-      <version>${platform.version}</version>
-    </dependency>
-    <!-- we need message macros (for warning/info/error) -->
-    <dependency>
-      <groupId>org.xwiki.rendering</groupId>
-      <artifactId>xwiki-rendering-macro-message</artifactId>
-      <version>${platform.version}</version>
-    </dependency>    
-    <!-- we need livetables -->
-    <!-- dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-livetable-ui</artifactId>
-      <version>${platform.version}</version>
-      <type>xar</type>
-    </dependency-->
+    
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
@@ -134,8 +81,8 @@
       <plugin>
         <groupId>org.xwiki.platform</groupId>
         <artifactId>xwiki-platform-tool-packager-plugin</artifactId>
-        <!-- because XWIKI-8960 was fixed from 5.0-SNAPSHOT... -->
-        <version>5.0-SNAPSHOT</version>
+        <!-- because XWIKI-8960 was fixed from 5.0-milestone-2... -->
+        <version>5.0-rc-1</version>
         <executions>
           <execution>
             <phase>generate-test-resources</phase>

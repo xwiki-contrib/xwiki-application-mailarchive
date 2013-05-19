@@ -26,24 +26,35 @@ import org.xwiki.test.ui.po.InlinePage;
 /**
  * @version $Id$
  */
-public class MailArchiveStoreEntryEditPage extends InlinePage
+public class MailArchiveServerEntryEditPage extends InlinePage
 {
-    @FindBy(id = "MailArchiveCode.StoreClass_0_id")
+    private static final String CLASS_PREFIX = "MailArchiveCode.ServerSettingsClass_0_";
+
+    @FindBy(id = CLASS_PREFIX + "id")
     private WebElement idElement;
 
-    @FindBy(id = "MailArchiveCode.StoreClass_0_format")
-    private WebElement formatElement;
+    @FindBy(id = CLASS_PREFIX + "hostname")
+    private WebElement hostnameElement;
 
-    @FindBy(id = "MailArchiveCode.StoreClass_0_location")
-    private WebElement locationElement;
+    @FindBy(id = CLASS_PREFIX + "port")
+    private WebElement portElement;
 
-    @FindBy(id = "MailArchiveCode.StoreClass_0_folder")
+    @FindBy(id = CLASS_PREFIX + "protocol")
+    private WebElement protocolElement;
+
+    @FindBy(id = CLASS_PREFIX + "user")
+    private WebElement userElement;
+
+    @FindBy(id = CLASS_PREFIX + "password")
+    private WebElement passwordElement;
+
+    @FindBy(id = CLASS_PREFIX + "folder")
     private WebElement folderElement;
 
-    @FindBy(id = "MailArchiveCode.StoreClass_0_additionalProperties")
+    @FindBy(id = CLASS_PREFIX + "additionalProperties")
     private WebElement additionalPropertiesElement;
 
-    @FindBy(id = "MailArchiveCode.StoreClass_0_state")
+    @FindBy(id = CLASS_PREFIX + "state")
     private WebElement stateElement;
 
     @FindBy(name = "save")
@@ -54,15 +65,29 @@ public class MailArchiveStoreEntryEditPage extends InlinePage
         this.idElement.sendKeys(id);
     }
 
-    public void setFormat(final String format)
+    public void setHostname(final String hostname)
     {
-        this.formatElement.clear();
-        this.formatElement.sendKeys(format);
+        this.hostnameElement.sendKeys(hostname);
     }
 
-    public void setLocation(final String location)
+    public void setPort(final String port)
     {
-        this.locationElement.sendKeys(location);
+        this.portElement.sendKeys(port);
+    }
+
+    public void setProtocol(final String protocol)
+    {
+        this.protocolElement.sendKeys(protocol);
+    }
+
+    public void setUser(final String user)
+    {
+        this.userElement.sendKeys(user);
+    }
+
+    public void setPassword(final String password)
+    {
+        this.passwordElement.sendKeys(password);
     }
 
     public void setFolder(final String folder)

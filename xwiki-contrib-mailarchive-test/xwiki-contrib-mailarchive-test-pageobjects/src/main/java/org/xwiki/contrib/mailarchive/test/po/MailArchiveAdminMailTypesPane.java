@@ -27,7 +27,7 @@ import org.xwiki.test.ui.po.LiveTableElement;
 /**
  * Represents the actions possible on the Mail Sources part of the Admin Page.
  */
-public class MailArchiveAdminMailSourcesPane extends BaseElement
+public class MailArchiveAdminMailTypesPane extends BaseElement
 {
     @FindBy(id = "btAddStore")
     private WebElement addStoreButton;

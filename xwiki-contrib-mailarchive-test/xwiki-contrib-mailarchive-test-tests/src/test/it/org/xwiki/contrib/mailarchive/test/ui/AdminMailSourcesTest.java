@@ -22,10 +22,12 @@ package org.xwiki.contrib.mailarchive.test.ui;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.contrib.mailarchive.test.po.MailArchiveAdminMailSourcesPane;
 import org.xwiki.contrib.mailarchive.test.po.MailArchiveAdminPage;
+import org.xwiki.contrib.mailarchive.test.po.MailArchiveServerEntryEditPage;
 import org.xwiki.contrib.mailarchive.test.po.MailArchiveStoreEntryEditPage;
 import org.xwiki.test.ui.AbstractAdminAuthenticatedTest;
 import org.xwiki.test.ui.po.LiveTableElement;
@@ -43,10 +45,39 @@ public class AdminMailSourcesTest extends AbstractAdminAuthenticatedTest
         getUtil().deleteSpace("MailArchivePrefs");
     }
 
+    @After
     public void tearDown() throws Exception
     {
         // remove any prefs pages that could have been created by tests
         getUtil().deleteSpace("MailArchivePrefs");
+    }
+
+    @Test
+    public void testAddServer()
+    {
+        MailArchiveAdminPage maAdminPage = MailArchiveAdminPage.gotoPage();
+        assertTrue(maAdminPage.isOnPage());
+        MailArchiveAdminMailSourcesPane maAdminSourcesPane = maAdminPage.openMailSourcesPane();
+        MailArchiveServerEntryEditPage serverEntryEditPage = maAdminSourcesPane.addServer();
+        serverEntryEditPage.setId("testServer");
+        serverEntryEditPage.setFolder("inbox");
+        serverEntryEditPage.setHostname("host");
+        serverEntryEditPage.setPort("1234");
+        serverEntryEditPage.setProtocol("protocol");
+        serverEntryEditPage.setUser("user");
+        serverEntryEditPage.setPassword("pwd");
+        serverEntryEditPage.setState("on");
+
+        serverEntryEditPage.submitForm();
+
+        LiveTableElement lt = maAdminSourcesPane.getServerLiveTable();
+        assertEquals("1 server should have been added to live table", 1, lt.getRowCount());
+        assertRow(lt, "ID", "testServer");
+        assertRow(lt, "Host Name", "host");
+        assertRow(lt, "Protocol", "protocol");
+        assertRow(lt, "Folder", "inbox");
+        assertRow(lt, "Account", "user");
+        assertRow(lt, "State", "Enabled");
     }
 
     @Test
@@ -56,14 +87,26 @@ public class AdminMailSourcesTest extends AbstractAdminAuthenticatedTest
         assertTrue(maAdminPage.isOnPage());
         MailArchiveAdminMailSourcesPane maAdminSourcesPane = maAdminPage.openMailSourcesPane();
         MailArchiveStoreEntryEditPage storeEntryEditPage = maAdminSourcesPane.addStore();
-        storeEntryEditPage.setId("test");
+        storeEntryEditPage.setId("testStore");
         storeEntryEditPage.setFolder("inbox");
         storeEntryEditPage.setFormat("mbox");
         storeEntryEditPage.setLocation("/a/folder/to/a/store");
         storeEntryEditPage.setState("on");
-        storeEntryEditPage.submitStoreForm();
-        LiveTableElement storeLt = maAdminSourcesPane.getStoreLiveTable();
-        assertEquals("1 store should have been added to live table", 1, storeLt.getRowCount());
-        assertTrue("correct store item not retrieved from live table", storeLt.hasRow("ID", "test"));
+
+        storeEntryEditPage.submitForm();
+
+        LiveTableElement lt = maAdminSourcesPane.getStoreLiveTable();
+        assertEquals("1 store should have been added to live table", 1, lt.getRowCount());
+        assertRow(lt, "ID", "testStore");
+        assertRow(lt, "Format", "mbox");
+        assertRow(lt, "Location", "/a/folder/to/a/store");
+        assertRow(lt, "Folder", "inbox");
+        assertRow(lt, "State", "Enabled");
+    }
+
+    private void assertRow(final LiveTableElement lt, final String columnTitle, final String columnValue)
+    {
+        assertTrue("Expected value \"" + columnValue + "\" not found for column with title \"" + columnTitle + "\"",
+            lt.hasRow(columnTitle, columnValue));
     }
 }

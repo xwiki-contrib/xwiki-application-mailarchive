@@ -578,6 +578,7 @@
 {{error}}$message{{/error}}
 #end
 #set($ok = $xwiki.jsfx.use("/js/xwiki/lightbox/lightbox.js", true))
+#set($ok = $xwiki.ssfx.use("js/xwiki/lightbox/lightbox.css", true))
 #set($spacecode='MailArchiveCode')
 #set($spaceitems='MailArchiveItems')
 #set($spacehome='MailArchive')
@@ -586,20 +587,26 @@
   #set($prefsdoc = $xwiki.getDocument("${spaceprefs}.GlobalParameters"))
   #set($prefsobj = $prefsdoc.newObject("${spacecode}.AdminClass"))
   #set($ok = $prefsdoc.save())
-#end #if (!$xwiki.exists("${spaceprefs}.Type_Mail"))
+#end 
+#if (!$xwiki.exists("${spaceprefs}.Type_Mail"))
   #set($mailtypedoc = $xwiki.getDocument("${spaceprefs}.Type_Mail"))
   #set($mailtypeobj = $mailtypedoc.newObject("${spacecode}.TypesSettingsClass"))
   #set($discard=$mailtypeobj.set('id', 'mail'))
   #set($discard=$mailtypeobj.set('name', 'Mail'))
   #set($discard=$mailtypeobj.set('icon', 'email'))
-  #set($mailmatcherobj = $mailtypedoc.newObject("${spacecode}.MailMatcherClass"))
-  #set($discard=$mailmatcherobj.set('fields', 'from'))
-  #set($discard=$mailmatcherobj.set('expression', '.*'))
-  #set($discard=$mailmatcherobj.set('isAdvanced', 1))
-  #set($discard=$mailmatcherobj.set('isIgnoreCase', 1))
-  #set($discard=$mailmatcherobj.set('isMultiLine', 1))
+  #set($discard=$mailtypeobj.set('builtin', '1'))
   #set($ok = $mailtypedoc.save())
-#end #if($!request.save)
+#end
+#if(!$xwiki.exists("${spaceprefs}.Type_Calendar"))
+  #set($mailcalendardoc = $xwiki.getDocument("${spaceprefs}.Type_Calendar"))
+  #set($mailcalendarobj = $mailcalendardoc.newObject("${spacecode}.TypesSettingsClass"))
+  #set($discard = $mailcalendarobj.set('id', 'calendar'))
+  #set($discard = $mailcalendarobj.set('name', 'Calendar Entry'))
+  #set($discard = $mailcalendarobj.set('icon', 'calendar'))
+  #set($discard = $mailcalendarobj.set('builtin', '1'))
+  #set($ok = $mailcalendardoc.save())
+#end
+#if($!request.save)
   #set($prefsdoc = $xwiki.getDocument("${spaceprefs}.GlobalParameters"))
   #set($prefsobj=$prefsdoc.updateObjectFromRequest("${spacecode}.AdminClass"))
   #set($ok=$prefsdoc.save())
@@ -888,13 +895,16 @@ Types are useful to materialize standard mails, annoucements, releases, ...&lt;b
 Mail types are similar to mailing-lists above, except that information is persisted in tags and in a specific mail field ("type"), a specific icon can be associated with each type. This information is viewable in Mails and Topics pages, and in the Timeline view (topic icon). 
 You can use a regular expression as pattern, and pick the fields to be checked against this pattern.&lt;br/&gt;
 
+Some built-in types exist, for them only icon can be updated. They are stored in a specific "builtin type" mail field.&lt;br/&gt;
+
 Note : icon field should contain the name of an icon from [[XWiki Icon Set&gt;&gt;http://www.famfamfam.com/lab/icons/silk/previews/index_abc.png]].&lt;br/&gt;&lt;br/&gt;
 
 &lt;i&gt;Default type 'Mail' should not be deleted nor updated (except to set another icon if you wish)&lt;/i&gt;&lt;br/&gt;
 
-#set($collist = [ "id", "name", "icon", "_actions"])
+#set($collist = [ "id", "builtin", "name", "icon", "_actions"])
 #set($colprops = {                   
                    "id" : { "type" : "text", "link" : "view" },
+                   "builtin" : { "type" : "text" },
                    "name" : { "type" : "text", "link" : "view" },
                    "icon" : { "type" : "html" },
                    "_actions" : {"actions": ["edit","delete"] } 
@@ -971,11 +981,11 @@ Event.observe(window, "load", onLoad);
 var sync_field = document.getElementById('MailArchiveCode.AdminClass_0_matchldap');
 Event.observe(sync_field, 'change', toggleSyncUserMode);
 var ldapphoto_field = document.getElementById('MailArchiveCode.AdminClass_0_ldapphoto');
-Event.observe(ldapphoto_field, "click", toggleLdapPhoto);
-Event.observe($('btAddServer'), "click", openAddServer);
-Event.observe($('btAddStore'), "click", openAddItem.bindAsEventListener(this, storesurl));
-Event.observe($('btAddList'), "click", openAddList);
-Event.observe($('btAddType'), "click", openAddType);
+Event.observe(ldapphoto_field, 'click', toggleLdapPhoto);
+Event.observe($('btAddServer'), 'click', openAddServer);
+Event.observe($('btAddStore'), 'click', openAddStore); //openAddItem.bindAsEventListener(this, storesurl));
+Event.observe($('btAddList'), 'click', openAddList);
+Event.observe($('btAddType'), 'click', openAddType);
 function toggleSyncUserMode() {
   var val = sync_field.checked;
   if (val) {

@@ -32,6 +32,20 @@
     <defaultWeb/>
     <nameField/>
     <validationScript/>
+    <builtin>
+      <customDisplay/>
+      <defaultValue>0</defaultValue>
+      <disabled>0</disabled>
+      <displayFormType>checkbox</displayFormType>
+      <displayType/>
+      <name>builtin</name>
+      <number>5</number>
+      <prettyName>Built-in Type</prettyName>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+    </builtin>
     <icon>
       <customDisplay/>
       <disabled>0</disabled>

@@ -162,12 +162,14 @@ mailarchive.lists.fields.listId.hint=Optionnally referring to the List-ID identi
 MailArchiveCode.TypesSettingsClass_id=ID
 MailArchiveCode.TypesSettingsClass_name=Display name
 MailArchiveCode.TypesSettingsClass_icon=Icon
+MailArchiveCode.TypesSettingsClass_builtin=Built-in type ?
 MailArchiveCode.TypesSettingsClass_matchersComposition=Matchers relation-ship
 MailArchiveCode.TypesSettingsClass_matchersComposition_and=AND
 MailArchiveCode.TypesSettingsClass_matchersComposition_or=OR
 ## Sheet Form
 mailarchive.types.fields.id.label=$msg.get('MailArchiveCode.TypesSettingsClass_id')
 mailarchive.types.fields.name.label=$msg.get('MailArchiveCode.TypesSettingsClass_name')
+mailarchive.types.fields.builtin.label=$msg.get('MailArchiveCode.TypesSettingsClass_builtin')
 mailarchive.types.fields.icon.label=$msg.get('MailArchiveCode.TypesSettingsClass_icon')
 mailarchive.types.fields.icon.hint=Enter the name of an icon from {0}XWiki Icon Set{1}.
 mailarchive.types.fields.matchersComposition.label==$msg.get('MailArchiveCode.TypesSettingsClass_matchersComposition')
@@ -261,6 +263,7 @@ mailarchive.lists.table.headers.emptyvalue=n/a
 # Types
 mailarchive.types.table.headers.name=Display Name
 mailarchive.types.table.headers.id=ID
+mailarchive.types.table.headers.builtin=Built-in ?
 mailarchive.types.table.headers.icon=Icon
 mailarchive.types.table.headers._actions=Actions
 mailarchive.types.table.headers.emptyvalue=n/a

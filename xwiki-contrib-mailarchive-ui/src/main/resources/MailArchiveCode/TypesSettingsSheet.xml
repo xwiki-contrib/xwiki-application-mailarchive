@@ -25,13 +25,9 @@
   <hidden>false</hidden>
   <content>{{velocity}}
 #if($doc.name != "TypesSettingsSheet")
-  #set($number=$request.getParameter('objnumber'))
-  #if("$!number"=="")
-    #set($number="0")
-  #end
-  #set($number=$util.parseInt($number))
   #set($typesClass=$doc.getObject('MailArchiveCode.TypesSettingsClass').xWikiClass)
-  #set($obj=$doc.getObject('MailArchiveCode.TypesSettingsClass',$number))
+  #set($obj=$doc.getObject('MailArchiveCode.TypesSettingsClass'))
+  #set($isBuiltin = ($obj.getProperty('builtin').getValue() != '0'))
 
 == Mail Type ${doc.display('name','view',$obj)} ==
 
@@ -39,7 +35,11 @@
 &lt;div class="xform"&gt;
  &lt;form action="#" class="xform" method="post" name="form_types"&gt;
   #foreach ($prop in $typesClass.properties)
-    #set($hint = $!{msg.get("mailarchive.types.fields.${prop.name}.hint")})
+    #if($prop.name == "icon")
+      #set($hint = $services.localization.render("mailarchive.types.fields.${prop.name}.hint", ['[[XWiki Icon Set&gt;&gt;', 'http://www.famfamfam.com/lab/icons/silk/previews/index_abc.png]]']))
+    #else
+      #set($hint = $!{msg.get("mailarchive.types.fields.${prop.name}.hint")})
+    #end
    &lt;dl&gt;
      &lt;dt&gt;
        &lt;label for="MailArchiveCode.TypesSettingsClass_$number_$prop.name"&gt;$prop.prettyName&lt;/label&gt;
@@ -48,11 +48,16 @@
     #end
      &lt;/dt&gt;
      &lt;dd&gt;
-       $doc.display($prop.getName(), $obj)
+       #if($isBuiltin &amp;&amp; $prop.name != "icon")
+       $doc.display($prop.name, 'view', $obj)
+       #else
+       $doc.display($prop.name, $obj)
+       #end
      &lt;/dd&gt;
    &lt;/dl&gt;
   #end
 
+#if(!$isBuiltin)
 === Matchers for this type ===
 
    &lt;span class="buttonwrapper"&gt;
@@ -66,6 +71,7 @@
   #end
 
 {{include reference="MailArchiveCode.MailMatcherSheet"/}}
+#end
 
  &lt;/form&gt;
 &lt;/div&gt;

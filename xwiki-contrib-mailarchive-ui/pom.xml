@@ -43,72 +43,72 @@
       <artifactId>xwiki-macro-tabs</artifactId>
       <version>1.0.2</version>
       <type>xar</type>
-	  <scope>runtime</scope>
+      <scope>runtime</scope>
     </dependency>
-	
-	<!-- XWiki dependencies, needed for installing on an empty wiki -->
-	<!-- we need velocity macro -->
+
+    <!-- XWiki dependencies, needed for installing on an empty wiki -->
+    <!-- we need velocity macro -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-rendering-macro-velocity</artifactId>
       <version>${platform.version}</version>
-	  <scope>runtime</scope>
+      <scope>runtime</scope>
     </dependency>
     <!-- we need html macro -->
     <dependency>
       <groupId>org.xwiki.rendering</groupId>
       <artifactId>xwiki-rendering-macro-html</artifactId>
       <version>${platform.version}</version>
-	  <scope>runtime</scope>
+      <scope>runtime</scope>
     </dependency>
     <!-- we need wiki macros -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-rendering-wikimacro-api</artifactId>
       <version>${platform.version}</version>
-	  <scope>runtime</scope>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-rendering-wikimacro-store</artifactId>
       <version>${platform.version}</version>
-	  <scope>runtime</scope>
+      <scope>runtime</scope>
     </dependency>
     <!-- we need include macro -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-rendering-macro-include</artifactId>
       <version>${platform.version}</version>
-	  <scope>runtime</scope>
+      <scope>runtime</scope>
     </dependency>
     <!-- we need code macro -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-rendering-macro-code</artifactId>
       <version>${platform.version}</version>
-	  <scope>runtime</scope>
+      <scope>runtime</scope>
     </dependency>
     <!-- we need box macro -->
     <dependency>
       <groupId>org.xwiki.rendering</groupId>
       <artifactId>xwiki-rendering-macro-box</artifactId>
       <version>${platform.version}</version>
-	  <scope>runtime</scope>
+      <scope>runtime</scope>
     </dependency>
     <!-- we need message macros (for warning/info/error) -->
     <dependency>
       <groupId>org.xwiki.rendering</groupId>
       <artifactId>xwiki-rendering-macro-message</artifactId>
       <version>${platform.version}</version>
-	  <scope>runtime</scope>
-    </dependency>    
+      <scope>runtime</scope>
+    </dependency>
     <!-- we need livetables -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-livetable-ui</artifactId>
       <version>${platform.version}</version>
       <type>xar</type>
-	  <scope>runtime</scope>
+      <scope>runtime</scope>
     </dependency>
     <!-- we need administration ui -->
     <dependency>
@@ -116,8 +116,8 @@
       <artifactId>xwiki-platform-administration-ui</artifactId>
       <version>${platform.version}</version>
       <type>xar</type>
-	  <scope>runtime</scope>
-    </dependency>	
+      <scope>runtime</scope>
+    </dependency>
     <!-- we need groovy -->
     <dependency>
       <groupId>org.xwiki.commons</groupId>
@@ -129,24 +129,25 @@
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-rendering-macro-groovy</artifactId>
       <version>${platform.version}</version>
-	  <scope>runtime</scope>
+      <scope>runtime</scope>
     </dependency>
     <!-- we need panels UI extension point -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-panels-api</artifactId>
       <version>${platform.version}</version>
-	  <scope>runtime</scope>
+      <scope>runtime</scope>
     </dependency>
     <!-- we need container macro -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-rendering-macro-container</artifactId>
       <version>${platform.version}</version>
-	  <scope>runtime</scope>
+      <scope>runtime</scope>
     </dependency>
+
   </dependencies>
-  
+
   <build>
     <plugins>
       <plugin>

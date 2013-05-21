@@ -104,16 +104,15 @@ mailarchive.admin.title=Mail Archive Administration
 
 # Loading page
 mailarchive.load.title=Mailing-lists emails loading
-mailarchive.load.abstract=This page will allow you to manually load emails from your configured mailbox(es), and to assign parameters to be used for the loading job.
+mailarchive.load.abstract=This page will allow you to manually load emails from your configured sources (mailboxes or stores), and to assign parameters to be used for the loading job(s).&lt;br/&gt;A "default" loading session is configured to load emails from all configured servers with some default options. "Disabled" servers are never taken into account, even if they are part of a loading session.
 mailarchive.load.load.submit=Load
 mailarchive.load.check.submit=Check
 mailarchive.load.switch.submit=Switch State
-mailarchive.load.table.headers.server=Server
-mailarchive.load.table.headers.state=State
+mailarchive.load.table.headers.source=Source Configuration
+mailarchive.load.table.headers.state=Enabled ?
+mailarchive.load.table.headers.status=Availability
 mailarchive.load.table.headers.available=Nb Mails available
 mailarchive.load.table.headers.actions=Actions
-mailarchive.load.schedule.setParameters.submit=Use parameters from top of this page for scheduled job
-
 
 # ---- Objects and Livetables ----
 
@@ -199,13 +198,25 @@ MailArchiveCode.LoadingSessionClass_debugMode=Debug Mode
 MailArchiveCode.LoadingSessionClass_simulationMode=Simulate
 MailArchiveCode.LoadingSessionClass_recentMails=Focus on Recent mails
 ## Sheet Form
-mailarchive.loadingSession.fields.maxMailsNb.label=$services.localization.get('MailArchiveCode.LoadingSessionClass_maxMailsNb')
-mailarchive.loadingSession.fields.debugMode.label=$services.localization.get('MailArchiveCode.LoadingSessionClass_debugMode')
-mailarchive.loadingSession.fields.simulationMode.label=$services.localization.get('MailArchiveCode.LoadingSessionClass_simulationMode')
-mailarchive.loadingSession.fields.loadAll.label=$services.localization.get('MailArchiveCode.LoadingSessionClass_loadAll')
-mailarchive.loadingSession.fields.recentMails.label=$services.localization.get('MailArchiveCode.LoadingSessionClass_recentMails')
-mailarchive.loadingSession.fields.withDelete.label=$services.localization.get('MailArchiveCode.LoadingSessionClass_withDelete')
+mailarchive.loadingSession.fields.maxMailsNb.label=$services.localization.render('MailArchiveCode.LoadingSessionClass_maxMailsNb')
+mailarchive.loadingSession.fields.debugMode.label=$services.localization.render('MailArchiveCode.LoadingSessionClass_debugMode')
+mailarchive.loadingSession.fields.simulationMode.label=$services.localization.render('MailArchiveCode.LoadingSessionClass_simulationMode')
+mailarchive.loadingSession.fields.loadAll.label=$services.localization.render('MailArchiveCode.LoadingSessionClass_loadAll')
+mailarchive.loadingSession.fields.recentMails.label=$services.localization.render('MailArchiveCode.LoadingSessionClass_recentMails')
+mailarchive.loadingSession.fields.withDelete.label=$services.localization.render('MailArchiveCode.LoadingSessionClass_withDelete')
 mailarchive.loadingSession.fields.maxMailsNb.hint=Enter -1 to load all mails - can take a very long time depending on number of emails.
+## Livetable headers
+mailarchive.loadingSessions.table.headers.id=ID
+mailarchive.loadingSessions.table.headers.maxMailsNb=Limit
+mailarchive.loadingSessions.table.headers.debugMode=Debug ?
+mailarchive.loadingSessions.table.headers.simulationMode=Simulate ?
+mailarchive.loadingSessions.table.headers.loadAll=All ?
+mailarchive.loadingSessions.table.headers.recentMails=Recent ?
+mailarchive.loadingSessions.table.headers.withDelete=Delete ?
+mailarchive.loadingSessions.table.headers.servers=Servers
+mailarchive.loadingSessions.table.headers.stores=Stores
+mailarchive.loadingSessions.table.headers.emptyvalue=(default)
+mailarchive.loadingSessions.table.headers._actions=Actions
 
 # Archive livetable column headers
 mailarchive.topics.table.headers.subject=Subject

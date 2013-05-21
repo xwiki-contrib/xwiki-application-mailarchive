@@ -234,10 +234,17 @@ public class Factory implements IFactory
                 + XWikiPersistence.CLASS_LOADING_SESSION);
             return null;
         }
-        LoadingSession session = new LoadingSession(mailArchive);
+        LoadingSession session = null;
 
         // Retrieve connection properties from prefs
         String className = XWikiPersistence.CLASS_LOADING_SESSION;
+        final String id = dab.getStringValue(sessionPrefsDoc, className, "id");
+        if (!StringUtils.isBlank(id)) {
+            session = new LoadingSession(mailArchive, id);
+        } else {
+            return null;
+        }
+
         if (dab.getBooleanValue(sessionPrefsDoc, className, "debugMode")) {
             session = session.debugMode();
         }
@@ -254,6 +261,7 @@ public class Factory implements IFactory
             session = session.withDelete();
         }
         session = session.setLimit(dab.getIntValue(sessionPrefsDoc, className, "maxMailsNb"));
+
         final String servers = dab.getStringValue(sessionPrefsDoc, className, "servers");
         final String stores = dab.getStringValue(sessionPrefsDoc, className, "stores");
         for (String serverPrefsDoc : StringUtils.split(servers, ',')) {

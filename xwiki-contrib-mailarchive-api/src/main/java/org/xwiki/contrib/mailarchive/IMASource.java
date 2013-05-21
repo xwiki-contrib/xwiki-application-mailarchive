@@ -38,7 +38,7 @@ public interface IMASource
      * 
      * @return
      */
-    String getType();
+    SourceType getType();
 
     /**
      * The folder to load emails from.
@@ -72,5 +72,11 @@ public interface IMASource
      * @return
      */
     int getState();
+
+    enum SourceType
+    {
+        SERVER,
+        STORE;
+    }
 
 }

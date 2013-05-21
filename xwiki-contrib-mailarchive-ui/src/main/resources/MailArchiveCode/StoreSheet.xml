@@ -26,7 +26,6 @@
   <content>{{velocity}}
 #set($obj = $doc.getObject('MailArchiveCode.StoreClass'))
 #if($request.get('submit'))
-DEBUG $services.mailarchive
   #set($nb = $services.mailarchive.check("${doc.fullName}"))
   $obj.set('status', $nb)
   $obj.set('lasttest', $datetool.get('dd/MM/yyyy HH:mm:ss'))
@@ -39,7 +38,7 @@ DEBUG $services.mailarchive
   #if(!$obj.status || "$!obj.status" == "")
 Connection never tested.
   #else
-    #set($nb = $util.parseInteger($obj.get('status')))
+    #set($nb = $mathtool.toInteger($obj.get('status')))
     #if($nb &gt;= 0)
 There were $obj.get('status') messages to read on $obj.get('lasttest')
     #else
@@ -72,16 +71,15 @@ Connection failed, tested on $obj.get('lasttest')
 #if($request.get('submit'))
   #if ($nb &gt;= 0)
 
-{{info}}$msg.get('mailarchive.servers.connectionStatus.description.ok', [$nb]){{/info}}
+{{info}}
+$services.localization.render('mailarchive.servers.connectionStatus.description.ok', [$nb])
+{{/info}}
 
   #else
 
-{{error}}$msg.get("mailarchive.servers.connectionStatus.description.${nb}"){{/error}}
-
-  #end
-  #if($nb &lt; 0)
-
-    {{info}}[[Javamail FAQ&gt;&gt;http://www.oracle.com/technetwork/java/faq-135477.html]] can be interesting reading{{/info}}
+{{error}}
+$services.localization.render("mailarchive.servers.connectionStatus.description.$nb")
+{{/error}}
 
   #end
 #end

@@ -81,6 +81,13 @@
       <version>${platform.version}</version>
       <scope>runtime</scope>
     </dependency>
+    <!-- we need display macro -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-display-macro</artifactId>
+      <version>${platform.version}</version>
+      <scope>runtime</scope>
+    </dependency>
     <!-- we need code macro -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>

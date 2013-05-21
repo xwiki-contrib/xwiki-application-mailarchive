@@ -22,11 +22,17 @@ package org.xwiki.contrib.mailarchive;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.xwiki.contrib.mailarchive.IMASource.SourceType;
+import org.xwiki.text.XWikiToStringBuilder;
+
 /**
  * @version $Id$
  */
 public class LoadingSession
 {
+    private String id;
+
     private boolean withDelete = false;
 
     private boolean loadAll = false;
@@ -39,11 +45,11 @@ public class LoadingSession
 
     private int maxMailsNb = -1;
 
-    private HashMap<String, String> sources = null;
+    private Map<SourceType, String> sources = null;
 
     private final IMailArchive ma;
 
-    public LoadingSession(final IMailArchive ma)
+    public LoadingSession(final IMailArchive ma, final String id)
     {
         this.ma = ma;
     }
@@ -51,24 +57,29 @@ public class LoadingSession
     public LoadingSession addServer(final String serverPrefsDoc)
     {
         if (this.sources == null) {
-            this.sources = new HashMap<String, String>();
+            this.sources = new HashMap<SourceType, String>();
         }
-        this.sources.put("SERVER", serverPrefsDoc);
+        this.sources.put(SourceType.SERVER, serverPrefsDoc);
         return this;
     }
 
     public LoadingSession addStore(final String storePrefsDoc)
     {
         if (this.sources == null) {
-            this.sources = new HashMap<String, String>();
+            this.sources = new HashMap<SourceType, String>();
         }
-        this.sources.put("STORE", storePrefsDoc);
+        this.sources.put(SourceType.STORE, storePrefsDoc);
         return this;
     }
 
-    protected void setSources(final HashMap<String, String> sources)
+    protected void setSources(final Map<SourceType, String> sources)
     {
         this.sources = sources;
+    }
+
+    public String getId()
+    {
+        return this.id;
     }
 
     public LoadingSession withDelete()
@@ -137,7 +148,7 @@ public class LoadingSession
         return maxMailsNb;
     }
 
-    public HashMap<String, String> getSources()
+    public Map<SourceType, String> getSources()
     {
         return this.sources;
     }
@@ -165,7 +176,7 @@ public class LoadingSession
     @Override
     protected LoadingSession clone() throws CloneNotSupportedException
     {
-        LoadingSession clone = new LoadingSession(ma);
+        LoadingSession clone = new LoadingSession(ma, this.id);
 
         if (debugMode) {
             clone.debugMode();
@@ -193,10 +204,12 @@ public class LoadingSession
     @Override
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
-        builder.append("LoadingSession [withDelete=").append(withDelete).append(", loadAll=").append(loadAll)
-            .append(", debugMode=").append(debugMode).append(", simulationMode=").append(simulationMode)
-            .append(", maxMailsNb=").append(maxMailsNb).append(", sources=").append(sources).append("]");
+        ToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder =
+            builder.append("id", id).append("withDelete", withDelete).append("loadAll", loadAll)
+                .append("debugMode", debugMode).append("simulationMode", simulationMode)
+                .append("maxMailsNb", maxMailsNb).append("sources", sources);
+
         return builder.toString();
     }
 

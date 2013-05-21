@@ -100,9 +100,9 @@ public class Server extends AbstractMASource implements IServerSource
      * @see org.xwiki.contrib.mailarchive.IMASource#getType()
      */
     @Override
-    public String getType()
+    public SourceType getType()
     {
-        return "SERVER";
+        return SourceType.SERVER;
     }
 
     /**

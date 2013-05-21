@@ -67,6 +67,7 @@ import org.xwiki.contrib.mail.internal.JavamailMessageParser;
 import org.xwiki.contrib.mail.internal.MailAttachment;
 import org.xwiki.contrib.mail.internal.util.Utils;
 import org.xwiki.contrib.mailarchive.IMASource;
+import org.xwiki.contrib.mailarchive.IMASource.SourceType;
 import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailingList;
@@ -508,17 +509,17 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     private List<IMASource> getSourcesList(final LoadingSession session)
     {
         List<IMASource> servers = null;
-        final HashMap<String, String> sources = session.getSources();
+        final Map<SourceType, String> sources = session.getSources();
         servers = new ArrayList<IMASource>();
         boolean hasServers = false;
-        for (Entry<String, String> source : sources.entrySet()) {
-            if ("SERVER".equals(source.getKey())) {
+        for (Entry<SourceType, String> source : sources.entrySet()) {
+            if (SourceType.SERVER.equals(source.getKey())) {
                 Server server = factory.createMailServer(source.getValue());
                 if (server != null) {
                     hasServers = true;
                     servers.add(server);
                 }
-            } else if ("STORE".equals(source.getKey())) {
+            } else if (SourceType.STORE.equals(source.getKey())) {
                 MailStore store = factory.createMailStore(source.getValue());
                 if (store != null) {
                     servers.add(store);

@@ -34,9 +34,11 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mailarchive.IMASource;
+import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailMatcher;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IType;
+import org.xwiki.contrib.mailarchive.LoadingSession;
 import org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
@@ -62,6 +64,8 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     private Map<String, IMailingList> lists;
 
     private Map<String, IType> types;
+
+    private Map<String, LoadingSession> loadingSessions;
 
     private String loadingUser;
 
@@ -110,6 +114,9 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     @Named("extended")
     private IExtendedDocumentAccessBridge bridge;
 
+    @Inject
+    private IMailArchive mailArchive;
+
     /**
      * {@inheritDoc}
      * 
@@ -150,6 +157,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         this.servers = sources;
         this.lists = loadMailingListsDefinitions();
         this.types = loadMailTypesDefinitions();
+        this.loadingSessions = loadLoadingSessions();
 
         if (logger.isDebugEnabled()) {
             logger.debug("loaded mail archive configuration: " + toString());
@@ -261,8 +269,8 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         final List<IMASource> lists = new ArrayList<IMASource>();
 
         String xwql =
-            "select doc.fullName from Document doc, doc.object('" + XWikiPersistence.CLASS_MAIL_SERVERS
-                + "') as server where doc.space='" + XWikiPersistence.SPACE_PREFS + "'";
+            "select doc.fullName from Document doc, doc.object(" + XWikiPersistence.CLASS_MAIL_SERVERS
+                + ") as server where doc.space='" + XWikiPersistence.SPACE_PREFS + "'";
         try {
             List<String> props = this.queryManager.createQuery(xwql, Query.XWQL).execute();
 
@@ -298,8 +306,8 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         final List<IMASource> lists = new ArrayList<IMASource>();
 
         String xwql =
-            "select doc.fullName from Document doc, doc.object('" + XWikiPersistence.CLASS_MAIL_STORES
-                + "') as store where doc.space='" + XWikiPersistence.SPACE_PREFS + "'";
+            "select doc.fullName from Document doc, doc.object(" + XWikiPersistence.CLASS_MAIL_STORES
+                + ") as store where doc.space='" + XWikiPersistence.SPACE_PREFS + "'";
         try {
             List<String> props = this.queryManager.createQuery(xwql, Query.XWQL).execute();
 
@@ -322,6 +330,38 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
             throw new MailArchiveException("Failed to load configured mail stores", e);
         }
         return lists;
+    }
+
+    protected Map<String, LoadingSession> loadLoadingSessions() throws MailArchiveException
+    {
+        final Map<String, LoadingSession> sessions = new HashMap<String, LoadingSession>();
+
+        final String xwql =
+            "select doc.fullName from Document doc, doc.object(" + XWikiPersistence.CLASS_LOADING_SESSION
+                + ") as session where doc.space='" + XWikiPersistence.SPACE_PREFS + "'";
+        try {
+            List<String> props = this.queryManager.createQuery(xwql, Query.XWQL).execute();
+
+            for (String sessionPrefsDoc : props) {
+                logger.info("Loading loading session from page " + sessionPrefsDoc + " ...");
+                if (StringUtils.isNotBlank(sessionPrefsDoc)) {
+                    LoadingSession session = factory.createLoadingSession(sessionPrefsDoc, this.mailArchive);
+                    if (session != null) {
+                        sessions.put(session.getId(), session);
+                        logger.info("Loaded Loading Session definition " + session);
+                    } else {
+                        logger.warn("Invalid loading session definition from document " + sessionPrefsDoc);
+                    }
+
+                } else {
+                    logger.info("Incorrect LoadingSession preferences doc found in db");
+                }
+            }
+        } catch (Exception e) {
+            throw new MailArchiveException("Failed to load configured loading sessions", e);
+        }
+
+        return sessions;
     }
 
     public String getLoadingUser()

@@ -74,9 +74,9 @@ public class MailStore extends AbstractMASource implements IStoreSource
      * @see org.xwiki.contrib.mailarchive.IMASource#getType()
      */
     @Override
-    public String getType()
+    public SourceType getType()
     {
-        return "STORE";
+        return SourceType.STORE;
     }
 
     /**

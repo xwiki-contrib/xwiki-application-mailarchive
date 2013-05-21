@@ -25,14 +25,11 @@
   <hidden>false</hidden>
   <content>{{velocity wiki="true"}}
 #set($installed = $services.mailarchive)
-$installed
-$services.mailarchive.getConfig()
 #set($config = $services.mailarchive.config)
 #if(!$config)
   #set($installed = false)
 #end
 #if(!$installed)
-DEBUG CONFIG $config
   Mail Archive is not correctly installed, please check [[Admin page&gt;&gt;MailArchive.Admin]].
 #else
   ## Create default loading session if needed
@@ -40,14 +37,15 @@ DEBUG CONFIG $config
   #set($defaultsession = $defaultsessiondoc.getObject('MailArchiveCode.LoadingSessionClass'))
   #if(!$xwiki.exists('MailArchivePrefs.LoadingSession_default') || $defaultsession.id != 'default')
     #set($defaultsession = $defaultsessiondoc.newObject('MailArchiveCode.LoadingSessionClass'))
-$msession
-    #set($discard = $msession.set('id', 'default'))
-    #set($discard = $msession.set('maxMailsNb', '-1'))
-    #set($discard = $msession.set('withDelete', '0'))
-    #set($discard = $msession.set('loadAll', '0'))
-    #set($discard = $msession.set('debugMode', '1'))
-    #set($discard = $msession.set('simulationMode', '1'))
-    #set($discard = $msession.set('recentMails', '0'))
+    #set($discard = $defaultsession.set('id', 'default'))
+    #set($discard = $defaultsession.set('maxMailsNb', '-1'))
+    #set($discard = $defaultsession.set('withDelete', '0'))
+    #set($discard = $defaultsession.set('loadAll', '0'))
+    #set($discard = $defaultsession.set('debugMode', '1'))
+    #set($discard = $defaultsession.set('simulationMode', '1'))
+    #set($discard = $defaultsession.set('recentMails', '0'))
+    #set($discard = $defaultsession.set('servers', ''))
+    #set($discard = $defaultsession.set('stores', ''))
     #set($discard = $defaultsessiondoc.save('Created default loading session.'))
   #end
 
@@ -55,55 +53,70 @@ $msession
 
 $services.localization.render('mailarchive.load.abstract')
 
-= Sources =
-
-  #set($sources = $config.servers)
-  #set($sources = $sorttool.sort($sources, ["type", "id"]))
-  #if($sources.size() &gt; 0)
-    #set($total = 0)
-|= |=Type|=$services.localization.render('mailarchive.load.table.headers.server')|=State|=Status
-    #foreach($source in $sources)
-      #set($currentsource = $source[0])
-      #set($nb=$util.parseInteger($currentsource.status))
-      #if($nb &lt; 0) 
-        #set($status = $services.localization.render("mailarchive.servers.connectionStatus.${nb}"))
-      #else
-        #set($status = "$nb")
-        #set($total = $total + $nb)
-      #end
-|&lt;input type="radio" name="radiosources" value="$source.id"&gt;|$source.type|[[$source.id / $source.folder&gt;&gt;$source.wikiDoc]]|$source.state|$status
-    #end
-|&lt;input type="radio" name="radiosources" value="all"&gt;|SERVER|All Servers|$total|/
-&lt;div id="buttons_sources"&gt;
-  &lt;span class="buttonwrapper"&gt;
-    &lt;input type="submit" id="button-sources-check" name="button-sources-check" $!disabled 
-value="Check"/&gt;
-    &lt;input type="submit" id="button-sources-load" name="button-sources-load" $!disabled value="Load"/&gt;
-  &lt;/span&gt;
-&lt;/div&gt;
-  #end
-
-
 = Loading Sessions =
 
 Go to [[Scheduler job page&gt;&gt;Scheduler.MailArchiveLoadingJob]] to activate / deactivate automatic loading.
 Scheduled job, once activated, will automatically load mails from servers in ACTIVE state, using the parameters below:&lt;br/&gt;&lt;br/&gt;
 
-|=Parameter|=Value
-|$services.localization.render('mailarchive.loadingSession.fields.maxMailsNb.label')|$ssession.maxMailsNb
-|$services.localization.render('mailarchive.loadingSession.fields.debugMode.label')|$ssession.debugMode
-|$services.localization.render('mailarchive.loadingSession.fields.simulationMode.label')|$ssession.simulationMode
-|$services.localization.render('mailarchive.loadingSession.fields.loadAll.label')|$ssession.loadAll
-|$services.localization.render('mailarchive.loadingSession.fields.recentMails.label')|$ssession.recentMails
-|$services.localization.render('mailarchive.loadingSession.fields.withDelete.label')|$ssession.withDelete
+#set($collist = [ "id", "maxMailsNb", "debugMode", "simulationMode", "loadAll", "recentMails", "withDelete", "servers", "stores", "_actions"])
+#set($colprops = {                   
+                   "id" : { "type" : "text", "link" : "view" },
+                   "maxMailsNb" : { "type" : "text" },
+                   "debugMode" : { "type" : "text" },
+                   "simulationMode" : { "type" : "text" },
+                   "loadAll" : { "type" : "text" },
+                   "recentMails" : { "type" : "text" },
+                   "withDelete" : { "type" : "text" },
+                   "servers" : { "type" : "text" },
+                   "stores" : { "type" : "text" },
+                   "_actions" : {"actions": ["edit", "schedule", "delete"] } 
+                 } )
+#set($options = { "className":"MailArchiveCode.LoadingSessionClass",
+                  "resultPage":"MailArchiveCode.LiveTableResults",
+                  "selectedColumn":"id",
+                  "tagCloud":"false",
+                  "defaultOrder":"asc",
+                  "translationPrefix" : "mailarchive.loadingSessions.table.headers.",
+                  "rowCount": 10,
+                  "extraParams" : "&amp;space=MailArchivePrefs" })
+#livetable("livetable_loadingSessions" $collist $colprops $options)
 
+Click on "schedule" link above to create a new Scheduler job for this session.
 &lt;br/&gt;&lt;br/&gt;
+Click on "Add Session..." button below to create a new Loading Session for selected sources.
 
-&lt;div class="buttons_schedule"&gt;
+  #set($sources = $config.servers)
+  #set($sources = $sorttool.sort($sources, ["type", "id"]))
+  #if($sources.size() &gt; 0)
+    #set($total = 0)
+|= |=Type|=$services.localization.render('mailarchive.load.table.headers.source')|=$services.localization.render('mailarchive.load.table.headers.state')|=$services.localization.render('mailarchive.load.table.headers.status')
+    #foreach($source in $sources)
+      #if("$!source.state" == "")
+        #set($status = "Never tested")
+      #else
+        #set($nb=$mathtool.toInteger($source.state))
+        #if($nb &lt; 0) 
+          #set($status = $services.localization.render("mailarchive.servers.connectionStatus.${nb}"))
+        #else
+          #set($status = "$nb")
+          #set($total = $total + $nb)
+        #end
+      #end
+|&lt;input type="radio" name="radiosources" value="$source.id"&gt;|$source.type|[[$source.id / $source.folder&gt;&gt;$source.wikiDoc]]|$source.enabled|$status
+    #end
+|&lt;input type="radio" name="radiosources" value="all"&gt;|SERVER|All Servers|n/a|$total
+
+&lt;div id="buttons_sources"&gt;
   &lt;span class="buttonwrapper"&gt;
-    &lt;input type="submit" id="button-scheduleparams" name="button-scheduleparams" $!disabled value="Use parameters from top of this page for scheduled job"/&gt;
+    &lt;input type="submit" id="button-sources-check" name="button-sources-check" $!disabled 
+value="Check"/&gt;
+    &lt;input type="submit" id="button-sources-load" name="button-sources-load" $!disabled value="Load"/&gt;
+    &lt;input type="submit" id="button-sources-create-session" name="button-sources-create-session" $!disabled value="Add Session..."/&gt;
   &lt;/span&gt;
 &lt;/div&gt;
+  #end
+
+&lt;br/&gt;&lt;br/&gt;
 
 #end
 

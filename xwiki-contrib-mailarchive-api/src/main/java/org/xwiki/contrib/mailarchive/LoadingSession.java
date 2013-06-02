@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.xwiki.contrib.mailarchive.IMASource.SourceType;
+import org.xwiki.contrib.mail.source.SourceType;
 import org.xwiki.text.XWikiToStringBuilder;
 
 /**

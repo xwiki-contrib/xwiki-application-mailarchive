@@ -20,6 +20,7 @@
 package org.xwiki.contrib.mailarchive.internal.data;
 
 import org.xwiki.contrib.mail.source.IStoreSource;
+import org.xwiki.contrib.mail.source.SourceType;
 
 /**
  * @version $Id$

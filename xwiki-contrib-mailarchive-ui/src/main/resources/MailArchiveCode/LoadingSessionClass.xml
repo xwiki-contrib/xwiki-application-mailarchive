@@ -64,13 +64,13 @@
       <classname/>
       <customDisplay/>
       <disabled>0</disabled>
-      <displayType>input</displayType>
+      <displayType>select</displayType>
       <idField/>
       <multiSelect>0</multiSelect>
       <name>job</name>
       <number>10</number>
-      <picker>1</picker>
-      <prettyName>Scheduled Job</prettyName>
+      <picker>0</picker>
+      <prettyName>Job Name</prettyName>
       <relationalStorage>0</relationalStorage>
       <separator> </separator>
       <separators/>
@@ -141,7 +141,7 @@
       <separators/>
       <size>1</size>
       <sort>id</sort>
-      <sql/>
+      <sql>select propid.value, propname.value from XWikiDocument doc, BaseObject obj, StringProperty propid, StringProperty propname where obj.className='MailArchiveCode.ServerSettingsClass' and doc.fullName=obj.name and propid.id.id=obj.id and propname.id.id=obj.id and propid.id.name='id' and propname.id.name='name' and doc.space = 'MailArchivePrefs'</sql>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
@@ -178,12 +178,12 @@
       <separator> </separator>
       <separators/>
       <size>1</size>
-      <sort>none</sort>
-      <sql/>
+      <sort>id</sort>
+      <sql>select propid.value, CONCAT(CONCAT(propid.value,':'), proplocation.value) from XWikiDocument doc, BaseObject obj, StringProperty propid, StringProperty proplocation where obj.className='MailArchiveCode.StoreClass' and doc.fullName=obj.name and propid.id.id=obj.id and proplocation.id.id=obj.id and propid.id.name='id' and proplocation.id.name='location' and doc.space = 'MailArchivePrefs'</sql>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <valueField>id</valueField>
+      <valueField>location</valueField>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </stores>
     <withDelete>

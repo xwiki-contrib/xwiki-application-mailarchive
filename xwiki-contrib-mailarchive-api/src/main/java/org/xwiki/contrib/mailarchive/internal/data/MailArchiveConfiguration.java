@@ -31,6 +31,7 @@ import javax.inject.Singleton;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mailarchive.IMASource;
@@ -115,7 +116,11 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     private IExtendedDocumentAccessBridge bridge;
 
     @Inject
-    private IMailArchive mailArchive;
+    private ComponentManager componentManager;
+
+    /*
+     * @Inject private IMailArchive mailArchive;
+     */
 
     /**
      * {@inheritDoc}
@@ -345,7 +350,10 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
             for (String sessionPrefsDoc : props) {
                 logger.info("Loading loading session from page " + sessionPrefsDoc + " ...");
                 if (StringUtils.isNotBlank(sessionPrefsDoc)) {
-                    LoadingSession session = factory.createLoadingSession(sessionPrefsDoc, this.mailArchive);
+                    // FIXME: ugly trick - MailArchiveConfiguration should not depend on IMailArchive...
+                    LoadingSession session =
+                        factory.createLoadingSession(sessionPrefsDoc,
+                            (IMailArchive) this.componentManager.getInstance(IMailArchive.class));
                     if (session != null) {
                         sessions.put(session.getId(), session);
                         logger.info("Loaded Loading Session definition " + session);

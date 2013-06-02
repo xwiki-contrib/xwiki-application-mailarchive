@@ -43,13 +43,14 @@
 
   <properties>
     <extensionrepository>xwiki-application-mailarchive</extensionrepository>
-	<mailarchive.version>0.3-SNAPSHOT</mailarchive.version>
+    <mailarchive.version>0.3-SNAPSHOT</mailarchive.version>
 
     <!-- Versions of XWiki dependencies -->
     <rendering.version>${commons.version}</rendering.version>
     <platform.version>${commons.version}</platform.version>
 
-    <!-- TODO : APIs will be considered stable only starting from version 1.0 -->
+    <!-- TODO : APIs will be considered stable only starting from version 
+      1.0 -->
     <xwiki.clirr.skip>true</xwiki.clirr.skip>
   </properties>
 
@@ -59,12 +60,17 @@
     <url>https://github.com/xwiki-contrib/${extensionrepository}</url>
   </scm>
 
+  <issueManagement>
+    <system>jira</system>
+    <url>http://jira.xwiki.org/jira/browse/XMAILARCH</url>
+  </issueManagement>
+
   <modules>
     <module>xwiki-contrib-mail</module>
     <module>xwiki-contrib-mailarchive-api</module>
     <module>xwiki-contrib-mailarchive-ui</module>
     <module>mstor-custom</module>
-	<module>xwiki-contrib-mailarchive-test</module>
+    <module>xwiki-contrib-mailarchive-test</module>
   </modules>
 
   <build>

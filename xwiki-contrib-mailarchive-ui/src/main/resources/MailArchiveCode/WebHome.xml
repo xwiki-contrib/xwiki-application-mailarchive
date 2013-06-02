@@ -117,5 +117,13 @@ Jmx0O2JyLyZndDsgYnkgJmx0O2JyLyZndDsgPC9ldmVudD4KPC9kYXRhPg==
       <tags/>
     </property>
   </object>
-  <content>Code for the Mail Archive application</content>
+  <content>Code for the Mail Archive application
+
+{{velocity wiki="true"}}
+#set($xwql = "select doc.fullName from Document doc where doc.space='$doc.space'")
+#set($pages = $services.query.xwql($xwql).execute())
+#foreach($page in $pages)
+* $page
+#end
+{{/velocity}}</content>
 </xwikidoc>

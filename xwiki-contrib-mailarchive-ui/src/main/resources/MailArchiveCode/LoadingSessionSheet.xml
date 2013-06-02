@@ -24,13 +24,21 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content>{{velocity}}
-## You can modify this page to customize the presentation of your object.
-## At first you should keep the default presentation and just save the document.
-
+#set($discard = $doc.use('MailArchiveCode.LoadingSessionClass'))
+#set($mode = "view")
+#if($doc.name == "LoadingSessionCreationSheet")
+  #set($mode = "edit")
+#end
+{{html wiki="true"}}
+(% class="xform" %)
+(((
 #set($class = $doc.getObject('MailArchiveCode.LoadingSessionClass').xWikiClass)
 #foreach($prop in $class.properties)
-  ; $prop.prettyName
-  : $doc.display($prop.getName())
+  ; &lt;label&gt;$services.localization.render("mailarchive.loadingSession.fields.${prop.name}.label")&lt;/label&gt;
+#if($services.localization.get("mailarchive.loadingSession.fields.${prop.name}.hint")) (% class="xHint" %)$services.localization.render("mailarchive.loadingSession.fields.${prop.name}.hint") #end
+  : $doc.display($prop.getName(), $mode)
 #end
+)))
+{{/html}}
 {{/velocity}}</content>
 </xwikidoc>

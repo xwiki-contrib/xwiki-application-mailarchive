@@ -47,6 +47,14 @@
     </dependency>
 
     <!-- XWiki dependencies, needed for installing on an empty wiki -->
+    <!-- we need the Sheet Module -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-sheet-ui</artifactId>
+      <version>${platform.version}</version>
+      <type>xar</type>
+      <scope>runtime</scope>
+    </dependency>
     <!-- we need velocity macro -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
@@ -150,6 +158,21 @@
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-rendering-macro-container</artifactId>
       <version>${platform.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- we need the scheduler plugin & app -->
+    <dependency>
+      <groupId>com.xpn.xwiki.platform.plugins</groupId>
+      <artifactId>xwiki-plugin-scheduler</artifactId>
+      <version>1.25</version>
+      <type>jar</type>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform.applications</groupId>
+      <artifactId>xwiki-application-scheduler</artifactId>
+      <version>1.25</version>
+      <type>xar</type>
       <scope>runtime</scope>
     </dependency>
 

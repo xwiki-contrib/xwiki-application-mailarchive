@@ -66,8 +66,8 @@ import org.xwiki.contrib.mail.SourceConnectionErrors;
 import org.xwiki.contrib.mail.internal.JavamailMessageParser;
 import org.xwiki.contrib.mail.internal.MailAttachment;
 import org.xwiki.contrib.mail.internal.util.Utils;
+import org.xwiki.contrib.mail.source.SourceType;
 import org.xwiki.contrib.mailarchive.IMASource;
-import org.xwiki.contrib.mailarchive.IMASource.SourceType;
 import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailingList;
@@ -221,6 +221,16 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
     /** Are we currently in a loading session ? */
     private boolean inProgress = false;
+
+    /** Current progress, ie index of mail currently loading, if any */
+    private int progressMails = 0;
+
+    /** Current progress, ie index of mail source currently loading, if any */
+    private int progressSources = 0;
+
+    private int totalMails = 0;
+
+    private int totalSources = 0;
 
     /**
      * {@inheritDoc}
@@ -437,16 +447,20 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         }
 
         inProgress = true;
+        setProgressSources(0);
+        setProgressMails(0);
         try {
             configure();
             loadTopicsAndMails();
 
             final List<IMASource> servers = getSourcesList(session);
+            setTotalMails(servers.size());
 
             // Loop on all servers
             for (IMASource server : servers) {
                 if (!server.isEnabled()) {
                     logger.info("[{}] Server not enabled, skipping it", server.getId());
+                    setProgressSources(getProgressSources() + 1);
                     break;
                 }
                 logger.info("[{}] Loading mails from server", server.getId());
@@ -468,6 +482,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 }
 
                 nbSuccess += loadMails(mailReader, server.getFolder(), session, server.getId());
+                setProgressSources(getProgressSources() + 1);
+                setProgressMails(0);
             }
 
             try {
@@ -509,7 +525,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     private List<IMASource> getSourcesList(final LoadingSession session)
     {
         List<IMASource> servers = null;
-        final Map<SourceType, String> sources = session.getSources();
+        final Map<org.xwiki.contrib.mail.source.SourceType, String> sources = session.getSources();
         servers = new ArrayList<IMASource>();
         boolean hasServers = false;
         for (Entry<SourceType, String> source : sources.entrySet()) {
@@ -554,6 +570,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             }
         }
         logger.info("[{}] Number of messages to treat : {}", new Object[] {serverId, messages.size()});
+        setProgressMails(0);
+        setTotalMails(messages.size());
 
         final int total = messages.size();
         MailLoadingResult result = null;
@@ -593,6 +611,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                     }
 
                 }
+                setProgressMails(getProgressMails() + 1);
                 if (result != null && result.isSuccess()) {
                     nbSuccess++;
                     if (!session.isSimulationMode()) {
@@ -1474,6 +1493,70 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     {
         logger.debug("DEBUG MODE OFF");
         aggregatedLoggerManager.popLogLevel();
+    }
+
+    /**
+     * @return the progressMails
+     */
+    public int getProgressMails()
+    {
+        return progressMails;
+    }
+
+    /**
+     * @param progressMails the progressMails to set
+     */
+    public void setProgressMails(int progressMails)
+    {
+        this.progressMails = progressMails;
+    }
+
+    /**
+     * @return the progressSources
+     */
+    public int getProgressSources()
+    {
+        return progressSources;
+    }
+
+    /**
+     * @param progressSources the progressSources to set
+     */
+    public void setProgressSources(int progressSources)
+    {
+        this.progressSources = progressSources;
+    }
+
+    /**
+     * @return the totalMails
+     */
+    public int getTotalMails()
+    {
+        return totalMails;
+    }
+
+    /**
+     * @param totalMails the totalMails to set
+     */
+    public void setTotalMails(int totalMails)
+    {
+        this.totalMails = totalMails;
+    }
+
+    /**
+     * @return the totalSources
+     */
+    public int getTotalSources()
+    {
+        return totalSources;
+    }
+
+    /**
+     * @param totalSources the totalSources to set
+     */
+    public void setTotalSources(int totalSources)
+    {
+        this.totalSources = totalSources;
     }
 
 }

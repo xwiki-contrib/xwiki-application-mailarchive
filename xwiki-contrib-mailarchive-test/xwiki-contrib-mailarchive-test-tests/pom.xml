@@ -26,6 +26,12 @@
   <description>${project.name}</description>
   <packaging>jar</packaging>
 
+  <properties>
+    <!-- We need scheduler plugin activated -->
+    <!-- xwikiCfgPlugins>com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,com.xpn.xwiki.plugin.skinx.JsSkinFileExtensionPlugin,com.xpn.xwiki.plugin.skinx.CssSkinExtensionPlugin,com.xpn.xwiki.plugin.skinx.CssSkinFileExtensionPlugin,com.xpn.xwiki.plugin.skinx.LinkExtensionPlugin,com.xpn.xwiki.plugin.scheduler.SchedulerPlugin
+    </xwikiCfgPlugins-->
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.xwiki.contrib.mailarchive</groupId>
@@ -33,7 +39,7 @@
       <version>0.3-SNAPSHOT</version>
       <type>xar</type>
     </dependency>
-    
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.xwiki.platform</groupId>
@@ -76,26 +82,34 @@
 
   <build>
     <testSourceDirectory>src/test/it</testSourceDirectory>
-    <plugins>
-      <!-- TODO: Remove when the following issue is fixed: http://jira.xwiki.org/jira/browse/XWIKI-7683 -->
-      <plugin>
-        <groupId>org.xwiki.platform</groupId>
-        <artifactId>xwiki-platform-tool-packager-plugin</artifactId>
-        <!-- because XWIKI-8960 was fixed from 5.0-milestone-2... -->
-        <version>5.0-rc-1</version>
-        <executions>
-          <execution>
-            <phase>generate-test-resources</phase>
-            <goals>
-              <goal>package</goal>
-            </goals>
-            <configuration>
-              <platformVersion>${platform.version}</platformVersion>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>integration-tests</id>
+      <build>
+        <plugins>
+          <!-- TODO: Remove when the following issue is fixed: http://jira.xwiki.org/jira/browse/XWIKI-7683 -->
+          <plugin>
+            <groupId>org.xwiki.platform</groupId>
+            <artifactId>xwiki-platform-tool-packager-plugin</artifactId>
+            <!-- because XWIKI-8960 was fixed from 5.0-milestone-2... -->
+            <version>5.0-rc-1</version>
+            <executions>
+              <execution>
+                <phase>generate-test-resources</phase>
+                <goals>
+                  <goal>package</goal>
+                </goals>
+                <configuration>
+                  <platformVersion>${platform.version}</platformVersion>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

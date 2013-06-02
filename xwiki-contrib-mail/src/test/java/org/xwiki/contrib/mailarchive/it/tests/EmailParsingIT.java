@@ -28,16 +28,20 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.mail.Message;
+import javax.mail.Part;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.contrib.mail.MailContent;
 import org.xwiki.contrib.mail.MailItem;
+import org.xwiki.contrib.mail.internal.IMessageParser;
 import org.xwiki.contrib.mail.internal.JavamailMessageParser;
 import org.xwiki.contrib.mailarchive.it.ITUtils;
+import org.xwiki.test.annotation.ComponentList;
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 /**
  * These tests load and create Message objects by importing .eml files from test resources. Parsing methods are fed with
@@ -46,17 +50,22 @@ import org.xwiki.contrib.mailarchive.it.ITUtils;
  * 
  * @version $Id$
  */
+@ComponentList({JavamailMessageParser.class})
 public class EmailParsingIT
 {
-    private JavamailMessageParser parser;
+
+    @Rule
+    public final MockitoComponentMockingRule<IMessageParser<Part>> mocker =
+        new MockitoComponentMockingRule<IMessageParser<Part>>(JavamailMessageParser.class);
+
+    private IMessageParser<Part> parser;
 
     private File dir;
 
     @Before
-    public void setUp()
+    public void setUp() throws ComponentLookupException
     {
-        Logger logger = LoggerFactory.getLogger("org.xwiki.contrib.test.LoadMailsIT");
-        parser = new JavamailMessageParser();
+        parser = mocker.getComponentUnderTest();
 
         // Init .eml input files folder
         URL url = Thread.currentThread().getContextClassLoader().getResource("messages/dummy.txt");

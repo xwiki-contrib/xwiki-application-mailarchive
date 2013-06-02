@@ -64,6 +64,34 @@ public interface IMailArchive
     public int loadMails(LoadingSession session);
 
     /**
+     * Number of sources already loaded for current loading session, if any.
+     * 
+     * @return
+     */
+    public int getProgressMails();
+
+    /**
+     * Number of mails already loaded for current source in current loading session, if any.
+     * 
+     * @return
+     */
+    public int getProgressSources();
+
+    /**
+     * Total number of mails to be loaded for current source in current loading session, if any.
+     * 
+     * @return
+     */
+    public int getTotalMails();
+
+    /**
+     * Total number of sources that take part of current loading session, if any.
+     * 
+     * @return
+     */
+    public int getTotalSources();
+
+    /**
      * Threads messages related to a topic, given its ID.<br/>
      * Result is the root of the threaded message hierarchy, descendants can be traversed using "child" and "next" to
      * get siblings recursively.<br/>

@@ -454,16 +454,6 @@ document.observe("xwiki:livetable:ready", function(levent) {
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </highlight>
-      <originalSelection>
-        <disabled>0</disabled>
-        <name>originalSelection</name>
-        <number>9</number>
-        <prettyName>Original Selection</prettyName>
-        <rows>5</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </originalSelection>
       <replyto>
         <disabled>0</disabled>
         <name>replyto</name>
@@ -474,54 +464,6 @@ document.observe("xwiki:livetable:ready", function(levent) {
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
       </replyto>
-      <selection>
-        <disabled>0</disabled>
-        <name>selection</name>
-        <number>6</number>
-        <prettyName>Selection</prettyName>
-        <rows>5</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </selection>
-      <selectionLeftContext>
-        <disabled>0</disabled>
-        <name>selectionLeftContext</name>
-        <number>7</number>
-        <prettyName>Selection Left Context</prettyName>
-        <rows>5</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </selectionLeftContext>
-      <selectionRightContext>
-        <disabled>0</disabled>
-        <name>selectionRightContext</name>
-        <number>8</number>
-        <prettyName>Selection Right Context</prettyName>
-        <rows>5</rows>
-        <size>40</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
-      </selectionRightContext>
-      <state>
-        <disabled>0</disabled>
-        <name>state</name>
-        <number>11</number>
-        <prettyName>State</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </state>
-      <target>
-        <disabled>0</disabled>
-        <name>target</name>
-        <number>10</number>
-        <prettyName>Target</prettyName>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-      </target>
     </class>
     <name>MailArchiveCode.LiveTableResults</name>
     <number>0</number>

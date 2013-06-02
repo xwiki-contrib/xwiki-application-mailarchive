@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>MailArchiveCode</web>
+  <name>LoadingJobTemplate</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchiveCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1368961504000</creationDate>
+  <date>1370001012000</date>
+  <contentUpdateDate>1370001012000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <object>
+    <class>
+      <name>MailArchiveCode.ScheduledSessionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <sessions>
+        <cache>0</cache>
+        <classname>MailArchiveCode.LoadingSessionClass</classname>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <idField>id</idField>
+        <multiSelect>1</multiSelect>
+        <name>sessions</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>sessions</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators/>
+        <size>1</size>
+        <sort>none</sort>
+        <sql/>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <valueField>id</valueField>
+        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+      </sessions>
+    </class>
+    <name>MailArchiveCode.LoadingJobTemplate</name>
+    <number>0</number>
+    <className>MailArchiveCode.ScheduledSessionClass</className>
+    <guid>472710f4-b246-4c8c-80f1-10b0046a3dcd</guid>
+    <property>
+      <sessions>
+        <value>default</value>
+        <value>test</value>
+      </sessions>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.SchedulerJobClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <contextDatabase>
+        <disabled>0</disabled>
+        <name>contextDatabase</name>
+        <number>9</number>
+        <prettyName>Job execution context database</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </contextDatabase>
+      <contextLang>
+        <disabled>0</disabled>
+        <name>contextLang</name>
+        <number>8</number>
+        <prettyName>Job execution context lang</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </contextLang>
+      <contextUser>
+        <disabled>0</disabled>
+        <name>contextUser</name>
+        <number>7</number>
+        <prettyName>Job execution context user</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </contextUser>
+      <cron>
+        <disabled>0</disabled>
+        <name>cron</name>
+        <number>5</number>
+        <prettyName>Cron Expression</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </cron>
+      <jobClass>
+        <disabled>0</disabled>
+        <name>jobClass</name>
+        <number>3</number>
+        <prettyName>Job Class</prettyName>
+        <size>60</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </jobClass>
+      <jobDescription>
+        <disabled>0</disabled>
+        <name>jobDescription</name>
+        <number>2</number>
+        <prettyName>Job Description</prettyName>
+        <rows>10</rows>
+        <size>45</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </jobDescription>
+      <jobName>
+        <disabled>0</disabled>
+        <name>jobName</name>
+        <number>1</number>
+        <prettyName>Job Name</prettyName>
+        <size>60</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </jobName>
+      <script>
+        <disabled>0</disabled>
+        <editor>PureText</editor>
+        <name>script</name>
+        <number>6</number>
+        <prettyName>Job Script</prettyName>
+        <rows>10</rows>
+        <size>60</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </script>
+      <status>
+        <disabled>0</disabled>
+        <name>status</name>
+        <number>4</number>
+        <prettyName>Status</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </status>
+    </class>
+    <name>MailArchiveCode.LoadingJobTemplate</name>
+    <number>0</number>
+    <className>XWiki.SchedulerJobClass</className>
+    <guid>af1eb910-a272-4c3f-af85-0488dd0cb603</guid>
+    <property>
+      <contextDatabase>xwiki</contextDatabase>
+    </property>
+    <property>
+      <contextLang>en</contextLang>
+    </property>
+    <property>
+      <contextUser>XWiki.Admin</contextUser>
+    </property>
+    <property>
+      <cron>0 0/5 * * * ?</cron>
+    </property>
+    <property>
+      <jobClass>com.xpn.xwiki.plugin.scheduler.GroovyJob</jobClass>
+    </property>
+    <property>
+      <jobDescription>This job defines automatic loading of MailArchive emails from configured sources, for following Loading Sessions:
+{{velocity}}
+#set($sessionobj = $doc.getObject('MailArchiveCode.ScheduledSessionClass'))
+#foreach($session in $sessionobj.getProperty('sessions').getValue())
+* [[$session&gt;&gt;MailArchivePrefs.LoadingSession_$session]]
+#end
+{{/velocity}}
+
+To configure options for loading session(s) of this scheduled job, please visit [[MailArchive.Loading]].</jobDescription>
+    </property>
+    <property>
+      <jobName>Mailing-lists Emails Loading</jobName>
+    </property>
+    <property>
+      <script>try {  
+  System.out.println("EMAILS LOADING: start"); 
+  def ma = services.mailarchive
+  def sessionsList = doc.getObject('MailArchiveCode.ScheduledSessionClass').getProperty('sessions').getValue()
+  sessionsList.each() { sessionId -&gt;
+    def sessionPrefsDoc = "MailArchivePrefs.LoadingSession_${sessionId}"
+    System.out.println("Loading session: ${sessionPrefsDoc}")
+    def result = ma.session(sessionPrefsDoc).loadMails()
+    System.out.println("Loading session: ${sessionPrefsDoc}, RESULT: ${result}") 
+  }
+} catch (Throwable e) {
+  System.out.println("EMAILS LOADING: exception while loading session ${sessionPrefsDoc}: " + e.getMessage()); 
+  e.printStackTrace(); 
+}</script>
+    </property>
+    <property>
+      <status>None</status>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.TagClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <tags>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>tags</name>
+        <number>1</number>
+        <prettyName>Tags</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator>|</separator>
+        <separators>|,</separators>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </tags>
+    </class>
+    <name>MailArchiveCode.LoadingJobTemplate</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>5c272a5e-04d5-443b-9393-678b24fc0b59</guid>
+    <property>
+      <tags/>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.XWikiRights</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <allow>
+        <defaultValue>1</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>allow</displayType>
+        <name>allow</name>
+        <number>4</number>
+        <prettyName>Allow/Deny</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </allow>
+      <groups>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>groups</name>
+        <number>1</number>
+        <picker>1</picker>
+        <prettyName>Groups</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.GroupsClass</classType>
+      </groups>
+      <levels>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>1</multiSelect>
+        <name>levels</name>
+        <number>2</number>
+        <prettyName>Levels</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>3</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.LevelsClass</classType>
+      </levels>
+      <users>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>users</name>
+        <number>3</number>
+        <picker>1</picker>
+        <prettyName>Users</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <size>5</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
+      </users>
+    </class>
+    <name>MailArchiveCode.LoadingJobTemplate</name>
+    <number>0</number>
+    <className>XWiki.XWikiRights</className>
+    <guid>d44ac813-cb95-4573-ae00-e5855707b91a</guid>
+    <property>
+      <allow>1</allow>
+    </property>
+    <property>
+      <groups>xwiki:XWiki.XWikiAdminGroup,</groups>
+    </property>
+    <property>
+      <levels>edit,delete</levels>
+    </property>
+    <property>
+      <users/>
+    </property>
+  </object>
+  <content>{{include document="XWiki.SchedulerJobSheet"/}}</content>
+</xwikidoc>

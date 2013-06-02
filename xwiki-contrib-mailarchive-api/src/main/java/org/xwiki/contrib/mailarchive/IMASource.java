@@ -21,6 +21,8 @@ package org.xwiki.contrib.mailarchive;
 
 import java.util.Properties;
 
+import org.xwiki.contrib.mail.source.SourceType;
+
 /**
  * Defines some characteristics common to a mail source configuration.
  */
@@ -72,11 +74,5 @@ public interface IMASource
      * @return
      */
     int getState();
-
-    enum SourceType
-    {
-        SERVER,
-        STORE;
-    }
 
 }

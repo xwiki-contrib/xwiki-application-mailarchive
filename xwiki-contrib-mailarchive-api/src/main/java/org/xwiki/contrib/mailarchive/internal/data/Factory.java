@@ -41,6 +41,8 @@ import org.xwiki.contrib.mailarchive.LoadingSession;
 import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
 import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 
+import com.xpn.xwiki.objects.DBStringListProperty;
+
 /**
  * @version $Id$
  */
@@ -262,13 +264,15 @@ public class Factory implements IFactory
         }
         session = session.setLimit(dab.getIntValue(sessionPrefsDoc, className, "maxMailsNb"));
 
-        final String servers = dab.getStringValue(sessionPrefsDoc, className, "servers");
-        final String stores = dab.getStringValue(sessionPrefsDoc, className, "stores");
-        for (String serverPrefsDoc : StringUtils.split(servers, ',')) {
-            session = session.addServer(serverPrefsDoc);
+        final List<String> servers =
+            ((DBStringListProperty) dab.getProperty(sessionPrefsDoc, className, "servers")).getList();
+        final List<String> stores =
+            ((DBStringListProperty) dab.getProperty(sessionPrefsDoc, className, "stores")).getList();
+        for (String serverId : servers) {
+            session = session.addServer(serverId);
         }
-        for (String storePrefsDoc : StringUtils.split(stores, ',')) {
-            session = session.addStore(storePrefsDoc);
+        for (String storeId : stores) {
+            session = session.addStore(storeId);
         }
 
         return session;

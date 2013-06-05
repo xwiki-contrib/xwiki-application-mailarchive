@@ -251,6 +251,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             aggregatedLoggerManager.addComponentLogger(StreamParser.class);
             logger.info("Mail archive initialized !");
             logger.debug("PERMANENT DATA DIR : " + this.environment.getPermanentDirectory());
+            // Create dump folder
+            new File(this.environment.getPermanentDirectory(), "mailarchive/dump").mkdirs();
         } catch (Throwable e) {
             logger.error("Could not initiliaze mailarchive ", e);
             e.printStackTrace();
@@ -442,6 +444,13 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             return -1;
         }
 
+        if (session == null) {
+            logger.warn("Invalid loading session (null) ...");
+            return -1;
+        }
+
+        logger.debug("Loading from session: " + session.toString());
+
         if (session.isDebugMode()) {
             enterDebugMode();
         }
@@ -587,6 +596,9 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                                     "[^a-zA-Z0-9-_\\.]", "_");
                             final File emlFile =
                                 new File(environment.getPermanentDirectory(), "mailarchive/dump/" + id + ".eml");
+
+                            emlFile.createNewFile();
+
                             final FileOutputStream fo = new FileOutputStream(emlFile);
                             message.writeTo(fo);
                             fo.flush();
@@ -608,6 +620,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                         if (message != null) {
                             result = loadMail(message, !session.isSimulationMode(), false, null);
                         }
+                    } else {
+                        logger.warn("Unexpected exception occurred while loading email", me);
                     }
 
                 }
@@ -700,16 +714,16 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             // Types
             List<IType> foundTypes = mailutils.extractTypes(config.getMailTypes().values(), m);
             logger.debug("Extracted types " + foundTypes);
-            foundTypes.remove(getType(IType.BUILTIN_TYPE_MAIL));
+            // foundTypes.remove(getType(IType.BUILTIN_TYPE_MAIL));
             if (foundTypes.size() > 0) {
                 for (IType foundType : foundTypes) {
                     logger.debug("Adding extracted type " + foundType);
                     m.addType(foundType.getId());
                 }
-            } else {
-                logger.debug("No specific type found for this mail");
-                m.addType(getType(IType.BUILTIN_TYPE_MAIL).getId());
-            }
+            } /*
+               * else { logger.debug("No specific type found for this mail");
+               * m.addType(getType(IType.BUILTIN_TYPE_MAIL).getId()); }
+               */
 
             // User
             logger.debug("Extracting user information");
@@ -726,6 +740,11 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 }
             }
             m.setWikiuser(userwiki);
+
+            // If no topic id is provided by message, we default to message id
+            if (StringUtils.isBlank(m.getTopicId())) {
+                m.setTopicId(m.getMessageId());
+            }
 
             // Compatibility: crop ids
             if (config.isCropTopicIds() && m.getTopicId().length() >= 30) {
@@ -770,6 +789,10 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
         logger.warn("Parsing headers");
         m = mailManager.parseHeaders(mail);
+        if (StringUtils.isBlank(m.getFrom())) {
+            logger.warn("Invalid email : missing 'from' header, skipping it");
+            return new MailLoadingResult(false, null, null);
+        }
         logger.warn("Parsing specific parts");
         setMailSpecificParts(m);
         // Compatibility option with old version of the mail archive
@@ -828,8 +851,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 logger.debug("  loaded new topic " + topicDocName);
             } else if (TextUtils.similarSubjects(m.getTopic(), existingTopics.get(existingTopicId).getSubject())) {
                 logger.debug("  topic already loaded " + m.getTopicId() + " : " + existingTopics.get(existingTopicId));
-                topicDocName =
-                    updateTopicPage(m, existingTopics.get(existingTopicId).getFullName(), dateFormatter, confirm);
+                topicDocName = updateTopicPage(m, existingTopicId, dateFormatter, confirm);
             } else {
                 // We consider this was a topic hack : someone replied to an existing thread, but to start on another
                 // subject.
@@ -915,7 +937,10 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     protected String updateTopicPage(MailItem m, String existingTopicId, SimpleDateFormat dateFormatter, boolean create)
         throws XWikiException
     {
+        logger.debug("updateTopicPage(" + m.toString() + ", existingTopicId=" + existingTopicId + ")");
+
         final String existingTopicPage = existingTopics.get(existingTopicId).getFullName();
+        logger.debug("Topic page to update: " + existingTopicPage);
 
         String updatedTopicName =
             persistence.updateTopicPage(m, existingTopicPage, dateFormatter, config.getLoadingUser(), create);
@@ -976,6 +1001,13 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
         content = mailContent.getText();
         htmlcontent = mailContent.getHtml();
+
+        if (content == null) {
+            content = "";
+        }
+        if (htmlcontent == null) {
+            htmlcontent = "";
+        }
 
         // Truncate body
         content = TextUtils.truncateStringForBytes(content, 65500, 65500);
@@ -1041,13 +1073,9 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             msgObj.set("attachedMails", StringUtils.join(attachedMailsPages, ','), context);
         }
         if (isAttachedMail) {
-            // FIXME: should be a built-in type, or something else maybe (ie mail/topic/attached mail ?)
-            // For example, add field "topicType"=Topic|Calendar Event and "mailType"=Mail|Attached mail|Calendar Item
-            // A Calendar Event could be a MailItem + some specific fields (start date, end date, id,...)
-            // The MailItem could be stored as usual with specific type, and an additional object CalendarEvent could
-            // store the calendary information
-            // with a link to the related email(s) (for cancelled, update meeting,...)
-            m.addType(IType.BUILTIN_TYPE_ATTACHED_MAIL);
+            m.setAttached(true);
+            msgObj.set("attached", "1", context);
+            // m.setBuiltinType(IType.BUILTIN_TYPE_ATTACHED_MAIL);
         }
         if (m.getTypes().size() > 0) {
             String types = StringUtils.join(m.getTypes().toArray(new String[] {}), ',');
@@ -1068,7 +1096,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         if (taglist.size() > 0) {
             BaseObject tagobj = msgDoc.newObject("XWiki.TagClass", context);
             String tags = StringUtils.join(taglist.toArray(new String[] {}), ',');
-            tagobj.set("tags", tags.replaceAll(" ", "_"), context);
+            tagobj.set("tags", tags, context);
         }
 
         if (create && !checkMsgIdExistence(m.getMessageId())) {
@@ -1294,6 +1322,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             IType type = config.getMailTypes().get(typeid);
             taglist.add(type.getName());
         }
+        taglist.add(m.getBuiltinType());
 
         return taglist;
     }
@@ -1338,7 +1367,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
         // Search in existing messages for existing msg id = new reply id, and grab topic id
         // search replies until root message
-        while (existingMessages.containsKey(replyId) && existingMessages.get(replyId) != null && !quit) {
+        while (StringUtils.isNotBlank(replyId) && existingMessages.containsKey(replyId)
+            && existingMessages.get(replyId) != null && !quit) {
             XWikiDocument msgDoc = null;
             try {
                 msgDoc = context.getWiki().getDocument(existingMessages.get(replyId).getFullName(), context);
@@ -1485,6 +1515,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     public void enterDebugMode()
     {
         // Logs level
+        logger.error("enterDebugMode()");
         aggregatedLoggerManager.pushLogLevel(LogLevel.DEBUG);
         logger.debug("DEBUG MODE ON");
     }
@@ -1493,6 +1524,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     {
         logger.debug("DEBUG MODE OFF");
         aggregatedLoggerManager.popLogLevel();
+        logger.error("quitDebugMode()");
     }
 
     /**

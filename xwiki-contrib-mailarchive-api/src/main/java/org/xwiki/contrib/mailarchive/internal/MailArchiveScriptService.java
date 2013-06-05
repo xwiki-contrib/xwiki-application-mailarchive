@@ -32,7 +32,6 @@ import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.LoadingSession;
 import org.xwiki.contrib.mailarchive.internal.data.IFactory;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
-import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadMessageBean;
 import org.xwiki.contrib.mailarchive.internal.utils.DecodedMailContent;
 import org.xwiki.script.service.ScriptService;
@@ -65,7 +64,7 @@ public class MailArchiveScriptService implements ScriptService
      */
     public LoadingSession session()
     {
-        return factory.createLoadingSession(XWikiPersistence.SPACE_PREFS + ".LoadingSession_default", mailArchive);
+        return new LoadingSession(mailArchive);
     }
 
     /**
@@ -157,4 +156,37 @@ public class MailArchiveScriptService implements ScriptService
             return null;
         }
     }
+
+    /**
+     * @return the progressMails
+     */
+    public int getProgressMails()
+    {
+        return this.mailArchive.getProgressMails();
+    }
+
+    /**
+     * @return the progressSources
+     */
+    public int getProgressSources()
+    {
+        return this.mailArchive.getProgressSources();
+    }
+
+    /**
+     * @return the totalMails
+     */
+    public int getTotalMails()
+    {
+        return this.mailArchive.getTotalMails();
+    }
+
+    /**
+     * @return the totalSources
+     */
+    public int getTotalSources()
+    {
+        return this.mailArchive.getTotalSources();
+    }
+
 }

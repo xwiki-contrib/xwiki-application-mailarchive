@@ -219,7 +219,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         String xwql =
             "select type.id, type.name, type.icon, doc.fullName from Document doc, doc.object("
                 + XWikiPersistence.CLASS_MAIL_TYPES + ") as type where doc.space='" + XWikiPersistence.SPACE_PREFS
-                + "'";
+                + "' and type.id<>'mail' and type.id<>'calendar' and type.id<>'attachedMail'";
         try {
             List<Object[]> types = this.queryManager.createQuery(xwql, Query.XWQL).execute();
 

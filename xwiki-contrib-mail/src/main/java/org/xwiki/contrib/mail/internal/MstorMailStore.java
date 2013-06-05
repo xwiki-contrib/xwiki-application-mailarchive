@@ -80,7 +80,15 @@ public class MstorMailStore extends AbstractMailStore implements IStoreManager
     public Properties getStoreProperties()
     {
         Properties props = new Properties();
-        props.put("mstor.mbox.metadataStrategy", "XML");
+        props.put("mstor.mbox.metadataStrategy", "none");
+        // Avoid caching to allow handling large files, and also to avoid dependency on ehcache
+        System.setProperty("mstor.cache.disabled", "true");
+        System.setProperty("mstor.mbox.cacheBuffers", "false");
+        System.setProperty("net.sf.ehcache.disabled", "true");
+        // Options to make it work with mbox files generated from Mozilla Thunderbird
+        System.setProperty("mstor.mbox.mozillaCompatibility", "true");
+        System.setProperty("mstor.mbox.bufferStrategy", "default");
+        System.setProperty("mstor.mbox.parsing.relaxed", "true");
         return props;
     }
 

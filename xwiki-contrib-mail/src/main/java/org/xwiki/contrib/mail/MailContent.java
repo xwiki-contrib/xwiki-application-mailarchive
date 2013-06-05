@@ -26,7 +26,9 @@ import java.util.List;
 import javax.mail.Message;
 import javax.mail.internet.MimeBodyPart;
 
+import org.apache.commons.lang3.StringUtils;
 import org.xwiki.contrib.mail.internal.MailAttachment;
+import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * Email content. TODO javadoc
@@ -169,12 +171,23 @@ public class MailContent
         this.attachedMails.add(message);
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {
-        return "MailContent [text=" + text + ", html=" + html + ", rawAttachments=" + rawAttachments
-            + ", wikiAttachments=" + wikiAttachments + ", attachedMails=" + attachedMails + ", encrypted=" + encrypted
-            + ", signed=" + signed + "]";
+        XWikiToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder.append("text", StringUtils.abbreviate(text.toString(), 10));
+        builder.append("html", StringUtils.abbreviate(html.toString(), 10));
+        builder.append("encrypted", encrypted);
+        builder.append("signed", signed);
+        builder.append("rawAttachments", rawAttachments != null ? rawAttachments.size() : "0");
+        builder.append("wikiAttachments", wikiAttachments != null ? wikiAttachments.size() : "0");
+        builder.append("attachedMails", attachedMails != null ? attachedMails.size() : "0");
+        return builder.toString();
     }
 
 }

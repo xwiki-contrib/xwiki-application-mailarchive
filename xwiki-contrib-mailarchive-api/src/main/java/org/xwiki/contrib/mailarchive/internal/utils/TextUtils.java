@@ -100,6 +100,9 @@ public class TextUtils
     // characters.
     public static String truncateStringForBytes(String s, int maxChars, int maxBytes)
     {
+        if (StringUtils.isEmpty(s)) {
+            return "";
+        }
 
         String substring = s;
         if (s.length() > maxChars) {

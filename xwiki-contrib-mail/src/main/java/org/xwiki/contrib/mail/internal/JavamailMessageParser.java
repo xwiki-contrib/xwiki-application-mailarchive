@@ -215,6 +215,9 @@ public class JavamailMessageParser implements IMessageParser<Part>
         }
         m.setImportance(importance.toLowerCase());
 
+        // type
+        m.setBuiltinType("mail");
+
         return m;
     }
 

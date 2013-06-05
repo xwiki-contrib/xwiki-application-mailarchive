@@ -27,6 +27,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.logging.LoggerManager;
@@ -85,6 +86,9 @@ public class AggregatedLoggerManager implements IAggregatedLoggerManager
     @Inject
     LoggerManager loggerManager;
 
+    @Inject
+    Logger privateLogger;
+
     /**
      * {@inheritDoc}
      * 
@@ -95,7 +99,10 @@ public class AggregatedLoggerManager implements IAggregatedLoggerManager
     {
         if (this.loggers != null) {
             for (String logger : loggers.keySet()) {
+                privateLogger
+                    .warn("Saving log level " + loggerManager.getLoggerLevel(logger) + " for logger " + logger);
                 loggers.put(logger, loggerManager.getLoggerLevel(logger));
+                privateLogger.warn("Setting log level " + logLevel + " to logger " + logger);
                 loggerManager.setLoggerLevel(logger, logLevel);
             }
         }
@@ -154,10 +161,14 @@ public class AggregatedLoggerManager implements IAggregatedLoggerManager
     @Override
     public void addComponentLogger(Type roleType)
     {
+        privateLogger.warn("addComponentLogger(Type=" + roleType + ')');
         boolean isRole = roleType.getClass().getAnnotation(org.xwiki.component.annotation.Role.class) != null;
+        privateLogger.warn("addComponentLogger: isRole() " + isRole);
         if (isRole) {
             final String clazzName = roleType.getClass().getName();
+            privateLogger.warn("clazzName=" + clazzName);
             final String packageName = clazzName.substring(0, clazzName.lastIndexOf('.'));
+            privateLogger.warn("adding managed logger for package " + packageName);
             addLogger(packageName);
         }
     }

@@ -49,6 +49,11 @@ public class LoadingSession
 
     private final IMailArchive ma;
 
+    public LoadingSession(final IMailArchive ma)
+    {
+        this.ma = ma;
+    }
+
     public LoadingSession(final IMailArchive ma, final String id)
     {
         this.ma = ma;

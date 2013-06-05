@@ -133,6 +133,8 @@ public class XWikiPersistence implements IPersistence, Initializable
     public String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
         final String loadingUser, final boolean create) throws XWikiException
     {
+        logger.debug("createTopic(pagename=" + pagename + ", m=" + m + ", taglist=" + taglist + ", loadingUser="
+            + loadingUser + ", create=" + create + ")");
         final String uniquePageName = bridge.getValidUniqueName(pagename, SPACE_ITEMS);
         final XWikiDocument topicDoc = xwiki.getDocument(SPACE_ITEMS + "." + uniquePageName, context);
         BaseObject topicObj = topicDoc.newObject(SPACE_CODE + ".MailTopicClass", context);
@@ -169,6 +171,8 @@ public class XWikiPersistence implements IPersistence, Initializable
             saveAsUser(topicDoc, m.getWikiuser(), loadingUser, "Created topic from mail [" + m.getMessageId() + "]");
         }
 
+        logger.debug("createTopic() Created " + topicDoc.getFullName());
+
         return topicDoc.getFullName();
     }
 
@@ -188,7 +192,8 @@ public class XWikiPersistence implements IPersistence, Initializable
     public String updateTopicPage(MailItem m, String existingTopicPage, SimpleDateFormat dateFormatter,
         final String loadingUser, boolean create) throws XWikiException
     {
-        logger.debug("updateTopicPage(" + existingTopicPage + ")");
+        logger.debug("updateTopicPage(m=" + m + ", existingTopicPage=" + existingTopicPage + ", loadingUser="
+            + loadingUser + ", create=" + create + ")");
 
         XWikiDocument topicDoc = xwiki.getDocument(existingTopicPage, context);
         logger.debug("Existing topic " + topicDoc);

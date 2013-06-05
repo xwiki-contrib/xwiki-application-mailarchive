@@ -126,8 +126,8 @@ public abstract class AbstractMailStore extends AbstractMailReader implements IS
     {
         Store store = getJavamailStore();
         store.connect();
-        Folder mailFolder = store.getFolder(folder);
-        mailFolder.open(Folder.READ_ONLY);
+        Folder mailFolder = store.getDefaultFolder().getFolder(folder);
+        mailFolder.open(Folder.READ_WRITE);
         Message[] msgsArray = mailFolder.getMessages();
         if (max > 0 && msgsArray.length > max) {
             msgsArray = (Message[]) ArrayUtils.subarray(msgsArray, 0, max);

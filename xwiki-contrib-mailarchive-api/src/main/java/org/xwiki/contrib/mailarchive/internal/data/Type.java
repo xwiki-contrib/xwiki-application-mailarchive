@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.xwiki.contrib.mailarchive.IMailMatcher;
 import org.xwiki.contrib.mailarchive.IType;
+import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * Mail IType
@@ -123,12 +124,19 @@ public class Type implements IType
         this.matchers.add(matcher);
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
-        builder.append("MailTypeImpl [name=").append(id).append(", displayName=").append(name).append(", icon=")
-            .append(icon).append(", matchers=").append(matchers).append("]");
+        XWikiToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder.append("id", id);
+        builder.append("name", name);
+        builder.append("icon", icon);
+        builder.append("matchers", matchers);
         return builder.toString();
     }
 

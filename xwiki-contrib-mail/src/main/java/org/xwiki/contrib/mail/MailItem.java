@@ -26,6 +26,8 @@ import java.util.Locale;
 
 import javax.mail.Message;
 
+import org.xwiki.text.XWikiToStringBuilder;
+
 /**
  * POJO representing a Mail.<br/>
  * Most attributes relate easily to their corresponding mail header, except when specified.
@@ -91,6 +93,8 @@ public class MailItem
     private boolean isFirstInTopic;
 
     private String importance;
+
+    private boolean attached = false;
 
     private Message originalMessage;
 
@@ -327,6 +331,22 @@ public class MailItem
     }
 
     /**
+     * @return the builtinType
+     */
+    public String getBuiltinType()
+    {
+        return builtinType;
+    }
+
+    /**
+     * @param builtinType the builtinType to set
+     */
+    public void setBuiltinType(final String builtinType)
+    {
+        this.builtinType = builtinType;
+    }
+
+    /**
      * @return the types
      */
     public ArrayList<String> getTypes()
@@ -385,6 +405,22 @@ public class MailItem
     }
 
     /**
+     * @return the attached
+     */
+    public boolean isAttached()
+    {
+        return attached;
+    }
+
+    /**
+     * @param attached the attached to set
+     */
+    public void setAttached(boolean attached)
+    {
+        this.attached = attached;
+    }
+
+    /**
      * @param isFirstInTopic the isFirstInTopic to set
      */
     public void setFirstInTopic(boolean isFirstInTopic)
@@ -419,23 +455,38 @@ public class MailItem
         return map;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
     public String toString()
     {
-        // FIXME : when migrating to 4.0, use XWikiToStringBuilder
-        StringBuilder result = new StringBuilder();
-
-        result.append("MailItem [\n").append("\t  date:'").append(date).append("'\n").append("\t, subject:'")
-            .append(subject).append("'\n").append("\t, topic:'").append(topic).append("'\n").append("\t, from:'")
-            .append(from).append("'\n").append("\t, to:'").append(to).append("'\n").append("\t, cc:'").append(cc)
-            .append("'\n").append("\t, topicId:'").append(topicId).append("'\n").append("\t, messageId:'")
-            .append(messageId).append("'\n").append("\t, replyToId:'").append(replyToId).append("'\n")
-            .append("\t, refs:'").append(refs).append("'\n").append("\t, contentType:'").append(contentType)
-            .append("'\n").append("\t, sensitivity:'").append(sensitivity).append("'\n").append("\t, locale:'")
-            .append(locale).append("'\n").append("\t, types:'").append(types).append("'\n").append("\t, wikiuser:'")
-            .append(wikiuser).append("'\n").append("\t, isFirstInTopic:'").append(isFirstInTopic).append("'\n")
-            .append("]");
-
-        return result.toString();
+        XWikiToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder.append("date", date);
+        builder.append("subject", subject);
+        builder.append("topic", topic);
+        builder.append("from", from);
+        builder.append("to", to);
+        builder.append("cc", cc);
+        builder.append("sender", sender);
+        builder.append("topicId", topicId);
+        builder.append("messageId", messageId);
+        builder.append("replyToId", replyToId);
+        builder.append("refs", refs);
+        builder.append("locale", locale);
+        builder.append("bodypart", bodypart != null ? bodypart.getClass() : "");
+        builder.append("contentType", contentType);
+        builder.append("sensitivity", sensitivity);
+        builder.append("builtinType", builtinType);
+        builder.append("types", types);
+        builder.append("wikiuser", wikiuser);
+        builder.append("isFirstInTopic", isFirstInTopic);
+        builder.append("importance", importance);
+        builder.append("attached", attached);
+        builder.append("originalMessage", originalMessage != null ? originalMessage.getClass() : "");
+        return builder.toString();
     }
 
 }

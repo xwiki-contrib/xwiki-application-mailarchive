@@ -17,58 +17,16 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal.utils;
+package org.xwiki.contrib.mailarchive;
+
+import org.xwiki.component.annotation.Role;
+import org.xwiki.contrib.mailarchive.internal.LoadingJob;
 
 /**
  * @version $Id$
  */
-public class DecodedMailContent
+@Role
+public interface IMailArchiveLoader
 {
-    private boolean html;
-
-    private String text;
-
-    /**
-     * @param html
-     * @param text
-     */
-    public DecodedMailContent(final boolean isHtml, final String text)
-    {
-        super();
-        this.html = isHtml;
-        this.text = text;
-    }
-
-    /**
-     * @return the html
-     */
-    public boolean isHtml()
-    {
-        return html;
-    }
-
-    /**
-     * @param html the html to set
-     */
-    public void setHtml(final boolean html)
-    {
-        this.html = html;
-    }
-
-    /**
-     * @return the text
-     */
-    public String getText()
-    {
-        return text;
-    }
-
-    /**
-     * @param text the text to set
-     */
-    public void setText(final String text)
-    {
-        this.text = text;
-    }
-
+    public int loadMails(LoadingSession session, LoadingJob job);
 }

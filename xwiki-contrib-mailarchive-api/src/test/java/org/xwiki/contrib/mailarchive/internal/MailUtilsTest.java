@@ -40,6 +40,7 @@ import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.internal.data.Type;
 import org.xwiki.contrib.mailarchive.internal.utils.DecodedMailContent;
 import org.xwiki.contrib.mailarchive.internal.utils.IMailUtils;
+import org.xwiki.contrib.mailarchive.internal.utils.ITextUtils;
 import org.xwiki.contrib.mailarchive.internal.utils.MailUtils;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -62,10 +63,14 @@ public class MailUtilsTest
 
     private IMailUtils mailutils;
 
+    private ITextUtils mockTextUtils;
+
     @Before
     public void setUp() throws Exception
     {
         this.mailutils = mocker.getComponentUnderTest();
+
+        this.mockTextUtils = mocker.getInstance(ITextUtils.class);
 
         /*
          * verify(mocker.getMockedLogger()). mocker.getMockery().checking(new Expectations() { { // Ignore all calls to
@@ -192,27 +197,30 @@ public class MailUtilsTest
     @Test
     public void decodeMailContentForHtmlAndNoBodyAndNoCut() throws IOException, XWikiException
     {
+        when(mockTextUtils.unzipString(HTML_ENCODED_CONTENT_NO_HISTORY)).thenReturn(HTML_DECODED_CONTENT_NO_HISTORY);
         DecodedMailContent decoded = this.mailutils.decodeMailContent(HTML_ENCODED_CONTENT_NO_HISTORY, "", false);
 
         // To avoid escaping result string for java, we remove white-space from both result and expected
-        assertEquals(HTML_DECODED_CONTENT_NO_HISTORY, decoded.getText().replaceAll("\\s", ""));
+        assertEquals(HTML_DECODED_CONTENT_NO_HISTORY, decoded.getText());
         assertTrue(decoded.isHtml());
     }
 
     @Test
     public void decodeMailContentForHtmlAndBodyAndNoCut() throws IOException, XWikiException
     {
+        when(mockTextUtils.unzipString(HTML_ENCODED_CONTENT_NO_HISTORY)).thenReturn(HTML_DECODED_CONTENT_NO_HISTORY);
         DecodedMailContent decoded =
             this.mailutils.decodeMailContent(HTML_ENCODED_CONTENT_NO_HISTORY, "ignored text", false);
 
         // To avoid escaping result string for java, we remove white-space from both result and expected
-        assertEquals(HTML_DECODED_CONTENT_NO_HISTORY, decoded.getText().replaceAll("\\s", ""));
+        assertEquals(HTML_DECODED_CONTENT_NO_HISTORY, decoded.getText());
         assertTrue(decoded.isHtml());
     }
 
     @Test
     public void decodeMailContentForHtmlAndNoBodyAndCut() throws IOException, XWikiException
     {
+        when(mockTextUtils.unzipString(HTML_ENCODED_CONTENT_NO_HISTORY)).thenReturn(HTML_DECODED_CONTENT_NO_HISTORY);
         DecodedMailContent decoded = this.mailutils.decodeMailContent(HTML_ENCODED_CONTENT_NO_HISTORY, "", true);
 
         assertEquals(HTML_DECODED_CONTENT_NO_HISTORY, decoded.getText().replaceAll("\\s", ""));

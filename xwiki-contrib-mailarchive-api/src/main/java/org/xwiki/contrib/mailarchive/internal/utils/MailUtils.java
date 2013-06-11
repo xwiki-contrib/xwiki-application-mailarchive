@@ -19,18 +19,13 @@
  */
 package org.xwiki.contrib.mailarchive.internal.utils;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import java.util.zip.GZIPInputStream;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -62,6 +57,9 @@ import com.xpn.xwiki.XWikiException;
 public class MailUtils implements IMailUtils
 {
     @Inject
+    private ITextUtils textUtils;
+
+    @Inject
     private QueryManager queryManager;
 
     @Inject
@@ -81,7 +79,7 @@ public class MailUtils implements IMailUtils
      * @param id an address mail header value
      * @return extracted address, or id itself if could not extract an address part
      */
-    public static String extractAddress(String id)
+    public String extractAddress(final String id)
     {
         int start = id.indexOf('<');
         int end = id.indexOf('>');
@@ -97,7 +95,7 @@ public class MailUtils implements IMailUtils
      * profiles, returns page name for this profile - returns null string if no match is found - tries to return profile
      * of a user that's authenticated from LDAP, if any, or else first profile found
      */
-    public IMAUser parseUser(String user, boolean isMatchLdap)
+    public IMAUser parseUser(final String user, final boolean isMatchLdap)
     {
         logger.debug("parseUser {}, {}", user, isMatchLdap);
 
@@ -207,29 +205,14 @@ public class MailUtils implements IMailUtils
      * @throws IOException
      * @throws XWikiException
      */
-    public DecodedMailContent decodeMailContent(String originalHtml, String originalBody, boolean cut)
+    public DecodedMailContent decodeMailContent(final String originalHtml, final String originalBody, final boolean cut)
         throws IOException
     {
         String html = "";
         String body = "";
 
         if (!StringUtils.isEmpty(originalHtml)) {
-            InputStream is = new ByteArrayInputStream(TextUtils.hex2byte(originalHtml));
-            GZIPInputStream zis = new GZIPInputStream(is);
-            html = "";
-            if (zis != null) {
-                StringBuilder sb = new StringBuilder();
-                String line;
-                try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(zis, "UTF-8"));
-                    while ((line = reader.readLine()) != null) {
-                        sb.append(line).append("\n");
-                    }
-                } finally {
-                    zis.close();
-                }
-                html = sb.toString();
-            }
+            html = textUtils.unzipString(originalHtml);
 
             // body is only plain text
         } else {
@@ -321,7 +304,7 @@ public class MailUtils implements IMailUtils
                         fieldValue = m.getSubject();
                     }
                     logger.info("  Checking field " + field + " with value [" + fieldValue + "] against pattern ["
-                        + regexp + "] DEBUG [" + TextUtils.byte2hex(regexp.getBytes()) + "]");
+                        + regexp + "] DEBUG [" + textUtils.byte2hex(regexp.getBytes()) + "]");
                     if (mailMatcher.isAdvancedMode()) {
                         matcher = pattern.matcher(fieldValue);
                         logger.debug("Matcher : " + matcher);

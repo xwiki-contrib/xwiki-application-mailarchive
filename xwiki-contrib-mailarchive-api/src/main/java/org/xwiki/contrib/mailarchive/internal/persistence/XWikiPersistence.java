@@ -19,14 +19,26 @@
  */
 package org.xwiki.contrib.mailarchive.internal.persistence;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.zip.GZIPOutputStream;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -35,14 +47,24 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
+import org.xwiki.contrib.mail.MailContent;
 import org.xwiki.contrib.mail.MailItem;
+import org.xwiki.contrib.mail.internal.MailAttachment;
+import org.xwiki.contrib.mail.internal.util.Utils;
+import org.xwiki.contrib.mailarchive.internal.bridge.ExtendedDocumentAccessBridge;
 import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
+import org.xwiki.contrib.mailarchive.internal.utils.ITextUtils;
+import org.xwiki.query.Query;
+import org.xwiki.query.QueryException;
+import org.xwiki.query.QueryManager;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.doc.XWikiAttachment;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.util.Util;
 
 /**
  * @version $Id$
@@ -105,6 +127,12 @@ public class XWikiPersistence implements IPersistence, Initializable
     @Inject
     @Named("extended")
     private IExtendedDocumentAccessBridge bridge;
+
+    @Inject
+    private ITextUtils textUtils;
+
+    @Inject
+    private QueryManager queryManager;
 
     private XWiki xwiki;
 
@@ -189,8 +217,8 @@ public class XWikiPersistence implements IPersistence, Initializable
      * @throws ParseException
      */
     @Override
-    public String updateTopicPage(MailItem m, String existingTopicPage, SimpleDateFormat dateFormatter,
-        final String loadingUser, boolean create) throws XWikiException
+    public String updateTopicPage(final MailItem m, final String existingTopicPage,
+        final SimpleDateFormat dateFormatter, final String loadingUser, final boolean create) throws XWikiException
     {
         logger.debug("updateTopicPage(m=" + m + ", existingTopicPage=" + existingTopicPage + ", loadingUser="
             + loadingUser + ", create=" + create + ")");
@@ -261,8 +289,341 @@ public class XWikiPersistence implements IPersistence, Initializable
         return topicDoc.getFullName();
     }
 
+    /**
+     * createMailPage Creates a wiki page for a Mail.
+     * 
+     * @throws XWikiException
+     * @throws IOException
+     * @throws MessagingException
+     */
     @Override
-    public void updateMailServerState(String serverPrefsDoc, int status) throws XWikiException
+    public String createMailPage(final MailItem m, final String pageName, final String existingTopicId,
+        final boolean isAttachedMail, final List<String> taglist, final List<String> attachedMailsPages,
+        final String parentMail, final String loadingUser, final boolean create) throws XWikiException,
+        MessagingException, IOException
+    {
+        logger.debug("createMailPage(" + m + "," + existingTopicId + "," + isAttachedMail + "," + parentMail + ","
+            + create + ")");
+
+        XWikiDocument msgDoc;
+        String docFullName = XWikiPersistence.SPACE_ITEMS + '.' + pageName;
+        String content = "";
+        String htmlcontent = "";
+        String zippedhtmlcontent = "";
+
+        // a map to store attachment filename = contentId for replacements in HTML retrieved from mails
+        HashMap<String, String> attachmentsMap = new HashMap<String, String>();
+        ArrayList<MimeBodyPart> attbodyparts = new ArrayList<MimeBodyPart>();
+
+        msgDoc = xwiki.getDocument(XWikiPersistence.SPACE_ITEMS + '.' + pageName, context);
+        logger.debug("NEW MSG msgwikiname=" + pageName);
+
+        Object bodypart = m.getBodypart();
+        logger.debug("bodypart class " + bodypart.getClass());
+        // addDebug("mail content type " + m.contentType)
+        // Retrieve mail body(ies)
+        MailContent mailContent = m.getMailContent();
+        // Resolve attachment urls against wiki document
+        for (MailAttachment wikiAttachment : mailContent.getWikiAttachments().values()) {
+            final String attachmentUrl = msgDoc.getAttachmentURL(wikiAttachment.getFilename(), context);
+            wikiAttachment.setUrl(attachmentUrl);
+        }
+
+        content = mailContent.getText();
+        htmlcontent = mailContent.getHtml();
+
+        if (content == null) {
+            content = "";
+        }
+        if (htmlcontent == null) {
+            htmlcontent = "";
+        }
+
+        // Truncate body
+        content = textUtils.truncateStringForBytes(content, 65500, 65500);
+
+        // Treat Html part
+        zippedhtmlcontent = treatHtml(htmlcontent, mailContent.getWikiAttachments());
+
+        // Treat lengths
+        m.setMessageId(textUtils.truncateForString(m.getMessageId()));
+        m.setSubject(textUtils.truncateForString(m.getSubject()));
+        String existingTopicIdTruncated = textUtils.truncateForString(existingTopicId);
+        m.setTopicId(textUtils.truncateForString(m.getTopicId()));
+        m.setTopic(textUtils.truncateForString(m.getTopic()));
+        m.setReplyToId(textUtils.truncateForLargeString(m.getReplyToId()));
+        m.setRefs(textUtils.truncateForLargeString(m.getRefs()));
+        m.setFrom(textUtils.truncateForLargeString(m.getFrom()));
+        m.setTo(textUtils.truncateForLargeString(m.getTo()));
+        m.setCc(textUtils.truncateForLargeString(m.getCc()));
+
+        // Assign text body converted from html content if there is no pure-text content
+        if (StringUtils.isBlank(content) && !StringUtils.isBlank(htmlcontent)) {
+            String converted = textUtils.htmlToPlainText(htmlcontent);
+            if (converted != null && !"".equals(converted)) {
+                // replace content with value (remove excessive whitespace also)
+                content = converted.replaceAll("[\\s]{2,}", "\n");
+                logger.debug("Text body now contains converted html content");
+            } else {
+                logger.debug("Conversion from HTML to Plain Text returned empty or null string");
+            }
+        }
+
+        // Fill all new object's fields
+        BaseObject msgObj = msgDoc.newObject(XWikiPersistence.SPACE_CODE + ".MailClass", context);
+        msgObj.set("messageid", m.getMessageId(), context);
+        msgObj.set("messagesubject", m.getSubject(), context);
+
+        msgObj.set("topicid", existingTopicIdTruncated, context);
+        msgObj.set("topicsubject", m.getTopic(), context);
+        msgObj.set("inreplyto", m.getReplyToId(), context);
+        msgObj.set("references", m.getRefs(), context);
+        msgObj.set("date", m.getDate(), context);
+        msgDoc.setCreationDate(m.getDate());
+        msgDoc.setDate(m.getDate());
+        msgDoc.setContentUpdateDate(m.getDate());
+        msgObj.set("from", m.getFrom(), context);
+        msgObj.set("to", m.getTo(), context);
+        msgObj.set("cc", m.getCc(), context);
+        msgObj.set("body", content, context);
+        msgObj.set("bodyhtml", zippedhtmlcontent, context);
+        msgObj.set("sensitivity", m.getSensitivity(), context);
+        if (attachedMailsPages.size() != 0) {
+            msgObj.set("attachedMails", StringUtils.join(attachedMailsPages, ','), context);
+        }
+        if (isAttachedMail) {
+            m.setAttached(true);
+            msgObj.set("attached", "1", context);
+            // m.setBuiltinType(IType.BUILTIN_TYPE_ATTACHED_MAIL);
+        }
+        if (m.getTypes().size() > 0) {
+            String types = StringUtils.join(m.getTypes().toArray(new String[] {}), ',');
+            msgObj.set("type", types, context);
+        }
+
+        msgDoc.setParent(parentMail);
+        msgDoc.setTitle("Message " + m.getSubject());
+        if (!isAttachedMail) {
+            msgDoc.setComment("Created message");
+        } else {
+            msgDoc.setComment("Attached mail created");
+        }
+
+        if (taglist.size() > 0) {
+            BaseObject tagobj = msgDoc.newObject("XWiki.TagClass", context);
+            String tags = StringUtils.join(taglist.toArray(new String[] {}), ',');
+            tagobj.set("tags", tags, context);
+        }
+
+        if (create && !existsMessage(m.getMessageId())) {
+            logger.debug("saving message " + m.getSubject());
+            saveAsUser(msgDoc, m.getWikiuser(), loadingUser, "Created message from mailing-list");
+        }
+
+        logger.debug("adding attachments to document");
+        addAttachmentsToMailPage(msgDoc, attbodyparts, attachmentsMap);
+
+        logger.debug("  mail loaded and saved :" + docFullName);
+
+        return docFullName;
+    }
+
+    // ****** Check existence of wiki object with same value as 'messageid', from database
+    @Override
+    public boolean existsMessage(final String msgid)
+    {
+        boolean exists = false;
+        String hql =
+            "select count(*) from StringProperty as prop where prop.name='messageid' and prop.value='" + msgid + "')";
+
+        try {
+            List<Object> result = queryManager.createQuery(hql, Query.HQL).execute();
+            logger.debug("CheckMsgIdExistence result " + result);
+            exists = (Long) result.get(0) != 0;
+        } catch (QueryException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        if (!exists) {
+            logger.debug("Message with id " + msgid + " does not exist in database");
+            return false;
+        } else {
+            logger.debug("Message with id " + msgid + " already loaded in database");
+            return true;
+        }
+
+    }
+
+    /*
+     * Add map of attachments (bodyparts) to a document (doc1)
+     */
+    private int addAttachmentsToMailPage(final XWikiDocument doc1, final ArrayList<MimeBodyPart> bodyparts,
+        final HashMap<String, String> attachmentsMap) throws MessagingException
+    {
+        int nb = 0;
+        for (MimeBodyPart bodypart : bodyparts) {
+            String fileName = bodypart.getFileName();
+            String cid = bodypart.getContentID();
+
+            try {
+                // replace by correct name if filename was renamed (multiple attachments with same name)
+                if (attachmentsMap.containsKey(cid)) {
+                    fileName = attachmentsMap.get(cid);
+                }
+                logger.debug("Treating attachment: " + fileName + " with contentid " + cid);
+                if (fileName == null) {
+                    fileName = "fichier.doc";
+                }
+                if (fileName.equals("oledata.mso") || fileName.endsWith(".wmz") || fileName.endsWith(".emz")) {
+                    logger.debug("Not treating Microsoft crap !");
+                } else {
+                    String disposition = bodypart.getDisposition();
+                    String contentType = bodypart.getContentType().toLowerCase();
+
+                    logger.debug("Treating attachment of type: " + contentType);
+
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    OutputStream out = new BufferedOutputStream(baos);
+                    // We can't just use p.writeTo() here because it doesn't
+                    // decode the attachment. Instead we copy the input stream
+                    // onto the output stream which does automatically decode
+                    // Base-64, quoted printable, and a variety of other formats.
+                    InputStream ins = new BufferedInputStream(bodypart.getInputStream());
+                    int b = ins.read();
+                    while (b != -1) {
+                        out.write(b);
+                        b = ins.read();
+                    }
+                    out.flush();
+                    out.close();
+                    ins.close();
+
+                    logger.debug("Treating attachment step 3: " + fileName);
+
+                    byte[] data = baos.toByteArray();
+                    logger.debug("Ready to attach attachment: " + fileName);
+                    addAttachmentToPage(doc1, fileName, data);
+                    nb++;
+                } // end if
+            } catch (Exception e) {
+                logger.warn("Attachment " + fileName + " could not be treated", e);
+            }
+        } // end for all attachments
+        return nb;
+    }
+
+    /*
+     * Add to document (doc1) an attached file (afilename) with its content (adata), and fills a map (adata) with
+     * relation between contentId (cid) and (afilename)
+     */
+    private void addAttachmentToPage(final XWikiDocument doc, final String afilename, final byte[] adata)
+        throws XWikiException
+    {
+        String filename = getAttachmentValidName(afilename);
+        logger.debug("adding attachment: " + filename);
+
+        XWikiAttachment attachment = new XWikiAttachment();
+        doc.getAttachmentList().add(attachment);
+        attachment.setContent(adata);
+        attachment.setFilename(filename);
+        // TODO: handle Author
+        attachment.setAuthor(context.getUser());
+        // Add the attachment to the document
+        attachment.setDoc(doc);
+        logger.debug("saving attachment: " + filename);
+        doc.setComment("Added attachment " + filename);
+        doc.saveAttachmentContent(attachment, context);
+    }
+
+    /*
+     * Returns a valid name for an attachment from its original name
+     */
+    public String getAttachmentValidName(final String afilename)
+    {
+        int i = afilename.lastIndexOf("\\");
+        if (i == -1) {
+            i = afilename.lastIndexOf("/");
+        }
+        String filename = afilename.substring(i + 1);
+        filename = filename.replaceAll("\\+", " ");
+        return filename;
+    }
+
+    @Override
+    public String getMessageUniquePageName(final MailItem m, final boolean isAttachedMail)
+    {
+        char prefix = 'M';
+        if (isAttachedMail) {
+            prefix = 'A';
+        }
+        String msgwikiname = xwiki.clearName(prefix + m.getTopic().replaceAll(" ", ""), context);
+        if (msgwikiname.length() >= ExtendedDocumentAccessBridge.MAX_PAGENAME_LENGTH) {
+            msgwikiname = msgwikiname.substring(0, ExtendedDocumentAccessBridge.MAX_PAGENAME_LENGTH);
+        }
+        return msgwikiname;
+    }
+
+    /*
+     * Cleans up HTML content and treat it to replace cid tags with correct image urls (targeting attachments), then zip
+     * it.
+     */
+    private String treatHtml(final String htmlcontent, final HashMap<String, MailAttachment> attachmentsMap)
+        throws IOException
+    {
+        String htmlcontentReplaced = "";
+        if (!StringUtils.isBlank(htmlcontent)) {
+            logger.debug("Original HTML length " + htmlcontent.length());
+
+            // Replacement to avoid issue of "A circumflex" characters displayed (???)
+            htmlcontentReplaced = htmlcontent.replaceAll("&Acirc;", " ");
+
+            // Replace attachment URLs in HTML content for images to be shown
+            for (Entry<String, MailAttachment> att : attachmentsMap.entrySet()) {
+                // remove starting "<" and finishing ">"
+                final String cid = att.getKey();
+                // If there is no cid, it means this attachment is not INLINE, so there's nothing more to do
+                if (!StringUtils.isEmpty(cid)) {
+                    String pattern = att.getKey().substring(1, att.getKey().length() - 2);
+                    pattern = "cid:" + pattern;
+
+                    logger.debug("Testing for CID pattern " + Util.encodeURI(pattern, context) + " " + pattern);
+                    String replacement = att.getValue().getUrl();
+                    logger.debug("To be replaced by " + replacement);
+                    htmlcontentReplaced = htmlcontentReplaced.replaceAll(pattern, replacement);
+                } else {
+                    logger.warn("treatHtml: attachment is supposed not inline as cid is null or empty: "
+                        + att.getValue().getFilename());
+                }
+            }
+
+            logger.debug("Zipping HTML part ...");
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            GZIPOutputStream zos = new GZIPOutputStream(bos);
+            byte[] bytes = htmlcontentReplaced.getBytes("UTF8");
+            zos.write(bytes, 0, bytes.length);
+            zos.finish();
+            zos.close();
+
+            byte[] compbytes = bos.toByteArray();
+            htmlcontentReplaced = Utils.byte2hex(compbytes);
+            bos.close();
+
+            if (htmlcontentReplaced.length() > ITextUtils.LONG_STRINGS_MAX_LENGTH) {
+                logger.debug("Failed to have HTML fit in target field, truncating");
+                htmlcontentReplaced = textUtils.truncateForLargeString(htmlcontentReplaced);
+            }
+
+        } else {
+            logger.debug("No HTML to treat");
+        }
+
+        logger.debug("Html Zipped length : " + htmlcontentReplaced.length());
+        return htmlcontentReplaced;
+    }
+
+    @Override
+    public void updateMailServerState(final String serverPrefsDoc, final int status) throws XWikiException
     {
         logger.debug("Updating server state in " + serverPrefsDoc);
         XWikiDocument serverDoc = context.getWiki().getDocument(serverPrefsDoc, context);
@@ -273,7 +634,7 @@ public class XWikiPersistence implements IPersistence, Initializable
     }
 
     @Override
-    public void updateMailStoreState(String storePrefsDoc, int status) throws XWikiException
+    public void updateMailStoreState(final String storePrefsDoc, final int status) throws XWikiException
     {
         logger.debug("Updating store state in " + storePrefsDoc);
         XWikiDocument serverDoc = context.getWiki().getDocument(storePrefsDoc, context);

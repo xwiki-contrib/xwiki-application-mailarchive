@@ -20,12 +20,22 @@
 package org.xwiki.contrib.mailarchive;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.List;
 import java.util.Map;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Part;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mail.SourceConnectionErrors;
+import org.xwiki.contrib.mail.source.IMailSource;
 import org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration;
+import org.xwiki.contrib.mailarchive.internal.MailLoadingResult;
+import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
+import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadableMessage;
 import org.xwiki.contrib.mailarchive.internal.utils.DecodedMailContent;
@@ -53,43 +63,6 @@ public interface IMailArchive
      * @return
      */
     public Map<String, Integer> checkSource(LoadingSession session);
-
-    /**
-     * Fetch mails from sources specified by a loading session. The session object provides all needed parameters (Cf
-     * {@link LoadingSession}).
-     * 
-     * @param session
-     * @return Number of emails loaded during this session.
-     */
-    public int loadMails(LoadingSession session);
-
-    /**
-     * Number of sources already loaded for current loading session, if any.
-     * 
-     * @return
-     */
-    public int getProgressMails();
-
-    /**
-     * Number of mails already loaded for current source in current loading session, if any.
-     * 
-     * @return
-     */
-    public int getProgressSources();
-
-    /**
-     * Total number of mails to be loaded for current source in current loading session, if any.
-     * 
-     * @return
-     */
-    public int getTotalMails();
-
-    /**
-     * Total number of sources that take part of current loading session, if any.
-     * 
-     * @return
-     */
-    public int getTotalSources();
 
     /**
      * Threads messages related to a topic, given its ID.<br/>
@@ -135,4 +108,34 @@ public interface IMailArchive
     public String computeTimeline() throws Exception;
 
     public IMailArchiveConfiguration getConfiguration() throws InitializationException, MailArchiveException;
+
+    /**
+     * Returns a view on mails already loaded into the mail archive.
+     * 
+     * @return
+     * @throws MailArchiveException
+     */
+    public Map<String, MailDescriptor> getMails() throws MailArchiveException;
+
+    /**
+     * Returns a view on topics already loaded into the mail archive.
+     * 
+     * @return
+     * @throws MailArchiveException
+     */
+    public Map<String, TopicDescriptor> getTopics() throws MailArchiveException;
+
+    public List<IMASource> getSourcesList(final LoadingSession session);
+
+    public void setLocked(final boolean locked);
+
+    public boolean isLocked();
+
+    public MailLoadingResult loadMail(Part mail, boolean confirm, boolean isAttachedMail, String parentMail)
+        throws XWikiException, ParseException, MessagingException, IOException;
+
+    public void saveToInternalStore(final String serverId, final IMailSource source, final Message message);
+
+    public void dumpEmail(Message message);
+
 }

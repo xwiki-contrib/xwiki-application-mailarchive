@@ -34,6 +34,10 @@ import org.xwiki.contrib.mailarchive.internal.data.IFactory;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadMessageBean;
 import org.xwiki.contrib.mailarchive.internal.utils.DecodedMailContent;
+import org.xwiki.job.DefaultRequest;
+import org.xwiki.job.Job;
+import org.xwiki.job.JobException;
+import org.xwiki.job.JobManager;
 import org.xwiki.script.service.ScriptService;
 
 /**
@@ -50,11 +54,8 @@ public class MailArchiveScriptService implements ScriptService
     @Inject
     private IFactory factory;
 
-    // @Inject
-    // private Logger logger;
-
-    // TODO: move out the session() and load() to another IMailArchiveLoader component.
-    // Justification: IMailArchive should be Singleton, whereas IMailArchiveLoader should not.
+    @Inject
+    private JobManager jobManager;
 
     /**
      * Creates a loading session based on default session configuration, stored in document
@@ -85,7 +86,34 @@ public class MailArchiveScriptService implements ScriptService
 
     public int load(final LoadingSession session)
     {
-        return this.mailArchive.loadMails(session);
+        LoadingJob job = null;
+        DefaultRequest request = new DefaultRequest();
+        request.setId("test");
+        request.setInteractive(false);
+        request.setProperty("sessionobj", session);
+        try {
+            job = (LoadingJob) jobManager.executeJob("mailarchivejob", request);
+        } catch (JobException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return job != null ? job.getNbSuccess() : -1;
+    }
+
+    public Job startLoadingJob(final LoadingSession session)
+    {
+        LoadingJob job = null;
+        DefaultRequest request = new DefaultRequest();
+        request.setId("test");
+        request.setInteractive(false);
+        request.setProperty("sessionobj", session);
+        try {
+            job = (LoadingJob) jobManager.addJob("mailarchivejob", request);
+        } catch (JobException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return job;
     }
 
     /**
@@ -155,38 +183,6 @@ public class MailArchiveScriptService implements ScriptService
             e.printStackTrace();
             return null;
         }
-    }
-
-    /**
-     * @return the progressMails
-     */
-    public int getProgressMails()
-    {
-        return this.mailArchive.getProgressMails();
-    }
-
-    /**
-     * @return the progressSources
-     */
-    public int getProgressSources()
-    {
-        return this.mailArchive.getProgressSources();
-    }
-
-    /**
-     * @return the totalMails
-     */
-    public int getTotalMails()
-    {
-        return this.mailArchive.getTotalMails();
-    }
-
-    /**
-     * @return the totalSources
-     */
-    public int getTotalSources()
-    {
-        return this.mailArchive.getTotalSources();
     }
 
 }

@@ -22,6 +22,7 @@ package org.xwiki.contrib.mailarchive.internal.data;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -264,10 +265,16 @@ public class Factory implements IFactory
         }
         session = session.setLimit(dab.getIntValue(sessionPrefsDoc, className, "maxMailsNb"));
 
-        final List<String> servers =
-            ((DBStringListProperty) dab.getProperty(sessionPrefsDoc, className, "servers")).getList();
-        final List<String> stores =
-            ((DBStringListProperty) dab.getProperty(sessionPrefsDoc, className, "stores")).getList();
+        DBStringListProperty props = (DBStringListProperty) dab.getProperty(sessionPrefsDoc, className, "servers");
+        List<String> servers = new ArrayList<String>();
+        if (props != null) {
+            servers = props.getList();
+        }
+        props = (DBStringListProperty) dab.getProperty(sessionPrefsDoc, className, "stores");
+        List<String> stores = new ArrayList<String>();
+        if (props != null) {
+            stores = props.getList();
+        }
         for (String serverId : servers) {
             session = session.addServer(serverId);
         }

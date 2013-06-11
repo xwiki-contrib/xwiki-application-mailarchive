@@ -82,9 +82,8 @@ $xcontext.put("relatedTopic", "")
 {{groovy}}
 import java.text.*;
 
-def sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZZ")
 def obj = doc.getObject("MailArchiveCode.MailClass")
-def date = sdf.parse(obj.date)
+def date = obj.getProperty('date').getValue()
 def sdf2 = new SimpleDateFormat("dd/MM/yyyy HH:mm")
 def from = doc.display("from")
 def start = from.indexOf("&lt;p&gt;")
@@ -190,9 +189,8 @@ $body
 #else
 {{/html}}
 
-{{code language="none"}}
+#set($body = $body.replaceAll("\[\(", "~[~["))
 $body
-{{/code}}
 
 {{html clean="false" wiki="true"}}
 #end

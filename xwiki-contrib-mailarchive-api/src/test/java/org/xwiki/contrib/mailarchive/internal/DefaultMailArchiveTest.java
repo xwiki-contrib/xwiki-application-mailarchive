@@ -44,7 +44,7 @@ public class DefaultMailArchiveTest extends AbstractBridgedComponentTestCase
     public final MockitoComponentMockingRule<IMailArchive> mocker = new MockitoComponentMockingRule<IMailArchive>(
         DefaultMailArchive.class);
 
-    private DefaultMailArchive ma;
+    private IMailArchive ma;
 
     private XWiki mockXWiki;
 
@@ -78,7 +78,7 @@ public class DefaultMailArchiveTest extends AbstractBridgedComponentTestCase
         // Needed because not mocked by MockingComponentManager
         getComponentManager().registerMockComponent(getMockery(), LoggerManager.class);
 
-        this.ma = (DefaultMailArchive) getComponentManager().getInstance(IMailArchive.class);
+        this.ma = (IMailArchive) getComponentManager().getInstance(IMailArchive.class);
 
     }
 

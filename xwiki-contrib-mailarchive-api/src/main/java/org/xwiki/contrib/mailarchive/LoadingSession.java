@@ -22,8 +22,14 @@ package org.xwiki.contrib.mailarchive;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.xwiki.contrib.mail.source.SourceType;
+import org.xwiki.contrib.mailarchive.internal.LoadingJob;
+import org.xwiki.job.DefaultRequest;
+import org.xwiki.job.JobException;
+import org.xwiki.job.JobManager;
 import org.xwiki.text.XWikiToStringBuilder;
 
 /**
@@ -31,6 +37,9 @@ import org.xwiki.text.XWikiToStringBuilder;
  */
 public class LoadingSession
 {
+    @Inject
+    private JobManager jobManager;
+
     private String id;
 
     private boolean withDelete = false;
@@ -160,12 +169,23 @@ public class LoadingSession
 
     public int loadMails()
     {
+        LoadingJob job = null;
         // clone the session to avoid it to be updated during loading phase ...
         try {
-            return this.ma.loadMails(this.clone());
+            DefaultRequest request = new DefaultRequest();
+            request.setId("test");
+            request.setInteractive(false);
+            request.setProperty("sessionobj", this.clone());
+            try {
+                job = (LoadingJob) jobManager.executeJob("mailarchivejob", request);
+            } catch (JobException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         } catch (CloneNotSupportedException e) {
-            return this.ma.loadMails(this);
+            // should not happen
         }
+        return job != null ? job.getNbSuccess() : -1;
     }
 
     public Map<String, Integer> checkMails()

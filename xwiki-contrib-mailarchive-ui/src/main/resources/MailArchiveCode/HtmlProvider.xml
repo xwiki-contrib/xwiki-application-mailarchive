@@ -78,7 +78,7 @@ def text=decoded.text
 if (decoded.isHtml()) {
   println("{{html clean='false' wiki='false'}}" + text + "{{/html}}")
 } else {
-  println("{{code language='none'}}" + text + "{{/code}}")
+  println(text.replaceAll("\\[\\(", "~[~[").replaceAll("\\{\\{", "~{~{"))
 }
 
 {{/groovy}}

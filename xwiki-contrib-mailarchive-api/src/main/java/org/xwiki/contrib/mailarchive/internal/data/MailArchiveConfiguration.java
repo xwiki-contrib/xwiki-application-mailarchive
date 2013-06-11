@@ -503,6 +503,11 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         return this.types;
     }
 
+    public Map<String, LoadingSession> getLoadingSessions()
+    {
+        return this.loadingSessions;
+    }
+
     /**
      * @return The page from which configuration is retrieved.
      */

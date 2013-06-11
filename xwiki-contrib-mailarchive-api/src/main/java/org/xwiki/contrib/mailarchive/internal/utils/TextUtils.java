@@ -1,31 +1,49 @@
 package org.xwiki.contrib.mailarchive.internal.utils;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.util.zip.GZIPInputStream;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
+import org.xwiki.component.annotation.Component;
+import org.xwiki.rendering.parser.StreamParser;
+import org.xwiki.rendering.renderer.PrintRendererFactory;
+import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
+import org.xwiki.rendering.renderer.printer.WikiPrinter;
 
 /**
  * @author jbousque
  */
-public class TextUtils
+@Component
+@Singleton
+public class TextUtils implements ITextUtils
 {
 
     /**
-     * Assumed maximum length for Large string properties
+     * The component used to parse XHTML obtained after cleaning, when transformations are not executed.
      */
-    public static final int LONG_STRINGS_MAX_LENGTH = 60000;
+    @Inject
+    @Named("xhtml/1.0")
+    private StreamParser htmlStreamParser;
 
-    /**
-     * Assumed maximum length for string properties
-     */
-    public static final int SHORT_STRINGS_MAX_LENGTH = 255;
+    @Inject
+    @Named("plain/1.0")
+    private PrintRendererFactory printRendererFactory;
 
     private static Logger logger;
 
-    private TextUtils()
+    public TextUtils()
     {
-
     }
 
     public Logger getLogger()
@@ -46,7 +64,8 @@ public class TextUtils
      * @param t
      * @return
      */
-    public static double getAveragedLevenshteinDistance(String s, String t)
+    @Override
+    public double getAveragedLevenshteinDistance(final String s, final String t)
     {
         return (double) (StringUtils.getLevenshteinDistance(s, t)) / ((double) Math.max(s.length(), t.length()));
     }
@@ -61,26 +80,27 @@ public class TextUtils
      * @param s2
      * @return
      */
-    public static boolean similarSubjects(String s1, String s2)
+    @Override
+    public boolean similarSubjects(final String s1, final String s2)
     {
         logger.debug("similarSubjects : comparing [" + s1 + "] and [" + s2 + "]");
-        s1 = s1.replaceAll("^([Rr][Ee]:|[Ff][Ww]:)(.*)$", "$2");
-        s2 = s2.replaceAll("^([Rr][Ee]:|[Ff][Ww]:)(.*)$", "$2");
+        String s1Replaced = s1.replaceAll("^([Rr][Ee]:|[Ff][Ww]:)(.*)$", "$2");
+        String s2Replaced = s2.replaceAll("^([Rr][Ee]:|[Ff][Ww]:)(.*)$", "$2");
         logger.debug("similarSubjects : comparing [" + s1 + "] and [" + s2 + "]");
-        if (s1 == s2) {
+        if (s1Replaced == s2Replaced) {
             logger.debug("similarSubjects : subjects are equal");
             return true;
         }
-        if (s1 != null && s1.equals(s2)) {
+        if (s1Replaced != null && s1Replaced.equals(s2Replaced)) {
             logger.debug("similarSubjects : subjects are the equal");
             return true;
         }
-        if (s1.length() == 0 || s2.length() == 0) {
+        if (s1Replaced.length() == 0 || s2Replaced.length() == 0) {
             logger.debug("similarSubjects : one subject is empty, we consider them different");
             return false;
         }
         try {
-            double d = TextUtils.getAveragedLevenshteinDistance(s1, s2);
+            double d = getAveragedLevenshteinDistance(s1Replaced, s2Replaced);
             logger.debug("similarSubjects : Levenshtein distance d=" + d);
             if (d <= 0.25) {
                 logger.debug("similarSubjects : subjects are considered similar because d <= 0.25");
@@ -89,7 +109,7 @@ public class TextUtils
         } catch (IllegalArgumentException iaE) {
             return false;
         }
-        if ((s1.startsWith(s2) || s2.startsWith(s1))) {
+        if ((s1Replaced.startsWith(s2Replaced) || s2Replaced.startsWith(s1Replaced))) {
             logger.debug("similarSubjects : subjects are considered similar because one start with the other");
             return true;
         }
@@ -98,7 +118,8 @@ public class TextUtils
 
     // Truncate a string "s" to obtain less than a certain number of bytes "maxBytes", starting with "maxChars"
     // characters.
-    public static String truncateStringForBytes(String s, int maxChars, int maxBytes)
+    @Override
+    public String truncateStringForBytes(final String s, final int maxChars, final int maxBytes)
     {
         if (StringUtils.isEmpty(s)) {
             return "";
@@ -132,7 +153,8 @@ public class TextUtils
 
     }
 
-    public static String truncateForString(String s)
+    @Override
+    public String truncateForString(final String s)
     {
         if (s.length() > SHORT_STRINGS_MAX_LENGTH) {
             return s.substring(0, SHORT_STRINGS_MAX_LENGTH - 1);
@@ -140,7 +162,8 @@ public class TextUtils
         return s;
     }
 
-    public static String truncateForLargeString(String s)
+    @Override
+    public String truncateForLargeString(final String s)
     {
         if (s.length() > LONG_STRINGS_MAX_LENGTH) {
             return s.substring(0, LONG_STRINGS_MAX_LENGTH - 1);
@@ -149,7 +172,8 @@ public class TextUtils
     }
 
     // FIXME: find equivalent methods in xwiki utilities libraries
-    public static byte charToByte(char c)
+    @Override
+    public byte charToByte(final char c)
     {
         return (byte) "0123456789ABCDEF".indexOf("" + c);
     }
@@ -162,7 +186,8 @@ public class TextUtils
      * @param hexStr
      * @return
      */
-    public static byte[] hex2byte(String hexStr)
+    @Override
+    public byte[] hex2byte(final String hexStr)
     {
         if (hexStr == null || hexStr.isEmpty() || (hexStr.length() % 2 > 1)) {
             return null;
@@ -185,7 +210,8 @@ public class TextUtils
      * @param b
      * @return
      */
-    public static String byte2hex(byte[] b)
+    @Override
+    public String byte2hex(final byte[] b)
     {
         StringBuffer hexStr = new StringBuffer("");
         String stmp = "";
@@ -198,5 +224,47 @@ public class TextUtils
             }
         }
         return hexStr.toString().toUpperCase();
+    }
+
+    @Override
+    public String htmlToPlainText(final String htmlcontent)
+    {
+        String converted = null;
+        try {
+
+            WikiPrinter printer = new DefaultWikiPrinter();
+            htmlStreamParser.parse(new StringReader(htmlcontent), printRendererFactory.createRenderer(printer));
+
+            converted = printer.toString();
+
+        } catch (Throwable t) {
+            logger.warn("Conversion from HTML to plain text thrown exception", t);
+            converted = null;
+        }
+
+        return converted;
+    }
+
+    @Override
+    public String unzipString(final String zippedString) throws IOException, UnsupportedEncodingException
+    {
+        String html;
+        InputStream is = new ByteArrayInputStream(hex2byte(zippedString));
+        GZIPInputStream zis = new GZIPInputStream(is);
+        html = "";
+        if (zis != null) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(zis, "UTF-8"));
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line).append("\n");
+                }
+            } finally {
+                zis.close();
+            }
+            html = sb.toString();
+        }
+        return html;
     }
 }

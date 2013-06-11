@@ -1,0 +1,460 @@
+From - Sun Jun 02 12:48:37 2013
+X-Mozilla-Status: 0001
+X-Mozilla-Status2: 00000000
+Delivered-To: jeremie.bousquet@gmail.com
+Received: by 10.50.178.65 with SMTP id cw1csp82003igc;
+        Sun, 4 Mar 2012 05:06:42 -0800 (PST)
+Received: by 10.14.184.3 with SMTP id r3mr7056654eem.109.1330866393511;
+        Sun, 04 Mar 2012 05:06:33 -0800 (PST)
+Return-Path: <users-bounces@xwiki.org>
+Received: from borabora.xwiki.com (borabora.xwiki.com. [87.98.166.189])
+        by mx.google.com with ESMTP id w47si10298956een.138.2012.03.04.05.06.19;
+        Sun, 04 Mar 2012 05:06:33 -0800 (PST)
+Received-SPF: neutral (google.com: 87.98.166.189 is neither permitted nor denied by best guess record for domain of users-bounces@xwiki.org) client-ip=87.98.166.189;
+Authentication-Results: mx.google.com; spf=neutral (google.com: 87.98.166.189 is neither permitted nor denied by best guess record for domain of users-bounces@xwiki.org) smtp.mail=users-bounces@xwiki.org; dkim=pass header.i=@xwiki.org
+Received: from localhost (localhost [127.0.0.1])
+	by borabora.xwiki.com (Postfix) with ESMTP id 192696A64A2B;
+	Sun,  4 Mar 2012 13:02:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=xwiki.org; s=mail;
+	t=1330866133; bh=3p7iukaPvgvZQs8ZaFJtcX3Qdv8/y5lBgSUqki5hvWw=;
+	h=Message-ID:Date:From:MIME-Version:To:References:In-Reply-To:
+	 Subject:Reply-To:List-Id:List-Unsubscribe:List-Archive:List-Post:
+	 List-Help:List-Subscribe:Content-Type:Content-Transfer-Encoding:
+	 Sender;
+	b=TQ9fX4wx2CusVfkkxMNnLHoMthWiK6EYaYMASjEwHb/4K1QgEGETclirYICx6Q9mT
+	 jtEQYVYz+5T+yCYajDSCksFMBGPMF27R3Ee0/EqMmI/HZvIIl2JZYMK0So0IQn9sj4
+	 NbCmz4mkhS4AV+6Gv4mXHHgXCruK7yU4VbuOBcyY=
+X-Virus-Scanned: Debian amavisd-new at xpertnet.org
+Received: from borabora.xwiki.com ([127.0.0.1])
+	by localhost (borabora.xpertnet.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id tx4ARV1Jvwju; Sun,  4 Mar 2012 13:02:12 +0000 (UTC)
+Received: from borabora.xwiki.com (localhost [127.0.0.1])
+	by borabora.xwiki.com (Postfix) with ESMTP id 0354F6A64A2D;
+	Sun,  4 Mar 2012 13:02:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=xwiki.org; s=mail;
+	t=1330866130; bh=3p7iukaPvgvZQs8ZaFJtcX3Qdv8/y5lBgSUqki5hvWw=;
+	h=Message-ID:Date:From:MIME-Version:To:References:In-Reply-To:
+	 Subject:Reply-To:List-Id:List-Unsubscribe:List-Archive:List-Post:
+	 List-Help:List-Subscribe:Content-Type:Content-Transfer-Encoding:
+	 Sender;
+	b=jISh6ciOtOGXEmqZ/aUYp0nkUIlOUyD54oxIQaxHb3PDV/XsADrhKfQlkVy0/4PnF
+	 YL5dgSHhz1omxwdi2nnM4Y4hIsGs/38k1y7aErFTKe8rQ8jE4+osE6bDBTf633D6s2
+	 6CPcthHQGRb3J7epYJ3BgNdNVk5EHEpLk59t/dL4=
+X-Original-To: users@xwiki.org
+Delivered-To: users@localhost
+Received: from localhost (localhost [127.0.0.1])
+	by borabora.xwiki.com (Postfix) with ESMTP id ECE076A64A2B
+	for <users@xwiki.org>; Sun,  4 Mar 2012 13:02:04 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at xpertnet.org
+Received: from borabora.xwiki.com ([127.0.0.1])
+	by localhost (borabora.xpertnet.org [127.0.0.1]) (amavisd-new,
+	port 10024) with ESMTP id ZjPJDK9ktnMt for <users@xwiki.org>;
+	Sun,  4 Mar 2012 13:01:56 +0000 (UTC)
+Received: from mailout3.hostsharing.net (mailout3.hostsharing.net
+	[176.9.242.54])
+	by borabora.xwiki.com (Postfix) with ESMTPS id 62FCD6A6447B
+	for <users@xwiki.org>; Sun,  4 Mar 2012 13:01:55 +0000 (UTC)
+Received: from h06.hostsharing.net (h06.hostsharing.net [83.223.95.25])
+	(using TLSv1 with cipher ADH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mailout3.hostsharing.net (Postfix) with ESMTPS id 0A1FA72515
+	for <users@xwiki.org>; Sun,  4 Mar 2012 14:05:57 +0100 (CET)
+Received: from kenny.bismarck.richard-rafalski.de (unknown [194.231.230.250])
+	(using TLSv1 with cipher ADH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by h06.hostsharing.net (Postfix) with ESMTPSA id 8D45F195013F8
+	for <users@xwiki.org>; Sun,  4 Mar 2012 14:05:58 +0100 (CET)
+Received: from localhost (kenny.bismarck.richard-rafalski.de [127.0.0.1])
+	by kenny.bismarck.richard-rafalski.de (Postfix) with ESMTP id
+	BF7A61211B
+	for <users@xwiki.org>; Sun,  4 Mar 2012 14:05:57 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at richard-rafalski.de
+Received: from kenny.bismarck.richard-rafalski.de ([127.0.0.1])
+	by localhost (kenny.bismarck.richard-rafalski.de [127.0.0.1])
+	(amavisd-new, port 10024)
+	with ESMTP id 3quA8WGqKreF for <users@xwiki.org>;
+	Sun,  4 Mar 2012 14:05:53 +0100 (CET)
+Received: from [192.168.2.2] (sparky.bismarck.richard-rafalski.de
+	[192.168.2.2]) (using TLSv1 with cipher AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by kenny.bismarck.richard-rafalski.de (Postfix) with ESMTPSA id
+	35A7E1210E
+	for <users@xwiki.org>; Sun,  4 Mar 2012 14:05:53 +0100 (CET)
+Message-ID: <4F536932.4020406@richard-rafalski.de>
+Date: Sun, 04 Mar 2012 14:08:02 +0100
+From: Richard Rafalski <mail@richard-rafalski.de>
+User-Agent: Mozilla/5.0 (X11; U; Linux i686; en-US;
+	rv:1.9.2.24) Gecko/20111114 Iceowl/1.0b2 Icedove/3.1.16
+MIME-Version: 1.0
+To: users@xwiki.org
+References: <4F4D2037.6020105@richard-rafalski.de>	<CAPnKnLHD++Lae0sjdPfZZ1sWZN8SGa2J+vQTO8HJL3Rd=tCR-w@mail.gmail.com>	<4F4DE0BC.8030706@richard-rafalski.de>	<CAPnKnLEZAfkxBGa=rSrPDHciHAzRNFyjr-s4oJw9gXtX_=09aA@mail.gmail.com>	<CAPnKnLHf3G9qo-SkLyM0cfy+U6ocGpYSzDpAAHurvABU1a+2JQ@mail.gmail.com>	<4F50F673.6080300@richard-rafalski.de>	<CAPnKnLGFZD4_cHLLShUmGrbTHbs8dhfz0GJafGO4D8=+NeC8vQ@mail.gmail.com>	<CAPnKnLGTAPtxG2RPTwUmeOqeT-wzPU412RUq0fB9vjvm6X5A1A@mail.gmail.com>	<CAPnKnLFpwuPx1XSNkAE5CJatF1zdX6vCm8MeQU5xjg5hR80WfA@mail.gmail.com>	<4F515BC2.2080809@richard-rafalski.de>	<CAPnKnLGjLdcNfMAT2Mn9Apjka9LbSRKhd8n0yWvYyFFGvOphBQ@mail.gmail.com>
+	<CAPnKnLEVV08y8ns=h2fWGOrPKjF3tm+8z-EX0EBvF4NZ8aA5TA@mail.gmail.com>
+In-Reply-To: <CAPnKnLEVV08y8ns=h2fWGOrPKjF3tm+8z-EX0EBvF4NZ8aA5TA@mail.gmail.com>
+X-Enigmail-Version: 1.1.2
+Subject: Re: [xwiki-users] Can't find [/WEB-INF/hibernate.cfg.xml] for
+ hibernate configuration
+X-BeenThere: users@xwiki.org
+X-Mailman-Version: 2.1.13
+Precedence: list
+Reply-To: XWiki Users <users@xwiki.org>
+List-Id: XWiki Users <users.xwiki.org>
+List-Unsubscribe: <http://lists.xwiki.org/mailman/options/users>,
+	<mailto:users-request@xwiki.org?subject=unsubscribe>
+List-Archive: <http://lists.xwiki.org/pipermail/users>
+List-Post: <mailto:users@xwiki.org>
+List-Help: <mailto:users-request@xwiki.org?subject=help>
+List-Subscribe: <http://lists.xwiki.org/mailman/listinfo/users>,
+	<mailto:users-request@xwiki.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Sender: users-bounces@xwiki.org
+Errors-To: users-bounces@xwiki.org
+
+
+Am 03.03.2012 13:07, schrieb Thomas Mortagne:
+> On Sat, Mar 3, 2012 at 11:56 AM, Thomas Mortagne UPDATED!!!!!
+> <thomas.mortagne@xwiki.com> wrote:
+>> On Sat, Mar 3, 2012 at 12:46 AM, Richard Rafalski
+>> <mail@richard-rafalski.de> wrote:
+>>>
+>>>
+>>> Am 02.03.2012 19:47, schrieb Thomas Mortagne:
+>>>> On Fri, Mar 2, 2012 at 7:36 PM, Thomas Mortagne
+>>>> <thomas.mortagne@xwiki.com> wrote:
+>>>>> On Fri, Mar 2, 2012 at 7:34 PM, Thomas Mortagne
+>>>>> <thomas.mortagne@xwiki.com> wrote:
+>>>>>> On Fri, Mar 2, 2012 at 5:33 PM, Richard Rafalski
+>>>>>> <mail@richard-rafalski.de> wrote:
+>>>>>>> Hi Thomas,
+>>>>>>>
+>>>>>>> thank you for the last modifications on the deb packages.
+>>>>>>>
+>>>>>>> I've installed the package xwiki-enterprise-tomcat7-pgsql. The
+>>>>>>> installation ran without probelms.
+>>>>>>> Great!
+>>>>>>>
+>>>>>>> But I'am sorry to inform you that after pointing the webbrowser to
+>>>>>>> http://xwikipg:8080/xwiki/ I got the well known
+>>>>>>> "Can't find [/WEB-INF/hibernate.cfg.xml] for hibernate configuration"
+>>>>>>> message.
+>>>>>>>
+>>>>>>> A quik look into /etc/xwiki showed
+>>>>>>> -rw-r----- 1 root root 8.1K Mar  2 16:08 hibernate.cfg.xml
+>>>>>>>
+>>>>>>> Changing group from root to tomcat7 and restarting the tomcat7 service
+>>>>>>> solved the problem.
+>>>>>>>
+>>>>>>> Maybe there is still a problem with setting group/rights on
+>>>>>>> hibernate.cfg.xml. I'am not shure.
+>>>>>>
+>>>>>> That's weird I was sure I changed the right for it to be 644, will
+>>>>>> checking this, maybe I modified it only in the mysql package. Should
+>>>>>> be quickly fixed.
+>>>>>
+>>>>> I did fixed it but forgot to backport it on 3.5 actually...
+>>>>
+>>>> Should be better now. Thanks for the report !
+>>> I think it is very dangerous to make hibernate.cfg.xml readable for
+>>> evryone. If you can not avoid it you should mention this fact in the
+>>> installation documentation.
+>>
+>> I can probably change the owner to tomcat and remove the readright for
+>> all in the xwiki-enterprise-tomcat*-pgsql and
+>> xwiki-enterprise-tomcat*-mysql (my problem was that the install script
+>> does not know the aplication server in xwiki-enterprise-pgsql-common
+>> and xwiki-enterprise-mysql-common).
+
+Yes I see.
+
+> 
+> Done, the right of the hibernate conf file is now 640 and the whole
+> /etc/xwiki folder has the proper tomcat5/tomcat6/tomcat7 user as
+> owner.
+> 
+
+While installing the new package xwiki-enterprise-tomcat7-pgsql I ran
+into this regression bug
+
+dpkg: error processing
+/var/cache/apt/archives/xwiki-enterprise-common_3.5_all.deb (--unpack):
+ name of conffile (starting `/etc/xwiki/web.xml') is too long (>1000
+characters)
+...
+dpkg: error processing
+/var/cache/apt/archives/xwiki-enterprise-tomcat-common_3.5_all.deb
+(--unpack):
+ name of conffile (starting `/etc/xwiki/xwiki-tomcat.xml') is too long
+(>1000 characters)
+
+> Does this sounds right to you ?
+
+>From a technical point of view this should work.
+
+But what are you thinking about the idea to introduce a user and group
+xwiki, set the needed rights for the user xwiki and group xwiki in the
+packages xwiki-enterprise-common and xwiki-enterprise-<data base>-common
+(so the install script does not to have to know the application server)
+and let the package xwiki-enterprise-<application server>-common add the
+user of the application server to the group xwiki (e.g. addgroup tomcat7
+xwiki).
+
+Adding and removing users to or form the group xwiki instead of
+fiddleling around with file permissions will make the live of the system
+administrator more convenient (e.g. if one want to try out a different
+application server).
+
+But i think more important is the fact that a group based right
+management will lead to more flexibility and so to fewer future preblems.
+
+Your opinion?
+
+> 
+>>
+>>>
+>>> Richard
+>>>
+>>>>
+>>>>>
+>>>>>>
+>>>>>>>
+>>>>>>> Richard
+>>>>>>>
+>>>>>>> Am 29.02.2012 18:02, schrieb Thomas Mortagne:
+>>>>>>>> On Wed, Feb 29, 2012 at 10:35 AM, Thomas Mortagne
+>>>>>>>> <thomas.mortagne@xwiki.com> wrote:
+>>>>>>>>> On Wed, Feb 29, 2012 at 9:24 AM, Richard Rafalski
+>>>>>>>>> <mail@richard-rafalski.de> wrote:
+>>>>>>>>>>
+>>>>>>>>>> Am 28.02.2012 20:10, schrieb Thomas Mortagne:
+>>>>>>>>>>> On Tue, Feb 28, 2012 at 7:43 PM, Richard Rafalski
+>>>>>>>>>>> <mail@richard-rafalski.de> wrote:
+>>>>>>>>>>>> Hi,
+>>>>>>>>>>>>
+>>>>>>>>>>>> i have installed xwiki form the deb package
+>>>>>>>>>>>> xwiki-enterprise-tomcat-pgsql version 3.5.  Then tried to contact the
+>>>>>>>>>>>> new wiki through the URL http://xwikipg:8080/xwiki (xwikipg is the
+>>>>>>>>>>>> hostname where xwiki is running). No page came up. I got this error:
+>>>>>>>>>>>>
+>>>>>>>>>>>> Can't find [/WEB-INF/hibernate.cfg.xml] for hibernate configuration
+>>>>>>>>>>>>
+>>>>>>>>>>>> What to do now?
+>>>>>>>>>>>
+>>>>>>>>>>> Looks like there is something wrong with the potgre packages actually,
+>>>>>>>>>>> xwiki-enterprise-tomcat-pgsql should not even exist for 3.5 (it's
+>>>>>>>>>>> supposed to contain the version of tomcat now). But that's not
+>>>>>>>>>>> related;
+>>>>>>>>>>
+>>>>>>>>>> Do you mean something like xwiki-enterprise-tomcat6-pgsql,
+>>>>>>>>>> xwiki-enterprise-tomcat7-pgsql ? That would be nice.
+>>>>>>>>>
+>>>>>>>>> Yes, see you can see how it's done for mysql but for postgre they are
+>>>>>>>>> all there but with the same xwiki-enterprise-tomcat-pgsql name... I
+>>>>>>>>> forgot to change it during the refactoring and I mostly test mysql.
+>>>>>>>>> Sorry about that.
+>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> Do you have the /usr/share/xwiki/templates/pgsql/hibernate.cfg.xml
+>>>>>>>>>>> template file ? I think there is an issue with the generation of the
+>>>>>>>>>>> /etc/xwiki/hibernate.cfg.xml file in some condition, I'm looking at
+>>>>>>>>>>> it.
+>>>>>>>>>>
+>>>>>>>>>> I tried a new install on a completely fresh debian system. The problem
+>>>>>>>>>> does not appear now. I think my old system was broken due to old failed
+>>>>>>>>>> installations. Or did you change something meanwhile?
+>>>>>>>>>
+>>>>>>>>> Nop I did not change anything but I actually suspect that the issue is
+>>>>>>>>> not fresh install but that the purge is wrong. That's what I plan to
+>>>>>>>>> look at, thanks for the confirmation.
+>>>>>>>>
+>>>>>>>> Should be OK now.
+>>>>>>>>
+>>>>>>>> The issue was indeed in the purge script. This mean that you might
+>>>>>>>> still have an issue with install, in that case you will need to do
+>>>>>>>> install/remove --purge/install to cleanup everything.
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> Richard
+>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>> Thanks for help
+>>>>>>>>>>>>
+>>>>>>>>>>>> Here is the full error text:
+>>>>>>>>>>>>
+>>>>>>>>>>>> HTTP Status 500 -
+>>>>>>>>>>>>
+>>>>>>>>>>>> type Exception report
+>>>>>>>>>>>>
+>>>>>>>>>>>> message
+>>>>>>>>>>>>
+>>>>>>>>>>>> description The server encountered an internal error () that prevented
+>>>>>>>>>>>> it from fulfilling this request.
+>>>>>>>>>>>>
+>>>>>>>>>>>> exception
+>>>>>>>>>>>>
+>>>>>>>>>>>> javax.servlet.ServletException: com.xpn.xwiki.XWikiException: Error
+>>>>>>>>>>>> number 3 in 0: Could not initialize main XWiki context
+>>>>>>>>>>>> Wrapped Exception: Error number 3202 in 3: Exception while reading
+>>>>>>>>>>>> document [name = [XWikiPreferences], type = [DOCUMENT], parent = [name =
+>>>>>>>>>>>> [XWiki], type = [SPACE], parent = [name = [xwiki], type = [WIKI], parent
+>>>>>>>>>>>> = [null]]]]
+>>>>>>>>>>>> Wrapped Exception: Can't find [/WEB-INF/hibernate.cfg.xml] for hibernate
+>>>>>>>>>>>> configuration
+>>>>>>>>>>>>        org.apache.struts.action.RequestProcessor.processException(RequestProcessor.java:535)
+>>>>>>>>>>>>        org.apache.struts.action.RequestProcessor.processActionPerform(RequestProcessor.java:433)
+>>>>>>>>>>>>        org.apache.struts.action.RequestProcessor.process(RequestProcessor.java:236)
+>>>>>>>>>>>>        org.apache.struts.action.ActionServlet.process(ActionServlet.java:1196)
+>>>>>>>>>>>>        org.apache.struts.action.ActionServlet.doGet(ActionServlet.java:414)
+>>>>>>>>>>>>        javax.servlet.http.HttpServlet.service(HttpServlet.java:617)
+>>>>>>>>>>>>        javax.servlet.http.HttpServlet.service(HttpServlet.java:717)
+>>>>>>>>>>>>        com.xpn.xwiki.web.ActionFilter.doFilter(ActionFilter.java:128)
+>>>>>>>>>>>>        org.xwiki.wysiwyg.server.filter.ConversionFilter.doFilter(ConversionFilter.java:144)
+>>>>>>>>>>>>        com.xpn.xwiki.plugin.webdav.XWikiDavFilter.doFilter(XWikiDavFilter.java:68)
+>>>>>>>>>>>>        org.xwiki.container.servlet.filters.internal.SavedRequestRestorerFilter.doFilter(SavedRequestRestorerFilter.java:217)
+>>>>>>>>>>>>        org.xwiki.container.servlet.filters.internal.SetCharacterEncodingFilter.doFilter(SetCharacterEncodingFilter.java:109)
+>>>>>>>>>>>> root cause
+>>>>>>>>>>>>
+>>>>>>>>>>>> com.xpn.xwiki.XWikiException: Error number 3 in 0: Could not initialize
+>>>>>>>>>>>> main XWiki context
+>>>>>>>>>>>> Wrapped Exception: Error number 3202 in 3: Exception while reading
+>>>>>>>>>>>> document [name = [XWikiPreferences], type = [DOCUMENT], parent = [name =
+>>>>>>>>>>>> [XWiki], type = [SPACE], parent = [name = [xwiki], type = [WIKI], parent
+>>>>>>>>>>>> = [null]]]]
+>>>>>>>>>>>> Wrapped Exception: Can't find [/WEB-INF/hibernate.cfg.xml] for hibernate
+>>>>>>>>>>>> configuration
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.getMainXWiki(XWiki.java:418)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.getXWiki(XWiki.java:487)
+>>>>>>>>>>>>        com.xpn.xwiki.web.XWikiAction.execute(XWikiAction.java:136)
+>>>>>>>>>>>>        com.xpn.xwiki.web.XWikiAction.execute(XWikiAction.java:116)
+>>>>>>>>>>>>        org.apache.struts.action.RequestProcessor.processActionPerform(RequestProcessor.java:431)
+>>>>>>>>>>>>        org.apache.struts.action.RequestProcessor.process(RequestProcessor.java:236)
+>>>>>>>>>>>>        org.apache.struts.action.ActionServlet.process(ActionServlet.java:1196)
+>>>>>>>>>>>>        org.apache.struts.action.ActionServlet.doGet(ActionServlet.java:414)
+>>>>>>>>>>>>        javax.servlet.http.HttpServlet.service(HttpServlet.java:617)
+>>>>>>>>>>>>        javax.servlet.http.HttpServlet.service(HttpServlet.java:717)
+>>>>>>>>>>>>        com.xpn.xwiki.web.ActionFilter.doFilter(ActionFilter.java:128)
+>>>>>>>>>>>>        org.xwiki.wysiwyg.server.filter.ConversionFilter.doFilter(ConversionFilter.java:144)
+>>>>>>>>>>>>        com.xpn.xwiki.plugin.webdav.XWikiDavFilter.doFilter(XWikiDavFilter.java:68)
+>>>>>>>>>>>>        org.xwiki.container.servlet.filters.internal.SavedRequestRestorerFilter.doFilter(SavedRequestRestorerFilter.java:217)
+>>>>>>>>>>>>        org.xwiki.container.servlet.filters.internal.SetCharacterEncodingFilter.doFilter(SetCharacterEncodingFilter.java:109)
+>>>>>>>>>>>> root cause
+>>>>>>>>>>>>
+>>>>>>>>>>>> com.xpn.xwiki.XWikiException: Error number 3202 in 3: Exception while
+>>>>>>>>>>>> reading document [name = [XWikiPreferences], type = [DOCUMENT], parent =
+>>>>>>>>>>>> [name = [XWiki], type = [SPACE], parent = [name = [xwiki], type =
+>>>>>>>>>>>> [WIKI], parent = [null]]]]
+>>>>>>>>>>>> Wrapped Exception: Can't find [/WEB-INF/hibernate.cfg.xml] for hibernate
+>>>>>>>>>>>> configuration
+>>>>>>>>>>>>        com.xpn.xwiki.store.XWikiHibernateStore.loadXWikiDoc(XWikiHibernateStore.java:856)
+>>>>>>>>>>>>        com.xpn.xwiki.store.XWikiCacheStore.loadXWikiDoc(XWikiCacheStore.java:283)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.getDocument(XWiki.java:1427)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.getDocument(XWiki.java:1470)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.getPrefsClass(XWiki.java:3104)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.initializeMandatoryClasses(XWiki.java:821)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.initXWiki(XWiki.java:796)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.<init>(XWiki.java:739)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.getMainXWiki(XWiki.java:401)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.getXWiki(XWiki.java:487)
+>>>>>>>>>>>>        com.xpn.xwiki.web.XWikiAction.execute(XWikiAction.java:136)
+>>>>>>>>>>>>        com.xpn.xwiki.web.XWikiAction.execute(XWikiAction.java:116)
+>>>>>>>>>>>>        org.apache.struts.action.RequestProcessor.processActionPerform(RequestProcessor.java:431)
+>>>>>>>>>>>>        org.apache.struts.action.RequestProcessor.process(RequestProcessor.java:236)
+>>>>>>>>>>>>        org.apache.struts.action.ActionServlet.process(ActionServlet.java:1196)
+>>>>>>>>>>>>        org.apache.struts.action.ActionServlet.doGet(ActionServlet.java:414)
+>>>>>>>>>>>>        javax.servlet.http.HttpServlet.service(HttpServlet.java:617)
+>>>>>>>>>>>>        javax.servlet.http.HttpServlet.service(HttpServlet.java:717)
+>>>>>>>>>>>>        com.xpn.xwiki.web.ActionFilter.doFilter(ActionFilter.java:128)
+>>>>>>>>>>>>        org.xwiki.wysiwyg.server.filter.ConversionFilter.doFilter(ConversionFilter.java:144)
+>>>>>>>>>>>>        com.xpn.xwiki.plugin.webdav.XWikiDavFilter.doFilter(XWikiDavFilter.java:68)
+>>>>>>>>>>>>        org.xwiki.container.servlet.filters.internal.SavedRequestRestorerFilter.doFilter(SavedRequestRestorerFilter.java:217)
+>>>>>>>>>>>>        org.xwiki.container.servlet.filters.internal.SetCharacterEncodingFilter.doFilter(SetCharacterEncodingFilter.java:109)
+>>>>>>>>>>>> root cause
+>>>>>>>>>>>>
+>>>>>>>>>>>> org.hibernate.HibernateException: Can't find
+>>>>>>>>>>>> [/WEB-INF/hibernate.cfg.xml] for hibernate configuration
+>>>>>>>>>>>>        com.xpn.xwiki.store.hibernate.DefaultHibernateSessionFactory$1.getConfigurationInputStream(DefaultHibernateSessionFactory.java:118)
+>>>>>>>>>>>>        org.hibernate.cfg.Configuration.configure(Configuration.java:2157)
+>>>>>>>>>>>>        com.xpn.xwiki.store.hibernate.DefaultHibernateSessionFactory$1.configure(DefaultHibernateSessionFactory.java:80)
+>>>>>>>>>>>>        com.xpn.xwiki.store.XWikiHibernateBaseStore.initHibernate(XWikiHibernateBaseStore.java:167)
+>>>>>>>>>>>>        com.xpn.xwiki.store.XWikiHibernateBaseStore.checkHibernate(XWikiHibernateBaseStore.java:550)
+>>>>>>>>>>>>        com.xpn.xwiki.store.XWikiHibernateStore.loadXWikiDoc(XWikiHibernateStore.java:728)
+>>>>>>>>>>>>        com.xpn.xwiki.store.XWikiCacheStore.loadXWikiDoc(XWikiCacheStore.java:283)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.getDocument(XWiki.java:1427)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.getDocument(XWiki.java:1470)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.getPrefsClass(XWiki.java:3104)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.initializeMandatoryClasses(XWiki.java:821)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.initXWiki(XWiki.java:796)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.<init>(XWiki.java:739)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.getMainXWiki(XWiki.java:401)
+>>>>>>>>>>>>        com.xpn.xwiki.XWiki.getXWiki(XWiki.java:487)
+>>>>>>>>>>>>        com.xpn.xwiki.web.XWikiAction.execute(XWikiAction.java:136)
+>>>>>>>>>>>>        com.xpn.xwiki.web.XWikiAction.execute(XWikiAction.java:116)
+>>>>>>>>>>>>        org.apache.struts.action.RequestProcessor.processActionPerform(RequestProcessor.java:431)
+>>>>>>>>>>>>        org.apache.struts.action.RequestProcessor.process(RequestProcessor.java:236)
+>>>>>>>>>>>>        org.apache.struts.action.ActionServlet.process(ActionServlet.java:1196)
+>>>>>>>>>>>>        org.apache.struts.action.ActionServlet.doGet(ActionServlet.java:414)
+>>>>>>>>>>>>        javax.servlet.http.HttpServlet.service(HttpServlet.java:617)
+>>>>>>>>>>>>        javax.servlet.http.HttpServlet.service(HttpServlet.java:717)
+>>>>>>>>>>>>        com.xpn.xwiki.web.ActionFilter.doFilter(ActionFilter.java:128)
+>>>>>>>>>>>>        org.xwiki.wysiwyg.server.filter.ConversionFilter.doFilter(ConversionFilter.java:144)
+>>>>>>>>>>>>        com.xpn.xwiki.plugin.webdav.XWikiDavFilter.doFilter(XWikiDavFilter.java:68)
+>>>>>>>>>>>>        org.xwiki.container.servlet.filters.internal.SavedRequestRestorerFilter.doFilter(SavedRequestRestorerFilter.java:217)
+>>>>>>>>>>>>        org.xwiki.container.servlet.filters.internal.SetCharacterEncodingFilter.doFilter(SetCharacterEncodingFilter.java:109)
+>>>>>>>>>>>> note The full stack trace of the root cause is available in the Apache
+>>>>>>>>>>>> Tomcat/6.0.35 logs.
+>>>>>>>>>>>>
+>>>>>>>>>>>> Apache Tomcat/6.0.35
+>>>>>>>>>>>> _______________________________________________
+>>>>>>>>>>>> users mailing list
+>>>>>>>>>>>> users@xwiki.org
+>>>>>>>>>>>> http://lists.xwiki.org/mailman/listinfo/users
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>> _______________________________________________
+>>>>>>>>>> users mailing list
+>>>>>>>>>> users@xwiki.org
+>>>>>>>>>> http://lists.xwiki.org/mailman/listinfo/users
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> --
+>>>>>>>>> Thomas Mortagne
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>> _______________________________________________
+>>>>>>> users mailing list
+>>>>>>> users@xwiki.org
+>>>>>>> http://lists.xwiki.org/mailman/listinfo/users
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> --
+>>>>>> Thomas Mortagne
+>>>>>
+>>>>>
+>>>>>
+>>>>> --
+>>>>> Thomas Mortagne
+>>>>
+>>>>
+>>>>
+>>> _______________________________________________
+>>> users mailing list
+>>> users@xwiki.org
+>>> http://lists.xwiki.org/mailman/listinfo/users
+>>
+>>
+>>
+>> --
+>> Thomas Mortagne
+> 
+> 
+> 
+_______________________________________________
+users mailing list
+users@xwiki.org
+http://lists.xwiki.org/mailman/listinfo/users

@@ -768,15 +768,6 @@
   #set($discard = $mailcalendarobj.set('builtin', '1'))
   #set($ok = $mailcalendardoc.save())
 #end
-#if(!$xwiki.exists("${spaceprefs}.Type_AttachedMail"))
-  #set($mailattdoc = $xwiki.getDocument("${spaceprefs}.Type_AttachedMail"))
-  #set($mailattobj = $mailattdoc.newObject("${spacecode}.TypesSettingsClass"))
-  #set($discard = $mailattobj.set('id', 'attachedMail'))
-  #set($discard = $mailattobj.set('name', 'Attached Mail'))
-  #set($discard = $mailattobj.set('icon', 'email_link'))
-  #set($discard = $mailattobj.set('builtin', '1'))
-  #set($ok = $mailattdoc.save())
-#end
 #if($!request.save)
   #set($prefsdoc = $xwiki.getDocument("${spaceprefs}.GlobalParameters"))
   #set($prefsobj=$prefsdoc.updateObjectFromRequest("${spacecode}.AdminClass"))

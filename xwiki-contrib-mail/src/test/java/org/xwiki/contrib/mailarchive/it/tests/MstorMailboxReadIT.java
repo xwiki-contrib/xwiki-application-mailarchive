@@ -84,7 +84,7 @@ public class MstorMailboxReadIT
         Store store = session.getStore(new URLName(url));
         store.connect();
         System.out.println("Connected to store");
-        MStorFolder mailFolder = (MStorFolder) store.getDefaultFolder().getFolder("WIKI");
+        MStorFolder mailFolder = (MStorFolder) store.getDefaultFolder().getFolder("WIKI_1.mbox");
 
         mailFolder.open(Folder.READ_ONLY);
 
@@ -95,27 +95,33 @@ public class MstorMailboxReadIT
         int messageCount = mailFolder.getMessageCount();
         System.out.println("Number of messages found: " + messageCount);
         Message[] messages = mailFolder.getMessages();
-        System.out.println("Showing one message...");
+        System.out.println("Showing messages...");
+        int i = 1;
         if (messages != null && messages.length >= 1) {
-            System.out.println("Loaded number of messages: " + messages.length);
+            System.out.println("Number of messages fetched: " + messages.length);
             for (Message message : messages) {
                 if (message == null) {
-                    System.out.println("Invalid message found");
+                    System.out.println(i + ": NULL MESSAGE");
                 } else {
-                    System.out.println("Message: " + message.toString());
-                    if (message.getFrom() == null) {
-                        System.out.println("Invalid FROM header");
-                    } else {
-                        System.out.println("From " + message.getFrom()[0]);
-                    }
-                    System.out.println("Subject " + message.getSubject());
-                    if (message.getHeader("Date") == null) {
-                        System.out.println("Invalid DATE header");
-                    } else {
-                        System.out.println("Date " + message.getHeader("Date")[0]);
-                    }
+                    System.out.println(i + ": From: " + (message.getFrom() != null ? message.getFrom()[0] : "<none>")
+                        + " subject: " + message.getSubject());
                 }
+                i++;
             }
+        }
+
+        System.out.println("SECOND LOOP (by index)");
+        i = 1;
+        while (i <= messageCount) {
+            Message message = mailFolder.getMessage(i);
+            if (message == null) {
+                System.out.println(i + ": NULL MESSAGE");
+            } else {
+                System.out.println(i + ": From: " + (message.getFrom() != null ? message.getFrom()[0] : "<none>")
+                    + " subject: " + message.getSubject());
+            }
+            i++;
+
         }
 
         /*

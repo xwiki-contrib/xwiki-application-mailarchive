@@ -98,6 +98,8 @@ public class MailItem
 
     private Message originalMessage;
 
+    private MailContent mailContent = null;
+
     public MailItem()
     {
     }
@@ -436,6 +438,22 @@ public class MailItem
     public void setOriginalMessage(final Message originalMessage)
     {
         this.originalMessage = originalMessage;
+    }
+
+    /**
+     * @return the mailContent
+     */
+    public MailContent getMailContent()
+    {
+        return mailContent;
+    }
+
+    /**
+     * @param mailContent the mailContent to set
+     */
+    public void setMailContent(MailContent mailContent)
+    {
+        this.mailContent = mailContent;
     }
 
     public HashMap<String, Object> asMap()

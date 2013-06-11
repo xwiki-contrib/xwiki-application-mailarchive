@@ -19,56 +19,46 @@
  */
 package org.xwiki.contrib.mailarchive.internal.utils;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
+import org.xwiki.component.annotation.Role;
+
 /**
  * @version $Id$
  */
-public class DecodedMailContent
+@Role
+public interface ITextUtils
 {
-    private boolean html;
-
-    private String text;
 
     /**
-     * @param html
-     * @param text
+     * Assumed maximum length for Large string properties
      */
-    public DecodedMailContent(final boolean isHtml, final String text)
-    {
-        super();
-        this.html = isHtml;
-        this.text = text;
-    }
+    public static final int LONG_STRINGS_MAX_LENGTH = 60000;
 
     /**
-     * @return the html
+     * Assumed maximum length for string properties
      */
-    public boolean isHtml()
-    {
-        return html;
-    }
+    public static final int SHORT_STRINGS_MAX_LENGTH = 255;
 
-    /**
-     * @param html the html to set
-     */
-    public void setHtml(final boolean html)
-    {
-        this.html = html;
-    }
+    public String htmlToPlainText(final String html);
 
-    /**
-     * @return the text
-     */
-    public String getText()
-    {
-        return text;
-    }
+    public String byte2hex(byte[] b);
 
-    /**
-     * @param text the text to set
-     */
-    public void setText(final String text)
-    {
-        this.text = text;
-    }
+    public byte[] hex2byte(String hexStr);
+
+    public byte charToByte(char c);
+
+    public String truncateForLargeString(String s);
+
+    public String truncateForString(String s);
+
+    public String truncateStringForBytes(String s, int maxChars, int maxBytes);
+
+    public boolean similarSubjects(String s1, String s2);
+
+    public double getAveragedLevenshteinDistance(String s, String t);
+
+    public String unzipString(String zippedString) throws IOException, UnsupportedEncodingException;
 
 }

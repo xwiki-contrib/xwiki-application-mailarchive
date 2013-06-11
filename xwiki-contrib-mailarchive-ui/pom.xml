@@ -162,17 +162,18 @@
     </dependency>
     <!-- we need the scheduler plugin & app -->
     <dependency>
-      <groupId>com.xpn.xwiki.platform.plugins</groupId>
-      <artifactId>xwiki-plugin-scheduler</artifactId>
-      <version>1.25</version>
-      <type>jar</type>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-scheduler-ui</artifactId>
+      <version>${platform.version}</version>
+      <type>xar</type>
       <scope>runtime</scope>
     </dependency>
+    <!-- we need the job module -->
     <dependency>
-      <groupId>org.xwiki.platform.applications</groupId>
-      <artifactId>xwiki-application-scheduler</artifactId>
-      <version>1.25</version>
-      <type>xar</type>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-job</artifactId>
+      <version>${platform.version}</version>
+      <type>jar</type>
       <scope>runtime</scope>
     </dependency>
 

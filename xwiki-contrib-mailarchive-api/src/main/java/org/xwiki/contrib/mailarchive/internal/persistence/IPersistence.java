@@ -19,8 +19,12 @@
  */
 package org.xwiki.contrib.mailarchive.internal.persistence;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.mail.MessagingException;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.contrib.mail.MailItem;
@@ -40,6 +44,13 @@ public interface IPersistence
     String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
         final String loadingUser, final boolean create) throws XWikiException;
 
+    String updateTopicPage(MailItem m, String existingTopicPage, SimpleDateFormat dateFormatter,
+        final String loadingUser, boolean create) throws XWikiException;
+
+    String createMailPage(MailItem m, String pageName, String existingTopicId, boolean isAttachedMail,
+        final List<String> taglist, List<String> attachedMailsPages, String parentMail, String loadingUser,
+        boolean create) throws XWikiException, MessagingException, IOException;
+
     void updateMailServerState(String serverPrefsDoc, int status) throws XWikiException;
 
     void updateMailStoreState(String storePrefsDoc, int status) throws XWikiException;
@@ -47,7 +58,8 @@ public interface IPersistence
     void saveAsUser(final XWikiDocument doc, final String user, final String contentUser, final String comment)
         throws XWikiException;
 
-    String updateTopicPage(MailItem m, String existingTopicPage, SimpleDateFormat dateFormatter,
-        final String loadingUser, boolean create) throws XWikiException;
+    public String getMessageUniquePageName(MailItem m, boolean isAttachedMail);
+
+    public boolean existsMessage(final String msgid);
 
 }

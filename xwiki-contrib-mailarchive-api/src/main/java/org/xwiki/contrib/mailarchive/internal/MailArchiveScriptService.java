@@ -86,21 +86,16 @@ public class MailArchiveScriptService implements ScriptService
 
     public int load(final LoadingSession session)
     {
-        LoadingJob job = null;
-        DefaultRequest request = new DefaultRequest();
-        request.setId("test");
-        request.setInteractive(false);
-        request.setProperty("sessionobj", session);
-        try {
-            job = (LoadingJob) jobManager.executeJob("mailarchivejob", request);
-        } catch (JobException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        LoadingJob job = createLoadingJob(session, true);
         return job != null ? job.getNbSuccess() : -1;
     }
 
     public Job startLoadingJob(final LoadingSession session)
+    {
+        return createLoadingJob(session, false);
+    }
+
+    private LoadingJob createLoadingJob(final LoadingSession session, boolean synchronous)
     {
         LoadingJob job = null;
         DefaultRequest request = new DefaultRequest();
@@ -108,7 +103,11 @@ public class MailArchiveScriptService implements ScriptService
         request.setInteractive(false);
         request.setProperty("sessionobj", session);
         try {
-            job = (LoadingJob) jobManager.addJob("mailarchivejob", request);
+            if (synchronous) {
+                job = (LoadingJob) jobManager.executeJob("mailarchivejob", request);
+            } else {
+                job = (LoadingJob) jobManager.addJob("mailarchivejob", request);
+            }
         } catch (JobException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

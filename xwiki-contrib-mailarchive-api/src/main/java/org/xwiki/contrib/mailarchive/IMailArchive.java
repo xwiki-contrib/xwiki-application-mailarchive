@@ -107,6 +107,13 @@ public interface IMailArchive
 
     public String computeTimeline() throws Exception;
 
+    /**
+     * The mail archive configuration.
+     * 
+     * @return
+     * @throws InitializationException
+     * @throws MailArchiveException
+     */
     public IMailArchiveConfiguration getConfiguration() throws InitializationException, MailArchiveException;
 
     /**
@@ -127,10 +134,34 @@ public interface IMailArchive
 
     public List<IMASource> getSourcesList(final LoadingSession session);
 
+    /**
+     * Locks or unlocks the archive, so no other loading job starts a concurrent session.
+     * 
+     * @param locked
+     */
     public void setLocked(final boolean locked);
 
+    /**
+     * Information about locked status of the archive.
+     * 
+     * @return
+     */
     public boolean isLocked();
 
+    /**
+     * Loads a mail in the archive. Creates a new Topic page if needed, or link new mail to an existing topic if
+     * possible. Creates a new Mail page only if the Message-Id has not already been loaded.
+     * 
+     * @param mail The javamail message Part.
+     * @param confirm If false, no page will be created in the wiki.
+     * @param isAttachedMail True if the mail is in fact an attachment of another mail.
+     * @param parentMail
+     * @return
+     * @throws XWikiException
+     * @throws ParseException
+     * @throws MessagingException
+     * @throws IOException
+     */
     public MailLoadingResult loadMail(Part mail, boolean confirm, boolean isAttachedMail, String parentMail)
         throws XWikiException, ParseException, MessagingException, IOException;
 

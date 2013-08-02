@@ -23,6 +23,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.phase.Initializable;
+import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mail.IMailComponent;
 import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailArchiveLoader;
@@ -37,7 +39,7 @@ import org.xwiki.rendering.parser.StreamParser;
  */
 @Component
 @Named("mailarchivejob")
-public class LoadingJob extends AbstractJob<DefaultRequest>
+public class LoadingJob extends AbstractJob<DefaultRequest> implements Initializable
 {
 
     @Inject
@@ -45,9 +47,28 @@ public class LoadingJob extends AbstractJob<DefaultRequest>
 
     /** Aggregated component logger */
     @Inject
-    IAggregatedLoggerManager aggregatedLoggerManager;
+    private IAggregatedLoggerManager aggregatedLoggerManager;
 
-    int nbSuccess = 0;
+    private int nbSuccess = 0;
+
+    private int nbFailure = 0;
+
+    private String currentSource = null;
+
+    private String currentMail = null;
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.component.phase.Initializable#initialize()
+     */
+    @Override
+    public void initialize() throws InitializationException
+    {
+        aggregatedLoggerManager.addComponentLogger(IMailArchive.class);
+        aggregatedLoggerManager.addComponentLogger(IMailComponent.class);
+        aggregatedLoggerManager.addComponentLogger(StreamParser.class);
+    }
 
     /**
      * {@inheritDoc}
@@ -70,11 +91,16 @@ public class LoadingJob extends AbstractJob<DefaultRequest>
     {
         LoadingSession session = (LoadingSession) getRequest().getProperty("sessionobj");
 
-        aggregatedLoggerManager.addComponentLogger(IMailArchive.class);
-        aggregatedLoggerManager.addComponentLogger(IMailComponent.class);
-        aggregatedLoggerManager.addComponentLogger(StreamParser.class);
+        if (session.isDebugMode()) {
+            enterDebugMode();
+        }
 
-        loader.loadMails(session, this);
+        int success = loader.loadMails(session, this);
+        setNbSuccess(success);
+
+        if (session.isDebugMode()) {
+            quitDebugMode();
+        }
 
     }
 
@@ -84,6 +110,58 @@ public class LoadingJob extends AbstractJob<DefaultRequest>
     public int getNbSuccess()
     {
         return nbSuccess;
+    }
+
+    protected void setNbSuccess(final int nbSuccess)
+    {
+        this.nbSuccess = nbSuccess;
+    }
+
+    public void incNbSuccess()
+    {
+        this.nbSuccess++;
+    }
+
+    public int getNbFailure()
+    {
+        return nbFailure;
+    }
+
+    public void incNbFailure()
+    {
+        this.nbFailure++;
+    }
+
+    /**
+     * @return the currentSource
+     */
+    public String getCurrentSource()
+    {
+        return currentSource;
+    }
+
+    /**
+     * @param currentSource the currentSource to set
+     */
+    public void setCurrentSource(final String currentSource)
+    {
+        this.currentSource = currentSource;
+    }
+
+    /**
+     * @return the currentMail
+     */
+    public String getCurrentMail()
+    {
+        return currentMail;
+    }
+
+    /**
+     * @param currentMail the currentMail to set
+     */
+    public void setCurrentMail(final String currentMail)
+    {
+        this.currentMail = currentMail;
     }
 
     public void enterDebugMode()
@@ -109,7 +187,6 @@ public class LoadingJob extends AbstractJob<DefaultRequest>
     @Override
     public void notifyPopLevelProgress()
     {
-        // TODO Auto-generated method stub
         super.notifyPopLevelProgress();
     }
 
@@ -119,9 +196,8 @@ public class LoadingJob extends AbstractJob<DefaultRequest>
      * @see org.xwiki.job.AbstractJob#notifyPushLevelProgress(int)
      */
     @Override
-    public void notifyPushLevelProgress(int steps)
+    public void notifyPushLevelProgress(final int steps)
     {
-        // TODO Auto-generated method stub
         super.notifyPushLevelProgress(steps);
     }
 
@@ -133,7 +209,6 @@ public class LoadingJob extends AbstractJob<DefaultRequest>
     @Override
     public void notifyStepPropress()
     {
-        // TODO Auto-generated method stub
         super.notifyStepPropress();
     }
 

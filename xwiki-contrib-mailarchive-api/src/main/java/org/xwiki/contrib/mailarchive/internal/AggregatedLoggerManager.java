@@ -162,15 +162,15 @@ public class AggregatedLoggerManager implements IAggregatedLoggerManager
     public void addComponentLogger(Type roleType)
     {
         privateLogger.warn("addComponentLogger(Type=" + roleType + ')');
-        boolean isRole = roleType.getClass().getAnnotation(org.xwiki.component.annotation.Role.class) != null;
-        privateLogger.warn("addComponentLogger: isRole() " + isRole);
-        if (isRole) {
-            final String clazzName = roleType.getClass().getName();
-            privateLogger.warn("clazzName=" + clazzName);
-            final String packageName = clazzName.substring(0, clazzName.lastIndexOf('.'));
-            privateLogger.warn("adding managed logger for package " + packageName);
-            addLogger(packageName);
+        final String clazzName = roleType.getClass().getName();
+        privateLogger.warn("clazzName=" + clazzName);
+        String packageName = clazzName.substring(0, clazzName.lastIndexOf('.'));
+        if (packageName.endsWith("internal")) {
+            packageName = packageName.substring(0, packageName.length() - 9);
         }
+        privateLogger.warn("adding managed logger for package " + packageName);
+        addLogger(packageName);
+
     }
 
     /**

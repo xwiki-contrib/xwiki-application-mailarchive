@@ -41,21 +41,21 @@ import com.xpn.xwiki.doc.XWikiDocument;
 public interface IPersistence
 {
 
-    String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
+    public String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
         final String loadingUser, final boolean create) throws XWikiException;
 
-    String updateTopicPage(MailItem m, String existingTopicPage, SimpleDateFormat dateFormatter,
+    public String updateTopicPage(MailItem m, String existingTopicPage, SimpleDateFormat dateFormatter,
         final String loadingUser, boolean create) throws XWikiException;
 
-    String createMailPage(MailItem m, String pageName, String existingTopicId, boolean isAttachedMail,
+    public String createMailPage(MailItem m, String pageName, String existingTopicId, boolean isAttachedMail,
         final List<String> taglist, List<String> attachedMailsPages, String parentMail, String loadingUser,
         boolean create) throws XWikiException, MessagingException, IOException;
 
-    void updateMailServerState(String serverPrefsDoc, int status) throws XWikiException;
+    public void updateMailServerState(String serverPrefsDoc, int status) throws XWikiException;
 
-    void updateMailStoreState(String storePrefsDoc, int status) throws XWikiException;
+    public void updateMailStoreState(String storePrefsDoc, int status) throws XWikiException;
 
-    void saveAsUser(final XWikiDocument doc, final String user, final String contentUser, final String comment)
+    public void saveAsUser(final XWikiDocument doc, final String user, final String contentUser, final String comment)
         throws XWikiException;
 
     public String getMessageUniquePageName(MailItem m, boolean isAttachedMail);

@@ -745,6 +745,7 @@
 #set($spaceitems='MailArchiveItems')
 #set($spacehome='MailArchive')
 #set($spaceprefs='MailArchivePrefs')
+##TODO check edit rights on updated/created pages/objects
 #if (!$xwiki.exists("${spaceprefs}.GlobalParameters"))
   #set($prefsdoc = $xwiki.getDocument("${spaceprefs}.GlobalParameters"))
   #set($prefsobj = $prefsdoc.newObject("${spacecode}.AdminClass"))

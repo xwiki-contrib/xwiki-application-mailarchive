@@ -17,13 +17,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal.timeline;
+package org.xwiki.contrib.mailarchive.internal.timeline.chaplinks;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,6 +39,9 @@ import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
+import org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineGenerator;
+import org.xwiki.contrib.mailarchive.internal.timeline.TimeLineEvent;
+import org.xwiki.contrib.mailarchive.internal.timeline.TopicEventBubble;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -150,12 +152,6 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
                         // Add 10 min just to see the tape
                         end.setTime(end.getTime() + 600000);
                     }
-                    // FIXME: compute html at the end ... ?
-                    TimeLineBubbleWriter writer = new TimeLineBubbleWriter(new DefaultWikiPrinter());
-                    for (Entry<Long, TopicEventBubble> bubbleInfo : getTopicMails(topicId, subject).entrySet()) {
-                        writer.printXML(bubbleInfo.getValue());
-                    }
-                    String extract = writer.toString();
 
                     String tags = "";
 
@@ -198,7 +194,7 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
                         topicEvent.url = doc.getURL("view", context);
                         topicEvent.action = action;
                         topicEvent.author = author;
-                        topicEvent.extract = extract;
+                        topicEvent.messages = getTopicMails(topicId, subject);
                         sortedEvents.put(date.getTime(), topicEvent);
 
                     } else {
@@ -229,7 +225,6 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
                         event.tags = tags;
                         event.action = action;
                         event.author = author;
-                        event.extract = extract;
                         sortedEvents.put(date.getTime(), event);
 
                     }
@@ -262,11 +257,12 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
     private String printEvents(TreeMap<Long, TimeLineEvent> sortedEvents)
     {
 
-        TimeLineWriter writer = new TimeLineWriter(new DefaultWikiPrinter());
-        writer.printXML(sortedEvents);
+        DefaultWikiPrinter printer = new DefaultWikiPrinter();
+        ChapLinksTimeLineWriter writer = new ChapLinksTimeLineWriter(printer);
+        writer.print(sortedEvents);
 
         logger.debug("Loaded " + sortedEvents.size() + " into Timeline feed");
-        return writer.toString();
+        return printer.toString();
 
         /*
          * curdoc.addAttachment("TimeLineFeed-MailArchiver.xml", content.toString().getBytes(), context);

@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
-import org.xwiki.contrib.mailarchive.ILoadingJob;
 import org.xwiki.contrib.mailarchive.IMailArchiveLoader;
 import org.xwiki.contrib.mailarchive.LoadingSession;
 import org.xwiki.job.AbstractJob;
@@ -37,7 +36,7 @@ import org.xwiki.job.DefaultRequest;
  */
 @Component
 @Named(LoadingJob.JOBTYPE)
-public class LoadingJob extends AbstractJob<DefaultRequest> implements ILoadingJob, Initializable
+public class LoadingJob extends AbstractJob<DefaultRequest> implements Initializable
 {
     public static final String JOBTYPE = "mailarchivejob";
 
@@ -49,6 +48,7 @@ public class LoadingJob extends AbstractJob<DefaultRequest> implements ILoadingJ
      * @Inject private IAggregatedLoggerManager aggregatedLoggerManager;
      */
 
+    @Inject
     private Logger logger;
 
     private int nbSuccess = 0;

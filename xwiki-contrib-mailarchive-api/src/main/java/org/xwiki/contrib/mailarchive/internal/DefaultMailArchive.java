@@ -79,7 +79,6 @@ import org.xwiki.contrib.mailarchive.internal.utils.IMailUtils;
 import org.xwiki.contrib.mailarchive.internal.utils.ITextUtils;
 import org.xwiki.contrib.mailarchive.internal.utils.TextUtils;
 import org.xwiki.environment.Environment;
-import org.xwiki.job.Job;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -214,8 +213,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             // Create dump folder
             new File(this.environment.getPermanentDirectory(), "mailarchive/dump").mkdirs();
             // Register custom job
-            this.componentManager.registerComponent(this.componentManager.getComponentDescriptor(Job.class,
-                "mailarchivejob"));
+            // this.componentManager.registerComponent(this.componentManager.getComponentDescriptor(Job.class,
+            // "mailarchivejob"));
 
         } catch (Throwable e) {
             logger.error("Could not initiliaze mailarchive ", e);

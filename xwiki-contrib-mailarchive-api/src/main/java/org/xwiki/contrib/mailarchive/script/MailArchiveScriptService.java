@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal;
+package org.xwiki.contrib.mailarchive.script;
 
 import java.util.ArrayList;
 
@@ -25,12 +25,18 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.context.Execution;
+import org.xwiki.context.ExecutionContextManager;
 import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.LoadingSession;
+import org.xwiki.contrib.mailarchive.internal.LoadingJob;
 import org.xwiki.contrib.mailarchive.internal.data.IFactory;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadMessageBean;
@@ -61,6 +67,18 @@ public class MailArchiveScriptService implements ScriptService
 
     @Inject
     private JobManager jobManager;
+
+    @Inject
+    private ComponentManager componentManager;
+
+    @Inject
+    private Logger logger;
+
+    @Inject
+    private ExecutionContextManager executionContextManager;
+
+    @Inject
+    private Execution execution;
 
     /**
      * Creates a loading session based on default session configuration, stored in document
@@ -102,6 +120,14 @@ public class MailArchiveScriptService implements ScriptService
 
     private LoadingJob createLoadingJob(final LoadingSession session, boolean synchronous)
     {
+        try {
+            Job job = this.componentManager.getInstance(Job.class, "mailarchivejob");
+            logger.debug("FOUND JOB " + (job != null ? job.getClass() : " NOT FOUND"));
+            System.out.println("FOUND JOB " + (job != null ? job.getClass() : " NOT FOUND"));
+        } catch (ComponentLookupException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
         LoadingJob job = null;
         DefaultRequest request = new DefaultRequest();
         request.setId("test");
@@ -114,8 +140,8 @@ public class MailArchiveScriptService implements ScriptService
                 job = (LoadingJob) jobManager.addJob("mailarchivejob", request);
             }
         } catch (JobException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Could not start new Job for loading", e);
+            job = null;
         }
         return job;
     }

@@ -17,16 +17,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive;
+package org.xwiki.contrib.mailarchive.internal.timeline;
 
-import org.xwiki.component.annotation.Role;
-import org.xwiki.job.Job;
+import java.util.TreeMap;
 
 /**
  * @version $Id$
  */
-@Role
-public interface ILoadingJob extends Job
+public interface ITimeLineWriter
 {
+
+    public abstract void print(TreeMap<Long, TimeLineEvent> sortedEvents);
+
+    public abstract void print(TimeLineEvent event);
+
+    public abstract void print(TopicEventBubble bubbleInfo);
 
 }

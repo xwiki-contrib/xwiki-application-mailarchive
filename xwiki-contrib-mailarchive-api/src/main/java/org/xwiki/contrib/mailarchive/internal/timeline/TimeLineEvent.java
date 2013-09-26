@@ -19,7 +19,7 @@
  */
 package org.xwiki.contrib.mailarchive.internal.timeline;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * Minimalistic POJO to store a Topic event to show in the timeline.
@@ -48,6 +48,6 @@ public class TimeLineEvent
 
     public String extract = null;
 
-    public List<TopicEventBubble> messages = null;
+    public Map<Long, TopicEventBubble> messages = null;
 
 }

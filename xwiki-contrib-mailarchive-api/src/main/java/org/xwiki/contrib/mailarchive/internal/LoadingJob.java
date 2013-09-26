@@ -22,32 +22,34 @@ package org.xwiki.contrib.mailarchive.internal;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
-import org.xwiki.contrib.mail.IMailComponent;
-import org.xwiki.contrib.mailarchive.IMailArchive;
+import org.xwiki.contrib.mailarchive.ILoadingJob;
 import org.xwiki.contrib.mailarchive.IMailArchiveLoader;
 import org.xwiki.contrib.mailarchive.LoadingSession;
 import org.xwiki.job.AbstractJob;
 import org.xwiki.job.DefaultRequest;
-import org.xwiki.logging.LogLevel;
-import org.xwiki.rendering.parser.StreamParser;
 
-/**
+/*
  * @version $Id$
  */
 @Component
-@Named("mailarchivejob")
-public class LoadingJob extends AbstractJob<DefaultRequest> implements Initializable
+@Named(LoadingJob.JOBTYPE)
+public class LoadingJob extends AbstractJob<DefaultRequest> implements ILoadingJob, Initializable
 {
+    public static final String JOBTYPE = "mailarchivejob";
 
     @Inject
     private IMailArchiveLoader loader;
 
     /** Aggregated component logger */
-    @Inject
-    private IAggregatedLoggerManager aggregatedLoggerManager;
+    /*
+     * @Inject private IAggregatedLoggerManager aggregatedLoggerManager;
+     */
+
+    private Logger logger;
 
     private int nbSuccess = 0;
 
@@ -65,9 +67,12 @@ public class LoadingJob extends AbstractJob<DefaultRequest> implements Initializ
     @Override
     public void initialize() throws InitializationException
     {
-        aggregatedLoggerManager.addComponentLogger(IMailArchive.class);
-        aggregatedLoggerManager.addComponentLogger(IMailComponent.class);
-        aggregatedLoggerManager.addComponentLogger(StreamParser.class);
+        logger.debug("MailArchive Loading Job INITIALIZED");
+        /*
+         * aggregatedLoggerManager.addComponentLogger(IMailArchive.class);
+         * aggregatedLoggerManager.addComponentLogger(IMailComponent.class);
+         * aggregatedLoggerManager.addComponentLogger(StreamParser.class);
+         */
     }
 
     /**
@@ -78,7 +83,7 @@ public class LoadingJob extends AbstractJob<DefaultRequest> implements Initializ
     @Override
     public String getType()
     {
-        return "mailarchivejob";
+        return JOBTYPE;
     }
 
     /**
@@ -168,15 +173,17 @@ public class LoadingJob extends AbstractJob<DefaultRequest> implements Initializ
     {
         // Logs level
         logger.error("enterDebugMode()");
-        aggregatedLoggerManager.pushLogLevel(LogLevel.DEBUG);
-        logger.debug("DEBUG MODE ON");
+        /*
+         * aggregatedLoggerManager.pushLogLevel(LogLevel.DEBUG); logger.debug("DEBUG MODE ON");
+         */
     }
 
     public void quitDebugMode()
     {
         logger.debug("DEBUG MODE OFF");
-        aggregatedLoggerManager.popLogLevel();
-        logger.error("quitDebugMode()");
+        /*
+         * aggregatedLoggerManager.popLogLevel(); logger.error("quitDebugMode()");
+         */
     }
 
     /**

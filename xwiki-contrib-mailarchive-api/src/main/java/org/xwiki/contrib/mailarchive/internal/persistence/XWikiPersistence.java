@@ -98,23 +98,25 @@ public class XWikiPersistence implements IPersistence, Initializable
      */
     public static String SPACE_ITEMS = "MailArchiveItems";
 
-    public static final String CLASS_TOPICS = SPACE_CODE + ".MailTopicClass";
+    public static final String CLASS_TOPICS = SPACE_CODE + ".TopicClass";
 
     public static final String CLASS_MAILS = SPACE_CODE + ".MailClass";
 
-    public static final String CLASS_MAIL_TYPES = SPACE_CODE + ".TypesSettingsClass";
+    public static final String CLASS_MAIL_TYPES = SPACE_CODE + ".TypeClass";
 
     public static final String CLASS_MAIL_MATCHERS = SPACE_CODE + ".MailMatcherClass";
 
-    public static final String CLASS_MAIL_LISTS = SPACE_CODE + ".ListsSettingsClass";
+    public static final String CLASS_MAIL_LISTS = SPACE_CODE + ".MailingListClass";
 
-    public static final String CLASS_MAIL_SERVERS = SPACE_CODE + ".ServerSettingsClass";
+    public static final String CLASS_MAIL_LIST_GROUPS = SPACE_CODE + ".MailingListGroupClass";
+
+    public static final String CLASS_MAIL_SERVERS = SPACE_CODE + ".ServerClass";
 
     public static final String CLASS_MAIL_STORES = SPACE_CODE + ".StoreClass";
 
     public static final String CLASS_LOADING_SESSION = SPACE_CODE + ".LoadingSessionClass";
 
-    public static final String TEMPLATE_MAILS = SPACE_CODE + ".MailClassTemplate";
+    public static final String TEMPLATE_MAILS = SPACE_CODE + ".MailTemplate";
 
     public static final String PAGE_GLOBAL_PARAMETERS = SPACE_PREFS + ".GlobalParameters";
 
@@ -165,7 +167,7 @@ public class XWikiPersistence implements IPersistence, Initializable
             + loadingUser + ", create=" + create + ")");
         final String uniquePageName = bridge.getValidUniqueName(pagename, SPACE_ITEMS);
         final XWikiDocument topicDoc = xwiki.getDocument(SPACE_ITEMS + "." + uniquePageName, context);
-        BaseObject topicObj = topicDoc.newObject(SPACE_CODE + ".MailTopicClass", context);
+        BaseObject topicObj = topicDoc.newObject(SPACE_CODE + ".TopicClass", context);
 
         topicObj.set("topicid", m.getTopicId(), context);
         topicObj.set("subject", m.getTopic(), context);
@@ -225,7 +227,7 @@ public class XWikiPersistence implements IPersistence, Initializable
 
         XWikiDocument topicDoc = xwiki.getDocument(existingTopicPage, context);
         logger.debug("Existing topic " + topicDoc);
-        BaseObject topicObj = topicDoc.getObject(XWikiPersistence.SPACE_CODE + ".MailTopicClass");
+        BaseObject topicObj = topicDoc.getObject(XWikiPersistence.SPACE_CODE + ".TopicClass");
         Date lastupdatedate = topicObj.getDateValue("lastupdatedate");
         Date startdate = topicObj.getDateValue("startdate");
         String originalAuthor = topicObj.getStringValue("author");

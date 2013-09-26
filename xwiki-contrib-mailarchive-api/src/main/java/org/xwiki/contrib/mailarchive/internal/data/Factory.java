@@ -37,6 +37,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailMatcher;
 import org.xwiki.contrib.mailarchive.IMailingList;
+import org.xwiki.contrib.mailarchive.IMailingListGroup;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.LoadingSession;
 import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
@@ -218,6 +219,27 @@ public class Factory implements IFactory
         list.setColor(color);
 
         return list;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.internal.data.IFactory#createMailingList(java.lang.String, java.lang.String,
+     *      java.lang.String, java.lang.String)
+     */
+    @Override
+    public IMailingListGroup createMailingListGroup(final String name, final List<IMailingList> mailingLists,
+        final String loadingUser, final String destinationWiki, final String destinationSpace)
+    {
+        MailingListGroup listgroup = new MailingListGroup();
+
+        listgroup.setName(name);
+        listgroup.setMailingLists(mailingLists);
+        listgroup.setLoadingUser(loadingUser);
+        listgroup.setDestinationWiki(destinationWiki);
+        listgroup.setDestinationSpace(destinationSpace);
+
+        return listgroup;
     }
 
     /**

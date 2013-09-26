@@ -28,7 +28,7 @@ import org.xwiki.test.ui.po.InlinePage;
  */
 public class MailArchiveServerEntryEditPage extends InlinePage
 {
-    private static final String CLASS_PREFIX = "MailArchiveCode.ServerSettingsClass_0_";
+    private static final String CLASS_PREFIX = "MailArchiveCode.ServerClass_0_";
 
     @FindBy(id = CLASS_PREFIX + "id")
     private WebElement idElement;

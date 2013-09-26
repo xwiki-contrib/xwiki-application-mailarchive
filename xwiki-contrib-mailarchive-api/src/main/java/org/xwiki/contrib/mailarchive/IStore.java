@@ -20,6 +20,8 @@
 package org.xwiki.contrib.mailarchive;
 
 /**
+ * A mail store, ie some definitions to load emails from a filesystem source.
+ * 
  * @version $Id$
  */
 public interface IStore extends IMASource

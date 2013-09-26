@@ -36,11 +36,12 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mailarchive.IMASource;
 import org.xwiki.contrib.mailarchive.IMailArchive;
+import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.IMailMatcher;
 import org.xwiki.contrib.mailarchive.IMailingList;
+import org.xwiki.contrib.mailarchive.IMailingListGroup;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.LoadingSession;
-import org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
@@ -63,6 +64,8 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     private List<IMASource> servers;
 
     private Map<String, IMailingList> lists;
+
+    private Map<String, IMailingListGroup> mailingListGroups;
 
     private Map<String, IType> types;
 
@@ -161,6 +164,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         sources.addAll(loadStoresDefinitions());
         this.servers = sources;
         this.lists = loadMailingListsDefinitions();
+        this.mailingListGroups = loadMailingListGroupsDefinitions();
         this.types = loadMailTypesDefinitions();
         this.loadingSessions = loadLoadingSessions();
 
@@ -192,7 +196,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
                     IMailingList list =
                         factory.createMailingList((String) prop[0], (String) prop[1], (String) prop[2],
                             (String) prop[3]);
-                    lists.put(list.getPattern(), list);
+                    lists.put(list.getDisplayName(), list);
                     logger.info("Loaded list " + list);
                 } else {
                     logger.warn("Incorrect mailing-list found in db " + prop[1]);
@@ -202,6 +206,59 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
             throw new MailArchiveException("Failed to load configured mailing-lists", e);
         }
         return lists;
+    }
+
+    /**
+     * Loads the mailing-lists definitions.
+     * 
+     * @return A map of mailing-lists definitions with key being the mailing-list pattern to check, and value an array
+     *         [name, IMailingListItem]
+     * @throws MailArchiveException
+     */
+    protected HashMap<String, IMailingListGroup> loadMailingListGroupsDefinitions() throws MailArchiveException
+    {
+        final HashMap<String, IMailingListGroup> listgroups = new HashMap<String, IMailingListGroup>();
+
+        String xwql =
+            "select listgroup.name, listgroup.mailingLists, listgroup.loadingUser, listgroup.destinationWiki, listgroup.destinationSpace from Document doc, doc.object('"
+                + XWikiPersistence.CLASS_MAIL_LIST_GROUPS
+                + "') as listgroup where doc.space='"
+                + XWikiPersistence.SPACE_PREFS + "'";
+        try {
+            List<Object[]> props = this.queryManager.createQuery(xwql, Query.XWQL).execute();
+
+            for (Object[] prop : props) {
+                List<IMailingList> mailingListItems = new ArrayList<IMailingList>();
+                if (StringUtils.isNotBlank((String) prop[0])) {
+                    String mailingListsString = (String) prop[1];
+                    if (StringUtils.isNotBlank(mailingListsString)) {
+                        String[] splittedList = mailingListsString.split("|");
+                        if (splittedList.length > 0) {
+                            for (String list : splittedList) {
+                                if (this.getMailingLists().containsKey(list)) {
+                                    MailingList mailingListItem = (MailingList) this.getMailingLists().get(list);
+                                    mailingListItems.add(mailingListItem);
+                                }
+                            }
+                        }
+                    }
+                    IMailingListGroup listgroup =
+                        factory.createMailingListGroup((String) prop[0], mailingListItems, (String) prop[2],
+                            (String) prop[3], (String) prop[4]);
+                    listgroups.put(listgroup.getName(), listgroup);
+                    // Attach the group back to each mailing-list
+                    for (IMailingList list : listgroup.getMailingLists()) {
+                        ((MailingList) list).setGroup(listgroup);
+                    }
+                    logger.info("Loaded list group " + listgroup);
+                } else {
+                    logger.warn("Incorrect mailing-list group found in db " + prop[1]);
+                }
+            }
+        } catch (Exception e) {
+            throw new MailArchiveException("Failed to load configured mailing-list groups", e);
+        }
+        return listgroups;
     }
 
     /**
@@ -457,7 +514,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration#isUseStore()
+     * @see org.xwiki.contrib.mailarchive.IMailArchiveConfiguration#isUseStore()
      */
     @Override
     public boolean isUseStore()
@@ -473,7 +530,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration#getMailingLists()
+     * @see org.xwiki.contrib.mailarchive.IMailArchiveConfiguration#getMailingLists()
      */
     @Override
     public Map<String, IMailingList> getMailingLists()
@@ -482,9 +539,17 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     }
 
     /**
+     * @return the mailingListGroups
+     */
+    public Map<String, IMailingListGroup> getMailingListGroups()
+    {
+        return mailingListGroups;
+    }
+
+    /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration#getServers()
+     * @see org.xwiki.contrib.mailarchive.IMailArchiveConfiguration#getServers()
      */
     @Override
     public List<IMASource> getServers()
@@ -495,7 +560,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration#getMailTypes()
+     * @see org.xwiki.contrib.mailarchive.IMailArchiveConfiguration#getMailTypes()
      */
     @Override
     public Map<String, IType> getMailTypes()

@@ -79,7 +79,7 @@
   #set($linksstr = "$linksstr [[All DLs&gt;&gt;${doc.web}.${doc.name}?full=$!{full}]]")
 #end
 ## List of DL tags
-#set($xwql = "select list.Tag, list.displayname, list.color from Document doc, doc.object(MailArchiveCode.ListsSettingsClass) as list where doc.name not like '%Sheet' and doc.name not like '%Template' order by list.displayname asc")
+#set($xwql = "select list.Tag, list.displayname, list.color from Document doc, doc.object(MailArchiveCode.MailingListClass) as list where doc.name not like '%Sheet' and doc.name not like '%Template' order by list.displayname asc")
 #set($tagslist = $services.query.xwql($xwql).execute())
 #foreach($tagitem in $tagslist)
   #set($listtag = $tagitem[0])
@@ -139,7 +139,7 @@ Total number of posts : $nbTotalPosts
 
 {{/container}}
 
-#set($xwql = "select count(topic.author), topic.author from Document doc, doc.object(MailArchiveCode.MailTopicClass) as topic where doc.space&lt;&gt;'MailArchiveCode'")
+#set($xwql = "select count(topic.author), topic.author from Document doc, doc.object(MailArchiveCode.TopicClass) as topic where doc.space&lt;&gt;'MailArchiveCode'")
 #if($restrict != "All")
   #set($xwql = "$xwql and :tagvalue MEMBER OF tag.tags ")
 #end
@@ -244,12 +244,12 @@ Total number of posts : $nbTotalPosts
                   StringProperty str1, StringProperty str2
             where obj.className='XWiki.TagClass' 
                   and obj.name=objtopic.name
-                  and objtopic.className='MailArchiveCode.MailTopicClass'
+                  and objtopic.className='MailArchiveCode.TopicClass'
                   and tags.id.id=obj.id  and tags.id.name='tags'
                   and tagsvalue in (select settings.value
                                      from  BaseObject as objsettings,
                                            StringProperty as settings
-                                    where  objsettings.className='MailArchiveCode.ListsSettingsClass'
+                                    where  objsettings.className='MailArchiveCode.MailingListClass'
                                            and objsettings.id=settings.id 
                                            and settings.name='Tag')
                   and str1.id=str2.id and str1.name='Tag' and str1.value=tagsvalue and str2.name='displayname'
@@ -267,7 +267,7 @@ Total number of posts : $nbTotalPosts
 ## Topics types : Newsletters, product releases, ...
 #set($sql = "select count(prop.name),prop.value
                from BaseObject as obj, StringProperty as prop
-              where prop.name = 'type' and obj.id=prop.id and obj.className='MailArchiveCode.MailTopicClass'
+              where prop.name = 'type' and obj.id=prop.id and obj.className='MailArchiveCode.TopicClass'
            group by prop.value")
 #set($results = $xwiki.search($sql, 0, 0))
 #set($nb = $results.size())
@@ -314,7 +314,7 @@ Total number of posts : $nbTotalPosts
   #set($hql = "select year(dateprop.value), month(dateprop.value), count(mailobj) from BaseObject as mailobj, DateProperty as dateprop where mailobj.className='MailArchiveCode.MailClass' and mailobj.id=dateprop.id and dateprop.name='date' group by year(dateprop.value), month(dateprop.value) order by year(dateprop.value), month(dateprop.value)")
   #set($alltimemails = $services.query.hql($hql).execute())
   #set($nballtimemails = $alltimemails.size())
-  #set($hql = "select year(dateprop.value), month(dateprop.value), count(topicobj) from BaseObject as topicobj, DateProperty as dateprop where topicobj.className='MailArchiveCode.MailTopicClass' and topicobj.id=dateprop.id and dateprop.name='startdate' group by year(dateprop.value), month(dateprop.value) order by year(dateprop.value), month(dateprop.value)")
+  #set($hql = "select year(dateprop.value), month(dateprop.value), count(topicobj) from BaseObject as topicobj, DateProperty as dateprop where topicobj.className='MailArchiveCode.TopicClass' and topicobj.id=dateprop.id and dateprop.name='startdate' group by year(dateprop.value), month(dateprop.value) order by year(dateprop.value), month(dateprop.value)")
   #set($alltimetopics = $services.query.hql($hql).execute())
   #set($nballtimetopics = $alltimetopics.size())
 

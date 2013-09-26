@@ -20,6 +20,8 @@
 package org.xwiki.contrib.mailarchive.internal.data;
 
 import org.xwiki.contrib.mailarchive.IMailingList;
+import org.xwiki.contrib.mailarchive.IMailingListGroup;
+import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * @version $Id$
@@ -34,6 +36,8 @@ public class MailingList implements IMailingList
     private String tag;
 
     private String color;
+
+    private IMailingListGroup group;
 
     /**
      * @return the displayName
@@ -100,6 +104,22 @@ public class MailingList implements IMailingList
     }
 
     /**
+     * @return the group
+     */
+    public IMailingListGroup getGroup()
+    {
+        return group;
+    }
+
+    /**
+     * @param group the group to set
+     */
+    public void setGroup(IMailingListGroup group)
+    {
+        this.group = group;
+    }
+
+    /**
      * {@inheritDoc}
      * 
      * @see java.lang.Object#toString()
@@ -107,9 +127,14 @@ public class MailingList implements IMailingList
     @Override
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
-        builder.append("MailingListImpl [displayName=").append(displayName).append(", pattern=").append(pattern)
-            .append(", tag=").append(tag).append(", color=").append(color).append("]");
+        XWikiToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder.append("displayName", displayName);
+        builder.append("pattern", pattern);
+        builder.append("tag", tag);
+        builder.append("color", color);
+        if (group != null) {
+            builder.append("group", group.getName());
+        }
         return builder.toString();
     }
 

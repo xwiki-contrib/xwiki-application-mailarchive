@@ -22,7 +22,7 @@ package org.xwiki.contrib.mailarchive;
 import java.util.List;
 
 /**
- * Interface for mails types.
+ * A mail type.
  * 
  * @author jbousque
  */

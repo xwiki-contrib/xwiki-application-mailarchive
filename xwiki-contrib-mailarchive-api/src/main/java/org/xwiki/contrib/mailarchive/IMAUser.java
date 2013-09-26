@@ -20,6 +20,10 @@
 package org.xwiki.contrib.mailarchive;
 
 /**
+ * A "mailing-list user", containing both XWiki user profile and mail archive email address parts information for a
+ * user.
+ * 
+ * @author jbousque
  * @version $Id$
  */
 public interface IMAUser

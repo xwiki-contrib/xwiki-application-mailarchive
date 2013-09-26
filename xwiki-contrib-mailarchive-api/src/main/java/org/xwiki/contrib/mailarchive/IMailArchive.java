@@ -32,7 +32,6 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mail.SourceConnectionErrors;
 import org.xwiki.contrib.mail.source.IMailSource;
-import org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.internal.MailLoadingResult;
 import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
 import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
@@ -43,7 +42,10 @@ import org.xwiki.contrib.mailarchive.internal.utils.DecodedMailContent;
 import com.xpn.xwiki.XWikiException;
 
 /**
- * Interface (aka Role) of the Component
+ * A component to manage a Mail Archive, ie mainly:<br/>
+ * - load a mail into the archive<br/>
+ * - retrieve mails and topics from the archive <br/>
+ * - thread emails<br/>
  */
 @Role
 public interface IMailArchive

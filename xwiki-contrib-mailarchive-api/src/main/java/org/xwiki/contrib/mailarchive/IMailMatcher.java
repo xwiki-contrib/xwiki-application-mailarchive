@@ -22,6 +22,8 @@ package org.xwiki.contrib.mailarchive;
 import java.util.List;
 
 /**
+ * A pattern system to assign loaded emails to configured types.
+ * 
  * @version $Id$
  */
 public interface IMailMatcher
@@ -34,7 +36,7 @@ public interface IMailMatcher
     List<String> getFields();
 
     /**
-     * The pattern to match.
+     * The pattern expression to match.
      * 
      * @return
      */

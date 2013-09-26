@@ -19,6 +19,7 @@
  */
 package org.xwiki.contrib.mailarchive.internal.timeline;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -30,7 +31,6 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
@@ -38,12 +38,13 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
-import org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration;
+import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
+import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -58,6 +59,9 @@ import com.xpn.xwiki.objects.BaseObject;
 @Singleton
 public class TimeLineGenerator implements Initializable, ITimeLineGenerator
 {
+
+    public static final int DEFAULT_MAX_ITEMS = 200;
+
     @Inject
     private IMailArchiveConfiguration config;
 
@@ -78,6 +82,8 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
     @Inject
     private DocumentReferenceResolver<String> docResolver;
 
+    private DateFormat dateFormatter;
+
     /**
      * {@inheritDoc}
      * 
@@ -89,6 +95,12 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
         ExecutionContext context = execution.getContext();
         this.context = (XWikiContext) context.getProperty("xwikicontext");
         this.xwiki = this.context.getWiki();
+        this.dateFormatter = DateFormat.getDateInstance();
+    }
+
+    public String compute()
+    {
+        return compute(DEFAULT_MAX_ITEMS);
     }
 
     /**
@@ -97,14 +109,14 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
      * @see org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineGenerator#compute()
      */
     @Override
-    public String compute()
+    public String compute(int maxItems)
     {
         // FIXME This compute() should be split in 2 parts, one part for generating a structure
         // representing timeline data into memory, another part in charge of generating XML/HTML from this
         // structure
-        int count = 200;
+
         // XWikiDocument curdoc = xwiki.getDocument("", context);
-        TreeMap<Long, String> sortedEvents = new TreeMap<Long, String>();
+        TreeMap<Long, TimeLineEvent> sortedEvents = new TreeMap<Long, TimeLineEvent>();
 
         // Utility class for mail archive
         // def tools = xwiki.parseGroovyFromPage('MailArchiveCode.ToolsGroovyClass');
@@ -118,31 +130,37 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
             String xwql =
                 "select doc.fullName, topic.author, topic.subject, topic.topicid, topic.startdate, topic.lastupdatedate, topic.type from Document doc, doc.object("
                     + XWikiPersistence.CLASS_TOPICS + ") as topic order by topic.lastupdatedate desc";
-            List<Object[]> result = queryManager.createQuery(xwql, Query.XWQL).setLimit(count).execute();
+            List<Object[]> result = queryManager.createQuery(xwql, Query.XWQL).setLimit(maxItems).execute();
 
             for (Object[] item : result) {
                 XWikiDocument doc = null;
                 try {
+                    String docurl = (String) item[0];
                     String author = (String) item[1];
                     String subject = (String) item[2];
-                    String docurl = (String) item[0];
                     String topicId = (String) item[3];
+                    Date date = (Date) item[4];
+                    Date end = (Date) item[5];
+                    String type = (String) item[6];
                     String icon = "";
                     String action = "";
                     String link = "";
 
-                    Date date = (Date) item[4];
-                    Date end = (Date) item[5];
                     if (date != null && date.equals(end)) {
                         // Add 10 min just to see the tape
                         end.setTime(end.getTime() + 600000);
                     }
-                    String extract = getTopicMails(topicId, subject);
-                    String type = (String) item[6];
+                    // FIXME: compute html at the end ... ?
+                    TimeLineBubbleWriter writer = new TimeLineBubbleWriter(new DefaultWikiPrinter());
+                    for (Entry<Long, TopicEventBubble> bubbleInfo : getTopicMails(topicId, subject).entrySet()) {
+                        writer.printXML(bubbleInfo.getValue());
+                    }
+                    String extract = writer.toString();
+
                     String tags = "";
 
                     doc = xwiki.getDocument(docResolver.resolve(docurl), context);
-                    // FIXME not generic
+                    // FIXME not generic - use mailing-list groups if there are some ?
                     if (doc.getTags(context).contains("GGS_WW_")) {
                         tags = "GGS_WW";
                     }
@@ -171,28 +189,17 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
 
                         }
                         action = "Topic created";
-                        sortedEvents.put(
-                            date.getTime(),
-                            new StringBuilder("<event start=\"")
-                                .append(date.toLocaleString())
-                                .append("\" end=\"")
-                                .append(end.toLocaleString())
-                                .append("\" title=\"")
-                                .append(StringEscapeUtils.escapeXml(subject))
-                                .append("\" icon=\"")
-                                .append(icon)
-                                .append("\" image=\"")
-                                .append(icon)
-                                .append("\" classname=\"")
-                                .append(tags)
-                                .append("\" durationEvent=\"true\" link=\"")
-                                .append(doc.getURL("view", context))
-                                .append("\">")
-                                .append(
-                                    StringEscapeUtils.escapeXml((!tags.equals("") ? "<span class=\"tape-" + tags
-                                        + "\">___</span> " + tags + "<br/>" : "")
-                                        + "<br/> " + action + " by " + author + "<br/> " + extract)).append("</event>")
-                                .toString());
+                        TimeLineEvent topicEvent = new TimeLineEvent();
+                        topicEvent.beginDate = dateFormatter.format(date);
+                        topicEvent.endDate = dateFormatter.format(end);
+                        topicEvent.title = subject;
+                        topicEvent.icon = icon;
+                        topicEvent.tags = tags;
+                        topicEvent.url = doc.getURL("view", context);
+                        topicEvent.action = action;
+                        topicEvent.author = author;
+                        topicEvent.extract = extract;
+                        sortedEvents.put(date.getTime(), topicEvent);
 
                     } else {
                         // FIXME use new types and not non-generic types...
@@ -211,25 +218,20 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
                         }
                         link =
                             xwiki.getDocument(
-                                docResolver.resolve("IMailArchive.M"
+                                docResolver.resolve("MailArchiveItems.M"
                                     + doc.getName().substring(1, doc.getName().length())), context).getURL("view",
                                 context);
-                        sortedEvents.put(
-                            date.getTime(),
-                            "<event start=\""
-                                + date.toLocaleString()
-                                + "\" title=\""
-                                + StringEscapeUtils.escapeXml(subject)
-                                + "\" icon=\""
-                                + icon
-                                + "\" image=\""
-                                + icon
-                                + "\" link=\""
-                                + link
-                                + "\" >"
-                                + StringEscapeUtils.escapeXml((!tags.equals("") ? "<span class=\"tape-" + tags
-                                    + "\">___</span> " + tags + "<br/>" : "")
-                                    + "<br/>" + action + " by " + author + "<br/> " + extract) + "</event>");
+                        TimeLineEvent event = new TimeLineEvent();
+                        event.beginDate = dateFormatter.format(date);
+                        event.title = subject;
+                        event.icon = icon;
+                        event.url = link;
+                        event.tags = tags;
+                        event.action = action;
+                        event.author = author;
+                        event.extract = extract;
+                        sortedEvents.put(date.getTime(), event);
+
                     }
                 } catch (Throwable t) {
                     logger.warn("Exception for " + doc, t);
@@ -243,7 +245,7 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
 
         String data = null;
         try {
-            data = toString(sortedEvents);
+            data = printEvents(sortedEvents);
         } catch (Exception e) {
             logger.warn("Could not save timeline date", e);
         }
@@ -252,16 +254,19 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
 
     }
 
-    private String toString(TreeMap<Long, String> sortedEvents)
+    public String toString(TreeMap<Long, TimeLineEvent> sortedEvents)
     {
-        StringBuilder content = new StringBuilder();
-        content.append("<data>");
-        for (Entry<Long, String> event : sortedEvents.entrySet()) {
-            content.append(event.getValue() + '\n');
-        }
-        content.append("</data>");
+        return printEvents(sortedEvents);
+    }
+
+    private String printEvents(TreeMap<Long, TimeLineEvent> sortedEvents)
+    {
+
+        TimeLineWriter writer = new TimeLineWriter(new DefaultWikiPrinter());
+        writer.printXML(sortedEvents);
+
         logger.debug("Loaded " + sortedEvents.size() + " into Timeline feed");
-        return content.toString();
+        return writer.toString();
 
         /*
          * curdoc.addAttachment("TimeLineFeed-MailArchiver.xml", content.toString().getBytes(), context);
@@ -280,11 +285,12 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
      * @throws QueryException
      * @throws XWikiException
      */
-    protected String getTopicMails(String topicid, String topicsubject) throws QueryException, XWikiException
+    protected TreeMap<Long, TopicEventBubble> getTopicMails(String topicid, String topicsubject) throws QueryException,
+        XWikiException
     {
         // TODO there should/could be an api to retrieve mails related to a topic somewhere ...
 
-        String returnVal = "";
+        TreeMap<Long, TopicEventBubble> bubblesInfo = new TreeMap<Long, TopicEventBubble>();
         boolean first = true;
         String xwql_topic =
             "select doc.fullName, doc.author, mail.date, mail.messagesubject ,mail.from from Document doc, "
@@ -323,16 +329,18 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
                 subject = StringUtils.normalizeSpace(topicsubject);
                 subject = StringUtils.abbreviate(subject, 23);
             }
-            returnVal +=
-                "<a href=\"javascript:centerTimeline(" + maildate.getTime() + ");\">" + formatter.format(maildate)
-                    + "</a> - <a href=\""
-                    + xwiki.getDocument(docResolver.resolve(docfullname), context).getURL("view", context) + "\">"
-                    + subject + "</a> - " + (link != null ? "<a href=\"" + link + "\">" : "") + user
-                    + (link != null ? "</a> " : "") + "'<br/>";
+            TopicEventBubble bubbleEvent = new TopicEventBubble();
+            bubbleEvent.date = maildate;
+            bubbleEvent.url = xwiki.getDocument(docResolver.resolve(docfullname), context).getURL("view", context);
+            bubbleEvent.subject = subject;
+            bubbleEvent.link = link;
+            bubbleEvent.user = user;
+            bubblesInfo.put(maildate.getTime(), bubbleEvent);
+
             first = false;
         }
 
-        return returnVal;
+        return bubblesInfo;
 
     }
 

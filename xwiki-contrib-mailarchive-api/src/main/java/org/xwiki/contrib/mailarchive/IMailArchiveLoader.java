@@ -23,10 +23,16 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.contrib.mailarchive.internal.LoadingJob;
 
 /**
+ * A component dedicated to load emails into the archive, given some configuration provided by a LoadingSession, and
+ * optionally using a specific LoadingJob.
+ * 
+ * @author jbousque
  * @version $Id$
  */
 @Role
 public interface IMailArchiveLoader
 {
+    public int loadMails(LoadingSession session);
+
     public int loadMails(LoadingSession session, LoadingJob job);
 }

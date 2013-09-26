@@ -3,7 +3,8 @@ Mail Archive application repository.
 
 * xwiki-contrib-mail: API (jar) based on Javamail used to parse and extract content from an email.
 * xwiki-contrib-mailarchive-api: The core Mail Archive component (jar), loads emails from servers and stores them as wiki pages.
-* xwiki-contrib-mailarchive-ui: The UI extension (xar) that provides pages to configure/administrate/navigate the Mail Archive.
+* xwiki-contrib-mailarchive-ui: The UI extension (xar) that provides pages to navigate the Mail Archive.
+* xwiki-contrib-mailarchive-admin-ui: The UI extension (xar) that provides administration pages for the Mail Archive.
 * mstor-custom: needed to modify transitivity of mstor library - used to parse and write to mbox format files.
 * xwiki-contrib-mailarchive-test: Automated integration tests based on Selenium and XWiki framework.
 

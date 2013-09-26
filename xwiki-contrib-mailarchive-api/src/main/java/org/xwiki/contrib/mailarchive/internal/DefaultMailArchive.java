@@ -59,6 +59,7 @@ import org.xwiki.contrib.mail.source.SourceType;
 import org.xwiki.contrib.mailarchive.IMASource;
 import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IMailArchive;
+import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.LoadingSession;
@@ -78,6 +79,7 @@ import org.xwiki.contrib.mailarchive.internal.utils.IMailUtils;
 import org.xwiki.contrib.mailarchive.internal.utils.ITextUtils;
 import org.xwiki.contrib.mailarchive.internal.utils.TextUtils;
 import org.xwiki.environment.Environment;
+import org.xwiki.job.Job;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -201,7 +203,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     public void initialize() throws InitializationException
     {
         try {
-            logger.debug("initialize()");
+            logger.debug("initialize updated()");
             ExecutionContext context = execution.getContext();
             this.context = (XWikiContext) context.getProperty("xwikicontext");
             this.xwiki = this.context.getWiki();
@@ -211,6 +213,10 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             logger.debug("PERMANENT DATA DIR : " + this.environment.getPermanentDirectory());
             // Create dump folder
             new File(this.environment.getPermanentDirectory(), "mailarchive/dump").mkdirs();
+            // Register custom job
+            this.componentManager.registerComponent(this.componentManager.getComponentDescriptor(Job.class,
+                "mailarchivejob"));
+
         } catch (Throwable e) {
             logger.error("Could not initiliaze mailarchive ", e);
             e.printStackTrace();
@@ -1034,4 +1040,5 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             logger.debug("Could not dump message for debug", t);
         }
     }
+
 }

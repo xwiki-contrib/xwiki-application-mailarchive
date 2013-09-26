@@ -26,7 +26,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.contrib.mailarchive.internal.IMailArchiveConfiguration;
+import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPAttributeSet;

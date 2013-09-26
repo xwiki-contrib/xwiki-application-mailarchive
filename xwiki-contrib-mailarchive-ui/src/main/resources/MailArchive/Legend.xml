@@ -29,7 +29,7 @@ The following mailing-lists are browable from the mail archive:
 
 {{velocity wiki="true"}}
 {{html wiki="true"}}
-#set($xwql = "select ml.displayname, ml.Tag, ml.color from Document doc, doc.object(MailArchiveCode.ListsSettingsClass) as ml")
+#set($xwql = "select ml.displayname, ml.Tag, ml.color from Document doc, doc.object(MailArchiveCode.MailingListClass) as ml")
 #set($mls = $services.query.xwql($xwql).execute())
 |=Name|=Tag|=Color
 #foreach($ml in $mls)
@@ -44,7 +44,7 @@ The following mail types are configured in the mail archive:
 
 {{velocity wiki="true"}}
 {{html wiki="true"}}
-#set($xwql = "select type.displayName, type.icon from Document doc, doc.object(MailArchiveCode.TypesSettingsClass) as type where doc.space='MailArchivePrefs'")
+#set($xwql = "select type.displayName, type.icon from Document doc, doc.object(MailArchiveCode.TypeClass) as type where doc.space='MailArchivePrefs'")
 #set($types = $services.query.xwql($xwql).execute())
 |=Name|=Icon
 #foreach($type in $types)

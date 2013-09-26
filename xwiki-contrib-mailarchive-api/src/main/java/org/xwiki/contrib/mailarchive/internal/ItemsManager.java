@@ -64,7 +64,7 @@ public class ItemsManager implements IItemsManager
 
         String xwql =
             "select doc.fullName, topic.topicid, topic.subject " + "from Document doc, doc.object("
-                + XWikiPersistence.SPACE_CODE + ".MailTopicClass) as  topic " + "where doc.space='"
+                + XWikiPersistence.SPACE_CODE + ".TopicClass) as  topic " + "where doc.space='"
                 + XWikiPersistence.SPACE_ITEMS + "'";
 
         try {

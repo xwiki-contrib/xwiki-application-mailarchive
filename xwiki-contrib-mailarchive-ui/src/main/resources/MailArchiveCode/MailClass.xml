@@ -79,7 +79,7 @@
     </bodyhtml>
     <builtinType>
       <cache>0</cache>
-      <classname>MailArchiveCode.TypesSettingsClass</classname>
+      <classname>MailArchiveCode.TypeClass</classname>
       <customDisplay/>
       <disabled>0</disabled>
       <displayType>select</displayType>
@@ -258,7 +258,7 @@
     </topicsubject>
     <type>
       <cache>0</cache>
-      <classname>MailArchiveCode.TypesSettingsClass</classname>
+      <classname>MailArchiveCode.TypeClass</classname>
       <customDisplay/>
       <disabled>0</disabled>
       <displayType>select</displayType>
@@ -310,7 +310,7 @@
     <className>XWiki.ClassSheetBinding</className>
     <guid>675651f3-bb33-4a0a-a6e6-8827a073ae16</guid>
     <property>
-      <sheet>MailArchiveCode.MailClassSheet</sheet>
+      <sheet>MailArchiveCode.MailSheet</sheet>
     </property>
   </object>
   <object>

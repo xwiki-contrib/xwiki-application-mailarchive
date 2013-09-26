@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>MailArchiveCode</web>
+  <name>UsersSuggestService</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchiveCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1353417893000</creationDate>
+  <date>1353417893000</date>
+  <contentUpdateDate>1353417893000</contentUpdateDate>
+  <version>1.1</version>
+  <title>UsersSuggestService</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity wiki="false"}}
+$response.setContentType("text/xml")
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;results&gt;
+#set ($input = $request.get('input').toLowerCase())
+#set ($indx = $input.indexOf('.'))
+#set ($next = $indx + 1)
+#if ($indx &gt; 0)
+  #set ($input = $input.substring($next))
+#end
+#set ($uorg = $request.get('uorg'))
+#set ($wiki = $request.get('wiki'))
+#set ($filterMap = $util.hashMap)
+#set ($arr = $util.arrayList)
+#set ($discard = $arr.add(null))
+#set ($discard = $arr.add("$input"))
+#set ($discard = $filterMap.put('name', $arr))
+
+#if ($uorg == 'user')
+  #if ($wiki == 'local')
+    #set ($allUsers = $xwiki.rightsmanager.usersApi.getAllMatchedLocalUsersNames($filterMap))
+  #else
+    #set ($allUsers = $xwiki.rightsmanager.usersApi.getAllMatchedGlobalUsersNames($filterMap))
+  #end
+  #if ($allUsers.size() &gt; 0)
+    #foreach ($user in $allUsers)
+      &lt;rs id="" info="$user"&gt;$xwiki.getUserName($user, false) &amp;lt;$xwiki.getUser($user).getEmail()&amp;gt;&lt;/rs&gt;
+##      &lt;rs id="" info=""&gt;$user&lt;/rs&gt;
+    #end
+  #end
+#else ## groups
+  #if ($wiki == 'local')
+    #set ($allUsers = $xwiki.rightsmanager.groupsApi.getAllMatchedLocalGroupsNames($filterMap))
+  #else
+    #set ($allUsers = $xwiki.rightsmanager.groupsApi.getAllMatchedGlobalGroupsNames($filterMap))
+  #end
+  #if ($allUsers.size() &gt; 0)
+    #foreach ($user in $allUsers)
+      &lt;rs id="" info=""&gt;$user&lt;/rs&gt;
+    #end
+  #end
+#end
+&lt;/results&gt;
+{{/velocity}}</content>
+</xwikidoc>

@@ -283,7 +283,7 @@ $xwiki.ssx.use('MailArchive.ViewUserMessages')
 == Statistics ==
   #set($Q="\n")
   ## Number of Topics
-  #set($xwql = "select count(doc) from Document doc, doc.object(MailArchiveCode.MailTopicClass) as topic where topic.author='${request.user}'")
+  #set($xwql = "select count(doc) from Document doc, doc.object(MailArchiveCode.TopicClass) as topic where topic.author='${request.user}'")
   #set($nbTopics = $services.query.xwql($xwql).execute())
   #if($nbTopics.size() &gt; 0) 
     #set($nbTopics = $nbTopics[0])
@@ -299,7 +299,7 @@ $xwiki.ssx.use('MailArchive.ViewUserMessages')
     #set($nbMails = 0)
   #end
   ## List of tags to check for
-  #set($xwql = "select list.Tag, list.displayname, list.color from Document doc, doc.object(MailArchiveCode.ListsSettingsClass) as list where doc.name not like '%Sheet' and doc.name not like '%Template' order by list.displayname asc")
+  #set($xwql = "select list.Tag, list.displayname, list.color from Document doc, doc.object(MailArchiveCode.MailingListClass) as list where doc.name not like '%Sheet' and doc.name not like '%Template' order by list.displayname asc")
   #set($tagslist = $services.query.xwql($xwql).execute())
   ## Distribution of topics per mailing-list
   #set($topicsdist = [])
@@ -308,7 +308,7 @@ $xwiki.ssx.use('MailArchive.ViewUserMessages')
     #set($listdisplay = $tagitem[1])
     #set($listcolor = $tagitem[2])
     #if("$!listtag" != "")
-      #set($xwql = "select count(topic.author) from Document doc, doc.object(XWiki.TagClass) as tag, doc.object(MailArchiveCode.MailTopicClass) as topic where tag.name=topic.name and topic.author = '${request.user}' and :tagvalue MEMBER OF tag.tags group by topic.author")
+      #set($xwql = "select count(topic.author) from Document doc, doc.object(XWiki.TagClass) as tag, doc.object(MailArchiveCode.TopicClass) as topic where tag.name=topic.name and topic.author = '${request.user}' and :tagvalue MEMBER OF tag.tags group by topic.author")
       #set($nbTopicsForTag = $services.query.xwql($xwql).bindValue("tagvalue", $listtag).execute())
       #if($nbTopicsForTag.size()&gt;0)
         #set($nbTopicsForTag = $nbTopicsForTag[0])
@@ -342,7 +342,7 @@ $xwiki.ssx.use('MailArchive.ViewUserMessages')
   #end
   #set($nbmailsdist = $mailsdist.size())
   ## **** Distribution of Mails over types *****
-  #set($xwql = "select type.name, count(type.name), type.icon from Document doc, Document doc2, doc.object(MailArchiveCode.MailClass) as mail, doc2.object(MailArchiveCode.TypesSettingsClass) as type where mail.from='${request.user}' and type.name member of mail.type group by type.name, type.icon")
+  #set($xwql = "select type.name, count(type.name), type.icon from Document doc, Document doc2, doc.object(MailArchiveCode.MailClass) as mail, doc2.object(MailArchiveCode.TypeClass) as type where mail.from='${request.user}' and type.name member of mail.type group by type.name, type.icon")
   #set($mailsdistbytype = $services.query.xwql($xwql).execute())
   #set($nbmailsdistbytype = $mailsdistbytype.size())
   ## **** Number of starred items ****
@@ -468,7 +468,7 @@ $xwiki.ssx.use('MailArchive.ViewUserMessages')
   #set($hql = "select year(dateprop.value), month(dateprop.value), count(mailobj) from BaseObject as mailobj, DateProperty as dateprop, LargeStringProperty as fromprop where mailobj.className='MailArchiveCode.MailClass' and mailobj.id=dateprop.id and dateprop.name='date' and mailobj.id=fromprop.id and fromprop.name='from' and fromprop.value='${request.user}' group by year(dateprop.value), month(dateprop.value) order by year(dateprop.value), month(dateprop.value)")
   #set($alltimemails = $services.query.hql($hql).execute())
   #set($nballtimemails = $alltimemails.size())
-  #set($hql = "select year(dateprop.value), month(dateprop.value), count(topicobj) from BaseObject as topicobj, DateProperty as dateprop, StringProperty as fromprop where topicobj.className='MailArchiveCode.MailTopicClass' and topicobj.id=dateprop.id and dateprop.name='startdate' and topicobj.id=fromprop.id and fromprop.name='author' and fromprop.value='${request.user}' group by year(dateprop.value), month(dateprop.value) order by year(dateprop.value), month(dateprop.value)")
+  #set($hql = "select year(dateprop.value), month(dateprop.value), count(topicobj) from BaseObject as topicobj, DateProperty as dateprop, StringProperty as fromprop where topicobj.className='MailArchiveCode.TopicClass' and topicobj.id=dateprop.id and dateprop.name='startdate' and topicobj.id=fromprop.id and fromprop.name='author' and fromprop.value='${request.user}' group by year(dateprop.value), month(dateprop.value) order by year(dateprop.value), month(dateprop.value)")
   #set($alltimetopics = $services.query.hql($hql).execute())
   #set($nballtimetopics = $alltimetopics.size())
 
@@ -563,8 +563,8 @@ $xwiki.ssx.use('MailArchive.ViewUserMessages')
    "_ratings" : { "sortable" : "false" },
    "startdate" : { "displayName":"Date", "type" : "date", "link" : "view" }
                  } )
-  #set($options = { "className":"MailArchiveCode.MailTopicClass",
-                  "url":"${xwiki.getDocument('MailArchiveCode.TopicsLiveTableResults').getExternalURL('view')}?topicsfrom=${request.user}&amp;collist=subject,_ratings,startdate&amp;classname=MailArchiveCode.MailTopicClass&amp;outputSyntax=plain&amp;xpage=plain",
+  #set($options = { "className":"MailArchiveCode.TopicClass",
+                  "url":"${xwiki.getDocument('MailArchiveCode.TopicsLiveTableResults').getExternalURL('view')}?topicsfrom=${request.user}&amp;collist=subject,_ratings,startdate&amp;classname=MailArchiveCode.TopicClass&amp;outputSyntax=plain&amp;xpage=plain",
                   "selectedColumn":"startdate",
                   "tagCloud":"false",
                   "defaultOrder":"desc",

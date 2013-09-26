@@ -37,6 +37,7 @@ import org.xwiki.contrib.mail.IMailComponent;
 import org.xwiki.contrib.mail.IMailReader;
 import org.xwiki.contrib.mailarchive.IMASource;
 import org.xwiki.contrib.mailarchive.IMailArchive;
+import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.IMailArchiveLoader;
 import org.xwiki.contrib.mailarchive.LoadingSession;
 import org.xwiki.contrib.mailarchive.internal.data.MailStore;
@@ -80,6 +81,15 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
         aggregatedLoggerManager.addComponentLogger(IMailArchive.class);
         aggregatedLoggerManager.addComponentLogger(IMailComponent.class);
         aggregatedLoggerManager.addComponentLogger(StreamParser.class);
+    }
+
+    /**
+     * @param session
+     * @return
+     */
+    public int loadMails(final LoadingSession session)
+    {
+        return loadMails(session, null);
     }
 
     /**

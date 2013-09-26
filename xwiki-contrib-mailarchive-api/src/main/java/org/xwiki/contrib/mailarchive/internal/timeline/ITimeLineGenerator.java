@@ -38,4 +38,10 @@ public interface ITimeLineGenerator
      */
     String compute();
 
+    /**
+     * @param maxItems
+     * @return
+     */
+    String compute(int maxItems);
+
 }

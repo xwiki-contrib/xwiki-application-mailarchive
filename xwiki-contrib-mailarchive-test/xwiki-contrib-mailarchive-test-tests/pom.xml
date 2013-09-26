@@ -33,10 +33,18 @@
   </properties>
 
   <dependencies>
+  
+  <dependency>
+      <groupId>org.xwiki.contrib.mailarchive</groupId>
+      <artifactId>xwiki-contrib-mailarchive-admin-ui</artifactId>
+      <version>${mailarchive.version}</version>
+      <type>xar</type>
+    </dependency>
+  
     <dependency>
       <groupId>org.xwiki.contrib.mailarchive</groupId>
       <artifactId>xwiki-contrib-mailarchive-ui</artifactId>
-      <version>0.3-SNAPSHOT</version>
+      <version>${mailarchive.version}</version>
       <type>xar</type>
     </dependency>
 
@@ -106,6 +114,22 @@
                 </configuration>
               </execution>
             </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>no-run-it</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <skipTests>true</skipTests>
+            </configuration>
           </plugin>
         </plugins>
       </build>

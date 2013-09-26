@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>MailArchiveCode</web>
+  <name>CorporateFeaturesAdminSheet</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchiveCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1375697499000</creationDate>
+  <date>1375697564000</date>
+  <contentUpdateDate>1375697564000</contentUpdateDate>
+  <version>1.1</version>
+  <title>CorporateFeaturesAdminSheet</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity wiki="true"}}
+#set($prefsdoc = $xwiki.getDocument("MailArchivePrefs.GlobalParameters"))
+#set($prefs = $prefsdoc.getObject("MailArchiveCode.AdminClass"))
+
+{{html wiki="true"}}
+&lt;form action="" class="xform" method="post" name="form_corporatefeatures"&gt;
+#set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_emailignoredtext'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.AdminClass_0_emailignoredtext"&gt;$prop.getPrettyName()&lt;/label&gt;
+       &lt;span class="xHint"&gt;For specific emails part, for example if provided text is "-external", both emails "john.smith@yahoo.com" and "john.smith-external@yahoo.com" will be matched. Note : domain part (here "yahoo") is always ignored.&lt;/span&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), 'edit')
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+#set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_matchldap'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.AdminClass_0_matchldap"&gt;$prop.getPrettyName()&lt;/label&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), 'edit') Check existence of mail authors from LDAP using email addresses or login information.
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+&lt;div id="synchro_fields" style="margin-left:20px;"&gt;
+#set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_createmissingprofiles'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.AdminClass_0_createmissingprofiles"&gt;$prop.getPrettyName()&lt;/label&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), 'edit') If an account exists in LDAP but not as wiki profile, create the wiki user profile from LDAP information.
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+#set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_ldapphoto'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.AdminClass_0_ldapphoto"&gt;$prop.getPrettyName()&lt;/label&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), 'edit') Retrieve a photo from LDAP and assign it as avatar to matching wiki profile
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+&lt;div id="ldap_photo_fields" class="hidden" style="margin-left:40px;"&gt;
+#set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_ldapphotoforceupdate'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.AdminClass_0_ldapphotofield"&gt;$prop.getPrettyName()&lt;/label&gt;
+       &lt;span class="xHint"&gt;By default, does not update wiki profile avatar (or even retrieve photo from LDAP) if it already exists.&lt;/span&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), 'edit') Force update of wiki profile photo from LDAP.
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+#set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_ldapphotofield'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.AdminClass_0_ldapphotofield"&gt;$prop.getPrettyName()&lt;/label&gt;
+       &lt;span class="xHint"&gt;The LDAP field name supposed to contain user picture information.&lt;/span&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), 'edit')
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+#set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_ldapphototype'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.AdminClass_0_ldapphototype"&gt;$prop.getPrettyName()&lt;/label&gt;
+       &lt;span class="xHint"&gt;The expected content of the LDAP photo field name. This field could contain an URL targeting the picture, or directly binary data of the picture (only JPEG format is recognized).&lt;/span&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), 'edit')
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+#set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_store'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.AdminClass_0_store"&gt;$prop.getPrettyName()&lt;/label&gt;
+       &lt;span class="xHint"&gt;&lt;/span&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), 'edit') Create a backup copy of emails to local store
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+#if($hasEdit)
+&lt;span class="buttonwrapper"&gt;
+  &lt;input class="button" type="submit" value="Save"/&gt;
+&lt;/span&gt;
+#end
+&lt;/form&gt;
+{{/html}}
+
+{{/velocity}}</content>
+</xwikidoc>

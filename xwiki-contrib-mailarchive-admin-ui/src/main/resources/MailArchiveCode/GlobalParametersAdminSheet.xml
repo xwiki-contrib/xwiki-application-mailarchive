@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>MailArchiveCode</web>
+  <name>GlobalParametersAdminSheet</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchiveCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1375696741000</creationDate>
+  <date>1375697301000</date>
+  <contentUpdateDate>1375697301000</contentUpdateDate>
+  <version>1.1</version>
+  <title>GlobalParametersAdminSheet</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity wiki="true"}}
+#set($prefsdoc = $xwiki.getDocument("MailArchivePrefs.GlobalParameters"))
+#set($prefs = $prefsdoc.getObject("MailArchiveCode.AdminClass"))
+
+{{html wiki="true"}}
+&lt;form action="" class="xform" method="post" name="form_admin"&gt;
+#set($prop=$xwiki.getPropertyClassFromName("MailArchiveCode.AdminClass_user"))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.AdminClass_0_user"&gt;$prop.getPrettyName()&lt;/label&gt;
+       &lt;span class="xHint"&gt;It is recommended to create a specific user for the Mail Archive, with edit rights on MailArchive and MailArchiveCode spaces, and to give only read rights to other users to these spaces.&lt;/span&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), 'edit')
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+#set($prop=$xwiki.getPropertyClassFromName("MailArchiveCode.AdminClass_defaulthomeview"))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.AdminClass_0_defaulthomeview"&gt;$prop.getPrettyName()&lt;/label&gt;
+       &lt;span class="xHint"&gt;"Timeline" option is meaningful only if "timeline" property is set below.&lt;/span&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), 'edit')
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+#set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_defaulttopicsview'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.AdminClass_0_defaulttopicsview"&gt;$prop.getPrettyName()&lt;/label&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), 'edit')
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+#set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_mailsopeningmode'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.AdminClass_0_mailsopeningmode"&gt;$prop.getPrettyName()&lt;/label&gt;
+       &lt;span class="xHint"&gt;Affects the way mails are displayed when clicked from a Topic view.&lt;/span&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), 'edit')
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+#set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_excelexport'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+      &lt;label for="MailArchiveCode.AdminClass_0_excelexport"&gt;$prop.getPrettyName()&lt;/label&gt;
+#if (!$xwiki.exists('Macros.AddExcelExportToLivetableMacro'))
+      &lt;span class="xErrorMsg"&gt;You need to install [[the export to Excel macro&gt;&gt;http://extensions.xwiki.org/xwiki/bin/view/Extension/LiveTableExcelExport+Macro]] to use this feature.&lt;/span&gt;
+     &lt;/dt&gt;
+#else
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), $mode) Add 'export to Excel' link to the Mail Archive livetables
+     &lt;/dd&gt;
+#end
+   &lt;/dl&gt;
+#set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_ratings'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+      &lt;label for="MailArchiveCode.AdminClass_0_ratings"&gt;$prop.getPrettyName()&lt;/label&gt;
+#if (!$xwiki.exists('XWiki.Ratings') || !$xwiki.ratings)
+      &lt;span class="xErrorMsg"&gt;You need to install Ratings Plugin and Ratings Applications to use this feature.&lt;/span&gt;
+     &lt;/dt&gt;
+#else
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), $mode) Show ratings in Topics and Mails views.
+     &lt;/dd&gt;
+#end
+   &lt;/dl&gt;
+
+#set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_timeline'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+      &lt;label for="MailArchiveCode.AdminClass_0_timeline"&gt;$prop.getPrettyName()&lt;/label&gt;
+      &lt;span class="xHint"&gt;The MailArchive Timeline shows bands for last topics in a timeline. Uses a [[Simile widget&gt;&gt;http://www.simile-widgets.org/timeline/]]. Timeline data is generated and cached after each loading session (if any mail was loaded). Can slightly slow down loading sessions.&lt;/span&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), 'edit') Compute timeline data when new mails are loaded, and add option for timeline view in Mail Archive homepage
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+#set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_timelinemaxload'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.AdminClass_0_timelinemaxload"&gt;$prop.getPrettyName()&lt;/label&gt;
+       &lt;span class="xHint"&gt;A number in range [1..500]. Large values show more history in timeline but can lead to big computation time and resources usage on server. Default is 100.&lt;/span&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), 'edit')
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+#set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_matchwikiprofiles'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.AdminClass_0_matchwikiprofiles"&gt;$prop.getPrettyName()&lt;/label&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $prefsdoc.display($prop.getName(), 'edit') Match wiki profiles using email addresses of authors, and set "created by", "updated by" fields accordingly in created wiki pages.
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+#if($hasEdit)
+&lt;span class="buttonwrapper"&gt;
+  &lt;input class="button" type="submit" name="save" value="Save"/&gt;
+&lt;/span&gt;
+#end
+&lt;/form&gt;
+{{/html}}
+
+{{/velocity}}</content>
+</xwikidoc>

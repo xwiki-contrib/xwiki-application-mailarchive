@@ -33,6 +33,9 @@ import org.xwiki.job.JobManager;
 import org.xwiki.text.XWikiToStringBuilder;
 
 /**
+ * A Loading session definition.
+ * 
+ * @author jbousque
  * @version $Id$
  */
 public class LoadingSession

@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>MailArchiveCode</web>
+  <name>TypeCreationSheet</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchiveCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1353930108000</creationDate>
+  <date>1354528933000</date>
+  <contentUpdateDate>1354528933000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Mail Types Creation</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <object>
+    <class>
+      <name>MailArchiveCode.MailMatcherClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <expression>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>expression</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Expression</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </expression>
+      <fields>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>checkbox</displayType>
+        <multiSelect>1</multiSelect>
+        <name>fields</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Fields</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> , </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>from=From|to=To|cc=CC|subject=Subject|body=Body Text</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </fields>
+      <isAdvanced>
+        <customDisplay/>
+        <defaultValue>0</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>isAdvanced</name>
+        <number>3</number>
+        <prettyName>Advanced Mode</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </isAdvanced>
+      <isIgnoreCase>
+        <customDisplay/>
+        <defaultValue>1</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>isIgnoreCase</name>
+        <number>4</number>
+        <prettyName>Ignore case</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </isIgnoreCase>
+      <isMultiLine>
+        <customDisplay/>
+        <defaultValue>1</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>isMultiLine</name>
+        <number>5</number>
+        <prettyName>Match multiple lines</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </isMultiLine>
+    </class>
+    <name>MailArchiveCode.TypeCreationSheet</name>
+    <number>0</number>
+    <className>MailArchiveCode.MailMatcherClass</className>
+    <guid>634a38e2-8252-402d-a41b-8f59d7aac481</guid>
+    <property>
+      <expression/>
+    </property>
+    <property>
+      <fields>
+        <value>subject</value>
+      </fields>
+    </property>
+    <property>
+      <isAdvanced>0</isAdvanced>
+    </property>
+    <property>
+      <isIgnoreCase>1</isIgnoreCase>
+    </property>
+    <property>
+      <isMultiLine>0</isMultiLine>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>MailArchiveCode.TypeClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <builtin>
+        <customDisplay/>
+        <defaultValue>0</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>builtin</name>
+        <number>5</number>
+        <prettyName>Built-in Type</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </builtin>
+      <icon>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>icon</name>
+        <number>4</number>
+        <picker>0</picker>
+        <prettyName>Icon</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </icon>
+      <id>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>id</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>id</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </id>
+      <matchersComposition>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>matchersComposition</name>
+        <number>5</number>
+        <picker>0</picker>
+        <prettyName>Matchers relation-ship</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values>and|or</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </matchersComposition>
+      <name>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <picker>0</picker>
+        <prettyName>Display Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+    </class>
+    <name>MailArchiveCode.TypeCreationSheet</name>
+    <number>0</number>
+    <className>MailArchiveCode.TypeClass</className>
+    <guid>8e484243-88d6-4fce-bcc2-4321bf006871</guid>
+    <property>
+      <icon/>
+    </property>
+    <property>
+      <id/>
+    </property>
+    <property>
+      <matchersComposition>and</matchersComposition>
+    </property>
+    <property>
+      <name/>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.DocumentSheetBinding</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <sheet>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sheet</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>Sheet</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </sheet>
+    </class>
+    <name>MailArchiveCode.TypeCreationSheet</name>
+    <number>0</number>
+    <className>XWiki.DocumentSheetBinding</className>
+    <guid>ef3e6c23-846b-44a4-bc97-60ee41cccde2</guid>
+    <property>
+      <sheet/>
+    </property>
+  </object>
+  <content>{{velocity}}
+#if($request.get('save'))
+  #set($name = $request.get('MailArchiveCode.TypeClass_0_name'))
+  #set($newtypedoc = $xwiki.getDocument("MailArchivePrefs.Type_${name}"))
+  $newtypedoc.setParent('MailArchive.Admin')
+  #set ($newtypeobj = $newtypedoc.addObjectFromRequest('MailArchiveCode.TypeClass'))
+  #set($discard = $newtypeobj.set('builtin', '0'))
+  #set ($newtypematcheroj = $newtypedoc.addObjectFromRequest('MailArchiveCode.MailMatcherClass'))
+  #set($ok = $newtypedoc.save())
+  $response.setContentType('text/xml')
+  #if($ok)
+    &lt;response&gt;
+      &lt;status&gt;ok&lt;/status&gt;
+      &lt;message&gt;Successfully created new type ${newtypeobj.get('name')}&lt;/message&gt;
+    &lt;/response&gt;
+  #else    
+    &lt;response&gt;
+      &lt;status&gt;ko&lt;/status&gt;
+      &lt;message&gt;Could not create new type ${newtypeobj.get('name')}&lt;/message&gt;
+    &lt;/response&gt;
+  #end
+#else  
+  #set($obj=$doc.getObject('MailArchiveCode.TypeClass'))
+  #if($request.getParameter('newtypename'))
+    #set($discard = $obj.set('name', $request.getParameter('newtypename')))
+  #end
+  #if(${doc.name.endsWith('Creation')})
+    #set($assumeLightbox = true)
+  #end
+  #set($typesClass=$doc.getObject('MailArchiveCode.TypeClass').xWikiClass)
+
+== New Mail Type Information ==
+
+{{html wiki="true"}}
+&lt;div class="xform"&gt;
+&lt;form action="" class="xform" method="post" name="form_types_settings" onsubmit="return validate(this, 'table-patterns-list');"&gt;
+  &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+   #set($prop = $typesClass.get('id'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.TypeClass_0_${prop.name}"&gt;$prop.prettyName&lt;/label&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $doc.display($prop.name, 'edit', $obj)
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+   #set($prop = $typesClass.get('name'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.TypeClass_0_${prop.name}"&gt;$prop.prettyName&lt;/label&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $doc.display($prop.name, 'edit', $obj)
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+   #set($prop = $typesClass.get('icon'))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.TypeClass_0_${prop.getName()}"&gt;$prop.prettyName&lt;/label&gt;
+       &lt;span class="xHint"&gt;Enter the name of an icon from [[XWiki Icon Set&gt;&gt;http://www.famfamfam.com/lab/icons/silk/previews/index_abc.png||rel="_blank"]]&lt;/span&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $doc.display($prop.getName(), 'edit', $obj)
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+  &lt;br/&gt;
+
+=== Matchers List ===
+
+{{include reference="MailArchiveCode.MailMatcherSheet"/}}
+
+
+  &lt;span class="buttonwrapper"&gt;
+    #if($assumeLightbox)
+      ## LightBox detected...
+      &lt;script type="text/javascript"&gt;
+        ## Make the X button not reload the page. (overriding LbClose)
+        window.lb.lbClose = function() {
+          this.lbHide();
+          this.lbClearData();
+          if(this.redirectUrl!==undefined){window.location=this.redirectUrl;}
+        }
+        ## Post the form entry to the page and load the result. (we override lbSaveForm)
+        window.lb.lbSaveForm = function() {
+          var formParams = Form.serialize(this.form);
+          Form.disable(this.form);
+          var ajaxRequest = new Ajax.Request(this.saveUrl, {
+            parameters: formParams,
+            asynchronous: false
+          });
+          var status = ajaxRequest.transport.responseXML.getElementsByTagName('status')[0].childNodes[0].nodeValue;
+          var message = ajaxRequest.transport.responseXML.getElementsByTagName('message')[0].childNodes[0].nodeValue;
+          this.redirectUrl = this.redirectUrl + '?status=' + status + '&amp;message=' + message + '&amp;tab=types';
+          window.lb.lbFormDataLoaded(ajaxRequest.transport);
+          window.lb.lbClose();
+        }
+      &lt;/script&gt;
+      &lt;input class="button" type="submit" value="$msg.get('save')" onclick="window.lb.lbSaveForm();"/&gt;
+      &lt;/span&gt;&lt;span class="buttonwrapper"&gt;
+      &lt;input class="button secondary" type="submit" value="$msg.get("cancel")" onclick="Form.disable(window.lb.form); window.lb.lbClose();"/&gt;
+    #else
+      ## Not using the LightBox
+      &lt;input type="submit" value="$msg.get('save')" class="button"/&gt;
+    #end
+  &lt;/span&gt;## ButtonWrapper
+&lt;/form&gt;
+&lt;/div&gt;
+{{/html}}
+
+#end
+
+{{/velocity}}</content>
+</xwikidoc>

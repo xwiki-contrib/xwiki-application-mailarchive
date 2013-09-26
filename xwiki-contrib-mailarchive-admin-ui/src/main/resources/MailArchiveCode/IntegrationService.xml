@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>MailArchiveCode</web>
+  <name>IntegrationService</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchiveCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1353930106000</creationDate>
+  <date>1354528934000</date>
+  <contentUpdateDate>1354528934000</contentUpdateDate>
+  <version>1.1</version>
+  <title>IntegrationService</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
+#set($output = $request.output)
+#if("$!output" == "")
+  #set($output = "html")
+#end
+#if("$!{request.itemType}"=="mail")
+  #set($class='MailArchiveCode.MailClass')
+  #set($subjectField='messagesubject')
+  #set($dateField='date')
+  #set($authorField='from')
+  #set($itemType = "Mails")
+#else
+  #set($class='MailArchiveCode.TopicClass')
+  #set($subjectField='subject')
+  #set($dateField='lastupdatedate')
+  #set($authorField='author')
+  #set($itemType = "Topics")
+#end
+#if("$!{request.maxnb}" != "")
+  #set($maxnb = $request.maxnb)
+#else
+  #set($maxnb = "10")
+#end
+#set($criterias = $request.getParameterValues('criteria'))
+#set($extrawhere = "where 1=1")
+#set($extrafrom = "")
+#set($comindex = 0)
+#foreach($criteria in $criterias)
+  #if("$!criteria" == "criteria_community")    
+    #set($commclause = "(1=0")
+    #set($extrafrom = ", doc.object(XWiki.TagClass) as tagsobj")
+    #set($communities = $request.getParameterValues('community'))
+    #foreach($community in $communities) 
+      #set($communityString = "$!{communityString} [${community}]")
+    #end
+    #foreach($community in $communities)
+      #set($commclause = "$!{commclause} or :community_${comindex} member of tagsobj.tags")
+      #set($comindex = $comindex + 1)
+    #end
+    #set($commclause = "${commclause})")
+    #set($extrawhere = "$!{extrawhere} and ${commclause}")
+  #end
+  #if("$!criteria" == "criteria_type")
+    ##Retrieve types information
+    #set($xwql = "select type.id, type.name from Document doc, doc.object(MailArchiveCode.TypeClass) as type")
+    #set($existingTypes = $services.query.xwql($xwql).execute())
+    #set($types = $request.getParameterValues('type'))
+    #foreach($type in $types)
+      #set($typesString = "$!{typesString} [${type}]")
+    #end
+    #set($typeclause = "(1=0 ")
+    ## TODO : not generic, use new mail types system
+    #foreach($type in $types)     
+        #set($typeclause = "${typeclause} or '${type}' member of item.type")
+    #end
+    #set($typeclause = "$!{typeclause})")
+    #set($extrawhere = "$!{extrawhere} and ${typeclause}")
+  #end
+#end
+#set($extraorder = "$!{extraorder} item.${dateField} desc")
+#if($request.ratings)
+  ##set($extraselect = "$!{extraselect}, ratings.averagevote")
+  ##set($extrafrom = "$!{extrafrom}, doc.object(XWiki.AverageRatingsClass) as ratings")
+  ##set($extraorder = "ratings.averagevote desc, $!{extraorder}")
+#end
+
+#set($maxnb =$util.parseInteger($maxnb))
+#set($xwql="select doc.fullName, item.${subjectField}, item.${dateField}, item.${authorField}$!{extraselect} from Document as doc, doc.object(${class}) as item${extrafrom} ${extrawhere} order by $!{extraorder}")
+#set($query=$services.query.xwql($xwql).setLimit($maxnb))
+#if($request.debug)
+
+DEBUG $xwql
+
+#end
+#if($communities.size() &gt; 0)
+  #set($comindex = 0)
+  #foreach($community in $communities)
+    #set($query=$query.bindValue("community_${comindex}", "$!{community}"))
+    #set($comindex = $comindex + 1)
+  #end
+#end
+#set($results = $query.execute())
+#set($out = $response.getWriter())
+#set( $Q = '"' ) 
+#if($request.inline)
+  #set( $n = "&lt;br/&gt;")
+#else
+  #set( $n = "")
+#end
+##
+## ADD HEADERS
+##
+#set($outputString = [])
+#if($output == "json")
+  #if(!$request.inline)
+    $response.setContentType('application/x-json')
+  #end
+  #set($discard=$outputString.add("({"))
+  #set($discard=$outputString.add("  ${Q}count${Q} : ${Q}${results.size()}${Q},"))
+  #set($discard=$outputString.add("  ${Q}results${Q} : ["))
+#end
+#if($output == "xml")
+  #if(!$!request.inline)
+    $response.setContentType('text/xml')
+  #end
+  #set($discard=$outputString.add("&lt;?xml version=${Q}1.0${Q} encoding=${Q}UTF-8${Q} ?&gt;"))
+  #set($discard=$outputString.add("&lt;results&gt;"))
+#end
+#if($output == "rss")
+  #if(!$!request.inline)
+    $response.setContentType('application/rss+xml')
+  #end
+  #set($discard=$outputString.add("&lt;?xml version=${Q}1.0${Q} encoding=${Q}UTF-8${Q} ?&gt;"))
+  #set($discard=$outputString.add("&lt;rss version=${Q}2.0${Q}&gt;"))
+  #set($discard=$outputString.add("&lt;channel&gt;"))
+  #set($discard=$outputString.add("     &lt;title&gt;Mail Archive RSS Feed&lt;/title&gt;"))
+  #set($discard=$outputString.add("     &lt;description&gt;RSS feed for $!{itemType} - $!{communityString} - $!{typesString}&lt;/description&gt;"))
+  #set($discard=$outputString.add("     &lt;link&gt;${xwiki.getDocument('MailArchive.WebHome').getExternalURL('view')}&lt;/link&gt;"))
+  #set($discard=$outputString.add("     &lt;lastBuildDate&gt;&lt;/lastBuildDate&gt;"))
+  #set($discard=$outputString.add("     &lt;pubDate&gt;&lt;/pubDate&gt;"))
+  #set($discard=$outputString.add("     &lt;ttl&gt;1800&lt;/ttl&gt;"))
+#end
+#if(!$!request.inline &amp;&amp; $output == "html")
+{{html wiki="false"}}
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;base target='_blank'/&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+   &lt;ul&gt;
+#end
+#set($index = 0)
+##
+## ADD ITEMS
+##
+#foreach($item in $results)
+  #parseUser($item[3])
+  #set($url = "${escapetool.html($xwiki.getDocument($item[0]).getExternalURL('view'))}")
+  #if($output == "html")
+&lt;li&gt;
+&lt;a target="_parent" href="${url}"&gt;${item[1]}&lt;/a&gt; - $item[2] - $item[3]
+&lt;/li&gt;
+##* [[${item[1]}&gt;&gt;${item[0]}]] - $item[2] - $item[3]
+
+  #end
+  #if($output == "json")
+    #if($index &gt; 0) #set($discard=$outputString.add(" ,")) #end #set($discard=$outputString.add("{"))
+    #set($discard=$outputString.add("      ${Q}subject${Q} : ${Q}${escapetool.javascript($item[1])}${Q},"))
+    #set($discard=$outputString.add("      ${Q}date${Q} : ${Q}${escapetool.javascript($item[2])}${Q},"))
+    #set($discard=$outputString.add("      ${Q}author${Q} : ${Q}${escapetool.javascript($user)}${Q},"))
+    #set($discard=$outputString.add("      ${Q}author_mail${Q} : ${Q}${escapetool.javascript($mail)}${Q},"))
+    #set($discard=$outputString.add("      ${Q}url${Q} : ${Q}${url}${Q}"))
+    #set($discard=$outputString.add("    }"))
+  #set($index = $index + 1)
+  #end
+  #if($output == "rss")
+    #set($discard=$outputString.add("&lt;item&gt;"))
+    #set($discard=$outputString.add("&lt;title&gt;${item[1]}&lt;/title&gt;"))
+    #set($discard=$outputString.add("&lt;description&gt;${item[1]}&lt;/description&gt;"))
+    #set($discard=$outputString.add("&lt;link&gt;${escapetool.html($xwiki.getDocument($item[0]).getExternalURL('view'))}&lt;/link&gt;"))
+    #set($discard=$outputString.add("&lt;guid&gt;${item[0]}&lt;/guid&gt;"))
+    #set($discard=$outputString.add("&lt;pubDate&gt;${url}&lt;/pubDate&gt;"))
+    #set($discard=$outputString.add("&lt;/item&gt;"))
+  #end
+  #if($output == "xml")
+    #set($discard=$outputString.add("&lt;item subject=${Q}${escapetool.xml($item[1])}${Q} date=${Q}${escapetool.xml($item[2])}${Q} author=${Q}${escapetool.xml($user)}${Q} author_mail=${Q}${escapetool.xml($mail)}${Q} url=${Q}$url${Q} /&gt;"))
+  #end
+#end
+##
+## WRITE FOOTER
+##
+#if ($output == "json")
+  #set($discard=$outputString.add("   ]})"))
+#end
+#if($output == "rss")
+  #set($discard=$outputString.add("&lt;/channel&gt;"))
+  #set($discard=$outputString.add("&lt;/rss&gt;"))
+#end
+#if($output == "xml")
+  #set($discard=$outputString.add("&lt;/results&gt;"))
+#end
+#if(!$!request.inline &amp;&amp; $output == "html")
+    &lt;/ul&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+{{/html}}
+#end
+##
+## OUTPUT RESULT
+##
+#if($output == "json" || $output == "xml" || $output == "rss")
+  #foreach($string in $outputString)
+    #if($request.inline)
+      #set($finalString = "$!{finalString}${escapetool.html($string)}&lt;br/&gt;")
+    #else
+      #set($finalString = "$!{finalString}${string}${n}")
+    #end
+  #end
+  #set($outputString = $finalString)
+  ## Write output to servlet response
+  $out.println($outputString)
+  $out.flush()
+#end
+
+## TODO : use parse user method from java component
+#macro(parseUser $userstr)
+  #set($begin = $userstr.indexOf('&lt;'))
+  #set($end = $userstr.lastIndexOf('&gt;'))
+  #set($user=$userstr.substring(0,$begin))
+  #set($begin = $begin + 1)
+  #set($mail=$userstr.substring($begin,$end))
+#end
+{{/velocity}}</content>
+</xwikidoc>

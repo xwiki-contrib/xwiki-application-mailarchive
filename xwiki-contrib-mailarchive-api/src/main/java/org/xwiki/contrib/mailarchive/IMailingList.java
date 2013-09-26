@@ -19,16 +19,40 @@
  */
 package org.xwiki.contrib.mailarchive;
 
-
 /**
- * Interface (aka Role) of the Component
+ * A mailing-list.
+ * 
+ * @author jbousque
  */
 public interface IMailingList
 {
+    /**
+     * Display name of this mailing-list.
+     * 
+     * @return
+     */
     public String getDisplayName();
 
+    /**
+     * Pattern (contains), ie part of an email address matched against email address fields, to decide if an email
+     * belongs to this mailing-list or not.
+     * 
+     * @return An inclusion pattern.
+     */
     public String getPattern();
 
+    /**
+     * A tag to be set on loaded emails and topics pages, when they belong to this mailing-list.
+     * 
+     * @return
+     */
     public String getTag();
+
+    /**
+     * Optionally, a mailing-list can be part of a group of mailing-lists.
+     * 
+     * @return The group this list belongs to, or null if it doesn't belong to a group.
+     */
+    public IMailingListGroup getGroup();
 
 }

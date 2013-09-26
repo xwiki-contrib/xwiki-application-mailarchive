@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>MailArchiveCode</web>
+  <name>TopicSheet</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchiveCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1353930107000</creationDate>
+  <date>1354528935000</date>
+  <contentUpdateDate>1354528935000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <object>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage=Always on this page|onDemand=On demand|always=Always on this wiki</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <name>MailArchiveCode.TopicSheet</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>30a78c85-fa49-4a24-8cb2-2ad5c563268e</guid>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>{{velocity wiki="false"}}
+#template('colorThemeInit.vm')
+.topic-header {
+  background-color:$theme.highlightColor !important;
+  padding:10px 10px 10px 10px !important;
+  height:2em;
+  line-height:2em;
+}
+.topic-header-info {
+  background-color:$theme.highlightColor !important;
+  text-align:left;
+  width:60%;
+  float:left;
+  display:inline-block;
+  vertical-align:middle;
+  line-height:1.2;
+}
+.topic-header-nav {
+  background-color:$theme.highlightColor !important;
+  text-align:right;
+  width:39%;
+  float:left;
+  display:inline-block;
+  vertical-align:middle;
+  line-height:1.2;
+}
+.forum-message-author-header {
+  background-color:$theme.backgroundSecondaryColor !important;
+  text-align:center !important;
+  border-top-color:darkgrey !important;
+  border-top-width:4px !important;
+}
+.forum-message-author {
+  //border-bottom-left-radius: 100px 50px;
+  //-moz-border-bottom-left-radius: 100px 50px;
+  vertical-align:top !important;
+  text-align:left !important;
+  border:0px none !important;
+  padding-left:10px !important;
+  background-color:$!{theme.backgroundSecondaryColor} !important;
+  //border-right-color:$!{theme.borderColor} !important;
+
+  
+  //border-bottom-color:grey !important;
+  //border-bottom-width:2px !important;
+}
+.forum-message-author img {
+  width:100px;
+  text-align:center;
+}
+.forum-message-content-header-left {
+  background-color:$theme.backgroundSecondaryColor !important;
+  border-top-color:darkgrey !important;
+  border-top-width:4px !important;
+  text-align:left;
+}
+.forum-message-content-header-right {
+  background-color:$theme.backgroundSecondaryColor !important;
+  border-top-color:darkgrey !important;
+  border-top-width:4px !important;
+  text-align:right;
+}
+
+.forum-message-content {
+  border-style:none;
+}
+.forum-message-footer-left {
+  background-color:$theme.backgroundSecondaryColor !important;
+  text-align:right !important;
+  border-style:none !important;
+}
+.forum-message-footer-right {
+  background-color:$theme.backgroundSecondaryColor !important;
+  text-align:right !important;
+  border-style:none !important;
+}
+.forum-message-author-footer {
+ background-color:$theme.backgroundSecondaryColor !important;
+ border-top-style:none !important;
+ border-bottom-width:4px !important;
+ border-bottom-color:darkgrey !important;
+}
+.forum-table {
+  border-color:$!{theme.borderColor} !important;
+  width:100% !important;
+}
+.forum-table th {
+  background-color:$theme.highlightColor !important;
+  text-align:center;
+  font-variant: small-caps;
+  border-color:black !important;
+  border-width:1px !important;
+}
+.forum-usercolumn {
+  background-color:$!{theme.backgroundSecondaryColor} !important;
+  border-style:none;
+  //border-color:$!{theme.backgroundSecondaryColor} !important;
+  width:150px !important;
+  height:0px !important;
+  padding: 0px 0px !important;
+}
+.forum-contentcolumn {
+  background-color:$!{theme.backgroundSecondaryColor} !important;
+  border-style:none;
+  //border-color:$!{theme.backgroundSecondaryColor} !important;
+  height:0px !important;
+  padding: 0px 0px !important;
+}
+{{/velocity}}</code>
+    </property>
+    <property>
+      <name>topicstyles</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+  <object>
+    <class>
+      <name>XWiki.TagClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <tags>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>tags</name>
+        <number>1</number>
+        <prettyName>Tags</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator>|</separator>
+        <separators>|,</separators>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </tags>
+    </class>
+    <name>MailArchiveCode.TopicSheet</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>84fd6add-03bd-4e4f-b698-bd38ac128793</guid>
+    <property>
+      <tags/>
+    </property>
+  </object>
+  <content>{{html wiki="false"}}
+&lt;SCRIPT LANGUAGE="JavaScript"&gt;
+function resizeIframeToFitContent(iframe, framenb) {
+    // This function resizes an IFrame object
+    // to fit its content.
+    // The IFrame tag must have a unique ID attribute.
+    iframe.height = window.frames[framenb].document.body.scrollHeight;
+}
+Event.observe(window, 'load', function() {
+  initialize();
+});
+&lt;/SCRIPT&gt;
+{{/html}}
+
+{{velocity}}
+## for display of message in modal box
+#set($discard = $xwiki.jsfx.use("js/scriptaculous/scriptaculous.js"))
+#set($discard = $xwiki.jsx.use("XWiki.ModalBox"))
+#set($discard = $xwiki.ssx.use("XWiki.ModalBox"))
+#set($discard = $xwiki.ssx.use('MailArchiveCode.TopicSheet'))
+#set($prefsdoc = $xwiki.getDocument('MailArchivePrefs.GlobalParameters'))
+#set($prefs = $prefsdoc.getObject('MailArchiveCode.AdminClass'))
+#set($obj = $doc.getObject('MailArchiveCode.TopicClass'))
+#set($showRatings = $prefs.getProperty('ratings').getValue() != "0")
+#if($prefs.getProperty('ratings').value != "0" &amp;&amp; $xwiki.exists('XWiki.Ratings') &amp;&amp; $xwiki.ratings)
+  #set($showRatings = true)
+#else
+  #set($showRatings = false)
+#end
+#if($showRatings)
+  #includeMacros("XWiki.RatingsMacros")
+#end
+#set($mode = $request.display)
+#if("$!mode" != "table" &amp;&amp; "$!mode" != "forum" &amp;&amp; "$!mode" != "threads")
+  #set($mode = $prefs.getProperty('defaulttopicsview').getValue())
+#end
+#if("$!doc.display('importance')" == "high")
+  #set($prefix = "(% style='color:red' %)[[image:icon:exclamation]] Important ")
+#end
+{{html wiki="true"}}
+&lt;div class="topic-header"&gt;
+&lt;div class="topic-header-info"&gt;
+$!prefix **$doc.display('author')** started **$datetool.format('medium', $obj.getProperty('startdate').getValue())** last updated **$datetool.format('medium', $obj.getProperty('lastupdatedate').getValue())**
+&lt;/div&gt;
+&lt;div class="topic-header-nav"&gt;
+{{html wiki="false"}}
+&lt;span class="buttonwrapper"&gt;&lt;a class="button" id="choice_threads" href="$doc.getURL()?display=threads"&gt;Threads&lt;/a&gt; &lt;a class="button" id="choice_list" href="$doc.getURL()?display=table&gt;List&lt;/a&gt; &lt;a class="button" id="choice_forum" href="$doc.getURL()?display=forum&gt;Forum&lt;/a&gt;&lt;/span&gt;
+{{/html}}
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script type="text/javascript"&gt;
+
+function initialize() {
+  #if($mode == "table")
+    $('choice_list').addClassName('disabled');
+  #elseif ($mode == "threads")
+    $('choice_threads').addClassName('disabled');
+  #elseif ($mode == "forum")
+    $('choice_forum').addClassName('disabled');
+  #end
+}
+
+&lt;/script&gt;
+{{/html}}
+
+#if($mode == "table")
+  #set($discard = $xwiki.ssx.use("MailArchiveCode.TopicsLiveTableResults"))
+  #set($discard = $xwiki.jsx.use("MailArchiveCode.TopicsLiveTableResults"))
+  #set($collist = [ "date", "from", "messagesubject"])
+  #if($showRatings)
+    #set($discard = $collist.add("_ratings"))
+  #end
+  #set($colprops = { 
+   "from" : { "displayName":"From", "type" : "text", "sortable":"true", "filterable":"true", "html" : "true" },                  
+   "messagesubject" : { "displayName":"Subject", "type" : "text", "link" : "view", "sortable":"false", "filterable":"false", "html":"true" },    
+   "_ratings" : { "sortable" : "false" },
+   "date" : { "displayName":"Date", "type" : "date", "link" : "view" }
+                 })
+  #set($url = "$xwiki.getDocument('MailArchiveCode.TopicsLiveTableResults').getExternalURL('view')?topicid=${doc.topicid}&amp;collist=date,from,messagesubject,_ratings&amp;classname=MailArchiveCode.MailClass&amp;outputSyntax=plain&amp;xpage=plain")
+  #set($options = { "className":"MailArchiveCode.TopicClass",
+                  "url":"$url",
+                  "selectedColumn":"date",
+                  "tagCloud":"false",
+                  "defaultOrder":"asc",
+                  "translationPrefix" : "xe.mailarchive.",
+                  "rowCount": 20 })
+  #livetable("mails" $collist $colprops $options)
+
+#elseif ($mode == "threads")
+  #set($threadedMessages = $services.mailarchive.thread($doc.topicid))
+  #if($!threadedMessages[0].user)
+    #set($start = 0)
+  #else
+    #set($start = 1)
+  #end
+  #foreach($message in $threadedMessages) 
+    #set($star="")
+    #if($!message.user)
+      #set($maUser=$services.mailarchive.parseUser($message.user))
+      #foreach($i in [$start..$message.level]) #set($star="$!{star}*") #end
+$star $datetool.format('short', $message.date) - $maUser.displayName - #if($message.page) [[$message.subject&gt;&gt;$message.page]] #else $message.subject #end
+
+      #end
+    #end
+#elseif ($mode == "forum")
+  #set($threadedMessages = $services.mailarchive.thread($doc.topicid))
+  ## HEADER Part
+{{html wiki="true"}}
+&lt;table class="forum-table" id="table-forum"&gt;
+  &lt;tr&gt;
+    &lt;th class="forum-usercolumn"&gt;Author&lt;/th&gt;
+    &lt;th class="forum-contentcolumn" colspan="2"&gt;Message&lt;/th&gt;
+  &lt;/tr&gt;
+  ## By default, we show it sorted by dates for forum view
+  #set($threadedMessages = $sorttool.sort($threadedMessages, "date"))
+  #set($level = 0)
+  #set($providerUrl = $xwiki.getDocument('MailArchiveCode.HtmlProvider').getURL("view"))
+  
+  ## show messages
+  #foreach($mail in $threadedMessages)
+    #if($!mail.user)
+     #set($subject = $mail.subject.replaceAll("&lt;","&amp;lt;").replaceAll("&gt;","&amp;gt;"))
+     #set($link = "$mail.page")
+     #if($!anchor)
+       #set($previousAnchor = $anchor)
+     #end
+     #set($anchor = $escapetool.javascript($link))
+     #set($user = "$mail.user")
+     #set($userDisplay = $services.mail.parseAddressHeader($!user)[0].getPersonal())
+     #set($maUser = $services.mailarchive.parseUser($!user))
+     #set($userWiki = $maUser.wikiProfile)
+     ## Count mails from author
+     #set($xwql = "select count(mail.from) from Document doc, doc.object(MailArchiveCode.MailClass) as mail where mail.from = '$xwiki.sqlfilter($user)'")
+     #set($result = $services.query.xwql($xwql).execute())
+     #set($count = 0)          
+     #if($result.size()&gt;0)
+       #set($count = $result[0])
+     #end
+     #set($iframeid = "iframe_$mail.page")
+  &lt;tr&gt;
+    &lt;td class="forum-message-author-header"&gt;**$mail.user**&lt;/td&gt;
+    &lt;td class="forum-message-content-header-left" valign="top"&gt;
+      &lt;div style="float:left;"&gt;
+      {{html wiki="false"}}&lt;a href="$xwiki.getURL($link,'view')" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $subject'}); return false; " name="$anchor"&gt;$subject&lt;/a&gt;{{/html}}
+      &lt;/div&gt;
+      &lt;div style="float:right;"&gt;
+      #if($!previousAnchor) &lt;a href="${doc.getURL()}#${previousAnchor}"&gt; image:icon:bullet_arrow_up &lt;/a&gt; #end
+      &lt;a href="${doc.getURL()}#${anchor}"&gt; image:icon:bullet_arrow_down &lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/td&gt;
+    &lt;td class="forum-message-content-header-right" valign="top"&gt;
+      #if($showRatings) #displayFullRating($xwiki.getDocument("$mail.page"), "") #end
+      $datetool.format('medium', $mail.date)      
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td class="forum-message-author"&gt;
+      #if($userWiki) [[image:$xwiki.getDocument($userWiki).fullName@$xwiki.getDocument($userWiki).getObject('XWiki.XWikiUsers').avatar]] &lt;br/&gt;#end
+      **$!maUser.displayName**&lt;br/&gt;&lt;br/&gt;
+      **Posts**: $count&lt;br/&gt;&lt;br/&gt;
+      &lt;span class="buttonwrapper"&gt;
+        &lt;a href="${xwiki.getDocument('MailArchive.ViewUserMessages').getURL()}?user=$escapetool.html("$!{user}")&amp;wikiUser=$escapetool.html("$!{userWiki}")"&gt;Statistics&lt;/a&gt;&lt;br/&gt;
+        #if("$!userWiki" != "") &lt;br/&gt;&lt;a href="${xwiki.getDocument($userWiki).getURL()}"&gt;Profile&lt;/a&gt;&lt;br/&gt; #end
+      &lt;/span&gt;
+    &lt;/td&gt;
+    &lt;td class="forum-message-content" colspan="2"&gt;
+      {{html wiki="false"}}
+      &lt;iframe id="$iframeid" name="$iframeid" width="100%" height="0" scrolling="no" src="$providerUrl?page=$mail.page&amp;cut=true&amp;xpage=plain" onload="resizeIframeToFitContent(this, '$iframeid')"&gt;&lt;/iframe&gt;
+      {{/html}}    
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td class="forum-message-author-footer&gt;&amp;nbsp;&lt;/td&gt;
+    &lt;td class="forum-message-footer-left"&gt;
+    &lt;/td&gt;
+    &lt;td class="forum-message-footer-right"&gt;
+      &lt;span class="buttonwrapper"&gt;
+       &lt;a class="button" href="$xwiki.getURL($link,'view','xpage=plain')&amp;showdetails=false" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $escapetool.javascript($subject)'}); return false; "&gt;View&lt;/a&gt;
+       #if($hasEdit) &lt;a class="button" href="$xwiki.getURL($link,'view','xpage=plain')&amp;showdetails=false" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $escapetool.javascript($subject)'}); return false; "&gt;Reply&lt;/a&gt; #end
+       #if($hasAdmin) &lt;a class="button" href="$xwiki.getURL($link,'view','xpage=plain')&amp;showdetails=false" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $escapetool.javascript($subject)'}); return false; "&gt;Edit&lt;/a&gt; #end
+      &lt;/span&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+    #end
+  #end
+
+  ## Footer Part
+&lt;/table&gt;
+{{/html}}
+ 
+#end
+
+{{/velocity}}
+</content>
+</xwikidoc>

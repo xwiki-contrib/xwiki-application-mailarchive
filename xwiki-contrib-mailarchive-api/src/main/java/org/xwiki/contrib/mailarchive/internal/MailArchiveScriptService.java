@@ -29,10 +29,12 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IMailArchive;
+import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.LoadingSession;
 import org.xwiki.contrib.mailarchive.internal.data.IFactory;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadMessageBean;
+import org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineGenerator;
 import org.xwiki.contrib.mailarchive.internal.utils.DecodedMailContent;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.Job;
@@ -50,6 +52,9 @@ public class MailArchiveScriptService implements ScriptService
 {
     @Inject
     private IMailArchive mailArchive;
+
+    @Inject
+    private ITimeLineGenerator timeline;
 
     @Inject
     private IFactory factory;
@@ -117,6 +122,18 @@ public class MailArchiveScriptService implements ScriptService
 
     /**
      * Threads messages related to a topic, given its topic ID.<br/>
+     * 
+     * @param topicid A topic ID, as can be found in a TopicClass object instance in "topicId" field.
+     * @return An array of threaded messages.
+     */
+    public ArrayList<ThreadMessageBean> thread(final String topicid)
+    {
+        // We "flatten" the output to avoid needing recursivity to display the thread(s).
+        return this.mailArchive.computeThreads(topicid).flatten();
+    }
+
+    /**
+     * Threads all messages in the mail archive.<br/>
      * The result is an array, and not a recursive structure, in order to facilitate display of the thread.<br/>
      * For each message, property "level" provides the current level in the thread hierarchy,<br/>
      * and "index" provides the sequence number in the whole thread stack.<br/>
@@ -127,15 +144,8 @@ public class MailArchiveScriptService implements ScriptService
      * -- "Re: I have a question" (level:1, index:3)<br/>
      * This allows to easily sort by thread, and display thread hierarchy.
      * 
-     * @param topicid A topic ID, as can be found in a MailTopicClass object instance in "topicId" field.
      * @return An array of threaded messages.
      */
-    public ArrayList<ThreadMessageBean> thread(final String topicid)
-    {
-        // We "flatten" the output to avoid needing recursivity to display the thread(s).
-        return this.mailArchive.computeThreads(topicid).flatten();
-    }
-
     public ArrayList<ThreadMessageBean> thread()
     {
         return thread(null);
@@ -147,17 +157,9 @@ public class MailArchiveScriptService implements ScriptService
     }
 
     // FIXME: for manual tests only, to be removed
-    public String getTimelineFeed()
+    public ITimeLineGenerator getTimeline()
     {
-        String timelineFeed = "";
-        try {
-            timelineFeed = this.mailArchive.computeTimeline();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        return timelineFeed;
+        return this.timeline;
     }
 
     public DecodedMailContent getDecodedMailText(final String mailPage, final boolean cut)

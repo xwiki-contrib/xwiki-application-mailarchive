@@ -598,7 +598,7 @@ ICBhbGVydChlKTsKICAgIH0KfSkoKTs=
   height:4px; 
 }
 {{velocity filter="none"}}
-#set($xwql = "select list.Tag, list.color from Document doc, doc.object(MailArchiveCode.ListsSettingsClass) as list where doc.name&lt;&gt;'MailArchiveCode.ListsSettingsTemplate'")
+#set($xwql = "select list.Tag, list.color from Document doc, doc.object(MailArchiveCode.MailingListClass) as list where doc.name&lt;&gt;'MailArchiveCode.ListsSettingsTemplate'")
 #set($lists = $services.query.xwql($xwql).execute())
 #foreach($list in $lists)
 .tape-${list[0]} {
@@ -767,7 +767,7 @@ function addJavascriptText(text,pos) {
 &lt;/script&gt;
 
 &lt;div&gt; 
-#set($xwql = "select list.Tag, list.color, list.displayname from Document doc, doc.object(MailArchiveCode.ListsSettingsClass) as list where doc.name&lt;&gt;'MailArchiveCode.ListsSettingsTemplate'")
+#set($xwql = "select list.Tag, list.color, list.displayname from Document doc, doc.object(MailArchiveCode.MailingListClass) as list where doc.name&lt;&gt;'MailArchiveCode.ListsSettingsTemplate'")
 #set($lists = $services.query.xwql($xwql).execute())
 #foreach($list in $lists)
   &lt;span style="font-weight:bold;color:white;text-shadow: 0.2em 0.2em 0.2em black;" class="tape-${list[0]}" style="color:${list[1]}"&gt;&amp;nbsp;${list[2]}&amp;nbsp;&lt;/span&gt;

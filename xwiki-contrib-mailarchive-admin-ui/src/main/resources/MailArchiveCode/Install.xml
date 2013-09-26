@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>MailArchiveCode</web>
+  <name>Install</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchiveCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1375534142000</creationDate>
+  <date>1375711589000</date>
+  <contentUpdateDate>1375711589000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <object>
+    <class>
+      <name>XWiki.TagClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <tags>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>tags</name>
+        <number>1</number>
+        <prettyName>Tags</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator>|</separator>
+        <separators>|,</separators>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </tags>
+    </class>
+    <name>MailArchiveCode.Install</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>ce2ef43d-60a5-4600-abfa-48099a9e6a60</guid>
+    <property>
+      <tags/>
+    </property>
+  </object>
+  <content>= Mail-Archive Application Install =
+
+{{velocity}}
+#if(!$xwiki.hasAdminRights())
+You are running this script as a non admin. It will have no effect. Login as admin.
+#else
+This script automatically set the owner of the pages in MailArchiveCode space and in some pages of MailArchive space. This will allow the priviledged scripts included in them to work.
+The script will also install the schedulable job, ,and set-up translations.
+
+#end
+
+#if(!$xwiki.exists("XWiki.LiveTableResultsMacros"))
+#warning("The LiveTable component is not installed properly. If you are running XWiki 1.8.x, you will need to download the LiveTable component from http://code.xwiki.org")
+#end
+
+#if($request.confirm=="1")
+Assigning programming rights to the following pages:
+#else
+[[Confirm assigning programming rights to the following pages:&gt;&gt;$doc.fullName||queryString=confirm=1]]
+#end
+
+#foreach($item in $xwiki.searchDocuments("where doc.web='MailArchiveCode' or doc.fullName like 'XWiki.LiveTable%' or (doc.space = 'MailArchive' and doc.name in ('WebHome','Statistics','Admin','Loading','Operate','Purge','RemoteIntegration')) order by doc.fullName asc"))
+* $item #if($request.confirm=="1") $xwiki.getDocument($item).save() #end
+
+#end
+
+#set($transdoc = $xwiki.getDocument("XWiki.XWikiPreferences"))
+#set($ok = $transdoc.use("XWiki.XWikiPreferences"))
+#set($transprefs = $transdoc.getValue("documentBundles"))
+#if($transprefs.indexOf("MailArchiveCode.Translations")==-1)
+#if($request.confirm=="1")
+#set($transprefs = "${transprefs},MailArchiveCode.Translations")
+#set($ok = $transdoc.set("documentBundles", $transprefs))
+#set($ok = $transprefs.save())
+#end
+* Added translation bundle to XWiki Preferences
+#end
+
+#if($transprefs.indexOf("XWiki.LiveTableTranslations")==-1 &amp;&amp; $xwiki.exists("XWiki.LiveTableTranslations"))
+#if($request.confirm=="1")
+#set($transprefs = "${transprefs},XWiki.LiveTableTranslations")
+#set($ok = $transdoc.set("documentBundles", $transprefs))
+#set($ok = $transprefs.save())
+#end
+* Added livetable translation bundle to XWiki Preferences
+#end
+{{/velocity}}
+
+== Additional Install steps ==
+
+You should go to the [[Administration page&gt;&gt;AdminSheet]] to set-up at least one email server / folder to read new emails, as well as other settings.
+
+Finally you can setup automatic loading by activating the job in the [[scheduler&gt;&gt;Scheduler.WebHome]]. Options for loading sessions can be setup through [[MailArchive.Loading]] page.
+
+
+[[Back to Mailing-list Archive Home Page&gt;&gt;MailArchive.WebHome]]</content>
+</xwikidoc>

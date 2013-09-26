@@ -19,10 +19,13 @@
  */
 package org.xwiki.contrib.mailarchive.internal.data;
 
+import java.util.List;
+
 import org.xwiki.component.annotation.Role;
 import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailMatcher;
 import org.xwiki.contrib.mailarchive.IMailingList;
+import org.xwiki.contrib.mailarchive.IMailingListGroup;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.LoadingSession;
 
@@ -91,5 +94,16 @@ public interface IFactory
      * @return
      */
     IMailingList createMailingList(String pattern, String displayName, String tag, String color);
+
+    /**
+     * @param name
+     * @param mailingLists
+     * @param loadingUser
+     * @param destinationWiki
+     * @param destinationSpace
+     * @return
+     */
+    IMailingListGroup createMailingListGroup(String name, List<IMailingList> mailingLists, String loadingUser,
+        String destinationWiki, String destinationSpace);
 
 }

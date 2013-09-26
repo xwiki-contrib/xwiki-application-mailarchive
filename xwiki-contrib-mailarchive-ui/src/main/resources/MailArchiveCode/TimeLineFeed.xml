@@ -175,12 +175,12 @@ if (!curdoc.hasAccessLevel('edit', loadingUser)) {
 try {
 
     // Add Topics durations
-    xwql = "select topic.name from Document doc, doc.object('MailArchiveCode.MailTopicClass') as topic order by topic.lastupdatedate desc"
+    xwql = "select topic.name from Document doc, doc.object('MailArchiveCode.TopicClass') as topic order by topic.lastupdatedate desc"
     result = services.get("query").xwql(xwql).setLimit(count).execute()
 
     for (item in result) {
         doc = xwiki.getDocument(item)
-        obj = doc.getObject("MailArchiveCode.MailTopicClass")
+        obj = doc.getObject("MailArchiveCode.TopicClass")
         if (obj != null) 
         {
             try {
@@ -271,7 +271,7 @@ try {
 def getTopicMails(topicid, topicsubject) {
     def returnVal = ""
     def first = true
-    def xwql_topic = "select doc.fullName,doc.author,mail.date,mail.messagesubject,mail.from from Document doc, doc.object(MailArchiveCode.MailClass) as  mail where  mail.topicid='${topicid}' and doc.fullName&lt;&gt;'MailArchiveCode.MailClassTemplate' order by mail.date asc"
+    def xwql_topic = "select doc.fullName,doc.author,mail.date,mail.messagesubject,mail.from from Document doc, doc.object(MailArchiveCode.MailClass) as  mail where  mail.topicid='${topicid}' and doc.fullName&lt;&gt;'MailArchiveCode.MailTemplate' order by mail.date asc"
     def msgs = services.get("query").xwql(xwql_topic).execute()
     msgs.each { msg -&gt;        
         // formatter for formatting dates for display

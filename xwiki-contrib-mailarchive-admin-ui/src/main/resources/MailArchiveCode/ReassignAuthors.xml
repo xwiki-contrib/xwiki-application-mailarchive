@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>MailArchiveCode</web>
+  <name>ReassignAuthors</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent>MailArchiveCode.WebHome</parent>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1353417892000</creationDate>
+  <date>1353417892000</date>
+  <contentUpdateDate>1353417892000</contentUpdateDate>
+  <version>1.1</version>
+  <title>Reassign Authors</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>false</hidden>
+  <content>Helping tool to reassign real authors to wiki pages of MailArchive (Mails and Topics)
+
+{{groovy}}
+   def maxNb = 50
+
+   def confirm = (request.getParameter("submit") != null || request.getParameter("submit") == "submit")
+   xcontext.put('confirm', confirm)
+
+   // Manage pagination
+   def start = 0
+   try {
+     start = util.parseInt(request.getParameter("start"))
+   } catch (NumberFormatException nfE) {
+     start = 0
+   }
+   if (start == null || start == "" || start == "null") {
+     start = 0
+   }
+   def nb = maxNb
+   try {
+     nb = util.parseInt(request.getParameter("nb"))
+   } catch (NumberFormatException nfE) {
+     nb = maxNb
+   }
+   if (nb == null || nb == "" || nb == "null" || nb == 0) {
+     nb = maxNb
+   }
+   def next = (request.getParameter("next") != null &amp;&amp; request.getParameter("next") != "null" &amp;&amp; request.getParameter("next") != "")
+   def previous = (request.getParameter("previous") != null &amp;&amp; request.getParameter("previous") != "null" &amp;&amp; request.getParameter("previous") != "")
+
+   if (next) {
+     start = start + nb     
+   }
+   if (previous) {
+     start = start - nb
+   }
+   xcontext.put('start',start)
+   xcontext.put('nb',nb)
+
+{{/groovy}}
+
+{{velocity}}
+{{html}}
+&lt;form class="xform" name="form" id="form"&gt;
+  &lt;span class="buttonwrapper"&gt;
+    &lt;input class="button" type="submit" value="Refresh" name="refresh"/&gt;
+    &lt;input class="button" type="submit" value="Reassign Authors" name="submit"/&gt;
+     #if ($xcontext.get('start') != 0)
+       &lt;input class="button" type="submit" value="Show Previous $xcontext.get('nb')" name="previous"/&gt;
+     #end
+    &lt;input class="button" type="submit" value="Show Next $xcontext.get('nb')" name="next"/&gt;&lt;br/&gt;
+    &lt;input type="checkbox" id="checkOverwrite" value="Force Overwrite" name="overwrite"/&gt;
+    &lt;label for="checkOverwrite"&gt;Force overwrite of author&lt;/label&gt;&lt;br/&gt;
+    &lt;input type="checkbox" id="checkTrigger" value="Trigger" name="trigger"/&gt;
+    &lt;label for="checkTrigger"&gt;Trigger update event&lt;/label&gt;&lt;br/&gt;
+    &lt;input type="hidden" name="start" value="$xcontext.get('start')"/&gt;
+    &lt;input type="hidden" name="nb" value="$xcontext.get('nb')"/&gt;
+  &lt;/span&gt;
+&lt;/form&gt;
+{{/html}}
+{{/velocity}}
+
+{{groovy}}
+
+def confirm = xcontext.get('confirm')
+def start = xcontext.get('start')
+def nb = xcontext.get('nb')
+
+def overwrite = (request.getParameter("overwrite") != null &amp;&amp; request.getParameter("overwrite") != "" &amp;&amp; request.getParameter("overwrite") != "null")
+def trigger = (request.getParameter("trigger") != null &amp;&amp; request.getParameter("trigger") != "" &amp;&amp; request.getParameter("trigger") != "null")
+
+def sql = "select count(doc.fullName) from XWikiDocument as doc, BaseObject as obj, LargeStringProperty as prop where obj.className='MailArchiveCode.MailClass' and obj.name&lt;&gt;'MailArchiveCode.MailTemplate' and obj.id=prop.id and prop.name='from' and doc.fullName=obj.name and ((doc.contentAuthor!='XWiki.MailArchiveAdmin' and not doc.author='XWiki.UserDoesNotExist') or doc.author='XWiki.UserDoesNotExist')"
+
+def nbMails = xwiki.search(sql)
+
+sql = "select count(doc.fullName) from XWikiDocument as doc, BaseObject as obj, StringProperty as prop where obj.className='MailArchiveCode.TopicClass' and obj.name&lt;&gt;'MailArchiveCode.TopicTemplate' and obj.id=prop.id and prop.name='author' and doc.fullName=obj.name and ((doc.contentAuthor!='XWiki.MailArchiveAdmin' and not doc.author='XWiki.UserDoesNotExist') or doc.author='XWiki.UserDoesNotExist')"
+
+def nbTopics = xwiki.search(sql)
+
+println "Nb Topics : ${nbTopics}  Nb Mails : ${nbMails}"
+
+println "Topics ${start} - ${start+nb}, Mails ${start} - ${start+nb}"
+
+println "|=Type|=Page|=Page Author|=Real Author|=To Update"
+
+sql = "select doc.fullName, prop.value from XWikiDocument as doc, BaseObject as obj, LargeStringProperty as prop where obj.className='MailArchiveCode.MailClass' and obj.name&lt;&gt;'MailArchiveCode.MailTemplate' and obj.id=prop.id and prop.name='from' and doc.fullName=obj.name and ((doc.contentAuthor!='XWiki.MailArchiveAdmin' and not doc.author='XWiki.UserDoesNotExist') or doc.author='XWiki.UserDoesNotExist')"
+
+def results = xwiki.search(sql, nb, start)
+
+sql = "select doc.fullName, prop.value from XWikiDocument as doc, BaseObject as obj, StringProperty as prop where obj.className='MailArchiveCode.TopicClass' and obj.name&lt;&gt;'MailArchiveCode.TopicTemplate' and obj.id=prop.id and prop.name='author' and doc.fullName=obj.name and ((doc.contentAuthor!='XWiki.MailArchiveAdmin' and not doc.author='XWiki.UserDoesNotExist') or doc.author='XWiki.UserDoesNotExist')"
+
+results += xwiki.search(sql, nb, start)
+
+
+def type = ""
+
+results.each() { page -&gt;
+
+try {
+
+  def docName = page[0]
+  def from = page[1]
+  def wikiCreator = xwiki.getDocument(docName).creator
+  def toUpdate = true
+  def preferredProfile = null
+  def parsedUser = parseUser(from)
+  if (parsedUser != null) {
+    parsedUser.each() { user -&gt;
+      if (user == wikiCreator &amp;&amp; !overwrite) {
+        toUpdate = false           
+      } 
+      if (xwiki.getDocument(user).getObject('XWiki.LDAPProfileClass') != null){
+        // Got a profile with an LDAP account
+        preferredProfile = user
+      }
+    }
+    if (preferredProfile == null) {
+      // if we did not found a profile with LDAP account, we take the first one we find ...
+      preferredProfile = parsedUser[0]
+    }
+  } else {
+    if (wikiCreator != 'XWiki.UserDoesNotExist') {
+      // author not found ...
+      toUpdate = true
+      preferredProfile = 'XWiki.UserDoesNotExist'
+    } else {
+      toUpdate = false
+    }   
+  }
+
+  if (docName.startsWith('MailArchive.T')) { type = "Topic" } else { type = "Mail" }
+  print "|${type}|[[${docName}]]|[[${wikiCreator}]]|${preferredProfile}|"
+  if (!confirm) {
+    println "${toUpdate}"
+  } else if (toUpdate) {
+    try {
+      def doc = xwiki.getDocument(docName)
+      doc.document.setCreator(preferredProfile)
+      doc.document.setAuthor(preferredProfile)
+      doc.document.setContentAuthor('XWiki.MailArchiveAdmin')
+      doc.document.setDate(doc.document.getDate())
+      doc.document.setCreationDate(doc.document.getCreationDate())
+      if (!trigger) {
+        doc.document.setContentDirty(false)
+        doc.document.setMetaDataDirty(false) 
+      }
+      xwiki.getXWiki().saveDocument(doc.document, xcontext.context)
+      println "Updated to ${preferredProfile}"
+    } catch (Throwable t) {
+      print "((("
+      t.printStacktrace()
+      println ")))"
+    }
+  } else {
+      println "Nothing to do"
+  }
+
+}catch (Exception e) {
+  println "Exception ${e}"
+}
+
+}
+
+  /*
+     Parses a user string of the form "user &lt;usermail@com&gt;"
+       - extract mail and if matched in xwiki user profiles, returns page(s) name(s) for this profile
+       - returns null string if no match is found
+  */
+  String[] parseUser (user) {
+    def start = user.indexOf('&lt;')
+    def end = user.indexOf('&gt;')
+    def mail = ""
+    if (start!=-1 &amp;&amp; end != -1) {
+      mail = user.substring(start+1, end).toLowerCase()
+    }
+    if (mail != "") {
+      // to match "-external" emails and old mails with '@gemplus.com'...
+      mail = mail.toLowerCase()
+      mail = mail.replace("-external", "").replaceAll(~/^(.*)@.*[.]com$/, "\$1%@%.com")   
+      // Try to find a wiki profile with this email as parameter.
+      // TBD : do this in the loading phase, and only try to search db if it was not found ?
+      def hql = "select obj.name from BaseObject as obj, StringProperty as prop where obj.className='XWiki.XWikiUsers' and obj.id=prop.id and prop.name='email' and LOWER(prop.value) like '" + mail + "'"
+
+      def wikiuser = xwiki.search(hql)
+      if (wikiuser != null &amp;&amp; wikiuser.size() == 0) {
+        wikiuser = null
+      }
+      return wikiuser
+
+    } else {
+
+      return null;
+    }
+  }
+
+{{/groovy}}
+
+</content>
+</xwikidoc>

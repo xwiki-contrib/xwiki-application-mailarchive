@@ -42,6 +42,7 @@ import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 import org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineGenerator;
 import org.xwiki.contrib.mailarchive.internal.timeline.TimeLineEvent;
 import org.xwiki.contrib.mailarchive.internal.timeline.TopicEventBubble;
+import org.xwiki.contrib.mailarchive.internal.timeline.simile.SimileTimeLineWriter;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -258,7 +259,7 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
     {
 
         DefaultWikiPrinter printer = new DefaultWikiPrinter();
-        ChapLinksTimeLineWriter writer = new ChapLinksTimeLineWriter(printer);
+        SimileTimeLineWriter writer = new SimileTimeLineWriter(printer);
         writer.print(sortedEvents);
 
         logger.debug("Loaded " + sortedEvents.size() + " into Timeline feed");

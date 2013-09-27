@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>MailArchiveCode</web>
+  <name>ForumSheet</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent/>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1378544800000</creationDate>
+  <date>1378545235000</date>
+  <contentUpdateDate>1378545235000</contentUpdateDate>
+  <version>1.1</version>
+  <title>ForumSheet</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
+#set($mailarchive = $services.mailarchive)
+#if(!$mailarchive)
+
+{{error}}
+Mail Archive application is not properly installed.
+{{/error}}
+
+#else
+  #set($config = $mailarchive.config)
+  #set($groups = $config.mailingListGroups)
+  #if($groups)
+    #foreach($group in $groups)
+== $group.value.name ==
+      #set($lists = $group.mailingLists)
+      #foreach($list in $lists)
+=== $list.displayName ===
+      #end
+    #end
+  #end
+  ## Display remaining lists (without group)
+  #set($lists = $config.mailingLists)
+  #foreach($list in $lists)
+    #if(!$list.group)
+=== $list.displayName ===
+    #end
+  #end
+  
+  
+
+
+#end
+
+
+{{/velocity}}</content>
+</xwikidoc>

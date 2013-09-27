@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>MailArchiveTests</web>
+  <name>JsonFeed</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent/>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1380103253000</creationDate>
+  <date>1380103867000</date>
+  <contentUpdateDate>1380103867000</contentUpdateDate>
+  <version>1.1</version>
+  <title>JsonFeed</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>[
+                {
+                    'start': new Date(2010,7,23),
+                    'content': 'Conversation&lt;br&gt;&lt;img src="img/comments-icon.png" style="width:32px; height:32px;"&gt;'
+                },
+                {
+                    'start': new Date(2010,7,23,23,0,0),
+                    'content': 'Mail from boss&lt;br&gt;&lt;img src="img/mail-icon.png" style="width:32px; height:32px;"&gt;'
+                },
+                {
+                    'start': new Date(2010,7,24,16,0,0),
+                    'content': 'Report'
+                },
+                {
+                    'start': new Date(2010,7,26),
+                    'end': new Date(2010,8,2),
+                    'content': 'Traject A'
+                },
+                {
+                    'start': new Date(2010,7,28),
+                    'content': 'Memo&lt;br&gt;&lt;img src="img/notes-edit-icon.png" style="width:48px; height:48px;"&gt;'
+                },
+                {
+                    'start': new Date(2010,7,29),
+                    'content': 'Phone call&lt;br&gt;&lt;img src="img/Hardware-Mobile-Phone-icon.png" style="width:32px; height:32px;"&gt;'
+                },
+                {
+                    'start': new Date(2010,7,31),
+                    'end': new Date(2010,8,3),
+                    'content': 'Traject B'
+                },
+                {
+                    'start': new Date(2010,8,4,12,0,0),
+                    'content': 'Report&lt;br&gt;&lt;img src="img/attachment-icon.png" style="width:32px; height:32px;"&gt;'
+                }
+            ];</content>
+</xwikidoc>

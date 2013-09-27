@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>MailArchiveCode</web>
+  <name>MailingListGroupSheet</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent/>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1376153772000</creationDate>
+  <date>1376211477000</date>
+  <contentUpdateDate>1376211477000</contentUpdateDate>
+  <version>1.1</version>
+  <title>#if($doc.name == 'MailingListGroupSheet')Mailing-list Groups Sheet#{else}$services.display.title($doc, {'displayerHint': 'default'})#end</title>
+  <template/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
+#if($doc.name == "MailingListGroupSheet")
+Mailing-List Group Sheet
+#else
+  #if(${doc.name.endsWith('CreationSheet')})
+    #set($assumeLightbox = true)
+  #end
+  #if($assumeLightbox)
+    #set($mode='edit')
+  #else
+    #set($mode=$xcontext.action)
+  #end
+  #set($xClass=$doc.getObject('MailArchiveCode.MailingListGroupClass').xWikiClass)
+  #set($obj=$doc.getObject('MailArchiveCode.MailingListGroupClass'))
+
+== Mailing-list Group ${doc.display('name','view',$obj)} ==
+
+{{html wiki="true"}}
+#if(!$assumeLightbox)
+&lt;div class="xform"&gt;
+ &lt;form action="#" class="xform" method="post" name="form_MailingListGroupSheet"&gt;
+#end
+    #foreach ($prop in $xClass.properties)
+      #set($hintKey = "mailarchive.mailinglistgroup.fields.${prop.name}")
+      #set($hint = $msg.get("${hintKey}.hint"))
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.MailingListGroupClass_$number_$prop.name"&gt;$msg.get("${hintKey}.label")&lt;/label&gt;
+      #if("$!hint" != "${hintKey}.hint")
+       &lt;span class="xHint"&gt;$hint&lt;/span&gt;
+      #end
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $doc.display($prop.name, $mode, $obj)
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+    #end
+#if(!$assumeLightbox)
+ &lt;/form&gt;
+&lt;/div&gt;
+#end
+{{/html}}
+
+#end
+{{/velocity}}</content>
+</xwikidoc>

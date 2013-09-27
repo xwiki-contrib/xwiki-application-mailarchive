@@ -115,7 +115,7 @@ This application aims at storing and showing mailing-lists archives. To know wha
 [[image:icon:cog]] [[Administrate and Configure&gt;&gt;MailArchive.Admin]] [[image:icon:wrench]] [[Operate&gt;&gt;MailArchive.Operate]] 
 #end
 #if($request.getParameter('display') == 'timeline')
-{{display reference="MailArchiveCode.TimeLine"/}}
+{{display reference="MailArchiveCode.TimeLineSheet"/}}
 #else
 {{display reference="MailArchiveCode.LiveTableSheet"/}}
 #end

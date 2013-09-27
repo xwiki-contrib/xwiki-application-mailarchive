@@ -28,15 +28,17 @@ import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mailarchive.IMailArchiveLoader;
 import org.xwiki.contrib.mailarchive.LoadingSession;
-import org.xwiki.job.AbstractJob;
 import org.xwiki.job.DefaultRequest;
+import org.xwiki.job.event.status.JobStatus.State;
+import org.xwiki.job.internal.AbstractJob;
+import org.xwiki.job.internal.DefaultJobStatus;
 
 /*
  * @version $Id$
  */
 @Component
 @Named(LoadingJob.JOBTYPE)
-public class LoadingJob extends AbstractJob<DefaultRequest> implements Initializable
+public class LoadingJob extends AbstractJob<DefaultRequest, DefaultJobStatus<DefaultRequest>> implements Initializable
 {
     public static final String JOBTYPE = "mailarchivejob";
 
@@ -92,8 +94,9 @@ public class LoadingJob extends AbstractJob<DefaultRequest> implements Initializ
      * @see org.xwiki.job.AbstractJob#start()
      */
     @Override
-    protected void start() throws Exception
+    protected void runInternal()
     {
+        this.status.setState(State.RUNNING);
         LoadingSession session = (LoadingSession) getRequest().getProperty("sessionobj");
 
         if (session.isDebugMode()) {
@@ -106,7 +109,7 @@ public class LoadingJob extends AbstractJob<DefaultRequest> implements Initializ
         if (session.isDebugMode()) {
             quitDebugMode();
         }
-
+        this.status.setState(State.FINISHED);
     }
 
     /**

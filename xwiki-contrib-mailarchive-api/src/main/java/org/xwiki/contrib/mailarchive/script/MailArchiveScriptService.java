@@ -20,6 +20,7 @@
 package org.xwiki.contrib.mailarchive.script;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,8 +31,6 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.InitializationException;
-import org.xwiki.context.Execution;
-import org.xwiki.context.ExecutionContextManager;
 import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
@@ -44,7 +43,6 @@ import org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineGenerator;
 import org.xwiki.contrib.mailarchive.internal.utils.DecodedMailContent;
 import org.xwiki.job.DefaultRequest;
 import org.xwiki.job.Job;
-import org.xwiki.job.JobException;
 import org.xwiki.job.JobManager;
 import org.xwiki.script.service.ScriptService;
 
@@ -73,12 +71,6 @@ public class MailArchiveScriptService implements ScriptService
 
     @Inject
     private Logger logger;
-
-    @Inject
-    private ExecutionContextManager executionContextManager;
-
-    @Inject
-    private Execution execution;
 
     /**
      * Creates a loading session based on default session configuration, stored in document
@@ -118,32 +110,9 @@ public class MailArchiveScriptService implements ScriptService
         return createLoadingJob(session, false);
     }
 
-    private LoadingJob createLoadingJob(final LoadingSession session, boolean synchronous)
+    public Job getCurrentJob()
     {
-        try {
-            Job job = this.componentManager.getInstance(Job.class, "mailarchivejob");
-            logger.debug("FOUND JOB " + (job != null ? job.getClass() : " NOT FOUND"));
-            System.out.println("FOUND JOB " + (job != null ? job.getClass() : " NOT FOUND"));
-        } catch (ComponentLookupException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        LoadingJob job = null;
-        DefaultRequest request = new DefaultRequest();
-        request.setId("test");
-        request.setInteractive(false);
-        request.setProperty("sessionobj", session);
-        try {
-            if (synchronous) {
-                job = (LoadingJob) jobManager.executeJob("mailarchivejob", request);
-            } else {
-                job = (LoadingJob) jobManager.addJob("mailarchivejob", request);
-            }
-        } catch (JobException e) {
-            logger.error("Could not start new Job for loading", e);
-            job = null;
-        }
-        return job;
+        return jobManager.getCurrentJob();
     }
 
     /**
@@ -210,6 +179,40 @@ public class MailArchiveScriptService implements ScriptService
             e.printStackTrace();
             return null;
         }
+    }
+
+    private LoadingJob createLoadingJob(final LoadingSession session, boolean synchronous)
+    {
+        if (session == null) {
+            logger.warn("Missing loading session object.");
+            return null;
+        }
+        LoadingJob job;
+        try {
+            job = this.componentManager.getInstance(Job.class, "mailarchivejob");
+        } catch (ComponentLookupException e) {
+            logger.error("Failed to lookup any Job for role hint [" + LoadingJob.JOBTYPE + "]", e);
+            return null;
+        }
+
+        final String id = session.getId() + '_' + new Date().getTime();
+
+        DefaultRequest request = new DefaultRequest();
+        request.setId(id);
+        request.setProperty("job.type", LoadingJob.JOBTYPE);
+        request.setInteractive(false);
+        request.setProperty("sessionobj", session);
+        job.initialize(request);
+        jobManager.addJob(job);
+        if (synchronous) {
+            try {
+                job.join();
+            } catch (InterruptedException e) {
+                // Ignore
+            }
+        }
+
+        return job;
     }
 
 }

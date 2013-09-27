@@ -42,9 +42,9 @@ import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IMailingListGroup;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.LoadingSession;
-import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
 import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
+import org.xwiki.contrib.mailarchive.internal.xwiki.IExtendedDocumentAccessBridge;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
 

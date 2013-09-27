@@ -40,9 +40,11 @@ import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IMailingListGroup;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.LoadingSession;
-import org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge;
 import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
+import org.xwiki.contrib.mailarchive.internal.xwiki.IExtendedDocumentAccessBridge;
+import org.xwiki.contrib.mailarchive.internal.xwiki.ObjectEntity;
 
+import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.DBStringListProperty;
 
 /**
@@ -259,40 +261,69 @@ public class Factory implements IFactory
                 + XWikiPersistence.CLASS_LOADING_SESSION);
             return null;
         }
-        LoadingSession session = null;
 
         // Retrieve connection properties from prefs
         String className = XWikiPersistence.CLASS_LOADING_SESSION;
-        final String id = dab.getStringValue(sessionPrefsDoc, className, "id");
+        ObjectEntity sessionObject = dab.getObjectEntity(sessionPrefsDoc, className);
+
+        return createLoadingSession(sessionObject, mailArchive);
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.internal.data.IFactory#createLoadingSession(java.lang.String,
+     *      org.xwiki.contrib.mailarchive.IMailArchive)
+     */
+    @Override
+    public LoadingSession createLoadingSession(final BaseObject xObject, final IMailArchive mailArchive)
+    {
+        // Retrieve connection properties from prefs
+        ObjectEntity sessionObject = dab.getObjectEntity(xObject);
+
+        return createLoadingSession(sessionObject, mailArchive);
+    }
+
+    /**
+     * Creates a LoadingSession from an ObjectEntity.
+     * 
+     * @param sessionObject
+     * @param mailArchive
+     * @return
+     */
+    private LoadingSession createLoadingSession(ObjectEntity sessionObject, final IMailArchive mailArchive)
+    {
+        LoadingSession session = null;
+        final String id = (String) sessionObject.getFieldValue("id");
         if (!StringUtils.isBlank(id)) {
             session = new LoadingSession(mailArchive, id);
         } else {
             return null;
         }
 
-        if (dab.getBooleanValue(sessionPrefsDoc, className, "debugMode")) {
+        if ((Boolean) sessionObject.getFieldValue("debugMode")) {
             session = session.debugMode();
         }
-        if (dab.getBooleanValue(sessionPrefsDoc, className, "simulationMode")) {
+        if ((Boolean) sessionObject.getFieldValue("simulationMode")) {
             session = session.simulationMode();
         }
-        if (dab.getBooleanValue(sessionPrefsDoc, className, "loadAll")) {
+        if ((Boolean) sessionObject.getFieldValue("loadAll")) {
             session = session.loadAll();
         }
-        if (dab.getBooleanValue(sessionPrefsDoc, className, "recentMails")) {
+        if ((Boolean) sessionObject.getFieldValue("recentMails")) {
             session = session.recentMails();
         }
-        if (dab.getBooleanValue(sessionPrefsDoc, className, "withDelete")) {
+        if ((Boolean) sessionObject.getFieldValue("withDelete")) {
             session = session.withDelete();
         }
-        session = session.setLimit(dab.getIntValue(sessionPrefsDoc, className, "maxMailsNb"));
+        session = session.setLimit((Integer) sessionObject.getFieldValue("maxMailsNb"));
 
-        DBStringListProperty props = (DBStringListProperty) dab.getProperty(sessionPrefsDoc, className, "servers");
+        DBStringListProperty props = (DBStringListProperty) sessionObject.getFieldValue("servers");
         List<String> servers = new ArrayList<String>();
         if (props != null) {
             servers = props.getList();
         }
-        props = (DBStringListProperty) dab.getProperty(sessionPrefsDoc, className, "stores");
+        props = (DBStringListProperty) sessionObject.getFieldValue("stores");
         List<String> stores = new ArrayList<String>();
         if (props != null) {
             stores = props.getList();

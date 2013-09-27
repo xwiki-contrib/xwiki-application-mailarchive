@@ -29,6 +29,8 @@ import org.xwiki.contrib.mailarchive.IMailingListGroup;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.LoadingSession;
 
+import com.xpn.xwiki.objects.BaseObject;
+
 /**
  * @version $Id$
  */
@@ -105,5 +107,7 @@ public interface IFactory
      */
     IMailingListGroup createMailingListGroup(String name, List<IMailingList> mailingLists, String loadingUser,
         String destinationWiki, String destinationSpace);
+
+    LoadingSession createLoadingSession(final BaseObject xObject, final IMailArchive mailArchive);
 
 }

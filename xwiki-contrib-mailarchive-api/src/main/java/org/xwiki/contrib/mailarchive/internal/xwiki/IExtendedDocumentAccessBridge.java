@@ -17,12 +17,13 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal.bridge;
+package org.xwiki.contrib.mailarchive.internal.xwiki;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Role;
 
 import com.xpn.xwiki.XWikiException;
+import com.xpn.xwiki.objects.BaseObject;
 
 /**
  * A component to bridge access to old core services.
@@ -103,4 +104,6 @@ public interface IExtendedDocumentAccessBridge extends DocumentAccessBridge
     DocumentEntity getDocumentEntity(final String space, final String page);
 
     DocumentEntity getDocumentEntity(final String wiki, final String space, final String page);
+
+    public abstract ObjectEntity getObjectEntity(final BaseObject xObject);
 }

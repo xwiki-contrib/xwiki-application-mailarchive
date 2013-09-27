@@ -17,29 +17,61 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal.bridge;
+package org.xwiki.contrib.mailarchive.internal.xwiki;
+
+import java.util.HashMap;
 
 /**
  * @version $Id$
  */
-public enum UpdateMode
+public class ObjectEntity
 {
+    private HashMap<String, Object> fields = new HashMap<String, Object>();
+
+    private String xdoc;
+
+    private String xclass;
 
     /**
-     * Only creates a new object each time.
+     * @return the name
      */
-    ADD,
+    public String getXdoc()
+    {
+        return xdoc;
+    }
+
     /**
-     * Creates a new object if none exists, or updates it if already existing.
+     * @param name the name to set
      */
-    CREATE_OR_UPDATE,
+    public void setXdoc(final String xdoc)
+    {
+        this.xdoc = xdoc;
+    }
+
     /**
-     * Only updates existing object (fails if it does not exist).
+     * @return the clazzName
      */
-    UPDATE,
+    public String getXclass()
+    {
+        return xclass;
+    }
+
     /**
-     * Only creates a new object if none exist (fails if an object exists).
+     * @param clazzName the clazzName to set
      */
-    CREATE
+    public void setXclass(final String xclass)
+    {
+        this.xclass = xclass;
+    }
+
+    public void setFieldValue(final String key, final Object value)
+    {
+        this.fields.put(key, value);
+    }
+
+    public Object getFieldValue(final String key)
+    {
+        return this.fields.get(key);
+    }
 
 }

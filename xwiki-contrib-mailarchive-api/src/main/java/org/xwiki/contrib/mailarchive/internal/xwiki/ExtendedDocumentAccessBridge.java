@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal.bridge;
+package org.xwiki.contrib.mailarchive.internal.xwiki;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,10 +33,10 @@ import org.xwiki.context.ExecutionContext;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
-import com.xpn.xwiki.api.PropertyClass;
 import com.xpn.xwiki.doc.DefaultDocumentAccessBridge;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.BaseProperty;
 
 /**
  * XWiki implementation of IExtendedDocumentAccessBridge.
@@ -77,7 +77,7 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#exists(java.lang.String)
+     * @see org.xwiki.contrib.mailarchive.internal.xwiki.IExtendedDocumentAccessBridge#exists(java.lang.String)
      */
     @Override
     public boolean exists(String docname)
@@ -88,7 +88,7 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#exists(java.lang.String,
+     * @see org.xwiki.contrib.mailarchive.internal.xwiki.IExtendedDocumentAccessBridge#exists(java.lang.String,
      *      java.lang.String)
      */
     public boolean exists(String docname, String classname)
@@ -104,7 +104,7 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#getValidUniqueName(java.lang.String,
+     * @see org.xwiki.contrib.mailarchive.internal.xwiki.IExtendedDocumentAccessBridge#getValidUniqueName(java.lang.String,
      *      java.lang.String)
      */
     @Override
@@ -115,13 +115,13 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
             wikiname = wikiname.substring(0, MAX_PAGENAME_LENGTH);
         }
 
-        return context.getWiki().getUniquePageName(space, wikiname, context);
+        return xwiki.getUniquePageName(space, wikiname, context);
     }
 
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#getStringValue(java.lang.String,
+     * @see org.xwiki.contrib.mailarchive.internal.xwiki.IExtendedDocumentAccessBridge#getStringValue(java.lang.String,
      *      java.lang.String, java.lang.String)
      */
     @Override
@@ -139,7 +139,7 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#getIntValue(java.lang.String,
+     * @see org.xwiki.contrib.mailarchive.internal.xwiki.IExtendedDocumentAccessBridge#getIntValue(java.lang.String,
      *      java.lang.String, java.lang.String)
      */
     @Override
@@ -157,7 +157,7 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#getBooleanValue(java.lang.String,
+     * @see org.xwiki.contrib.mailarchive.internal.xwiki.IExtendedDocumentAccessBridge#getBooleanValue(java.lang.String,
      *      java.lang.String, java.lang.String)
      */
     @Override
@@ -171,54 +171,50 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
         return false;
     }
 
-    public ObjectEntity getObject(final String xdocument, final String xclass)
+    @Override
+    public ObjectEntity getObjectEntity(final String xdocument, final String xclass)
     {
+        try {
+            XWikiDocument document = xwiki.getDocument(xdocument, context);
+            BaseObject baseObject = document.getObject(xclass);
+            ObjectEntity objectEntity = new ObjectEntity();
+            objectEntity.setXdoc(xdocument);
+            objectEntity.setXclass(xclass);
+
+            for (String name : baseObject.getXClass(context).getPropertyList()) {
+                BaseProperty property = (BaseProperty) baseObject.get(name);
+                objectEntity.setFieldValue(property.getName(), property.getValue());
+            }
+            return objectEntity;
+        } catch (XWikiException e) {
+            logger.error("Could not parse XObject[" + xdocument + ',' + xclass + "]");
+        }
+        return null;
+    }
+
+    @Override
+    public ObjectEntity getObjectEntity(final BaseObject xObject)
+    {
+        try {
+            ObjectEntity objectEntity = new ObjectEntity();
+            objectEntity.setXdoc(xObject.getName());
+            objectEntity.setXclass(xObject.getXClassReference().toString());
+
+            for (String name : xObject.getXClass(context).getPropertyList()) {
+                BaseProperty property = (BaseProperty) xObject.get(name);
+                objectEntity.setFieldValue(property.getName(), property.getValue());
+            }
+            return objectEntity;
+        } catch (XWikiException e) {
+            logger.error("Could not parse XObject[" + xObject + "]");
+        }
         return null;
     }
 
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#getObjectEntity(java.lang.String,
-     *      java.lang.String)
-     */
-    @Override
-    public ObjectEntity getObjectEntity(String xdocument, String xclass)
-    {
-        ObjectEntity objectEntity = null;
-        try {
-            XWikiDocument document = xwiki.getDocument(xdocument, context);
-            if (document != null && exists(xdocument)) {
-                BaseObject baseObject = document.getObject(xclass);
-                if (baseObject != null) {
-                    objectEntity = new ObjectEntity();
-                    objectEntity.setXclass(xclass);
-                    objectEntity.setXdoc(xdocument);
-                    for (String propname : baseObject.getPropertyList()) {
-
-                        PropertyClass propclass = (PropertyClass) baseObject.getProperties()[0];
-                        String proptype = propclass.getType();
-                        if ("StringProperty".equals(proptype)) {
-                            objectEntity.setFieldValue(propname, baseObject.getStringValue(propname));
-                        }
-                    }
-
-                } else {
-                    logger.info("Object does not exist: " + xclass + " from " + xdocument);
-                }
-            } else {
-                logger.info("Document does not exist: " + xdocument);
-            }
-        } catch (XWikiException e) {
-            logger.error("Could not retrieve Object", e);
-        }
-        return objectEntity;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#getDocumentEntity(java.lang.String)
+     * @see org.xwiki.contrib.mailarchive.internal.xwiki.IExtendedDocumentAccessBridge#getDocumentEntity(java.lang.String)
      */
     @Override
     public DocumentEntity getDocumentEntity(String xdocument)
@@ -230,7 +226,7 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#getDocumentEntity(java.lang.String,
+     * @see org.xwiki.contrib.mailarchive.internal.xwiki.IExtendedDocumentAccessBridge#getDocumentEntity(java.lang.String,
      *      java.lang.String)
      */
     @Override
@@ -243,7 +239,7 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.bridge.IExtendedDocumentAccessBridge#getDocumentEntity(java.lang.String,
+     * @see org.xwiki.contrib.mailarchive.internal.xwiki.IExtendedDocumentAccessBridge#getDocumentEntity(java.lang.String,
      *      java.lang.String, java.lang.String)
      */
     @Override

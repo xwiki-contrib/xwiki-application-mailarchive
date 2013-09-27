@@ -1,7 +1,7 @@
 org.xwiki.contrib.mailarchive.script.MailArchiveScriptService
 org.xwiki.contrib.mailarchive.internal.AggregatedLoggerManager
 org.xwiki.contrib.mailarchive.internal.DefaultMailArchive
-org.xwiki.contrib.mailarchive.internal.bridge.ExtendedDocumentAccessBridge
+org.xwiki.contrib.mailarchive.internal.xwiki.ExtendedDocumentAccessBridge
 org.xwiki.contrib.mailarchive.internal.ItemsManager
 org.xwiki.contrib.mailarchive.internal.ldap.LDAPHelper
 org.xwiki.contrib.mailarchive.internal.data.Factory

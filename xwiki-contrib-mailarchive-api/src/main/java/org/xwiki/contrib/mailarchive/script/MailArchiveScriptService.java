@@ -46,6 +46,8 @@ import org.xwiki.job.Job;
 import org.xwiki.job.JobManager;
 import org.xwiki.script.service.ScriptService;
 
+import com.xpn.xwiki.objects.BaseObject;
+
 /**
  * Make the IMailArchive API available to scripting.
  */
@@ -94,9 +96,20 @@ public class MailArchiveScriptService implements ScriptService
         return factory.createLoadingSession(sessionPrefsDoc, mailArchive);
     }
 
+    /**
+     * Creates a loading session from an XObject.
+     * 
+     * @param sessionObject
+     * @return
+     */
+    public LoadingSession session(final BaseObject sessionObject)
+    {
+        return factory.createLoadingSession(sessionObject, mailArchive);
+    }
+
     public int check(final String serverPrefsDoc)
     {
-        return this.mailArchive.checkSource(serverPrefsDoc);
+        return mailArchive.checkSource(serverPrefsDoc);
     }
 
     public int load(final LoadingSession session)
@@ -148,7 +161,7 @@ public class MailArchiveScriptService implements ScriptService
 
     public IMAUser parseUser(final String internetAddress)
     {
-        return this.mailArchive.parseUser(internetAddress);
+        return mailArchive.parseUser(internetAddress);
     }
 
     // FIXME: for manual tests only, to be removed
@@ -181,6 +194,11 @@ public class MailArchiveScriptService implements ScriptService
         }
     }
 
+    /**
+     * @param session
+     * @param synchronous
+     * @return
+     */
     private LoadingJob createLoadingJob(final LoadingSession session, boolean synchronous)
     {
         if (session == null) {

@@ -48,6 +48,8 @@
     <!-- Versions of XWiki dependencies -->
     <rendering.version>${commons.version}</rendering.version>
     <platform.version>${commons.version}</platform.version>
+    <!-- Version of SmartGWT that we use in platform for the XWiki Explorer Tree. -->
+    <smartgwt.version>3.1</smartgwt.version>
 
     <!-- TODO : APIs will be considered stable only starting from version 
       1.0 -->
@@ -126,6 +128,26 @@
         <artifactId>xwiki-commons-test-component</artifactId>
         <version>${commons.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.xwiki.contrib.mailarchive</groupId>
+        <artifactId>xwiki-contrib-mail</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.xwiki.commons</groupId>
+        <artifactId>xwiki-commons-component-api</artifactId>
+        <version>${commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.xwiki.platform</groupId>
+        <artifactId>xwiki-platform-oldcore</artifactId>
+        <version>${platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.xwiki.rendering</groupId>
+        <artifactId>xwiki-rendering-xml</artifactId>
+        <version>${platform.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

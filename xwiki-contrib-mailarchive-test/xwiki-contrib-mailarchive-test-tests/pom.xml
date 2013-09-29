@@ -101,8 +101,7 @@
           <plugin>
             <groupId>org.xwiki.platform</groupId>
             <artifactId>xwiki-platform-tool-packager-plugin</artifactId>
-            <!-- because XWIKI-8960 was fixed from 5.0-milestone-2... -->
-            <version>5.0-rc-1</version>
+            <version>${platform.version}</version>
             <executions>
               <execution>
                 <phase>generate-test-resources</phase>

@@ -26,9 +26,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.xwiki.contrib.mail.source.SourceType;
-import org.xwiki.contrib.mailarchive.internal.LoadingJob;
-import org.xwiki.job.DefaultRequest;
-import org.xwiki.job.JobException;
 import org.xwiki.job.JobManager;
 import org.xwiki.text.XWikiToStringBuilder;
 
@@ -59,16 +56,13 @@ public class LoadingSession
 
     private Map<SourceType, String> sources = null;
 
-    private final IMailArchive ma;
-
-    public LoadingSession(final IMailArchive ma)
+    public LoadingSession()
     {
-        this.ma = ma;
     }
 
-    public LoadingSession(final IMailArchive ma, final String id)
+    public LoadingSession(final String id)
     {
-        this.ma = ma;
+        this.id = id;
     }
 
     public LoadingSession addServer(final String serverPrefsDoc)
@@ -170,41 +164,10 @@ public class LoadingSession
         return this.sources;
     }
 
-    public int loadMails()
-    {
-        LoadingJob job = null;
-        // clone the session to avoid it to be updated during loading phase ...
-        try {
-            DefaultRequest request = new DefaultRequest();
-            request.setId("test");
-            request.setInteractive(false);
-            request.setProperty("sessionobj", this.clone());
-            try {
-                job = (LoadingJob) jobManager.executeJob("mailarchivejob", request);
-            } catch (JobException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        } catch (CloneNotSupportedException e) {
-            // should not happen
-        }
-        return job != null ? job.getNbSuccess() : -1;
-    }
-
-    public Map<String, Integer> checkMails()
-    {
-        // clone the session to avoid it to be updated during loading phase ...
-        try {
-            return this.ma.checkSource(this.clone());
-        } catch (CloneNotSupportedException e) {
-            return this.ma.checkSource(this);
-        }
-    }
-
     @Override
     protected LoadingSession clone() throws CloneNotSupportedException
     {
-        LoadingSession clone = new LoadingSession(ma, this.id);
+        LoadingSession clone = new LoadingSession(this.id);
 
         if (debugMode) {
             clone.debugMode();

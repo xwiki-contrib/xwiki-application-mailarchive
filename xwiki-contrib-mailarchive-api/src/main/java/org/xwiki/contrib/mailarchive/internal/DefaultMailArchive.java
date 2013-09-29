@@ -394,22 +394,26 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     public List<IMASource> getSourcesList(final LoadingSession session)
     {
         List<IMASource> servers = null;
-        final Map<org.xwiki.contrib.mail.source.SourceType, String> sources = session.getSources();
+        final Map<SourceType, String> sources = session.getSources();
         servers = new ArrayList<IMASource>();
         boolean hasServers = false;
         for (Entry<SourceType, String> source : sources.entrySet()) {
+
             if (SourceType.SERVER.equals(source.getKey())) {
-                Server server = factory.createMailServer(source.getValue());
+                final String prefsDoc = XWikiPersistence.SPACE_PREFS + ".Server_" + source.getValue();
+                Server server = factory.createMailServer(prefsDoc);
                 if (server != null) {
                     hasServers = true;
                     servers.add(server);
                 }
             } else if (SourceType.STORE.equals(source.getKey())) {
-                MailStore store = factory.createMailStore(source.getValue());
+                final String prefsDoc = XWikiPersistence.SPACE_PREFS + ".Store_" + source.getValue();
+                MailStore store = factory.createMailStore(prefsDoc);
                 if (store != null) {
                     servers.add(store);
                 }
             } else {
+                // This should never occur
                 logger.warn("Unknown type of source connection: " + source.getKey());
             }
         }

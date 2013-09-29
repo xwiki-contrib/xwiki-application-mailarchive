@@ -82,7 +82,7 @@ public class MailArchiveScriptService implements ScriptService
      */
     public LoadingSession session()
     {
-        return new LoadingSession(mailArchive);
+        return new LoadingSession();
     }
 
     /**

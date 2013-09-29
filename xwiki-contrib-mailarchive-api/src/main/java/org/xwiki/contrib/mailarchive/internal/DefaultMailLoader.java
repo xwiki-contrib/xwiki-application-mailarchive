@@ -195,14 +195,23 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
                 messages = new ArrayList<Message>();
             }
         }
-        logger.info("[{}] Number of messages to treat : {}", new Object[] {serverId, messages.size()});
+        final int total = messages.size();
+        int limit = session.getLimit();
+        if (limit > 0) {
+            if (limit > total) {
+                limit = total;
+            }
+        } else {
+            limit = total;
+        }
+        logger.info("[{}] Number of messages to treat : {} / {}", new Object[] {serverId, limit, total});
         if (job != null) {
-            job.notifyPushLevelProgress(messages.size());
+            job.notifyPushLevelProgress(limit);
         }
 
-        final int total = messages.size();
         MailLoadingResult result = null;
-        for (Message message : messages) {
+        while (currentMsg < limit) {
+            Message message = messages.get(currentMsg - 1);
             logger.debug("[{}] Loading message {}/{}", new Object[] {serverId, currentMsg, total});
             try {
                 try {
@@ -227,6 +236,7 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
                     }
 
                 }
+                currentMsg++;
                 if (job != null) {
                     job.notifyStepPropress();
                 }
@@ -241,7 +251,13 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
                             mailArchive.saveToInternalStore(serverId, mailReader.getMailSource(), message);
                         }
                     }
+                    if (job != null) {
+                        job.incNbSuccess();
+                    }
+                } else if (job != null) {
+                    job.incNbFailure();
                 }
+
             } catch (Throwable e) {
                 logger.warn("Failed to load mail", e);
             }
@@ -252,7 +268,6 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
             job.notifyPopLevelProgress();
         }
 
-        // nbMessages += currentMsg;
         return nbSuccess;
     }
 

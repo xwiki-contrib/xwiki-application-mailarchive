@@ -22,7 +22,6 @@ package org.xwiki.contrib.mailarchive.internal.data;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -45,7 +44,6 @@ import org.xwiki.contrib.mailarchive.internal.xwiki.IExtendedDocumentAccessBridg
 import org.xwiki.contrib.mailarchive.internal.xwiki.ObjectEntity;
 
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.DBStringListProperty;
 
 /**
  * @version $Id$
@@ -110,6 +108,7 @@ public class Factory implements IFactory
             logger.error("createMailServer: Server " + serverPrefsDoc + " miss mandatory parameters");
             return null;
         } else {
+            logger.debug("createMailServer: Loaded Server " + server);
             return server;
         }
     }
@@ -295,39 +294,28 @@ public class Factory implements IFactory
     {
         LoadingSession session = null;
         final String id = (String) sessionObject.getFieldValue("id");
-        if (!StringUtils.isBlank(id)) {
-            session = new LoadingSession(mailArchive, id);
-        } else {
-            return null;
-        }
+        session = new LoadingSession(id);
 
-        if ((Boolean) sessionObject.getFieldValue("debugMode")) {
+        if ((Integer) sessionObject.getFieldValue("debugMode") == 1) {
             session = session.debugMode();
         }
-        if ((Boolean) sessionObject.getFieldValue("simulationMode")) {
+        if ((Integer) sessionObject.getFieldValue("simulationMode") == 1) {
             session = session.simulationMode();
         }
-        if ((Boolean) sessionObject.getFieldValue("loadAll")) {
+        if ((Integer) sessionObject.getFieldValue("loadAll") == 1) {
             session = session.loadAll();
         }
-        if ((Boolean) sessionObject.getFieldValue("recentMails")) {
+        if ((Integer) sessionObject.getFieldValue("recentMails") == 1) {
             session = session.recentMails();
         }
-        if ((Boolean) sessionObject.getFieldValue("withDelete")) {
+        if ((Integer) sessionObject.getFieldValue("withDelete") == 1) {
             session = session.withDelete();
         }
-        session = session.setLimit((Integer) sessionObject.getFieldValue("maxMailsNb"));
+        session = session.setLimit(((Long) sessionObject.getFieldValue("maxMailsNb")).intValue());
 
-        DBStringListProperty props = (DBStringListProperty) sessionObject.getFieldValue("servers");
-        List<String> servers = new ArrayList<String>();
-        if (props != null) {
-            servers = props.getList();
-        }
-        props = (DBStringListProperty) sessionObject.getFieldValue("stores");
-        List<String> stores = new ArrayList<String>();
-        if (props != null) {
-            stores = props.getList();
-        }
+        List<String> servers = (List<String>) sessionObject.getFieldValue("servers");
+        List<String> stores = (List<String>) sessionObject.getFieldValue("stores");
+
         for (String serverId : servers) {
             session = session.addServer(serverId);
         }

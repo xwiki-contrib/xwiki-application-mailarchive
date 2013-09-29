@@ -22,7 +22,6 @@ package org.xwiki.contrib.mailarchive.internal;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -50,8 +49,8 @@ public class LoadingJob extends AbstractJob<DefaultRequest, DefaultJobStatus<Def
      * @Inject private IAggregatedLoggerManager aggregatedLoggerManager;
      */
 
-    @Inject
-    private Logger logger;
+    // @Inject
+    // private Logger logger;
 
     private int nbSuccess = 0;
 
@@ -96,20 +95,26 @@ public class LoadingJob extends AbstractJob<DefaultRequest, DefaultJobStatus<Def
     @Override
     protected void runInternal()
     {
+        logger.debug("Starting Loading Job");
         this.status.setState(State.RUNNING);
-        LoadingSession session = (LoadingSession) getRequest().getProperty("sessionobj");
+        try {
+            LoadingSession session = (LoadingSession) getRequest().getProperty("sessionobj");
 
-        if (session.isDebugMode()) {
-            enterDebugMode();
+            if (session.isDebugMode()) {
+                enterDebugMode();
+            }
+
+            int success = loader.loadMails(session, this);
+            setNbSuccess(success);
+
+            if (session.isDebugMode()) {
+                quitDebugMode();
+            }
+        } catch (Throwable t) {
+            logger.error("Loading Job failure", t);
+        } finally {
+            this.status.setState(State.FINISHED);
         }
-
-        int success = loader.loadMails(session, this);
-        setNbSuccess(success);
-
-        if (session.isDebugMode()) {
-            quitDebugMode();
-        }
-        this.status.setState(State.FINISHED);
     }
 
     /**

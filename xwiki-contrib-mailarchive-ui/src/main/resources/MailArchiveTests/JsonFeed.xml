@@ -6,17 +6,16 @@
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent/>
+  <parent>MailArchiveTests.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1380103253000</creationDate>
-  <date>1380103867000</date>
-  <contentUpdateDate>1380103867000</contentUpdateDate>
+  <creationDate>1380375091000</creationDate>
+  <date>1380375091000</date>
+  <contentUpdateDate>1380375091000</contentUpdateDate>
   <version>1.1</version>
   <title>JsonFeed</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>

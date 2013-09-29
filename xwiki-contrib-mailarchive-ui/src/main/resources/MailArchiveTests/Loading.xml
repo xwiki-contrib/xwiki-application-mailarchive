@@ -11,12 +11,11 @@
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1380120731000</creationDate>
-  <date>1380207660000</date>
-  <contentUpdateDate>1380207660000</contentUpdateDate>
+  <creationDate>1380269055000</creationDate>
+  <date>1380288953000</date>
+  <contentUpdateDate>1380288953000</contentUpdateDate>
   <version>1.1</version>
   <title>Loading</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -27,8 +26,20 @@
 #set($mailarchive = $services.mailarchive)
 #set($defaultsession = $mailarchive.session('MailArchivePrefs.LoadingSession_default'))
 #set($job = $mailarchive.startLoadingJob($defaultsession))
+#if(!$job)
+
+{{error}}
+Could not trigger loading session.
+{{/error}}
+
+#else
 $job
-$job.status
+$job.status.toString()
+$job.status.state
+$job.status.progress
+$job.status.log
+$job.status.request.id
+#end
 
 $mailarchive.timeline
 $mailarchive.timeline.compute()

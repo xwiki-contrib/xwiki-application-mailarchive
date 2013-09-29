@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>MailArchiveTests</web>
+  <name>MonitorJob</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent/>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1380288979000</creationDate>
+  <date>1380439466000</date>
+  <contentUpdateDate>1380439466000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
+
+
+#set($job=$services.mailarchive.getCurrentJob())
+$job
+Type $job.type
+ID $job.status.request.id
+Success / Failure $job.nbSuccess / $job.nbFailure
+Offsets $job.status.progress.currentLevelOffset / $job.status.progress.offset
+State $job.status.state
+Logs
+((( 
+#foreach($log in $job.status.log)
+$log
+#end
+)))
+
+{{/velocity}}</content>
+</xwikidoc>

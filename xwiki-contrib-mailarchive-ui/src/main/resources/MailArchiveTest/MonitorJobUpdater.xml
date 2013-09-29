@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>MailArchiveTest</web>
+  <name>MonitorJobUpdater</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent/>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1380442978000</creationDate>
+  <date>1380443715000</date>
+  <contentUpdateDate>1380443715000</contentUpdateDate>
+  <version>1.1</version>
+  <title>MonitorJobUpdater</title>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{html}}
+&lt;script type="text/javascript"&gt;
+new Ajax.PeriodicalUpdater('jobinfo', '/xwiki/bin/view/MailArchiveTests/MonitorJob', {
+  parameters: { "xpage": "plain"},
+  frequency: 1,
+  decay: 1.1
+});
+&lt;/script&gt;
+
+&lt;div id='jobinfo'&gt;
+
+&lt;/div&gt;
+{{/html}}</content>
+</xwikidoc>

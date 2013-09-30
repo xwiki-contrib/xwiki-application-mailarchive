@@ -162,7 +162,7 @@ public class AggregatedLoggerManager implements IAggregatedLoggerManager
     public void addComponentLogger(Type roleType)
     {
         privateLogger.warn("addComponentLogger(Type=" + roleType + ')');
-        final String clazzName = roleType.getClass().getName();
+        final String clazzName = ((Class< ? >) roleType).getCanonicalName();
         privateLogger.warn("clazzName=" + clazzName);
         String packageName = clazzName.substring(0, clazzName.lastIndexOf('.'));
         if (packageName.endsWith("internal")) {

@@ -42,6 +42,7 @@ import org.xwiki.contrib.mailarchive.IMailArchiveLoader;
 import org.xwiki.contrib.mailarchive.LoadingSession;
 import org.xwiki.contrib.mailarchive.internal.data.MailStore;
 import org.xwiki.contrib.mailarchive.internal.data.Server;
+import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.rendering.parser.StreamParser;
 
@@ -81,6 +82,11 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
         aggregatedLoggerManager.addComponentLogger(IMailArchive.class);
         aggregatedLoggerManager.addComponentLogger(IMailComponent.class);
         aggregatedLoggerManager.addComponentLogger(StreamParser.class);
+        try {
+            this.config = mailArchive.getConfiguration();
+        } catch (MailArchiveException e) {
+            throw new InitializationException("Failed to initiliaze mail archive configuration", e);
+        }
     }
 
     /**
@@ -136,6 +142,7 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
                 }
                 if (mailReader != null) {
                     nbSuccess += loadMails(mailReader, server.getFolder(), session, server.getId(), job);
+                    mailReader.close();
                 }
                 if (job != null) {
                     job.notifyStepPropress();
@@ -236,7 +243,7 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
                     }
 
                 }
-                currentMsg++;
+
                 if (job != null) {
                     job.notifyStepPropress();
                 }
@@ -259,8 +266,10 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
                 }
 
             } catch (Throwable e) {
-                logger.warn("Failed to load mail", e);
+                logger.error("Failed to load mail", e);
             }
+
+            currentMsg++;
         }
 
         if (job != null) {
@@ -301,7 +310,7 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
     public void enterDebugMode()
     {
         // Logs level
-        logger.error("enterDebugMode()");
+        logger.debug("enterDebugMode()");
         aggregatedLoggerManager.pushLogLevel(LogLevel.DEBUG);
         logger.debug("DEBUG MODE ON");
     }
@@ -310,7 +319,7 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
     {
         logger.debug("DEBUG MODE OFF");
         aggregatedLoggerManager.popLogLevel();
-        logger.error("quitDebugMode()");
+        logger.debug("quitDebugMode()");
     }
 
 }

@@ -103,4 +103,6 @@ public interface IMailReader
      */
     MimeMessage cloneEmail(Message mail);
 
+    public abstract void close();
+
 }

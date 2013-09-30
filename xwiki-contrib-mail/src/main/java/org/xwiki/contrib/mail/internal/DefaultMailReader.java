@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.mail.AuthenticationFailedException;
 import javax.mail.Flags;
 import javax.mail.Folder;
@@ -51,7 +50,6 @@ import org.xwiki.contrib.mail.internal.source.ServerAccountSource;
  * @version $Id$
  */
 @Component
-@Singleton
 public class DefaultMailReader extends AbstractMailReader
 {
 
@@ -59,6 +57,8 @@ public class DefaultMailReader extends AbstractMailReader
     private static final int MAIL_HEADER_MAX_LENGTH = 255;
 
     private Session session;
+
+    private Store store;
 
     @Inject
     private Logger logger;
@@ -104,57 +104,46 @@ public class DefaultMailReader extends AbstractMailReader
         assert (getMailSource() != null);
         assert (getMailSource().getHostname() != null);
 
-        Store store = null;
+        store = null;
         List<Message> messages = new ArrayList<Message>();
         boolean isGmail = getMailSource().getHostname() != null && getMailSource().getHostname().endsWith(".gmail.com");
 
-        try {
+        logger.info("Trying to retrieve mails from server " + getMailSource().getHostname());
 
-            logger.info("Trying to retrieve mails from server " + getMailSource().getHostname());
+        this.session = createSession(getMailSource().getProtocol(), getMailSource().getAdditionalProperties(), isGmail);
 
-            this.session =
-                createSession(getMailSource().getProtocol(), getMailSource().getAdditionalProperties(), isGmail);
+        // Get a Store object
+        store = session.getStore();
 
-            // Get a Store object
-            store = session.getStore();
+        // Connect to the mail account
+        store.connect(getMailSource().getHostname(), getMailSource().getPort(), getMailSource().getUsername(),
+            getMailSource().getPassword());
+        Folder fldr;
+        // Specifically for GMAIL ...
+        if (isGmail) {
+            fldr = store.getDefaultFolder();
+        }
+        fldr = store.getFolder(folder);
 
-            // Connect to the mail account
-            store.connect(getMailSource().getHostname(), getMailSource().getPort(), getMailSource().getUsername(),
-                getMailSource().getPassword());
-            Folder fldr;
-            // Specifically for GMAIL ...
-            if (isGmail) {
-                fldr = store.getDefaultFolder();
-            }
-            fldr = store.getFolder(folder);
+        fldr.open(Folder.READ_WRITE);
 
-            fldr.open(Folder.READ_WRITE);
-
-            Message[] msgsArray;
-            // Searches for mails not already read
-            if (onlyUnread) {
-                FlagTerm searchterms = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
-                msgsArray = fldr.search(searchterms);
-            } else {
-                msgsArray = fldr.getMessages();
-            }
-
-            if (max > 0 && msgsArray.length > max) {
-                msgsArray = (Message[]) ArrayUtils.subarray(msgsArray, 0, max);
-            }
-            messages = new ArrayList<Message>(Arrays.asList(msgsArray));
-
-        } finally {
-            if (store != null) {
-                try {
-                    store.close();
-                } catch (MessagingException e) {
-                    logger.debug("checkMails : Could not close connection", e);
-                }
-            }
+        Message[] msgsArray;
+        // Searches for mails not already read
+        if (onlyUnread) {
+            FlagTerm searchterms = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
+            msgsArray = fldr.search(searchterms);
+        } else {
+            msgsArray = fldr.getMessages();
         }
 
+        if (max > 0 && msgsArray.length > max) {
+            msgsArray = (Message[]) ArrayUtils.subarray(msgsArray, 0, max);
+        }
+        messages = new ArrayList<Message>(Arrays.asList(msgsArray));
+
         logger.info("Found " + messages.size() + " messages");
+
+        // Note: we leave the Store opened to allow reading returned Messages
 
         return messages;
     }
@@ -175,46 +164,33 @@ public class DefaultMailReader extends AbstractMailReader
         assert (getMailSource().getHostname() != null);
 
         Message message = null;
-        Store store = null;
+        store = null;
         boolean isGmail = getMailSource().getHostname() != null && getMailSource().getHostname().endsWith(".gmail.com");
 
-        try {
+        logger.info("Trying to retrieve mails from server " + getMailSource().getHostname());
 
-            logger.info("Trying to retrieve mails from server " + getMailSource().getHostname());
+        this.session = createSession(getMailSource().getProtocol(), getMailSource().getAdditionalProperties(), isGmail);
 
-            this.session =
-                createSession(getMailSource().getProtocol(), getMailSource().getAdditionalProperties(), isGmail);
+        // Get a Store object
+        store = session.getStore();
 
-            // Get a Store object
-            store = session.getStore();
+        // Connect to the mail account
+        store.connect(getMailSource().getHostname(), getMailSource().getPort(), getMailSource().getUsername(),
+            getMailSource().getPassword());
+        Folder fldr;
+        // Specifically for GMAIL ...
+        if (isGmail) {
+            fldr = store.getDefaultFolder();
+        }
+        fldr = store.getFolder(folder);
 
-            // Connect to the mail account
-            store.connect(getMailSource().getHostname(), getMailSource().getPort(), getMailSource().getUsername(),
-                getMailSource().getPassword());
-            Folder fldr;
-            // Specifically for GMAIL ...
-            if (isGmail) {
-                fldr = store.getDefaultFolder();
-            }
-            fldr = store.getFolder(folder);
+        fldr.open(Folder.READ_WRITE);
 
-            fldr.open(Folder.READ_WRITE);
+        // Search with message id
+        Message[] messages = fldr.search(new MessageIDTerm(messageid));
 
-            // Search with message id
-            Message[] messages = fldr.search(new MessageIDTerm(messageid));
-
-            if (messages.length > 0) {
-                message = messages[0];
-            }
-
-        } finally {
-            if (store != null) {
-                try {
-                    store.close();
-                } catch (MessagingException e) {
-                    logger.debug("checkMails : Could not close connection", e);
-                }
-            }
+        if (messages.length > 0) {
+            message = messages[0];
         }
 
         logger.info("Found message " + message);
@@ -232,6 +208,13 @@ public class DefaultMailReader extends AbstractMailReader
     public int check(final String folder, final boolean onlyUnread)
     {
         int result;
+        boolean toClose = true;
+
+        // If store is currently connected, we don't need to close it after the check.
+        // If it is not, we close it after to leave everything as it was.
+        if (store != null && store.isConnected()) {
+            toClose = false;
+        }
 
         try {
 
@@ -259,6 +242,9 @@ public class DefaultMailReader extends AbstractMailReader
         } catch (Throwable t) {
             logger.warn("checkMails : ", t);
             return SourceConnectionErrors.UNEXPECTED_EXCEPTION.getCode();
+        }
+        if (toClose) {
+            close();
         }
         logger.debug("checkMails : " + result + " available from " + getMailSource().getHostname());
 
@@ -289,6 +275,18 @@ public class DefaultMailReader extends AbstractMailReader
     public Session getSession()
     {
         return this.session;
+    }
+
+    @Override
+    public void close()
+    {
+        if (store != null && store.isConnected()) {
+            try {
+                store.close();
+            } catch (MessagingException e) {
+                logger.debug("Could not close connection.");
+            }
+        }
     }
 
     /**

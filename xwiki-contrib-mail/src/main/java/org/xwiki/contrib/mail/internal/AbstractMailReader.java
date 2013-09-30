@@ -56,4 +56,13 @@ public abstract class AbstractMailReader implements IMailReader
         return this.mailSource;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mail.IMailReader#close()
+     */
+    public void close()
+    {
+    }
+
 }

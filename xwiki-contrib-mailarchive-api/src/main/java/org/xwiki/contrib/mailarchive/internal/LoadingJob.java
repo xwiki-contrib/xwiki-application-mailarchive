@@ -61,6 +61,21 @@ public class LoadingJob extends AbstractJob<DefaultRequest, DefaultJobStatus<Def
     private String currentMail = null;
 
     /**
+     * 
+     */
+    public static final String JOB_PROPERTY_TYPE = "job.type";
+
+    /**
+     * 
+     */
+    public static final String JOB_ID = "mailarchive";
+
+    /**
+     * 
+     */
+    public static final String JOB_PROPERTY_SESSION = "sessionobj";
+
+    /**
      * {@inheritDoc}
      * 
      * @see org.xwiki.component.phase.Initializable#initialize()

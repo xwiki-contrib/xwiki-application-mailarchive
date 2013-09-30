@@ -39,13 +39,19 @@ import org.xwiki.script.service.ScriptService;
 @Component
 @Named("mail")
 @Singleton
-public class MailScriptService implements ScriptService
+public class MailScriptService implements ScriptService, IMailScriptService
 {
     @Inject
     IMailComponent mailComp;
 
-    List<Message> fetch(String hostname, int port, String protocol, String folder, String username, String password,
-        Properties additionalProperties, boolean onlyUnread)
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mail.IMailScriptService#fetch(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.Properties, boolean)
+     */
+    @Override
+    public List<Message> fetch(String hostname, int port, String protocol, String folder, String username,
+        String password, Properties additionalProperties, boolean onlyUnread)
     {
         try {
             IMailReader mailReader =
@@ -65,7 +71,13 @@ public class MailScriptService implements ScriptService
         return new ArrayList<Message>();
     }
 
-    int check(String hostname, int port, String protocol, String folder, String username, String password,
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mail.IMailScriptService#check(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.Properties, boolean)
+     */
+    @Override
+    public int check(String hostname, int port, String protocol, String folder, String username, String password,
         Properties additionalProperties, boolean onlyUnread)
     {
         try {
@@ -81,7 +93,13 @@ public class MailScriptService implements ScriptService
         return -1;
     }
 
-    String parseAddressHeader(String header)
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mail.IMailScriptService#parseAddressHeader(java.lang.String)
+     */
+    @Override
+    public String parseAddressHeader(String header)
     {
         return mailComp.parseAddressHeader(header);
     }

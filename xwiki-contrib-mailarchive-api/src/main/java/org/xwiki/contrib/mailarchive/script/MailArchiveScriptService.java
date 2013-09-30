@@ -20,7 +20,6 @@
 package org.xwiki.contrib.mailarchive.script;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -54,7 +53,12 @@ import com.xpn.xwiki.objects.BaseObject;
 @Component
 @Named("mailarchive")
 @Singleton
-public class MailArchiveScriptService implements ScriptService
+/**
+ * Mail Archive Script Service.
+ * 
+ * @version $Id$
+ */
+public class MailArchiveScriptService implements ScriptService, IMailArchiveScriptService
 {
     @Inject
     private IMailArchive mailArchive;
@@ -75,65 +79,89 @@ public class MailArchiveScriptService implements ScriptService
     private Logger logger;
 
     /**
-     * Creates a loading session based on default session configuration, stored in document
-     * MailArchivePrefs.LoadingSession_default.
+     * {@inheritDoc}
      * 
-     * @return
+     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#session()
      */
+    @Override
     public LoadingSession session()
     {
         return new LoadingSession();
     }
 
     /**
-     * Creates a loading session, based on configuration stored in specified wiki page.
+     * {@inheritDoc}
      * 
-     * @param serverPrefsDoc
-     * @return
+     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#session(java.lang.String)
      */
+    @Override
     public LoadingSession session(final String sessionPrefsDoc)
     {
         return factory.createLoadingSession(sessionPrefsDoc, mailArchive);
     }
 
     /**
-     * Creates a loading session from an XObject.
+     * {@inheritDoc}
      * 
-     * @param sessionObject
-     * @return
+     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#session(com.xpn.xwiki.objects.BaseObject)
      */
+    @Override
     public LoadingSession session(final BaseObject sessionObject)
     {
         return factory.createLoadingSession(sessionObject, mailArchive);
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#check(java.lang.String)
+     */
+    @Override
     public int check(final String serverPrefsDoc)
     {
         return mailArchive.checkSource(serverPrefsDoc);
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#load(org.xwiki.contrib.mailarchive.LoadingSession)
+     */
+    @Override
     public int load(final LoadingSession session)
     {
         LoadingJob job = createLoadingJob(session, true);
         return job != null ? job.getNbSuccess() : -1;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#startLoadingJob(org.xwiki.contrib.mailarchive.LoadingSession)
+     */
+    @Override
     public Job startLoadingJob(final LoadingSession session)
     {
         return createLoadingJob(session, false);
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#getCurrentJob()
+     */
+    @Override
     public Job getCurrentJob()
     {
         return jobManager.getCurrentJob();
     }
 
     /**
-     * Threads messages related to a topic, given its topic ID.<br/>
+     * {@inheritDoc}
      * 
-     * @param topicid A topic ID, as can be found in a TopicClass object instance in "topicId" field.
-     * @return An array of threaded messages.
+     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#thread(java.lang.String)
      */
+    @Override
     public ArrayList<ThreadMessageBean> thread(final String topicid)
     {
         // We "flatten" the output to avoid needing recursivity to display the thread(s).
@@ -141,35 +169,44 @@ public class MailArchiveScriptService implements ScriptService
     }
 
     /**
-     * Threads all messages in the mail archive.<br/>
-     * The result is an array, and not a recursive structure, in order to facilitate display of the thread.<br/>
-     * For each message, property "level" provides the current level in the thread hierarchy,<br/>
-     * and "index" provides the sequence number in the whole thread stack.<br/>
-     * For example for the following thread:<br/>
-     * - "I have a question" (level:0, index:0)<br/>
-     * -- "Re: I have a question" (level:1, index:1)<br/>
-     * --- "Re: I have a question" (level:2, index:2)<br/>
-     * -- "Re: I have a question" (level:1, index:3)<br/>
-     * This allows to easily sort by thread, and display thread hierarchy.
+     * {@inheritDoc}
      * 
-     * @return An array of threaded messages.
+     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#thread()
      */
+    @Override
     public ArrayList<ThreadMessageBean> thread()
     {
         return thread(null);
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#parseUser(java.lang.String)
+     */
+    @Override
     public IMAUser parseUser(final String internetAddress)
     {
         return mailArchive.parseUser(internetAddress);
     }
 
-    // FIXME: for manual tests only, to be removed
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#getTimeline()
+     */
+    @Override
     public ITimeLineGenerator getTimeline()
     {
         return this.timeline;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#getDecodedMailText(java.lang.String, boolean)
+     */
+    @Override
     public DecodedMailContent getDecodedMailText(final String mailPage, final boolean cut)
     {
         try {
@@ -181,6 +218,12 @@ public class MailArchiveScriptService implements ScriptService
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#getConfig()
+     */
+    @Override
     public IMailArchiveConfiguration getConfig()
     {
         try {
@@ -195,9 +238,12 @@ public class MailArchiveScriptService implements ScriptService
     }
 
     /**
-     * @param session
-     * @param synchronous
-     * @return
+     * Creates a loading job either in synchronous or asynchronous mode.<br/>
+     * To check for progress/results, cf. {@link org.xwiki.contrib.}
+     * 
+     * @param session The Loading Session description.
+     * @param synchronous If true creates a job and waits for its end, if false returns right away.
+     * @return Created LoadingJob, or null if a problem occurred.
      */
     private LoadingJob createLoadingJob(final LoadingSession session, boolean synchronous)
     {
@@ -207,19 +253,19 @@ public class MailArchiveScriptService implements ScriptService
         }
         LoadingJob job;
         try {
-            job = this.componentManager.getInstance(Job.class, "mailarchivejob");
+            job = this.componentManager.getInstance(Job.class, LoadingJob.JOBTYPE);
         } catch (ComponentLookupException e) {
             logger.error("Failed to lookup any Job for role hint [" + LoadingJob.JOBTYPE + "]", e);
             return null;
         }
 
-        final String id = session.getId() + '_' + new Date().getTime();
+        final String id = LoadingJob.JOB_ID;
 
         DefaultRequest request = new DefaultRequest();
         request.setId(id);
-        request.setProperty("job.type", LoadingJob.JOBTYPE);
+        request.setProperty(LoadingJob.JOB_PROPERTY_TYPE, LoadingJob.JOBTYPE);
         request.setInteractive(false);
-        request.setProperty("sessionobj", session);
+        request.setProperty(LoadingJob.JOB_PROPERTY_SESSION, session);
         job.initialize(request);
         jobManager.addJob(job);
         if (synchronous) {

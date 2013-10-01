@@ -82,11 +82,6 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
         aggregatedLoggerManager.addComponentLogger(IMailArchive.class);
         aggregatedLoggerManager.addComponentLogger(IMailComponent.class);
         aggregatedLoggerManager.addComponentLogger(StreamParser.class);
-        try {
-            this.config = mailArchive.getConfiguration();
-        } catch (MailArchiveException e) {
-            throw new InitializationException("Failed to initiliaze mail archive configuration", e);
-        }
     }
 
     /**
@@ -125,6 +120,16 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
 
         if (session.isDebugMode()) {
             enterDebugMode();
+        }
+
+        // Reinitialize configuration
+        try {
+            // FIXME: not very nice to call getConfiguration to reload configuration from db ...
+            this.config = mailArchive.getConfiguration();
+        } catch (MailArchiveException e) {
+            e.printStackTrace();
+        } catch (InitializationException e) {
+            e.printStackTrace();
         }
 
         try {

@@ -16,7 +16,6 @@
   <contentUpdateDate>1369672721000</contentUpdateDate>
   <version>1.1</version>
   <title>Loading Session Creation</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -142,7 +141,7 @@
         <separators/>
         <size>1</size>
         <sort>id</sort>
-        <sql>select propid.value, propname.value from XWikiDocument doc, BaseObject obj, StringProperty propid, StringProperty propname where obj.className='MailArchiveCode.ServerClass' and doc.fullName=obj.name and propid.id.id=obj.id and propname.id.id=obj.id and propid.id.name='id' and propname.id.name='name' and doc.space = 'MailArchivePrefs'</sql>
+        <sql>select propid.value, CONCAT(CONCAT(propid.value,':'), propname.value) from XWikiDocument doc, BaseObject obj, StringProperty propid, StringProperty propname where obj.className='MailArchiveCode.ServerClass' and doc.fullName=obj.name and propid.id.id=obj.id and propname.id.id=obj.id and propid.id.name='id' and propname.id.name='hostname' and doc.space = 'MailArchivePrefs'</sql>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>

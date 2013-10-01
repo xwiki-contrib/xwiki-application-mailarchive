@@ -16,7 +16,6 @@
   <contentUpdateDate>1375700969000</contentUpdateDate>
   <version>1.1</version>
   <title>MailingListAdminSheet</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -42,7 +41,7 @@ Mailing-lists are defined independently from mail servers above, so the same mai
                    "displayname" : { "type" : "text", "link" : "view" },
                    "pattern" : { "type" : "text" },
                    "Tag" : { "type" : "text" },
-                   "color" : { "type" : "html" },
+                   "color" : { "type" : "text", "html" : "true" },
                    "listId" : { "type" : "text" },
                    "_actions" : {"actions": ["edit","delete"] } 
                  } )

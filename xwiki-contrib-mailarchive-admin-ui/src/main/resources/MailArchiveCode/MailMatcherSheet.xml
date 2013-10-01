@@ -16,7 +16,6 @@
   <contentUpdateDate>1359477662000</contentUpdateDate>
   <version>1.1</version>
   <title>#if($doc.name == 'MailMatcherSheet')MailMatcher Sheet#{else}$services.display.title($doc, {'displayerHint': 'default'})#end</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -27,7 +26,7 @@
 #if($doc.name == 'MailMatcherSheet')
 Mail Matcher Sheet
 #else
-#if(${doc.name.endsWith('Creation')})
+#if(${doc.name.endsWith('CreationSheet')})
   #set($assumeLightbox = true)
 #end
 #set($matcherobjs = $doc.getObjects('MailArchiveCode.MailMatcherClass'))

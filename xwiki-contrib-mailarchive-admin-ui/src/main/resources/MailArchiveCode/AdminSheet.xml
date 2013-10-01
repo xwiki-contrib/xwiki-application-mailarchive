@@ -16,7 +16,6 @@
   <contentUpdateDate>1375711798000</contentUpdateDate>
   <version>1.1</version>
   <title>Mail Archive Administration</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -515,18 +514,18 @@
 
 #set($prerequisites = 0) 
 #end
-#if($prerequisites == 1) {{tabs idsToLabels='tabIdSummary=Summary,tabIdGlobalParameters=Global Parameters,tabIdCorporateFeatures=Enterprise Features,tabIdMailServers=Sources ($nbServers),tabIdLists=Mailing-Lists ($nbLists),tabIdTypes=Mail Types ($nbTypes),tabIdAdvanced=Advanced Parameters' /}}
+
+#if($prerequisites == 1) {{tabs idsToLabels="tabIdSummary=${services.localization.render('mailarchive.admin.section.overview')},tabIdGlobalParameters=${services.localization.render('mailarchive.admin.section.configuration')},tabIdMailServers=${services.localization.render('mailarchive.admin.section.sources')} (#if($nbServers==0) (% style="color:red" %) #end $nbServers/$nbStores),tabIdLists=${services.localization.render('mailarchive.admin.section.lists')} (#if($nbLists==0) (% style="color:red" %) #end $nbLists),tabIdTypes=${services.localization.render('mailarchive.admin.section.types')} ($nbTypes)" /}}
 
 {{html wiki="true"}}
 (%id="tabIdSummary"%)(((
-* Number of configured servers : #if($nbServers==0) (% style="color:red" %) #end **$nbServers**
-* Number of configured stores : **$nbStores**
-* Number of configured mailing-lists : #if($nbLists==0) (% style="color:red" %) #end **$nbLists**
+#set($operational = true)
 #set($prefsdoc = $xwiki.getDocument("${spaceprefs}.GlobalParameters"))
 #set($prefs = $prefsdoc.getObject("${spacecode}.AdminClass"))
 #set($loadingUser = $prefs.get('user'))
 #if("$!loadingUser.trim()" == "") 
 
+  #set($operational = false)
 {{warning}}Please set a loading user in 'Global Parameters' !{{/warning}}
 
 #else
@@ -534,6 +533,7 @@
 #end
 #if("$!msg.mailarchive_home_title"=="") ## does not work ? || !$xwiki.hasAccessLevel("edit", $loadinguser, "${spacehome}.WebHome"))
 
+  #set($operational = false)
 {{warning}}Please visit [[Install&gt;&gt;MailArchiveCode.Install]] page to finish installation{{/warning}}
 
 #end 
@@ -548,19 +548,21 @@
 {{/info}}
 
 #end 
-#if($nbServers == 0) 
+#if($nbServers == 0 &amp;&amp; $nbStores == 0) 
 
-{{warning}}Please configure at least one mail server{{/warning}}
+  #set($operational = false)
+{{warning}}Please configure at least one mail server or store.{{/warning}}
 
 #end
 #if($nbLists == 0)
 
+  #set($operational = false)
 {{warning}}Please configure at least one mailing-list{{/warning}}
 
 #end 
-#if($scheduled)
+#if($operational)
 
-{{warning}}Please schedule the crontab job{{/warning}}
+{{success}}You are ready to [[operate the mail archive&gt;&gt;MailArchive.Operate]] (schedule loading jobs, etc) !{{/success}}
 
 #end
 === Activity on Mail Archive administration ===
@@ -665,17 +667,6 @@
        $prefsdoc.display($prop.getName(), 'edit') Match wiki profiles using email addresses of authors, and set "created by", "updated by" fields accordingly in created wiki pages.
      &lt;/dd&gt;
    &lt;/dl&gt;
-#if($hasEdit)
-&lt;span class="buttonwrapper"&gt;
-  &lt;input class="button" type="submit" name="save" value="Save"/&gt;
-&lt;/span&gt;
-#end
-&lt;/form&gt;
-)))
-
-(%id="tabIdCorporateFeatures"%)
-(((
-&lt;form action="" class="xform" method="post" name="form_corporatefeatures"&gt;
 #set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_emailignoredtext'))
    &lt;dl&gt;
      &lt;dt&gt;
@@ -757,60 +748,11 @@
        $prefsdoc.display($prop.getName(), 'edit') Create a backup copy of emails to local store
      &lt;/dd&gt;
    &lt;/dl&gt;
-#if($hasEdit)
-&lt;span class="buttonwrapper"&gt;
-  &lt;input class="button" type="submit" value="Save"/&gt;
-&lt;/span&gt;
-#end
-&lt;/form&gt;
-)))
 
-(%id="tabIdMailServers"%)(((
-{{include reference="MailArchiveCode.ServerAndStoreAdminSheet"/}}
-)))
-(%id="tabIdLists"%)(((
-{{include reference="MailArchiveCode.MailingListAdminSheet"/}}
-{{include reference="MailArchiveCode.MailingListGroupAdminSheet"/}}
-)))
-(%id="tabIdTypes"%)(((
-Types are useful to materialize standard mails, annoucements, releases, ...&lt;br/&gt;
+== Advanced Parameters ==
 
-Mail types are similar to mailing-lists above, except that information is persisted in tags and in a specific mail field ("type"), a specific icon can be associated with each type. This information is viewable in Mails and Topics pages, and in the Timeline view (topic icon). 
-You can use a regular expression as pattern, and pick the fields to be checked against this pattern.&lt;br/&gt;
-
-Some built-in types exist, for them only icon can be updated. They are stored in a specific "builtin type" mail field.&lt;br/&gt;
-
-Note : icon field should contain the name of an icon from [[XWiki Icon Set&gt;&gt;http://www.famfamfam.com/lab/icons/silk/previews/index_abc.png]].&lt;br/&gt;&lt;br/&gt;
-
-&lt;i&gt;Default type 'Mail' should not be deleted nor updated (except to set another icon if you wish)&lt;/i&gt;&lt;br/&gt;
-
-#set($collist = [ "id", "builtin", "name", "icon", "_actions"])
-#set($colprops = {                   
-                   "id" : { "type" : "text", "link" : "view" },
-                   "builtin" : { "type" : "text" },
-                   "name" : { "type" : "text", "link" : "view" },
-                   "icon" : { "type" : "html" },
-                   "_actions" : {"actions": ["edit","delete"] } 
-                 } )
-#set($options = { "className":"MailArchiveCode.TypeClass",
-                  "resultPage":"MailArchiveCode.LiveTableResults",
-                  "selectedColumn":"name",
-                  "tagCloud":"false",
-                  "defaultOrder":"asc",
-                  "translationPrefix" : "mailarchive.types.table.headers.",
-                  "rowCount": 10,
-                  "extraParams" : "&amp;space=MailArchivePrefs" })
-#livetable("livetable_types" $collist $colprops $options)
-&lt;form action="#" class="xformInline" method="post" name="form_types"&gt;
-  &lt;span class="buttonwrapper"&gt;
-    &lt;a href="#" class="button" id="btAddType"&gt;Add...&lt;/a&gt;
-  &lt;/span&gt;
-&lt;/form&gt;
-)))
-(%id="tabIdAdvanced"%)(((
 You should probably not modify the following parameters. They are mainly available for specific use-cases and for compatibility reasons.
 Do not update them without thinking of the consequences !
-&lt;form action="" class="xform" method="post" name="form_advanced"&gt;
 #set($prop=$xwiki.getPropertyClassFromName('MailArchiveCode.AdminClass_adv_croptopicid'))
    &lt;dl&gt;
      &lt;dt&gt;
@@ -838,6 +780,48 @@ Do not update them without thinking of the consequences !
 #end
 &lt;/form&gt;
 )))
+(%id="tabIdMailServers"%)(((
+{{include reference="MailArchiveCode.ServerAndStoreAdminSheet"/}}
+)))
+(%id="tabIdLists"%)(((
+{{include reference="MailArchiveCode.MailingListAdminSheet"/}}
+{{include reference="MailArchiveCode.MailingListGroupAdminSheet"/}}
+)))
+(%id="tabIdTypes"%)(((
+Types are useful to materialize standard mails, annoucements, releases, ...&lt;br/&gt;
+
+Mail types are similar to mailing-lists above, except that information is persisted in tags and in a specific mail field ("type"), a specific icon can be associated with each type. This information is viewable in Mails and Topics pages, and in the Timeline view (topic icon). 
+You can use a regular expression as pattern, and pick the fields to be checked against this pattern.&lt;br/&gt;
+
+Some built-in types exist, for them only icon can be updated. They are stored in a specific "builtin type" mail field.&lt;br/&gt;
+
+Note : icon field should contain the name of an icon from [[XWiki Icon Set&gt;&gt;http://www.famfamfam.com/lab/icons/silk/previews/index_abc.png]].&lt;br/&gt;&lt;br/&gt;
+
+&lt;i&gt;Default type 'Mail' should not be deleted nor updated (except to set another icon if you wish)&lt;/i&gt;&lt;br/&gt;
+
+#set($collist = [ "id", "builtin", "name", "icon", "_actions"])
+#set($colprops = {                   
+                   "id" : { "type" : "text", "link" : "view" },
+                   "builtin" : { "type" : "text" },
+                   "name" : { "type" : "text", "link" : "view" },
+                   "icon" : { "type" : "text", "html" : "true" },
+                   "_actions" : {"actions": ["edit","delete"] } 
+                 } )
+#set($options = { "className":"MailArchiveCode.TypeClass",
+                  "resultPage":"MailArchiveCode.LiveTableResults",
+                  "selectedColumn":"name",
+                  "tagCloud":"false",
+                  "defaultOrder":"asc",
+                  "translationPrefix" : "mailarchive.types.table.headers.",
+                  "rowCount": 10,
+                  "extraParams" : "&amp;space=MailArchivePrefs" })
+#livetable("livetable_types" $collist $colprops $options)
+&lt;form action="#" class="xformInline" method="post" name="form_types"&gt;
+  &lt;span class="buttonwrapper"&gt;
+    &lt;a href="#" class="button" id="btAddType"&gt;Add...&lt;/a&gt;
+  &lt;/span&gt;
+&lt;/form&gt;
+)))
 
 {{/html}}
 
@@ -855,6 +839,7 @@ Do not update them without thinking of the consequences !
 var serversurl = "$xwiki.getDocument('MailArchiveCode.ServerCreationSheet').getURL('view')";
 var storesurl = "$xwiki.getDocument('MailArchiveCode.StoreCreationSheet').getURL('view')";
 var listsurl = "$xwiki.getDocument('MailArchiveCode.MailingListCreationSheet').getURL('view')";
+var listgroupsurl = "$xwiki.getDocument('MailArchiveCode.MailingListGroupCreationSheet').getURL('view')";
 var typesurl = "$xwiki.getDocument('MailArchiveCode.TypeCreationSheet').getURL('view')";
 #set($homeurl = $!xcontext.get("maadmin_homeurl"))
 #if(!$homeurl)
@@ -873,6 +858,7 @@ Event.observe(ldapphoto_field, 'click', toggleLdapPhoto);
 Event.observe($('btAddServer'), 'click', openAddServer);
 Event.observe($('btAddStore'), 'click', openAddStore); //openAddItem.bindAsEventListener(this, storesurl));
 Event.observe($('btAddList'), 'click', openAddList);
+Event.observe($('btAddListGroup'), 'click', openAddListGroup);
 Event.observe($('btAddType'), 'click', openAddType);
 function toggleSyncUserMode() {
   var val = sync_field.checked;
@@ -926,6 +912,12 @@ function openAddList() {
   var redirecturl = homeurl+'&amp;tab=lists';
   window.lb = new Lightbox(createurl,saveurl,redirecturl);
 }
+function openAddListGroup() {
+  var createurl = listgroupsurl + '?xpage=plain';
+  var saveurl = listgroupsurl + '?save=true&amp;xpage=plain&amp;outputSyntax=plain';
+  var redirecturl = homeurl+'&amp;tab=lists';
+  window.lb = new Lightbox(createurl,saveurl,redirecturl);
+}
 function openAddType() {
   var createurl = typesurl + '?xpage=plain';
   var saveurl = typesurl + '?save=true&amp;xpage=plain&amp;outputSyntax=plain';
@@ -937,13 +929,13 @@ function onLoad() {
   toggleSyncUserMode();
   toggleLdapPhoto();
   if (tab == 'sources') {
-    switchTab('tabIdMailServers', ['tabIdSummary', 'tabIdGlobalParameters', 'tabIdCorporateFeatures', 'tabIdMailServers', 'tabIdLists', 'tabIdTypes', 'tabIdAdvanced']);
+    switchTab('tabIdMailServers', ['tabIdSummary', 'tabIdGlobalParameters', 'tabIdMailServers', 'tabIdLists', 'tabIdTypes']);
   }
   if (tab == 'lists') {
-    switchTab('tabIdLists', ['tabIdSummary', 'tabIdGlobalParameters', 'tabIdCorporateFeatures', 'tabIdMailServers', 'tabIdLists', 'tabIdTypes', 'tabIdAdvanced']);
+    switchTab('tabIdLists', ['tabIdSummary', 'tabIdGlobalParameters', 'tabIdMailServers', 'tabIdLists', 'tabIdTypes']);
   }
   if (tab == 'types') {
-    switchTab('tabIdTypes', ['tabIdSummary', 'tabIdGlobalParameters', 'tabIdCorporateFeatures', 'tabIdMailServers', 'tabIdLists', 'tabIdTypes', 'tabIdAdvanced']);
+    switchTab('tabIdTypes', ['tabIdSummary', 'tabIdGlobalParameters', 'tabIdMailServers', 'tabIdLists', 'tabIdTypes']);
   }
 }
 &lt;/script&gt;

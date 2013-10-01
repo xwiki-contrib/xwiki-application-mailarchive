@@ -16,7 +16,6 @@
   <contentUpdateDate>1376211824000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -59,13 +58,34 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </destinationWiki>
+      <loadingUser>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>0</multiSelect>
+        <name>loadingUser</name>
+        <number>5</number>
+        <picker>1</picker>
+        <prettyName>loadingUser</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators/>
+        <size>20</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <usesList>0</usesList>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
+      </loadingUser>
       <mailingLists>
         <cache>0</cache>
         <classname>MailArchiveCode.MailingListClass</classname>
         <customDisplay/>
         <disabled>0</disabled>
         <displayType>checkbox</displayType>
-        <idField>name</idField>
+        <idField>displayname</idField>
         <multiSelect>1</multiSelect>
         <name>mailingLists</name>
         <number>2</number>
@@ -76,11 +96,11 @@
         <separators/>
         <size>1</size>
         <sort>none</sort>
-        <sql/>
+        <sql>select propname.value, propname.value from XWikiDocument doc, BaseObject obj, StringProperty propname where obj.className='MailArchiveCode.MailingListClass' and doc.fullName=obj.name and propname.id.id=obj.id and propname.id.name='displayname' and doc.space = 'MailArchivePrefs'</sql>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
-        <valueField>displayName</valueField>
+        <valueField>displayname</valueField>
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </mailingLists>
       <name>
@@ -106,9 +126,6 @@
     </property>
     <property>
       <destinationWiki>xwiki</destinationWiki>
-    </property>
-    <property>
-      <loadingUser/>
     </property>
     <property>
       <mailingLists/>

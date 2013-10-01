@@ -101,6 +101,11 @@ mailarchive.home.abstract=This application aims at storing and showing mailing-l
 
 # Administration page
 mailarchive.admin.title=Mail Archive Administration
+mailarchive.admin.section.overview=Summary
+mailarchive.admin.section.configuration=Configuration
+mailarchive.admin.section.sources=Sources
+mailarchive.admin.section.lists=Mailing-lists
+mailarchive.admin.section.types=Mail Types
 
 # Loading page
 mailarchive.load.title=Mailing-lists emails loading
@@ -156,7 +161,16 @@ mailarchive.lists.fields.color.label=$msg.get('MailArchiveCode.MailingListClass_
 mailarchive.lists.fields.color.hint=Enter the value as for {0}CSS color properties{1}.
 mailarchive.lists.fields.listId.label=$msg.get('MailArchiveCode.MailingListClass_listId')
 mailarchive.lists.fields.listId.hint=Optionnally referring to the List-ID identifying this list, will allow replying, subscribing and unsubscribing from this list.
-# (types) XClass MailArchiveCode.TypeClass
+# GROUPS OF LISTS (MailArchiveCode.MailingListGroupClass)
+mailarchive.mailinglistgroup.fields.name.label=Name
+mailarchive.mailinglistgroup.fields.mailingLists.label=Mailing-lists
+mailarchive.mailinglistgroup.fields.destinationWiki.label=Targeted (sub)wiki
+mailarchive.mailinglistgroup.fields.destinationWiki.hint=Not implemented.
+mailarchive.mailinglistgroup.fields.destinationSpace.label=Targeted Space
+mailarchive.mailinglistgroup.fields.destinationSpace.hint=Not implemented.
+mailarchive.mailinglistgroup.fields.loadingUser.label=Loading User
+mailarchive.mailinglistgroup.fields.loadingUser.hint=Not implemented.
+# TYPES (MailArchiveCode.TypeClass)
 ## XObject
 MailArchiveCode.TypeClass_id=ID
 MailArchiveCode.TypeClass_name=Display name

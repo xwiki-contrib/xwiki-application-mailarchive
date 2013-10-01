@@ -16,7 +16,6 @@
   <contentUpdateDate>1375701332000</contentUpdateDate>
   <version>1.1</version>
   <title>ServerAndStoreAdminSheet</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -43,7 +42,7 @@ You should have access to this mail account and folder, as some maintenance migh
                    "protocol" : { "type" : "text" },
                    "folder" : { "type" : "text" },
                    "user" : { "type" : "text" },
-                   "status" : { "type" : "text" },
+                   "status" : { "type" : "text", "html": "true" },
                    "state" : { "type" : "text" },
                    "_actions" : {"actions": ["check","edit","delete"]} 
                  } )
@@ -82,7 +81,7 @@ No store defined.
                    "format" : { "type" : "text" },
                    "location" : { "type" : "text" },
                    "folder" : { "type" : "text" },
-                   "status" : { "type" : "text" },
+                   "status" : { "type" : "text", "html" : "true" },
                    "state" : { "type" : "text" },
                    "_actions" : {"actions": ["check","edit","delete"]} 
                  } )

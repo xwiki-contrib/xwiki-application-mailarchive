@@ -16,7 +16,6 @@
   <contentUpdateDate>1354528933000</contentUpdateDate>
   <version>1.1</version>
   <title>Mail Types Creation</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -292,7 +291,7 @@
   #if($request.getParameter('newtypename'))
     #set($discard = $obj.set('name', $request.getParameter('newtypename')))
   #end
-  #if(${doc.name.endsWith('Creation')})
+  #if(${doc.name.endsWith('CreationSheet')})
     #set($assumeLightbox = true)
   #end
   #set($typesClass=$doc.getObject('MailArchiveCode.TypeClass').xWikiClass)
@@ -336,7 +335,6 @@
 === Matchers List ===
 
 {{include reference="MailArchiveCode.MailMatcherSheet"/}}
-
 
   &lt;span class="buttonwrapper"&gt;
     #if($assumeLightbox)

@@ -16,13 +16,24 @@
   <contentUpdateDate>1354528934000</contentUpdateDate>
   <version>1.1</version>
   <title>$msg.get('mailarchive_home_title')</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
+  <attachment>
+    <filename>iconthumbs-mini.gif</filename>
+    <filesize>127</filesize>
+    <author>XWiki.Admin</author>
+    <date>1380375090000</date>
+    <version>1.1</version>
+    <comment/>
+    <content>R0lGODlhGQAXAKECAAAAAAEBAf///////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACH5BAEKAAIALAAA
+AAAZABcAAAI7lI+py+0IwHtSzmYvNlnD03kcKDJhSXpRlJyms16rO4UuzVXVggv22fPNfChbSxZD
+BEQZS5A3REmnhwIAOw==
+</content>
+  </attachment>
   <attachment>
     <filename>iconthumbs.gif</filename>
     <filesize>925</filesize>
@@ -47,18 +58,6 @@ zNZYgEKCmGWXRBaUZQ9ciegiAlXGmcZSUpkxnwdQbnVIFkB+MGGhuGXWx4+34bYfAlf1eBojj7FE
 pJn0deOladwlWk1WXm5TYhaNlmOne1iihJSqBI1lHXp/cYTTg8bIg2k4OVFFX5TJwKQrfaVGBVCl
 FNjpUqwr/XoBlEc4Bfpia0geFZCVFU47kLQYbkosttPaOCGr3Gqp7EtU/Rnuueimq+667Lbr7rvw
 xivvvPTWa6+7EQAAOw==
-</content>
-  </attachment>
-  <attachment>
-    <filename>iconthumbs-mini.gif</filename>
-    <filesize>127</filesize>
-    <author>XWiki.Admin</author>
-    <date>1353930103000</date>
-    <version>1.1</version>
-    <comment/>
-    <content>R0lGODlhGQAXAKECAAAAAAEBAf///////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACH5BAEKAAIALAAA
-AAAZABcAAAI7lI+py+0IwHtSzmYvNlnD03kcKDJhSXpRlJyms16rO4UuzVXVggv22fPNfChbSxZD
-BEQZS5A3REmnhwIAOw==
 </content>
   </attachment>
   <object>
@@ -112,7 +111,7 @@ This application aims at storing and showing mailing-lists archives. To know wha
 #end
 [[image:icon:chart_pie]] [[Mailing-list Statistics&gt;&gt;MailArchive.Statistics]] [[image:icon:help]] [[Documentation&gt;&gt;MailArchive.Mail Archive Documentation||rel="__blank"]] [[image:icon:page_white_code]] [[Feeds Generator&gt;&gt;MailArchive.FeedsGenerator]]  [[image:icon:bug]] [[Open issues&gt;&gt;http://jira.xwiki.org/browse/XMAILARCH]]
 #if($hasAdmin)
-[[image:icon:cog]] [[Administrate and Configure&gt;&gt;MailArchive.Admin]] [[image:icon:wrench]] [[Operate&gt;&gt;MailArchive.Operate]] 
+[[image:icon:cog]] [[Administrate and Configure&gt;&gt;XWiki.XWikiPreferences||queryString="editor=globaladmin&amp;section=Mail+Archive"]] [[image:icon:wrench]] [[Operate&gt;&gt;MailArchive.Operate]] 
 #end
 #if($request.getParameter('display') == 'timeline')
 {{display reference="MailArchiveCode.TimeLineSheet"/}}

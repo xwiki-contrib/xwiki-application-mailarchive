@@ -755,7 +755,10 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     {
         // Materialize mailing-lists information and mail IType in Tags
         final String pageName = persistence.getMessageUniquePageName(m, isAttachedMail);
+        // Parse mail content
+        m.setMailContent(mailManager.parseContent(m.getOriginalMessage()));
         List<String> taglist = extractTags(m);
+        // We load attachment emails first - so we can link them afterwards
         List<String> attachedMailPages = loadAttachedMails(m.getMailContent().getAttachedMails(), pageName, create);
         final String createdPageName =
             persistence.createMailPage(m, pageName, existingTopicId, isAttachedMail, taglist, attachedMailPages,

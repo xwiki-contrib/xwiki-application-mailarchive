@@ -36,17 +36,18 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.context.Execution;
-import org.xwiki.context.ExecutionContext;
 import org.xwiki.contrib.mail.MailContent;
 import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mail.internal.MailAttachment;
@@ -138,6 +139,9 @@ public class XWikiPersistence implements IPersistence, Initializable
 
     private XWiki xwiki;
 
+    @Inject
+    private Provider<XWikiContext> xcontext;
+
     private XWikiContext context;
 
     /**
@@ -148,8 +152,9 @@ public class XWikiPersistence implements IPersistence, Initializable
     @Override
     public void initialize() throws InitializationException
     {
-        ExecutionContext context = execution.getContext();
-        this.context = (XWikiContext) context.getProperty("xwikicontext");
+
+        // ExecutionContext context = execution.getContext();
+        this.context = xcontext.get();
         this.xwiki = this.context.getWiki();
 
     }
@@ -317,7 +322,7 @@ public class XWikiPersistence implements IPersistence, Initializable
         HashMap<String, String> attachmentsMap = new HashMap<String, String>();
         ArrayList<MimeBodyPart> attbodyparts = new ArrayList<MimeBodyPart>();
 
-        msgDoc = xwiki.getDocument(XWikiPersistence.SPACE_ITEMS + '.' + pageName, context);
+        msgDoc = xwiki.getDocument(docFullName, context);
         logger.debug("NEW MSG msgwikiname=" + pageName);
 
         Object bodypart = m.getBodypart();
@@ -563,6 +568,7 @@ public class XWikiPersistence implements IPersistence, Initializable
         if (msgwikiname.length() >= ExtendedDocumentAccessBridge.MAX_PAGENAME_LENGTH) {
             msgwikiname = msgwikiname.substring(0, ExtendedDocumentAccessBridge.MAX_PAGENAME_LENGTH);
         }
+        msgwikiname = xwiki.getUniquePageName(SPACE_ITEMS, msgwikiname, context);
         return msgwikiname;
     }
 
@@ -675,7 +681,7 @@ public class XWikiPersistence implements IPersistence, Initializable
         // avoid automatic set of update date to current date
         doc.setContentDirty(false);
         doc.setMetaDataDirty(false);
-        xwiki.getXWiki(context).saveDocument(doc, comment, context);
+        logger.debug("Saving document " + (new ReflectionToStringBuilder(doc).toString()));
+        xwiki.saveDocument(doc, comment, context);
     }
-
 }

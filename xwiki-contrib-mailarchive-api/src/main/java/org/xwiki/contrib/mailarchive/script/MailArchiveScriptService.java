@@ -97,7 +97,7 @@ public class MailArchiveScriptService implements ScriptService, IMailArchiveScri
     @Override
     public LoadingSession session(final String sessionPrefsDoc)
     {
-        return factory.createLoadingSession(sessionPrefsDoc, mailArchive);
+        return factory.createLoadingSession(sessionPrefsDoc);
     }
 
     /**
@@ -106,9 +106,10 @@ public class MailArchiveScriptService implements ScriptService, IMailArchiveScri
      * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#session(com.xpn.xwiki.objects.BaseObject)
      */
     @Override
-    public LoadingSession session(final BaseObject sessionObject)
+    public LoadingSession sessionFromXObject(final BaseObject sessionObject)
     {
-        return factory.createLoadingSession(sessionObject, mailArchive);
+        logger.error("Create LoadingSession from BaseObject " + sessionObject);
+        return factory.createLoadingSession(sessionObject);
     }
 
     /**

@@ -314,17 +314,14 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
 
     public void enterDebugMode()
     {
-        // Logs level
-        logger.debug("enterDebugMode()");
-        aggregatedLoggerManager.pushLogLevel(LogLevel.DEBUG);
         logger.debug("DEBUG MODE ON");
+        aggregatedLoggerManager.pushLogLevel(LogLevel.DEBUG);
     }
 
     public void quitDebugMode()
     {
-        logger.debug("DEBUG MODE OFF");
         aggregatedLoggerManager.popLogLevel();
-        logger.debug("quitDebugMode()");
+        logger.debug("DEBUG MODE OFF");
     }
 
 }

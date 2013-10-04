@@ -35,7 +35,6 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mailarchive.IMASource;
-import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.IMailMatcher;
 import org.xwiki.contrib.mailarchive.IMailingList;
@@ -408,9 +407,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
                 logger.info("Loading loading session from page " + sessionPrefsDoc + " ...");
                 if (StringUtils.isNotBlank(sessionPrefsDoc)) {
                     // FIXME: ugly trick - MailArchiveConfiguration should not depend on IMailArchive...
-                    LoadingSession session =
-                        factory.createLoadingSession(sessionPrefsDoc,
-                            (IMailArchive) this.componentManager.getInstance(IMailArchive.class));
+                    LoadingSession session = factory.createLoadingSession(sessionPrefsDoc);
                     if (session != null) {
                         sessions.put(session.getId(), session);
                         logger.info("Loaded Loading Session definition " + session);

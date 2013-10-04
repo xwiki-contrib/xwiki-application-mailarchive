@@ -68,7 +68,7 @@ public interface IMailArchiveScriptService
      * @param sessionObject
      * @return
      */
-    LoadingSession session(BaseObject sessionObject);
+    LoadingSession sessionFromXObject(BaseObject sessionObject);
 
     /**
      * Triggers a synchronous Loading Session.

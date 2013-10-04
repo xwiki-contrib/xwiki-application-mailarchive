@@ -22,6 +22,7 @@ package org.xwiki.contrib.mailarchive.internal.data;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -33,7 +34,6 @@ import javax.inject.Singleton;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
-import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailMatcher;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IMailingListGroup;
@@ -246,10 +246,9 @@ public class Factory implements IFactory
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.data.IFactory#createLoadingSession(java.lang.String,
-     *      org.xwiki.contrib.mailarchive.IMailArchive)
+     * @see org.xwiki.contrib.mailarchive.internal.data.IFactory#createLoadingSession(java.lang.String)
      */
-    public LoadingSession createLoadingSession(final String sessionPrefsDoc, final IMailArchive mailArchive)
+    public LoadingSession createLoadingSession(final String sessionPrefsDoc)
     {
         if (!dab.exists(sessionPrefsDoc)) {
             logger.error("createLoadingSession: page " + sessionPrefsDoc + " does not exist");
@@ -265,63 +264,81 @@ public class Factory implements IFactory
         String className = XWikiPersistence.CLASS_LOADING_SESSION;
         ObjectEntity sessionObject = dab.getObjectEntity(sessionPrefsDoc, className);
 
-        return createLoadingSession(sessionObject, mailArchive);
+        return createLoadingSession(sessionObject);
     }
 
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.data.IFactory#createLoadingSession(java.lang.String,
-     *      org.xwiki.contrib.mailarchive.IMailArchive)
+     * @see org.xwiki.contrib.mailarchive.internal.data.IFactory#createLoadingSession(java.lang.String)
      */
     @Override
-    public LoadingSession createLoadingSession(final BaseObject xObject, final IMailArchive mailArchive)
+    public LoadingSession createLoadingSession(final BaseObject xObject)
     {
         // Retrieve connection properties from prefs
         ObjectEntity sessionObject = dab.getObjectEntity(xObject);
 
-        return createLoadingSession(sessionObject, mailArchive);
+        return createLoadingSession(sessionObject);
     }
 
     /**
      * Creates a LoadingSession from an ObjectEntity.
      * 
      * @param sessionObject
-     * @param mailArchive
      * @return
      */
-    private LoadingSession createLoadingSession(ObjectEntity sessionObject, final IMailArchive mailArchive)
+    private LoadingSession createLoadingSession(ObjectEntity sessionObject)
     {
+        logger.debug("Parsing LoadingClass XObject " + sessionObject);
         LoadingSession session = null;
-        final String id = (String) sessionObject.getFieldValue("id");
-        session = new LoadingSession(id);
 
-        if ((Integer) sessionObject.getFieldValue("debugMode") == 1) {
-            session = session.debugMode();
-        }
-        if ((Integer) sessionObject.getFieldValue("simulationMode") == 1) {
-            session = session.simulationMode();
-        }
-        if ((Integer) sessionObject.getFieldValue("loadAll") == 1) {
-            session = session.loadAll();
-        }
-        if ((Integer) sessionObject.getFieldValue("recentMails") == 1) {
-            session = session.recentMails();
-        }
-        if ((Integer) sessionObject.getFieldValue("withDelete") == 1) {
-            session = session.withDelete();
-        }
-        session = session.setLimit(((Long) sessionObject.getFieldValue("maxMailsNb")).intValue());
+        try {
+            session = null;
+            final String id = (String) sessionObject.getFieldValue("id");
+            session = new LoadingSession(id);
 
-        List<String> servers = (List<String>) sessionObject.getFieldValue("servers");
-        List<String> stores = (List<String>) sessionObject.getFieldValue("stores");
+            if (sessionObject.getFieldValue("debugMode") != null
+                && (Integer) sessionObject.getFieldValue("debugMode") == 1) {
+                session = session.debugMode();
+            }
+            if (sessionObject.getFieldValue("simulationMode") != null
+                && (Integer) sessionObject.getFieldValue("simulationMode") == 1) {
+                session = session.simulationMode();
+            }
+            if (sessionObject.getFieldValue("loadAll") != null && (Integer) sessionObject.getFieldValue("loadAll") == 1) {
+                session = session.loadAll();
+            }
+            if (sessionObject.getFieldValue("recentMails") != null
+                && (Integer) sessionObject.getFieldValue("recentMails") == 1) {
+                session = session.recentMails();
+            }
+            if (sessionObject.getFieldValue("withDelete") != null
+                && (Integer) sessionObject.getFieldValue("withDelete") == 1) {
+                session = session.withDelete();
+            }
+            if (sessionObject.getFieldValue("maxMailsNb") != null) {
+                session = session.setLimit(((Long) sessionObject.getFieldValue("maxMailsNb")).intValue());
+            }
+            List<String> servers = new ArrayList<String>();
+            if (sessionObject.getFieldValue("servers") != null) {
+                servers = (List<String>) sessionObject.getFieldValue("servers");
+            }
+            List<String> stores = new ArrayList<String>();
+            if (sessionObject.getFieldValue("stores") != null) {
+                stores = (List<String>) sessionObject.getFieldValue("stores");
+            }
 
-        for (String serverId : servers) {
-            session = session.addServer(serverId);
+            for (String serverId : servers) {
+                session = session.addServer(serverId);
+            }
+            for (String storeId : stores) {
+                session = session.addStore(storeId);
+            }
+        } catch (Throwable e) {
+            logger.error("Could not parse XObject", e);
         }
-        for (String storeId : stores) {
-            session = session.addStore(storeId);
-        }
+
+        logger.debug("Parsed XObject into LoadingSession " + session);
 
         return session;
     }

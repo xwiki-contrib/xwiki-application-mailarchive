@@ -202,7 +202,11 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
 
             for (String name : xObject.getXClass(context).getPropertyList()) {
                 BaseProperty property = (BaseProperty) xObject.get(name);
-                objectEntity.setFieldValue(property.getName(), property.getValue());
+                if (property != null) {
+                    objectEntity.setFieldValue(property.getName(), property.getValue());
+                } else {
+                    objectEntity.setFieldValue(name, null);
+                }
             }
             return objectEntity;
         } catch (XWikiException e) {

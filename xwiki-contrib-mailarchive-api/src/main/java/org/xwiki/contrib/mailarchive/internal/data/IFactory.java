@@ -22,7 +22,6 @@ package org.xwiki.contrib.mailarchive.internal.data;
 import java.util.List;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailMatcher;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IMailingListGroup;
@@ -63,7 +62,7 @@ public interface IFactory
      * @param mailArchive
      * @return
      */
-    LoadingSession createLoadingSession(String sessionPrefsDoc, IMailArchive mailArchive);
+    LoadingSession createLoadingSession(String sessionPrefsDoc);
 
     /**
      * Creates a IType from name, icon and patterns list
@@ -108,6 +107,6 @@ public interface IFactory
     IMailingListGroup createMailingListGroup(String name, List<IMailingList> mailingLists, String loadingUser,
         String destinationWiki, String destinationSpace);
 
-    LoadingSession createLoadingSession(final BaseObject xObject, final IMailArchive mailArchive);
+    LoadingSession createLoadingSession(final BaseObject xObject);
 
 }

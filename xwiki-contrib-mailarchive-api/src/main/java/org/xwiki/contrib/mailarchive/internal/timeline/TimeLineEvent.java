@@ -19,6 +19,8 @@
  */
 package org.xwiki.contrib.mailarchive.internal.timeline;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,13 +30,13 @@ import java.util.Map;
  */
 public class TimeLineEvent
 {
-    public String beginDate = null;
+    public Date beginDate = null;
 
-    public String endDate = null;
+    public Date endDate = null;
 
     public String title = null;
 
-    public String icon = null;
+    public List<String> icons = null;
 
     public String tags = null;
 
@@ -43,6 +45,8 @@ public class TimeLineEvent
     public String action = null;
 
     public String author = null;
+
+    public String authorAvatar = null;
 
     public String content = null;
 

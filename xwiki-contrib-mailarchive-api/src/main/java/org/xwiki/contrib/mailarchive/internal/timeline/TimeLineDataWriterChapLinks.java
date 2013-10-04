@@ -17,18 +17,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal.timeline.chaplinks;
+package org.xwiki.contrib.mailarchive.internal.timeline;
 
 import java.text.DateFormat;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import net.sf.json.JSON;
-import net.sf.json.JSONArray;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-import org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineWriter;
-import org.xwiki.contrib.mailarchive.internal.timeline.TimeLineEvent;
-import org.xwiki.contrib.mailarchive.internal.timeline.TopicEventBubble;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import org.slf4j.Logger;
+import org.xwiki.component.annotation.Component;
 import org.xwiki.rendering.renderer.printer.WikiPrinter;
 
 /**
@@ -36,109 +37,96 @@ import org.xwiki.rendering.renderer.printer.WikiPrinter;
  * 
  * @version $Id$
  */
-public class ChapLinksTimeLineWriter implements ITimeLineWriter
+@Component
+@Named("chaplinks")
+public class TimeLineDataWriterChapLinks implements ITimeLineDataWriter
 {
+    @Inject
+    private Logger logger;
 
     private static final DateFormat dateFormatter = DateFormat.getDateInstance();
+
+    private WikiPrinter wikiPrinter;
+
+    private JSONArray jsonArray;
+
+    public TimeLineDataWriterChapLinks()
+    {
+    }
 
     /**
      * @param printer
      */
-    public ChapLinksTimeLineWriter(WikiPrinter printer)
+    public TimeLineDataWriterChapLinks(WikiPrinter printer)
     {
-        JSON json = null;
+        this();
+        this.wikiPrinter = printer;
+    }
+
+    @Override
+    public void setWikiPrinter(final WikiPrinter printer)
+    {
+        this.wikiPrinter = printer;
     }
 
     @Override
     public void print(TreeMap<Long, TimeLineEvent> sortedEvents)
     {
-        JSONArray mainArray = new JSONArray();
-        mainArray.
+        jsonArray = new JSONArray();
+        for (TimeLineEvent event : sortedEvents.values()) {
+            print(event);
+        }
 
+        wikiPrinter.print(jsonArray.toString(3));
     }
 
     @Override
     public void print(TimeLineEvent event)
     {
-        if (event.endDate != null) {
-            // This is a topic
-            printTopic(event);
+        if (event != null && event.beginDate != null) {
+
+            if (event.endDate != null) {
+                // This is a topic
+                printTopic(event);
+            } else {
+                // This is a special mail
+                printMail(event);
+            }
+
         } else {
-            // This is a special mail
-            printMail(event);
+            logger.warn("Skip invalid event, miss begin date for '" + event.title);
         }
-    }
-
-    protected void printTopic(TimeLineEvent event)
-    {
-        String[][] attributes =
-            new String[][] { {"start", event.beginDate}, {"end", event.endDate}, {"title", event.title},
-            {"icon", event.icon}, {"image", event.icon}, {"classname", event.tags}, {"durationEvent", "true"},
-            {"link", event.url}};
-
-        printXMLStartElement("event", attributes);
-
-        // FIXME HTML generation here
-        printXML((!event.tags.equals("") ? "<span class=\"tape-" + event.tags + "\">___</span> " + event.tags + "<br/>"
-            : "") + "<br/> " + event.action + " by " + event.author + "<br/> ");
-
-        // Print extract
-        for (Entry<Long, TopicEventBubble> bubbleInfo : event.messages.entrySet()) {
-            print(bubbleInfo.getValue());
-        }
-
-        printXMLEndElement("event");
     }
 
     protected void printMail(TimeLineEvent event)
     {
-        String[][] attributes =
-            new String[][] { {"start", event.beginDate}, {"title", event.title}, {"icon", event.icon},
-            {"image", event.icon}, {"link", event.url}};
 
-        printXMLStartElement("event", attributes);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("start", event.beginDate.getTime());
+        // FIXME dummy content
+        jsonObject.put("content", event.title + " " + event.tags + " " + event.author);
 
-        // FIXME HTML generation here
-        printXML((!event.tags.equals("") ? "<span class=\"tape-" + event.tags + "\">___</span> " + event.tags + "<br/>"
-            : "") + "<br/>" + event.action + " by " + event.author + "<br/> " + event.extract);
+        jsonArray.add(jsonObject);
+    }
 
-        printXMLEndElement("event");
+    protected void printTopic(TimeLineEvent event)
+    {
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("start", event.beginDate.getTime());
+        jsonObject.put("end", event.endDate.getTime());
+        // FIXME dummy content
+        jsonObject.put("content", event.title + " " + event.tags + " " + event.author);
+
+        jsonArray.add(jsonObject);
 
     }
 
     @Override
+    // FIXME: move to a 3rd component, in charge of generating topic extract (same HTML generated whatever timeline
+    // feed)
     public void print(final TopicEventBubble bubbleInfo)
     {
-
-        String[][] attributes = new String[][] {{"href", "javascript:centerTimeline(" + bubbleInfo.date + ");\">"}};
-
-        printXMLStartElement("a", attributes);
-        printXML(dateFormatter.format(bubbleInfo.date));
-        printXMLEndElement("a");
-
-        printXML(" - ");
-
-        attributes = new String[][] {{"href", bubbleInfo.url}};
-        printXMLStartElement("a", attributes);
-        printXML(bubbleInfo.subject);
-        printXMLEndElement("a");
-
-        printXML(" - ");
-        if (bubbleInfo.link != null) {
-            attributes = new String[][] {{"href", bubbleInfo.link}};
-            printXMLStartElement("a", attributes);
-        }
-        printXML(bubbleInfo.user);
-        if (bubbleInfo.link != null) {
-            printXMLEndElement("a");
-        }
-
-        printXMLElement("br");
-
-        /*
-         * <a href="javascript:centerTimeline();"> formatter.format(maildate)</a> - <a href=\"" + +"\">" + subject +
-         * "</a> - " + (link != null ? "<a href=\"" + link + "\">" : "") + user + (link != null ? "</a> " : "") +
-         * "'<br/>";
-         */
+        // FIXME dummy content
     }
 }

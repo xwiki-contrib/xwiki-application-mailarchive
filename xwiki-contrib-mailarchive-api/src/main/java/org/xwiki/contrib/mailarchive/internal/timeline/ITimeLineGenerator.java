@@ -24,6 +24,8 @@ import org.xwiki.component.annotation.Role;
 import com.xpn.xwiki.XWikiException;
 
 /**
+ * Generates Timeline data from archived emails.
+ * 
  * @version $Id$
  */
 @Role

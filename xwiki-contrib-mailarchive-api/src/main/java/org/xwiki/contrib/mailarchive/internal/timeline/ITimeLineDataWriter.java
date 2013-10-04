@@ -21,16 +21,24 @@ package org.xwiki.contrib.mailarchive.internal.timeline;
 
 import java.util.TreeMap;
 
+import org.xwiki.component.annotation.Role;
+import org.xwiki.rendering.renderer.printer.WikiPrinter;
+
 /**
+ * Generator of timeline feed data from a sorted map of TimeLineEvent.
+ * 
  * @version $Id$
  */
-public interface ITimeLineWriter
+@Role
+public interface ITimeLineDataWriter
 {
 
-    public abstract void print(TreeMap<Long, TimeLineEvent> sortedEvents);
+    void print(TreeMap<Long, TimeLineEvent> sortedEvents);
 
-    public abstract void print(TimeLineEvent event);
+    void print(TimeLineEvent event);
 
-    public abstract void print(TopicEventBubble bubbleInfo);
+    void print(TopicEventBubble bubbleInfo);
+
+    void setWikiPrinter(WikiPrinter printer);
 
 }

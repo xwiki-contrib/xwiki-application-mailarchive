@@ -17,15 +17,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal.timeline.simile;
+package org.xwiki.contrib.mailarchive.internal.timeline;
 
 import java.text.DateFormat;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineWriter;
-import org.xwiki.contrib.mailarchive.internal.timeline.TimeLineEvent;
-import org.xwiki.contrib.mailarchive.internal.timeline.TopicEventBubble;
+import javax.inject.Named;
+
+import org.xwiki.component.annotation.Component;
 import org.xwiki.rendering.renderer.printer.WikiPrinter;
 import org.xwiki.rendering.renderer.printer.XMLWikiPrinter;
 
@@ -34,23 +34,35 @@ import org.xwiki.rendering.renderer.printer.XMLWikiPrinter;
  * 
  * @version $Id$
  */
-public class SimileTimeLineWriter extends XMLWikiPrinter implements ITimeLineWriter
+@Component
+@Named("simile")
+public class TimeLineDataWriterSimile extends XMLWikiPrinter implements ITimeLineDataWriter
 {
 
     private static final DateFormat dateFormatter = DateFormat.getDateInstance();
 
+    public TimeLineDataWriterSimile()
+    {
+        super(null);
+    }
+
     /**
      * @param printer
      */
-    public SimileTimeLineWriter(WikiPrinter printer)
+    public TimeLineDataWriterSimile(WikiPrinter printer)
     {
         super(printer);
+    }
+
+    public void setWikiPrinter(final WikiPrinter printer)
+    {
+        super.setWikiPrinter(printer);
     }
 
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineWriter#print(java.util.TreeMap)
+     * @see org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineDataWriter#print(java.util.TreeMap)
      */
     @Override
     public void print(TreeMap<Long, TimeLineEvent> sortedEvents)
@@ -66,7 +78,7 @@ public class SimileTimeLineWriter extends XMLWikiPrinter implements ITimeLineWri
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineWriter#print(org.xwiki.contrib.mailarchive.internal.timeline.TimeLineEvent)
+     * @see org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineDataWriter#print(org.xwiki.contrib.mailarchive.internal.timeline.TimeLineEvent)
      */
     @Override
     public void print(TimeLineEvent event)
@@ -83,14 +95,14 @@ public class SimileTimeLineWriter extends XMLWikiPrinter implements ITimeLineWri
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineWriter#printTopic(org.xwiki.contrib.mailarchive.internal.timeline.TimeLineEvent)
+     * @see org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineDataWriter#printTopic(org.xwiki.contrib.mailarchive.internal.timeline.TimeLineEvent)
      */
     protected void printTopic(TimeLineEvent event)
     {
         String[][] attributes =
-            new String[][] { {"start", event.beginDate}, {"end", event.endDate}, {"title", event.title},
-            {"icon", event.icon}, {"image", event.icon}, {"classname", event.tags}, {"durationEvent", "true"},
-            {"link", event.url}};
+            new String[][] { {"start", dateFormatter.format(event.beginDate)},
+            {"end", dateFormatter.format(event.endDate)}, {"title", event.title}, {"icon", event.icons.get(0)},
+            {"image", event.icons.get(0)}, {"classname", event.tags}, {"durationEvent", "true"}, {"link", event.url}};
 
         printXMLStartElement("event", attributes);
 
@@ -109,13 +121,13 @@ public class SimileTimeLineWriter extends XMLWikiPrinter implements ITimeLineWri
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineWriter#printMail(org.xwiki.contrib.mailarchive.internal.timeline.TimeLineEvent)
+     * @see org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineDataWriter#printMail(org.xwiki.contrib.mailarchive.internal.timeline.TimeLineEvent)
      */
     protected void printMail(TimeLineEvent event)
     {
         String[][] attributes =
-            new String[][] { {"start", event.beginDate}, {"title", event.title}, {"icon", event.icon},
-            {"image", event.icon}, {"link", event.url}};
+            new String[][] { {"start", dateFormatter.format(event.beginDate)}, {"title", event.title},
+            {"icon", event.icons.get(0)}, {"image", event.icons.get(0)}, {"link", event.url}};
 
         printXMLStartElement("event", attributes);
 
@@ -130,7 +142,7 @@ public class SimileTimeLineWriter extends XMLWikiPrinter implements ITimeLineWri
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineWriter#print(org.xwiki.contrib.mailarchive.internal.timeline.TopicEventBubble)
+     * @see org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineDataWriter#print(org.xwiki.contrib.mailarchive.internal.timeline.TopicEventBubble)
      */
     @Override
     public void print(final TopicEventBubble bubbleInfo)

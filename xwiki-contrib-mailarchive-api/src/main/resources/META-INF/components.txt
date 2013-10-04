@@ -9,7 +9,9 @@ org.xwiki.contrib.mailarchive.internal.data.MailArchiveConfiguration
 org.xwiki.contrib.mailarchive.internal.utils.TextUtils
 org.xwiki.contrib.mailarchive.internal.utils.MailUtils
 org.xwiki.contrib.mailarchive.internal.threads.MessagesThreader
-org.xwiki.contrib.mailarchive.internal.timeline.simile.TimeLineGenerator
+org.xwiki.contrib.mailarchive.internal.timeline.TimeLineGenerator
+org.xwiki.contrib.mailarchive.internal.timeline.TimeLineDataWriterSimile
+org.xwiki.contrib.mailarchive.internal.timeline.TimeLineDataWriterChapLinks
 org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence
 org.xwiki.contrib.mailarchive.internal.LoadingJob
 org.xwiki.contrib.mailarchive.internal.DefaultMailLoader

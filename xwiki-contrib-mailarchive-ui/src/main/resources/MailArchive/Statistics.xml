@@ -16,7 +16,6 @@
   <contentUpdateDate>1354528932000</contentUpdateDate>
   <version>1.1</version>
   <title>GGS WW Mailing-lists Statistics</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -156,7 +155,7 @@ Total number of posts : $nbTotalPosts
 == Top Posters ==
 #if ($results.size() &gt; 0) 
 (posters are creators of new discussion threads - not newsletters)
-|=Person|=Threads
+|=Person|=Topics
   #foreach($result in $results)
     #set($author = $result[1])
     #set($maUser = $services.mailarchive.parseUser($author))

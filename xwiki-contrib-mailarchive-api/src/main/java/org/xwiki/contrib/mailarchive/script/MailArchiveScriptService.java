@@ -131,6 +131,7 @@ public class MailArchiveScriptService implements ScriptService, IMailArchiveScri
     @Override
     public int load(final LoadingSession session)
     {
+
         LoadingJob job = createLoadingJob(session, true);
         return job != null ? job.getNbSuccess() : -1;
     }

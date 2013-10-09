@@ -137,20 +137,6 @@ public interface IMailArchive
     public List<IMASource> getSourcesList(final LoadingSession session);
 
     /**
-     * Locks or unlocks the archive, so no other loading job starts a concurrent session.
-     * 
-     * @param locked
-     */
-    public void setLocked(final boolean locked);
-
-    /**
-     * Information about locked status of the archive.
-     * 
-     * @return
-     */
-    public boolean isLocked();
-
-    /**
      * Loads a mail in the archive. Creates a new Topic page if needed, or link new mail to an existing topic if
      * possible. Creates a new Mail page only if the Message-Id has not already been loaded.
      * 
@@ -170,5 +156,9 @@ public interface IMailArchive
     public void saveToInternalStore(final String serverId, final IMailSource source, final Message message);
 
     public void dumpEmail(Message message);
+
+    public abstract void unlock();
+
+    public abstract boolean lock();
 
 }

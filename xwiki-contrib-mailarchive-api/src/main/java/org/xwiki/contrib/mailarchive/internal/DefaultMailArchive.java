@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -103,6 +105,14 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     public static final String UNKNOWN_USER = "XWiki.UserDoesNotExist";
 
     public boolean isConfigured = false;
+
+    /** Is the component initialized ? */
+    private boolean isInitialized = false;
+
+    /** Are we currently in a loading session ? */
+    private boolean locked = false;
+
+    private Lock lock = new ReentrantLock();
 
     // Components injected by the Component Manager
 
@@ -186,12 +196,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
     /** Already archived messages, loaded from database */
     private HashMap<String, MailDescriptor> existingMessages;
-
-    /** Is the component initialized ? */
-    private boolean isInitialized = false;
-
-    /** Are we currently in a loading session ? */
-    private boolean locked = false;
 
     /**
      * {@inheritDoc}
@@ -292,15 +296,19 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     {
         Map<String, Integer> results = new HashMap<String, Integer>();
         List<IMASource> sources = getSourcesList(session);
-        for (IMASource source : sources) {
-            if ("SERVER".equals(source.getType())) {
-                results.put(source.getWikiDoc(), checkSource((Server) source));
-            } else if ("STORE".equals(source.getType())) {
-                results.put(source.getWikiDoc(), checkSource((MailStore) source));
-            } else {
-                logger.error("Unknown type of source " + source.getType() + " for " + source.getId());
-                results.put(source.getWikiDoc(), SourceConnectionErrors.UNKNOWN_SOURCE_TYPE.getCode());
+        if (sources != null && !sources.isEmpty()) {
+            for (IMASource source : sources) {
+                if ("SERVER".equals(source.getType())) {
+                    results.put(source.getWikiDoc(), checkSource((Server) source));
+                } else if ("STORE".equals(source.getType())) {
+                    results.put(source.getWikiDoc(), checkSource((MailStore) source));
+                } else {
+                    logger.error("Unknown type of source " + source.getType() + " for " + source.getId());
+                    results.put(source.getWikiDoc(), SourceConnectionErrors.UNKNOWN_SOURCE_TYPE.getCode());
+                }
             }
+        } else {
+            logger.warn("No Server nor Store found to check, nothing to do");
         }
         return results;
     }
@@ -397,27 +405,29 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         final Map<SourceType, String> sources = session.getSources();
         servers = new ArrayList<IMASource>();
         boolean hasServers = false;
-        for (Entry<SourceType, String> source : sources.entrySet()) {
+        if (sources != null) {
+            for (Entry<SourceType, String> source : sources.entrySet()) {
 
-            if (SourceType.SERVER.equals(source.getKey())) {
-                final String prefsDoc = XWikiPersistence.SPACE_PREFS + ".Server_" + source.getValue();
-                Server server = factory.createMailServer(prefsDoc);
-                if (server != null) {
-                    hasServers = true;
-                    servers.add(server);
+                if (SourceType.SERVER.equals(source.getKey())) {
+                    final String prefsDoc = XWikiPersistence.SPACE_PREFS + ".Server_" + source.getValue();
+                    Server server = factory.createMailServer(prefsDoc);
+                    if (server != null) {
+                        hasServers = true;
+                        servers.add(server);
+                    }
+                } else if (SourceType.STORE.equals(source.getKey())) {
+                    final String prefsDoc = XWikiPersistence.SPACE_PREFS + ".Store_" + source.getValue();
+                    MailStore store = factory.createMailStore(prefsDoc);
+                    if (store != null) {
+                        servers.add(store);
+                    }
+                } else {
+                    // This should never occur
+                    logger.warn("Unknown type of source connection: " + source.getKey());
                 }
-            } else if (SourceType.STORE.equals(source.getKey())) {
-                final String prefsDoc = XWikiPersistence.SPACE_PREFS + ".Store_" + source.getValue();
-                MailStore store = factory.createMailStore(prefsDoc);
-                if (store != null) {
-                    servers.add(store);
-                }
-            } else {
-                // This should never occur
-                logger.warn("Unknown type of source connection: " + source.getKey());
             }
         }
-        if (!hasServers) {
+        if (!hasServers && config.getServers() != null) {
             // Empty server config means all servers
             // Empty store config means no store
             servers.addAll(config.getServers());
@@ -433,8 +443,12 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
         String timelineFeed = timelineGenerator.compute();
         if (!StringUtils.isBlank(timelineFeed)) {
-            File timelineFeedLocation = new File(environment.getPermanentDirectory(), "mailarchive/timeline");
-            FileWriter fw = new FileWriter(timelineFeedLocation.getAbsolutePath() + "/TimeLineFeed.xml", false);
+            File timelineFeedPath = new File(environment.getPermanentDirectory(), "mailarchive/timeline");
+            if (!timelineFeedPath.exists() || !timelineFeedPath.isDirectory()) {
+                timelineFeedPath.mkdirs();
+            }
+
+            FileWriter fw = new FileWriter(new File(timelineFeedPath, "TimeLineFeed.xml"), false);
             fw.write(timelineFeed);
             fw.close();
         }
@@ -582,19 +596,19 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     {
         MailItem m = null;
 
-        logger.warn("Parsing headers");
+        logger.info("Parsing headers");
         m = mailManager.parseHeaders(mail);
         if (StringUtils.isBlank(m.getFrom())) {
             logger.warn("Invalid email : missing 'from' header, skipping it");
             return new MailLoadingResult(false, null, null);
         }
-        logger.warn("Parsing specific parts");
+        logger.info("Parsing specific parts");
         setMailSpecificParts(m);
         // Compatibility option with old version of the mail archive
         if (config.isCropTopicIds() && m.getTopicId().length() > 30) {
             m.setTopicId(m.getTopicId().substring(0, 29));
         }
-        logger.warn("PARSED MAIL  " + m);
+        logger.info("PARSED MAIL  " + m);
 
         return loadMail(m, confirm, isAttachedMail, parentMail);
     }
@@ -669,7 +683,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
         // Create a new message if needed
         if (!existingMessages.containsKey(m.getMessageId())) {
-            logger.debug("creating new message " + m.getMessageId() + " ...");
+            logger.info("creating new message " + m.getMessageId() + " ...");
             /*
              * Note : use already existing topic id if any, instead of the one from the message, to keep an easy to
              * parse link between thread messages
@@ -693,7 +707,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             return new MailLoadingResult(true, topicDocName, messageDocName);
         } else {
             // message already loaded
-            logger.debug("Mail already loaded - checking for updates ...");
+            logger.info("Mail already loaded - checking for updates ...");
 
             MailDescriptor msg = existingMessages.get(m.getMessageId());
             logger.debug("TopicId of existing message " + msg.getTopicId() + " and of topic " + existingTopicId
@@ -994,21 +1008,23 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     }
 
     /**
-     * @return the locked
+     * Try to get a lock on the archive. (non-blocking)
+     * 
+     * @return true if lock could be set, or false if lock is already in use.
      */
     @Override
-    public boolean isLocked()
+    public boolean lock()
     {
-        return locked;
+        return this.lock.tryLock();
     }
 
     /**
-     * @param locked the locked to set
+     * Unlocks the archive.
      */
     @Override
-    public void setLocked(final boolean locked)
+    public void unlock()
     {
-        this.locked = locked;
+        this.lock.unlock();
     }
 
     @Override

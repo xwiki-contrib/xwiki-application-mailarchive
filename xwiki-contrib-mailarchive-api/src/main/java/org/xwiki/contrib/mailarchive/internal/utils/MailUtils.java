@@ -259,10 +259,10 @@ public class MailUtils implements IMailUtils
 
         // set IType
         for (IType type : types) {
-            logger.info("Checking for type " + type);
+            logger.debug("Checking for type " + type);
             boolean matched = true;
             for (IMailMatcher mailMatcher : type.getMatchers()) {
-                logger.info("  Checking for matcher " + mailMatcher);
+                logger.debug("  Checking for matcher " + mailMatcher);
                 List<String> fields = mailMatcher.getFields();
                 String regexp = mailMatcher.getExpression();
 
@@ -303,7 +303,7 @@ public class MailUtils implements IMailUtils
                     } else if ("subject".equals(field)) {
                         fieldValue = m.getSubject();
                     }
-                    logger.info("  Checking field " + field + " with value [" + fieldValue + "] against pattern ["
+                    logger.debug("  Checking field " + field + " with value [" + fieldValue + "] against pattern ["
                         + regexp + "] DEBUG [" + textUtils.byte2hex(regexp.getBytes()) + "]");
                     if (mailMatcher.isAdvancedMode()) {
                         matcher = pattern.matcher(fieldValue);
@@ -321,7 +321,7 @@ public class MailUtils implements IMailUtils
                         }
                     }
                     if (fieldMatch) {
-                        logger.info("Field " + field + " value [" + fieldValue + "] matches pattern [" + regexp + "]");
+                        logger.debug("Field " + field + " value [" + fieldValue + "] matches pattern [" + regexp + "]");
                         break;
                     }
                 }

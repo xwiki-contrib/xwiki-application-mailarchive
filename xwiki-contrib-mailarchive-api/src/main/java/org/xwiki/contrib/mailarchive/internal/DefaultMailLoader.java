@@ -106,73 +106,74 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
             logger.warn("Invalid loading session (null) ...");
             return -1;
         } else {
-            logger.info("Starting new MAIL loading session...");
+            logger.info("Starting new mail loading session...");
         }
 
-        if (mailArchive.isLocked()) {
+        boolean hasLock = mailArchive.lock();
+        if (!hasLock) {
             logger.warn("Loading process already in progress ...");
             return -1;
         }
+        logger.debug("Locked the archive");
 
-        mailArchive.setLocked(true);
+        logger.debug("Loading parameters: " + session.toString());
 
-        logger.debug("Loading from session: " + session.toString());
-
-        if (session.isDebugMode()) {
-            enterDebugMode();
-        }
-
-        // Reinitialize configuration
         try {
+
+            if (session.isDebugMode()) {
+                enterDebugMode();
+            }
+
+            // Reinitialize configuration
             // FIXME: not very nice to call getConfiguration to reload configuration from db ...
             this.config = mailArchive.getConfiguration();
-        } catch (MailArchiveException e) {
-            e.printStackTrace();
-        } catch (InitializationException e) {
-            e.printStackTrace();
-        }
 
-        try {
             final List<IMASource> servers = mailArchive.getSourcesList(session);
-
-            if (job != null) {
-                job.notifyPushLevelProgress(servers.size());
-            }
-
-            // Loop on all servers
-            for (IMASource server : servers) {
-                IMailReader mailReader = getReader(server);
+            if (servers != null && !servers.isEmpty()) {
                 if (job != null) {
-                    job.setCurrentSource("" + server.getType() + ':' + server.getId());
+                    job.notifyPushLevelProgress(servers.size());
                 }
-                if (mailReader != null) {
-                    nbSuccess += loadMails(mailReader, server.getFolder(), session, server.getId(), job);
-                    mailReader.close();
+
+                // Loop on all servers
+                for (IMASource server : servers) {
+                    IMailReader mailReader = getReader(server);
+                    if (job != null) {
+                        job.setCurrentSource("" + server.getType() + ':' + server.getId());
+                    }
+                    if (mailReader != null) {
+                        nbSuccess += loadMails(mailReader, server.getFolder(), session, server.getId(), job);
+                        mailReader.close();
+                    }
+                    if (job != null) {
+                        job.notifyStepPropress();
+                    }
+
                 }
+
                 if (job != null) {
-                    job.notifyStepPropress();
+                    job.notifyPopLevelProgress();
                 }
 
-            }
-
-            if (job != null) {
-                job.notifyPopLevelProgress();
-            }
-
-            try {
-                // Compute timeline feed
-                if (config.isManageTimeline() && nbSuccess > 0) {
-                    mailArchive.computeTimeline();
+                try {
+                    // Compute timeline feed
+                    if (config.isManageTimeline() && nbSuccess > 0) {
+                        mailArchive.computeTimeline();
+                    }
+                } catch (Exception e) {
+                    logger.warn("Could not compute timeline data", e);
                 }
-            } catch (Exception e) {
-                logger.warn("Could not compute timeline data", e);
+            } else {
+                logger.warn("No Server nor Store found to load from, nothing to do");
             }
 
-        } catch (Exception e) {
-            logger.warn("EXCEPTION ", e);
-            return -1;
+        } catch (InitializationException e) {
+            logger.error("Could not initialize a component", e);
+            nbSuccess = -1;
+        } catch (MailArchiveException e) {
+            logger.error("Could not retrieve configuration", e);
+            nbSuccess = -1;
         } finally {
-            mailArchive.setLocked(false);
+            mailArchive.unlock();
             if (session.isDebugMode()) {
                 quitDebugMode();
             }

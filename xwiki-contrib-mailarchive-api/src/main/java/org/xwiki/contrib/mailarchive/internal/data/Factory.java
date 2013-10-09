@@ -80,27 +80,31 @@ public class Factory implements IFactory
         }
         Server server = new Server();
 
-        // Retrieve connection properties from prefs
-        String className = XWikiPersistence.CLASS_MAIL_SERVERS;
-        server.setId(dab.getStringValue(serverPrefsDoc, className, "id"));
-        server.setHostname(dab.getStringValue(serverPrefsDoc, className, "hostname"));
-        server.setPort(dab.getIntValue(serverPrefsDoc, className, "port"));
-        server.setProtocol(dab.getStringValue(serverPrefsDoc, className, "protocol"));
-        server.setUsername(dab.getStringValue(serverPrefsDoc, className, "user"));
-        server.setPassword(dab.getStringValue(serverPrefsDoc, className, "password"));
-        server.setFolder(dab.getStringValue(serverPrefsDoc, className, "folder"));
-        server.setEnabled("on".equals(dab.getStringValue(serverPrefsDoc, className, "state")));
-        server.setState(dab.getIntValue(serverPrefsDoc, className, "status"));
-        String additionalProperties = dab.getStringValue(serverPrefsDoc, className, "additionalProperties");
-        if (StringUtils.isNotBlank(additionalProperties)) {
-            InputStream is = new ByteArrayInputStream(additionalProperties.getBytes());
-            Properties props = new Properties();
-            try {
-                props.load(is);
-            } catch (IOException e) {
-                // TODO ?
+        try {
+            // Retrieve connection properties from prefs
+            String className = XWikiPersistence.CLASS_MAIL_SERVERS;
+            server.setId(dab.getStringValue(serverPrefsDoc, className, "id"));
+            server.setHostname(dab.getStringValue(serverPrefsDoc, className, "hostname"));
+            server.setPort(dab.getIntValue(serverPrefsDoc, className, "port"));
+            server.setProtocol(dab.getStringValue(serverPrefsDoc, className, "protocol"));
+            server.setUsername(dab.getStringValue(serverPrefsDoc, className, "user"));
+            server.setPassword(dab.getStringValue(serverPrefsDoc, className, "password"));
+            server.setFolder(dab.getStringValue(serverPrefsDoc, className, "folder"));
+            server.setEnabled("on".equals(dab.getStringValue(serverPrefsDoc, className, "state")));
+            server.setState(dab.getIntValue(serverPrefsDoc, className, "status"));
+            String additionalProperties = dab.getStringValue(serverPrefsDoc, className, "additionalProperties");
+            if (StringUtils.isNotBlank(additionalProperties)) {
+                InputStream is = new ByteArrayInputStream(additionalProperties.getBytes());
+                Properties props = new Properties();
+                try {
+                    props.load(is);
+                } catch (IOException e) {
+                    // TODO ?
+                }
+                server.setAdditionalProperties(props);
             }
-            server.setAdditionalProperties(props);
+        } catch (Exception e) {
+            logger.error("Could not load Server from " + serverPrefsDoc);
         }
         server.setWikiDoc(serverPrefsDoc);
 
@@ -121,6 +125,8 @@ public class Factory implements IFactory
     @Override
     public MailStore createMailStore(String storePrefsDoc)
     {
+        logger.debug("Loading Mail Store from " + storePrefsDoc);
+
         if (!dab.exists(storePrefsDoc)) {
             logger.error("createMailStore: page " + storePrefsDoc + " does not exist");
             return null;
@@ -133,23 +139,28 @@ public class Factory implements IFactory
         MailStore store = new MailStore();
 
         // Retrieve connection properties from prefs
-        String className = XWikiPersistence.CLASS_MAIL_STORES;
-        store.setLocation(dab.getStringValue(storePrefsDoc, className, "location"));
-        store.setFormat(dab.getStringValue(storePrefsDoc, className, "format"));
-        store.setId(dab.getStringValue(storePrefsDoc, className, "id"));
-        store.setFolder(dab.getStringValue(storePrefsDoc, className, "folder"));
-        store.setEnabled("on".equals(dab.getStringValue(storePrefsDoc, className, "state")));
-        store.setState(dab.getIntValue(storePrefsDoc, className, "status"));
-        String additionalProperties = dab.getStringValue(storePrefsDoc, className, "additionalProperties");
-        if (StringUtils.isNotBlank(additionalProperties)) {
-            InputStream is = new ByteArrayInputStream(additionalProperties.getBytes());
-            Properties props = new Properties();
-            try {
-                props.load(is);
-            } catch (IOException e) {
-                // TODO ?
+        try {
+            String className = XWikiPersistence.CLASS_MAIL_STORES;
+            store.setLocation(dab.getStringValue(storePrefsDoc, className, "location"));
+            store.setFormat(dab.getStringValue(storePrefsDoc, className, "format"));
+            store.setId(dab.getStringValue(storePrefsDoc, className, "id"));
+            store.setFolder(dab.getStringValue(storePrefsDoc, className, "folder"));
+            store.setEnabled("on".equals(dab.getStringValue(storePrefsDoc, className, "state")));
+            store.setState(dab.getIntValue(storePrefsDoc, className, "status"));
+            String additionalProperties = dab.getStringValue(storePrefsDoc, className, "additionalProperties");
+            if (StringUtils.isNotBlank(additionalProperties)) {
+                InputStream is = new ByteArrayInputStream(additionalProperties.getBytes());
+                Properties props = new Properties();
+                try {
+                    props.load(is);
+                } catch (IOException e) {
+                    // TODO ?
+                }
+                store.setAdditionalProperties(props);
             }
-            store.setAdditionalProperties(props);
+        } catch (Exception e) {
+            logger.error("Could not load Mail Store from " + storePrefsDoc, e);
+            return null;
         }
         store.setWikiDoc(storePrefsDoc);
 
@@ -157,6 +168,7 @@ public class Factory implements IFactory
             logger.error("createMailStore: Store " + storePrefsDoc + " miss mandatory parameters");
             return null;
         } else {
+            logger.debug("Loaded Mail Store " + store);
             return store;
         }
     }
@@ -335,7 +347,8 @@ public class Factory implements IFactory
                 session = session.addStore(storeId);
             }
         } catch (Throwable e) {
-            logger.error("Could not parse XObject", e);
+            logger.error("Could not load LoadingSession", e);
+            return null;
         }
 
         logger.debug("Parsed XObject into LoadingSession " + session);

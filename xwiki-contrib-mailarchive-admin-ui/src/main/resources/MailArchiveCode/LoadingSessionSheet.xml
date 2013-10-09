@@ -16,7 +16,6 @@
   <contentUpdateDate>1353417891000</contentUpdateDate>
   <version>1.1</version>
   <title>#if($doc.name == 'LoadingSessionSheet')LoadingSession Sheet#{else}$services.display.title($doc, {'displayerHint': 'default'})#end</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -26,18 +25,32 @@
   <content>{{velocity}}
 #set($discard = $doc.use('MailArchiveCode.LoadingSessionClass'))
 #set($mode = "view")
-#if($doc.name == "LoadingSessionCreationSheet")
+#if($doc.name == "LoadingSessionCreationSheet" || $doc.name == "Loading")
   #set($mode = "edit")
 #end
 {{html wiki="true"}}
 (% class="xform" %)
 (((
 #set($class = $doc.getObject('MailArchiveCode.LoadingSessionClass').xWikiClass)
+{{container layoutStyle="columns"}}
+(((
+{{html wiki="true"}}
 #foreach($prop in $class.properties)
+  #if($velocityCount == 5)
+{{/html}}
+)))
+(((
+{{html wiki="true"}}
+  #end
+  #if($prop.name != "job")
   ; &lt;label&gt;$services.localization.render("mailarchive.loadingSession.fields.${prop.name}.label")&lt;/label&gt;
 #if($services.localization.get("mailarchive.loadingSession.fields.${prop.name}.hint")) (% class="xHint" %)$services.localization.render("mailarchive.loadingSession.fields.${prop.name}.hint") #end
   : $doc.display($prop.getName(), $mode)
+  #end
 #end
+{{/html}}
+)))
+{{/container}}
 )))
 {{/html}}
 {{/velocity}}</content>

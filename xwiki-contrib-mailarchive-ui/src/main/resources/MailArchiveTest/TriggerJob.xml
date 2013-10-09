@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc>
+  <web>MailArchiveTest</web>
+  <name>TriggerJob</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <parent/>
+  <creator>xwiki:XWiki.Admin</creator>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <creationDate>1380874059000</creationDate>
+  <date>1380880686000</date>
+  <contentUpdateDate>1380880686000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>false</hidden>
+  <content>{{velocity}}
+#set($mailarchive = $services.mailarchive)
+#if("$!request.loadingSession" != "")
+  #set($loadingSession = $mailarchive.session("MailArchivePrefs.LoadingSession_${request.loadingSession}"))
+#else
+  #set($loadingSessionObj = $doc.addObjectFromRequest('MailArchiveCode.LoadingSessionClass'))
+  #if($loadingSessionObj.id)
+Triggering session with id $loadingSessionObj.id
+    #set($loadingSession = $mailarchive.sessionFromXObject($loadingSessionObj.getXWikiObject()))
+  #end
+#end
+LoadingSession $loadingSession
+#if($loadingSession)
+  #set($job = $mailarchive.startLoadingJob($loadingSession))
+#end
+#if($job)
+
+{{success}}Loading session successfully triggered{{/success}}
+
+#else
+
+{{error}}Could not start loading session job "$!{loadingSessionObj.id}"{{/error}}
+
+#end
+
+{{/velocity}}</content>
+</xwikidoc>

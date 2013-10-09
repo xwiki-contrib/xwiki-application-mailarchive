@@ -24,13 +24,13 @@ Build
 For testing
 -----------
 
-1. Push all jars (except from tests) to WEB-INF/lib of your xwiki container
+1. The easiest, is to configure your local ~/.m2 repository as an extension repository in xwiki.properties,
+   then to install the application with Extension Manager application by searching for extension with
+   id org.xwiki.contrib.mailarchive:xwiki-contrib-mailarchive-admin-ui (and appropriate version).
 
-2. Import the .xar
+2. Browse to following pages:
 
-3. Browse to following pages:
-
-* MailArchive.Admin: to register needed configuration (servers, lists, types) - some elements are also automatically created when visiting the page.
+* XWiki Global Administration / Mail Archive: to register needed configuration (servers, lists, types) - some elements are also automatically created when visiting the page (for now, so you'd better go there first).
 
 * MailArchive.Loading: to test servers connections and try loading some mails.
 

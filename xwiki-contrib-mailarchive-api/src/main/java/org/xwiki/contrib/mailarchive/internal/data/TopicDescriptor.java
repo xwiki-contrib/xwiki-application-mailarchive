@@ -1,5 +1,7 @@
 package org.xwiki.contrib.mailarchive.internal.data;
 
+import org.xwiki.text.XWikiToStringBuilder;
+
 public class TopicDescriptor
 {
 
@@ -24,11 +26,17 @@ public class TopicDescriptor
         return subject;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
-        builder.append("TopicShortItem [fullName=").append(fullName).append(", subject=").append(subject).append("]");
+        XWikiToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder.append("fullName", fullName);
+        builder.append("subject", subject);
         return builder.toString();
     }
 

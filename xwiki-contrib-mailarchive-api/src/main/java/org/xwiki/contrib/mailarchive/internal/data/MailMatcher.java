@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.xwiki.contrib.mailarchive.IMailMatcher;
+import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * @version $Id$
@@ -189,10 +190,12 @@ public class MailMatcher implements IMailMatcher
     @Override
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
-        builder.append("MailMatcher [fields=").append(fields).append(", expression=").append(expression)
-            .append(", advancedMode=").append(advancedMode).append(", ignoreCase=").append(ignoreCase)
-            .append(", multiLine=").append(multiLine).append("]");
+        XWikiToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder.append("fields", fields);
+        builder.append("expression", expression);
+        builder.append("advancedMode", advancedMode);
+        builder.append("ignoreCase", ignoreCase);
+        builder.append("multiLine", multiLine);
         return builder.toString();
     }
 

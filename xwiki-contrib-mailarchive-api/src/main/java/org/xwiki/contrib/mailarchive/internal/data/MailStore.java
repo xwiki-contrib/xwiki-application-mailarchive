@@ -21,6 +21,7 @@ package org.xwiki.contrib.mailarchive.internal.data;
 
 import org.xwiki.contrib.mail.source.IStoreSource;
 import org.xwiki.contrib.mail.source.SourceType;
+import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * @version $Id$
@@ -88,11 +89,10 @@ public class MailStore extends AbstractMASource implements IStoreSource
     @Override
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
-        builder.append("MailStore [format=").append(format).append(", location=").append(location).append(", getId()=")
-            .append(getId()).append(", getFolder()=").append(getFolder()).append(", getAdditionalProperties()=")
-            .append(getAdditionalProperties()).append(", getWikiDoc()=").append(getWikiDoc()).append(", isEnabled()=")
-            .append(isEnabled()).append("]");
+        XWikiToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder.append("format", format);
+        builder.append("location", location);
+        builder.append("AbstractMASource", super.toString());
         return builder.toString();
     }
 

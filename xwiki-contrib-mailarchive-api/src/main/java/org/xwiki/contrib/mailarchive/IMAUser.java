@@ -50,4 +50,5 @@ public interface IMAUser
      * @return A matching wiki profile, or null if none was found.
      */
     String getWikiProfile();
+
 }

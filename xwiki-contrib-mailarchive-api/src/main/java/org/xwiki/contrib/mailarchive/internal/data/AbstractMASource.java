@@ -22,6 +22,7 @@ package org.xwiki.contrib.mailarchive.internal.data;
 import java.util.Properties;
 
 import org.xwiki.contrib.mailarchive.IMASource;
+import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * @version $Id$
@@ -134,6 +135,24 @@ public abstract class AbstractMASource implements IMASource
     public void setState(final int state)
     {
         this.state = state;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        XWikiToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder.append("id", id);
+        builder.append("folder", folder);
+        builder.append("additionalProperties", additionalProperties);
+        builder.append("wikiDoc", wikiDoc);
+        builder.append("enabled", enabled);
+        builder.append("state", state);
+        return builder.toString();
     }
 
 }

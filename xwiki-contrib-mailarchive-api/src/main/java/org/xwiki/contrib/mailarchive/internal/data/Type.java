@@ -27,7 +27,7 @@ import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.text.XWikiToStringBuilder;
 
 /**
- * Mail IType
+ * A mail type.
  * 
  * @version $Id$
  */

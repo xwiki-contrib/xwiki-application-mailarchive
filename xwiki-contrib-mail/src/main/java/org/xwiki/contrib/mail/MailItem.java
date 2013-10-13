@@ -29,7 +29,7 @@ import javax.mail.Message;
 import org.xwiki.text.XWikiToStringBuilder;
 
 /**
- * POJO representing a Mail.<br/>
+ * A Mail.<br/>
  * Most attributes relate easily to their corresponding mail header, except when specified.
  * Surrounding '<' and '>' are stripped from ID headers, except References that is "as is".
  * <ul>

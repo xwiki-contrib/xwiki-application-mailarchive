@@ -20,6 +20,7 @@
 package org.xwiki.contrib.mailarchive.internal.data;
 
 import org.xwiki.contrib.mailarchive.IMAUser;
+import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * @version $Id$
@@ -116,9 +117,11 @@ public class MAUser implements IMAUser
     @Override
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
-        builder.append("MAUser [originalAddress=").append(originalAddress).append(", address=").append(address)
-            .append(", displayName=").append(displayName).append(", wikiProfile=").append(wikiProfile).append("]");
+        XWikiToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder.append("originalAddress", originalAddress);
+        builder.append("address", address);
+        builder.append("displayName", displayName);
+        builder.append("wikiProfile", wikiProfile);
         return builder.toString();
     }
 

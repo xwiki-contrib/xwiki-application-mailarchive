@@ -21,6 +21,7 @@ package org.xwiki.contrib.mailarchive.internal.data;
 
 import org.xwiki.contrib.mail.source.IServerSource;
 import org.xwiki.contrib.mail.source.SourceType;
+import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * @author jbousque
@@ -114,12 +115,18 @@ public class Server extends AbstractMASource implements IServerSource
     @Override
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Server [hostname=").append(hostname).append(", port=").append(port).append(", protocol=")
-            .append(protocol).append(", username=").append(username).append(", password=*****").append(", getId()=")
-            .append(getId()).append(", getFolder()=").append(getFolder()).append(", getAdditionalProperties()=")
-            .append(getAdditionalProperties()).append(", getWikiDoc()=").append(getWikiDoc()).append(", isEnabled()=")
-            .append(isEnabled()).append("]");
+        XWikiToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder.append("hostname", hostname);
+        builder.append("port", port);
+        builder.append("protocol", protocol);
+        builder.append("username", username);
+        builder.append("password", "***");
+        builder.append("getId()", getId());
+        builder.append("getFolder()", getFolder());
+        builder.append("getAdditionalProperties()", getAdditionalProperties());
+        builder.append("getWikiDoc()", getWikiDoc());
+        builder.append("isEnabled()", isEnabled());
+        builder.append("getState()", getState());
         return builder.toString();
     }
 

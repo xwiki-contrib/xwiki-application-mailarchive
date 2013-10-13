@@ -46,6 +46,7 @@ import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 import org.xwiki.contrib.mailarchive.internal.xwiki.IExtendedDocumentAccessBridge;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
+import org.xwiki.text.XWikiToStringBuilder;
 
 /**
  * @version $Id$
@@ -608,18 +609,30 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     @Override
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
-        builder.append("MailArchiveConfiguration [adminPrefsPage=").append(adminPrefsPage).append(", servers=")
-            .append(servers).append(", lists=").append(lists).append(", types=").append(types).append(", loadingUser=")
-            .append(loadingUser).append(", defaultHomeView=").append(defaultHomeView).append(", defaultTopicsView=")
-            .append(defaultTopicsView).append(", defaultMailsOpeningMode=").append(defaultMailsOpeningMode)
-            .append(", manageTimeline=").append(manageTimeline).append(", maxTimelineItemsToLoad=")
-            .append(maxTimelineItemsToLoad).append(", matchProfiles=").append(matchProfiles).append(", matchLdap=")
-            .append(matchLdap).append(", ldapCreateMissingProfiles=").append(ldapCreateMissingProfiles)
-            .append(", ldapForcePhotoUpdate=").append(ldapForcePhotoUpdate).append(", ldapPhotoFieldName=")
-            .append(ldapPhotoFieldName).append(", ldapPhotoFieldContent=").append(ldapPhotoFieldContent)
-            .append(", cropTopicIds=").append(cropTopicIds).append(", itemsSpaceName=").append(itemsSpaceName)
-            .append(", useStore=").append(useStore).append(", emailIgnoredText=").append(emailIgnoredText).append("]");
+        XWikiToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder.append("adminPrefsPage", adminPrefsPage);
+        builder.append("servers", servers);
+        builder.append("lists", lists);
+        builder.append("mailingListGroups", mailingListGroups);
+        builder.append("types", types);
+        builder.append("loadingSessions", loadingSessions);
+        builder.append("loadingUser", loadingUser);
+        builder.append("defaultHomeView", defaultHomeView);
+        builder.append("defaultTopicsView", defaultTopicsView);
+        builder.append("defaultMailsOpeningMode", defaultMailsOpeningMode);
+        builder.append("manageTimeline", manageTimeline);
+        builder.append("maxTimelineItemsToLoad", maxTimelineItemsToLoad);
+        builder.append("matchProfiles", matchProfiles);
+        builder.append("matchLdap", matchLdap);
+        builder.append("ldapCreateMissingProfiles", ldapCreateMissingProfiles);
+        builder.append("ldapForcePhotoUpdate", ldapForcePhotoUpdate);
+        builder.append("ldapPhotoFieldName", ldapPhotoFieldName);
+        builder.append("ldapPhotoFieldContent", ldapPhotoFieldContent);
+        builder.append("cropTopicIds", cropTopicIds);
+        builder.append("itemsSpaceName", itemsSpaceName);
+        builder.append("useStore", useStore);
+        builder.append("emailIgnoredText", emailIgnoredText);
+
         return builder.toString();
     }
 

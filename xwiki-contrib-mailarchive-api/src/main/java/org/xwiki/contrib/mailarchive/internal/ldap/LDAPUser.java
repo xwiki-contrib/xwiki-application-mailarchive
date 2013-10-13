@@ -19,6 +19,8 @@
  */
 package org.xwiki.contrib.mailarchive.internal.ldap;
 
+import org.xwiki.text.XWikiToStringBuilder;
+
 /**
  * @version $Id$
  */
@@ -99,11 +101,21 @@ public class LDAPUser
         this.avatar = avatar;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {
-        return "LDAPUser [uid=" + uid + ", first_name=" + first_name + ", last_name=" + last_name + ", email=" + email
-            + ", avatar=" + avatar + "]";
+        XWikiToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder.append("uid", uid);
+        builder.append("first_name", first_name);
+        builder.append("last_name", last_name);
+        builder.append("email", email);
+        builder.append("avatar", avatar);
+        return builder.toString();
     }
 
 }

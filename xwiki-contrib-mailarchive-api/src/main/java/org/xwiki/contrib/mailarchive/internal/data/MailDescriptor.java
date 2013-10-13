@@ -1,5 +1,7 @@
 package org.xwiki.contrib.mailarchive.internal.data;
 
+import org.xwiki.text.XWikiToStringBuilder;
+
 public class MailDescriptor
 {
 
@@ -32,12 +34,18 @@ public class MailDescriptor
         return fullName;
     }
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
-        builder.append("MailShortItem [subject=").append(subject).append(", topicId=").append(topicId)
-            .append(", fullName=").append(fullName).append("]");
+        XWikiToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder.append("subject", subject);
+        builder.append("topicId", topicId);
+        builder.append("fullName", fullName);
         return builder.toString();
     }
 

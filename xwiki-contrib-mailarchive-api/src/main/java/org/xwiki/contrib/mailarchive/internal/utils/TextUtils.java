@@ -267,4 +267,5 @@ public class TextUtils implements ITextUtils
         }
         return html;
     }
+
 }

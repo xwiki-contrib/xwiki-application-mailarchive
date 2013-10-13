@@ -460,7 +460,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * @throws InitializationException
      * @throws MailArchiveException
      */
-    protected void configure() throws InitializationException, MailArchiveException
+    protected void configure(boolean loadTopicsAndMails) throws InitializationException, MailArchiveException
     {
         // Init
         if (!this.isInitialized) {
@@ -484,9 +484,16 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         }
 
         TextUtils.setLogger(this.logger);
-        loadTopicsAndMails();
+        if (loadTopicsAndMails) {
+            loadTopicsAndMails();
+        }
 
         this.isConfigured = true;
+    }
+
+    protected void configure() throws InitializationException, MailArchiveException
+    {
+        configure(true);
     }
 
     protected void loadTopicsAndMails() throws MailArchiveException
@@ -569,7 +576,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     {
         logger.debug("parseUser {}", internetAddress);
         try {
-            configure();
+            configure(false);
         } catch (Exception e) {
             logger.warn("parseUser: failed to configure the Mail Archive", e);
             return null;
@@ -596,19 +603,19 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     {
         MailItem m = null;
 
-        logger.info("Parsing headers");
+        logger.debug("Parsing headers");
         m = mailManager.parseHeaders(mail);
         if (StringUtils.isBlank(m.getFrom())) {
             logger.warn("Invalid email : missing 'from' header, skipping it");
             return new MailLoadingResult(false, null, null);
         }
-        logger.info("Parsing specific parts");
+        logger.debug("Parsing specific parts");
         setMailSpecificParts(m);
         // Compatibility option with old version of the mail archive
         if (config.isCropTopicIds() && m.getTopicId().length() > 30) {
             m.setTopicId(m.getTopicId().substring(0, 29));
         }
-        logger.info("PARSED MAIL  " + m);
+        logger.info("Parsed email  " + m);
 
         return loadMail(m, confirm, isAttachedMail, parentMail);
     }

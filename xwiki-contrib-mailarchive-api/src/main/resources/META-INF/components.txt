@@ -15,3 +15,6 @@ org.xwiki.contrib.mailarchive.internal.timeline.TimeLineDataWriterChapLinks
 org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence
 org.xwiki.contrib.mailarchive.internal.LoadingJob
 org.xwiki.contrib.mailarchive.internal.DefaultMailLoader
+org.xwiki.contrib.mailarchive.internal.renderer.XHTMLEmailBlockRenderer
+org.xwiki.contrib.mailarchive.internal.renderer.XHTMLEmailRenderer
+org.xwiki.contrib.mailarchive.internal.renderer.XHTMLEmailRendererFactory

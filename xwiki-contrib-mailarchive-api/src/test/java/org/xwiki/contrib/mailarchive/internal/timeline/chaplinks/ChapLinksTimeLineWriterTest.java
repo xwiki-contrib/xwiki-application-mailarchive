@@ -26,9 +26,9 @@ import java.util.TreeMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineDataWriter;
-import org.xwiki.contrib.mailarchive.internal.timeline.TimeLineDataWriterChapLinks;
-import org.xwiki.contrib.mailarchive.internal.timeline.TimeLineEvent;
+import org.xwiki.contrib.mailarchive.timeline.internal.ITimeLineDataWriter;
+import org.xwiki.contrib.mailarchive.timeline.internal.TimeLineDataWriterChapLinks;
+import org.xwiki.contrib.mailarchive.timeline.internal.TimeLineEvent;
 import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
 import org.xwiki.rendering.renderer.printer.WikiPrinter;
 

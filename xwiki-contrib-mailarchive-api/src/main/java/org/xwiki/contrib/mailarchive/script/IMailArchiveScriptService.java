@@ -25,8 +25,8 @@ import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.LoadingSession;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadMessageBean;
-import org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineGenerator;
-import org.xwiki.contrib.mailarchive.internal.utils.DecodedMailContent;
+import org.xwiki.contrib.mailarchive.timeline.ITimeLineGenerator;
+import org.xwiki.contrib.mailarchive.utils.DecodedMailContent;
 import org.xwiki.job.Job;
 
 import com.xpn.xwiki.objects.BaseObject;
@@ -119,7 +119,7 @@ public interface IMailArchiveScriptService
 
     /**
      * Parses a user internet address.<br/>
-     * Specified in {@link org.xwiki.contrib.mailarchive.internal.utils.IMailUtils#parseUser(String, boolean)}
+     * Specified in {@link org.xwiki.contrib.mailarchive.utils.IMailUtils#parseUser(String, boolean)}
      * 
      * @param internetAddress
      * @return A "mail archive" user.
@@ -128,7 +128,7 @@ public interface IMailArchiveScriptService
 
     /**
      * Returns the timeline generator component. Interface specified in
-     * {@link org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineGenerator}
+     * {@link org.xwiki.contrib.mailarchive.timeline.ITimeLineGenerator}
      * 
      * @return
      */

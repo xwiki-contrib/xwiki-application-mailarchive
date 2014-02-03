@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
+import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
 
 /**
  * Configuration of the Mail Archive.
@@ -31,54 +31,59 @@ import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 @Role
 public interface IMailArchiveConfiguration
 {
-    public static final String LDAP_PHOTO_CONTENT_BINARY = "binary";
+    static final String LDAP_PHOTO_CONTENT_BINARY = "binary";
 
-    public static final String LDAP_PHOTO_CONTENT_URL = "url";
+    static final String LDAP_PHOTO_CONTENT_URL = "url";
 
-    public Map<String, IMailingList> getMailingLists();
+    Map<String, IMailingList> getMailingLists();
 
     /**
      * Mailing-list groups.
      * 
      * @return A map of mailing-list groups, key being the "name" of the group.
      */
-    public Map<String, IMailingListGroup> getMailingListGroups();
+    Map<String, IMailingListGroup> getMailingListGroups();
 
-    public List<IMASource> getServers();
+    List<IMASource> getServers();
 
-    public Map<String, IType> getMailTypes();
+    Map<String, IType> getMailTypes();
 
-    public String getLoadingUser();
+    String getLoadingUser();
 
-    public String getDefaultHomeView();
+    String getDefaultHomeView();
 
-    public String getDefaultTopicsView();
+    String getDefaultTopicsView();
 
-    public String getDefaultMailsOpeningMode();
+    String getDefaultMailsOpeningMode();
 
-    public boolean isManageTimeline();
+    boolean isManageTimeline();
 
-    public int getMaxTimelineItemsToLoad();
+    int getMaxTimelineItemsToLoad();
 
-    public boolean isMatchProfiles();
+    boolean isMatchProfiles();
 
-    public boolean isMatchLdap();
+    boolean isMatchLdap();
 
-    public boolean isLdapCreateMissingProfiles();
+    boolean isLdapCreateMissingProfiles();
 
-    public boolean isLdapForcePhotoUpdate();
+    boolean isLdapForcePhotoUpdate();
 
-    public String getLdapPhotoFieldName();
+    String getLdapPhotoFieldName();
 
-    public String getLdapPhotoFieldContent();
+    String getLdapPhotoFieldContent();
 
-    public String getItemsSpaceName();
+    String getItemsSpaceName();
 
-    public boolean isCropTopicIds();
+    boolean isCropTopicIds();
 
-    public boolean isUseStore();
+    boolean isUseStore();
 
-    public String getEmailIgnoredText();
+    String getEmailIgnoredText();
+
+    String getAdminPrefsPage();
+
+    Map<String, LoadingSession> getLoadingSessions();
 
     public abstract void reloadConfiguration() throws MailArchiveException;
+
 }

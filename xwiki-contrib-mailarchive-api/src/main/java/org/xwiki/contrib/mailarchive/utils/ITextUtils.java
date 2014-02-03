@@ -17,37 +17,48 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal;
+package org.xwiki.contrib.mailarchive.utils;
 
-import java.util.HashMap;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
-import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
-import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
-import org.xwiki.query.QueryException;
 
 /**
  * @version $Id$
  */
 @Role
-public interface IItemsManager
+public interface ITextUtils
 {
 
     /**
-     * Loads existing topics minimal information from database.
-     * 
-     * @return a map of existing topics, with key = topicId
-     * @throws QueryException
+     * Assumed maximum length for Large string properties
      */
-    HashMap<String, TopicDescriptor> loadStoredTopics() throws MailArchiveException;
+    public static final int LONG_STRINGS_MAX_LENGTH = 60000;
 
     /**
-     * Loads existing mails minimal information from database.
-     * 
-     * @return a map of existing mails, with key = messageId
-     * @throws MailArchiveException
+     * Assumed maximum length for string properties
      */
-    HashMap<String, MailDescriptor> loadStoredMessages() throws MailArchiveException;
+    public static final int SHORT_STRINGS_MAX_LENGTH = 255;
+
+    public String htmlToPlainText(final String html);
+
+    public String byte2hex(byte[] b);
+
+    public byte[] hex2byte(String hexStr);
+
+    public byte charToByte(char c);
+
+    public String truncateForLargeString(String s);
+
+    public String truncateForString(String s);
+
+    public String truncateStringForBytes(String s, int maxChars, int maxBytes);
+
+    public boolean similarSubjects(String s1, String s2);
+
+    public double getAveragedLevenshteinDistance(String s, String t);
+
+    public String unzipString(String zippedString) throws IOException, UnsupportedEncodingException;
 
 }

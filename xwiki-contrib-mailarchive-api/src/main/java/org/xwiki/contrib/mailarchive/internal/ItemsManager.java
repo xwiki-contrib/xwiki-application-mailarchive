@@ -27,10 +27,10 @@ import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
 import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
-import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
-import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
+import org.xwiki.contrib.mailarchive.xwiki.internal.XWikiPersistence;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
 

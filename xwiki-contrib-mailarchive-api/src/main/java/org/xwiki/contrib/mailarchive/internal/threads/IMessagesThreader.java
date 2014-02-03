@@ -22,7 +22,7 @@ package org.xwiki.contrib.mailarchive.internal.threads;
 import java.util.List;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
+import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
 import org.xwiki.query.QueryException;
 
 /**

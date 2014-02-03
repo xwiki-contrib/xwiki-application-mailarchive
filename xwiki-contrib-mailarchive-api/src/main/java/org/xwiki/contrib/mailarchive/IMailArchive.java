@@ -32,12 +32,12 @@ import org.xwiki.component.annotation.Role;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mail.SourceConnectionErrors;
 import org.xwiki.contrib.mail.source.IMailSource;
+import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.MailLoadingResult;
 import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
 import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
-import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadableMessage;
-import org.xwiki.contrib.mailarchive.internal.utils.DecodedMailContent;
+import org.xwiki.contrib.mailarchive.utils.DecodedMailContent;
 
 import com.xpn.xwiki.XWikiException;
 

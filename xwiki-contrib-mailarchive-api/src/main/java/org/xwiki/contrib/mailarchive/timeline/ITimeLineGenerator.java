@@ -17,37 +17,33 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal;
-
-import java.util.HashMap;
+package org.xwiki.contrib.mailarchive.timeline;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
-import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
-import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
-import org.xwiki.query.QueryException;
+
+import com.xpn.xwiki.XWikiException;
 
 /**
+ * Generates Timeline data from archived emails.
+ * 
  * @version $Id$
  */
 @Role
-public interface IItemsManager
+public interface ITimeLineGenerator
 {
 
     /**
-     * Loads existing topics minimal information from database.
+     * Computes timeline XML feed from topics and mails, and returns it as a string.
      * 
-     * @return a map of existing topics, with key = topicId
-     * @throws QueryException
+     * @return
+     * @throws XWikiException
      */
-    HashMap<String, TopicDescriptor> loadStoredTopics() throws MailArchiveException;
+    String compute();
 
     /**
-     * Loads existing mails minimal information from database.
-     * 
-     * @return a map of existing mails, with key = messageId
-     * @throws MailArchiveException
+     * @param maxItems
+     * @return
      */
-    HashMap<String, MailDescriptor> loadStoredMessages() throws MailArchiveException;
+    String compute(int maxItems);
 
 }

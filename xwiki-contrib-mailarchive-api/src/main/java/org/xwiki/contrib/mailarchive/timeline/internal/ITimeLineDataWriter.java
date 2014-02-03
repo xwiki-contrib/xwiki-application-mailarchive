@@ -17,37 +17,28 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal;
+package org.xwiki.contrib.mailarchive.timeline.internal;
 
-import java.util.HashMap;
+import java.util.TreeMap;
 
 import org.xwiki.component.annotation.Role;
-import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
-import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
-import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
-import org.xwiki.query.QueryException;
+import org.xwiki.rendering.renderer.printer.WikiPrinter;
 
 /**
+ * Generator of timeline feed data from a sorted map of TimeLineEvent.
+ * 
  * @version $Id$
  */
 @Role
-public interface IItemsManager
+public interface ITimeLineDataWriter
 {
 
-    /**
-     * Loads existing topics minimal information from database.
-     * 
-     * @return a map of existing topics, with key = topicId
-     * @throws QueryException
-     */
-    HashMap<String, TopicDescriptor> loadStoredTopics() throws MailArchiveException;
+    void print(TreeMap<Long, TimeLineEvent> sortedEvents);
 
-    /**
-     * Loads existing mails minimal information from database.
-     * 
-     * @return a map of existing mails, with key = messageId
-     * @throws MailArchiveException
-     */
-    HashMap<String, MailDescriptor> loadStoredMessages() throws MailArchiveException;
+    void print(TimeLineEvent event);
+
+    void print(TopicEventBubble bubbleInfo);
+
+    void setWikiPrinter(WikiPrinter printer);
 
 }

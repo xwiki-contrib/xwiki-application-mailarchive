@@ -39,9 +39,9 @@ import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IMailingListGroup;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.LoadingSession;
-import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
-import org.xwiki.contrib.mailarchive.internal.xwiki.IExtendedDocumentAccessBridge;
-import org.xwiki.contrib.mailarchive.internal.xwiki.ObjectEntity;
+import org.xwiki.contrib.mailarchive.xwiki.IExtendedDocumentAccessBridge;
+import org.xwiki.contrib.mailarchive.xwiki.ObjectEntity;
+import org.xwiki.contrib.mailarchive.xwiki.internal.XWikiPersistence;
 
 import com.xpn.xwiki.objects.BaseObject;
 

@@ -41,9 +41,9 @@ import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IMailingListGroup;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.LoadingSession;
-import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
-import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
-import org.xwiki.contrib.mailarchive.internal.xwiki.IExtendedDocumentAccessBridge;
+import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
+import org.xwiki.contrib.mailarchive.xwiki.IExtendedDocumentAccessBridge;
+import org.xwiki.contrib.mailarchive.xwiki.internal.XWikiPersistence;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
 import org.xwiki.text.XWikiToStringBuilder;
@@ -427,61 +427,73 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         return sessions;
     }
 
+    @Override
     public String getLoadingUser()
     {
         return loadingUser;
     }
 
+    @Override
     public String getDefaultHomeView()
     {
         return defaultHomeView;
     }
 
+    @Override
     public String getDefaultTopicsView()
     {
         return defaultTopicsView;
     }
 
+    @Override
     public String getDefaultMailsOpeningMode()
     {
         return defaultMailsOpeningMode;
     }
 
+    @Override
     public boolean isManageTimeline()
     {
         return manageTimeline;
     }
 
+    @Override
     public int getMaxTimelineItemsToLoad()
     {
         return maxTimelineItemsToLoad;
     }
 
+    @Override
     public boolean isMatchProfiles()
     {
         return matchProfiles;
     }
 
+    @Override
     public boolean isMatchLdap()
     {
         return matchLdap;
     }
 
+    @Override
     public boolean isLdapCreateMissingProfiles()
     {
         return ldapCreateMissingProfiles;
     }
 
+    @Override
     public boolean isLdapForcePhotoUpdate()
     {
         return ldapForcePhotoUpdate;
     }
 
+    @Override
     public String getLdapPhotoFieldName()
     {
         return ldapPhotoFieldName;
     }
 
+    @Override
     public String getLdapPhotoFieldContent()
     {
         return ldapPhotoFieldContent;
@@ -539,6 +551,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     /**
      * @return the mailingListGroups
      */
+    @Override
     public Map<String, IMailingListGroup> getMailingListGroups()
     {
         return mailingListGroups;
@@ -566,6 +579,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         return this.types;
     }
 
+    @Override
     public Map<String, LoadingSession> getLoadingSessions()
     {
         return this.loadingSessions;
@@ -574,6 +588,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     /**
      * @return The page from which configuration is retrieved.
      */
+    @Override
     public String getAdminPrefsPage()
     {
         return adminPrefsPage;
@@ -591,6 +606,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         reloadConfiguration();
     }
 
+    @Override
     public String getEmailIgnoredText()
     {
         return emailIgnoredText;

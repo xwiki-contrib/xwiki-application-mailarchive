@@ -17,37 +17,63 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal;
+package org.xwiki.contrib.mailarchive.xwiki;
 
 import java.util.HashMap;
 
-import org.xwiki.component.annotation.Role;
-import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
-import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
-import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
-import org.xwiki.query.QueryException;
-
 /**
+ * A simple POJO to represent an XObject in memory with no link to XWiki API.
+ * 
  * @version $Id$
  */
-@Role
-public interface IItemsManager
+public class ObjectEntity
 {
+    private HashMap<String, Object> fields = new HashMap<String, Object>();
+
+    private String xdoc;
+
+    private String xclass;
 
     /**
-     * Loads existing topics minimal information from database.
-     * 
-     * @return a map of existing topics, with key = topicId
-     * @throws QueryException
+     * @return the name
      */
-    HashMap<String, TopicDescriptor> loadStoredTopics() throws MailArchiveException;
+    public String getXdoc()
+    {
+        return xdoc;
+    }
 
     /**
-     * Loads existing mails minimal information from database.
-     * 
-     * @return a map of existing mails, with key = messageId
-     * @throws MailArchiveException
+     * @param name the name to set
      */
-    HashMap<String, MailDescriptor> loadStoredMessages() throws MailArchiveException;
+    public void setXdoc(final String xdoc)
+    {
+        this.xdoc = xdoc;
+    }
+
+    /**
+     * @return the clazzName
+     */
+    public String getXclass()
+    {
+        return xclass;
+    }
+
+    /**
+     * @param clazzName the clazzName to set
+     */
+    public void setXclass(final String xclass)
+    {
+        this.xclass = xclass;
+    }
+
+    public void setFieldValue(final String key, final Object value)
+    {
+        this.fields.put(key, value);
+    }
+
+    public Object getFieldValue(final String key)
+    {
+        return this.fields.get(key);
+    }
 
 }

@@ -17,37 +17,29 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal;
-
-import java.util.HashMap;
-
-import org.xwiki.component.annotation.Role;
-import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
-import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
-import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
-import org.xwiki.query.QueryException;
+package org.xwiki.contrib.mailarchive.xwiki;
 
 /**
  * @version $Id$
  */
-@Role
-public interface IItemsManager
+public enum UpdateMode
 {
 
     /**
-     * Loads existing topics minimal information from database.
-     * 
-     * @return a map of existing topics, with key = topicId
-     * @throws QueryException
+     * Only creates a new object each time.
      */
-    HashMap<String, TopicDescriptor> loadStoredTopics() throws MailArchiveException;
-
+    ADD,
     /**
-     * Loads existing mails minimal information from database.
-     * 
-     * @return a map of existing mails, with key = messageId
-     * @throws MailArchiveException
+     * Creates a new object if none exists, or updates it if already existing.
      */
-    HashMap<String, MailDescriptor> loadStoredMessages() throws MailArchiveException;
+    CREATE_OR_UPDATE,
+    /**
+     * Only updates existing object (fails if it does not exist).
+     */
+    UPDATE,
+    /**
+     * Only creates a new object if none exist (fails if an object exists).
+     */
+    CREATE
 
 }

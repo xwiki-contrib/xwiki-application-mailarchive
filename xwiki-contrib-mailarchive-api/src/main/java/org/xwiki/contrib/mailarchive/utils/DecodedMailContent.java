@@ -17,37 +17,58 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal;
-
-import java.util.HashMap;
-
-import org.xwiki.component.annotation.Role;
-import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
-import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
-import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
-import org.xwiki.query.QueryException;
+package org.xwiki.contrib.mailarchive.utils;
 
 /**
  * @version $Id$
  */
-@Role
-public interface IItemsManager
+public class DecodedMailContent
 {
+    private boolean html;
+
+    private String text;
 
     /**
-     * Loads existing topics minimal information from database.
-     * 
-     * @return a map of existing topics, with key = topicId
-     * @throws QueryException
+     * @param html
+     * @param text
      */
-    HashMap<String, TopicDescriptor> loadStoredTopics() throws MailArchiveException;
+    public DecodedMailContent(final boolean isHtml, final String text)
+    {
+        super();
+        this.html = isHtml;
+        this.text = text;
+    }
 
     /**
-     * Loads existing mails minimal information from database.
-     * 
-     * @return a map of existing mails, with key = messageId
-     * @throws MailArchiveException
+     * @return the html
      */
-    HashMap<String, MailDescriptor> loadStoredMessages() throws MailArchiveException;
+    public boolean isHtml()
+    {
+        return html;
+    }
+
+    /**
+     * @param html the html to set
+     */
+    public void setHtml(final boolean html)
+    {
+        this.html = html;
+    }
+
+    /**
+     * @return the text
+     */
+    public String getText()
+    {
+        return text;
+    }
+
+    /**
+     * @param text the text to set
+     */
+    public void setText(final String text)
+    {
+        this.text = text;
+    }
 
 }

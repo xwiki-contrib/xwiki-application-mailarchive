@@ -7,9 +7,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.phase.InitializationException;
-import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
-import org.xwiki.contrib.mailarchive.internal.utils.ITextUtils;
-import org.xwiki.contrib.mailarchive.internal.utils.TextUtils;
+import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
+import org.xwiki.contrib.mailarchive.utils.ITextUtils;
+import org.xwiki.contrib.mailarchive.utils.internal.TextUtils;
 import org.xwiki.test.annotation.ComponentList;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 

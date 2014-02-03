@@ -65,21 +65,21 @@ import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.LoadingSession;
+import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.data.IFactory;
 import org.xwiki.contrib.mailarchive.internal.data.MailDescriptor;
 import org.xwiki.contrib.mailarchive.internal.data.MailStore;
 import org.xwiki.contrib.mailarchive.internal.data.Server;
 import org.xwiki.contrib.mailarchive.internal.data.TopicDescriptor;
-import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
-import org.xwiki.contrib.mailarchive.internal.persistence.IPersistence;
-import org.xwiki.contrib.mailarchive.internal.persistence.XWikiPersistence;
 import org.xwiki.contrib.mailarchive.internal.threads.IMessagesThreader;
 import org.xwiki.contrib.mailarchive.internal.threads.ThreadableMessage;
-import org.xwiki.contrib.mailarchive.internal.timeline.ITimeLineGenerator;
-import org.xwiki.contrib.mailarchive.internal.utils.DecodedMailContent;
-import org.xwiki.contrib.mailarchive.internal.utils.IMailUtils;
-import org.xwiki.contrib.mailarchive.internal.utils.ITextUtils;
-import org.xwiki.contrib.mailarchive.internal.utils.TextUtils;
+import org.xwiki.contrib.mailarchive.timeline.ITimeLineGenerator;
+import org.xwiki.contrib.mailarchive.utils.DecodedMailContent;
+import org.xwiki.contrib.mailarchive.utils.IMailUtils;
+import org.xwiki.contrib.mailarchive.utils.ITextUtils;
+import org.xwiki.contrib.mailarchive.utils.internal.TextUtils;
+import org.xwiki.contrib.mailarchive.xwiki.IPersistence;
+import org.xwiki.contrib.mailarchive.xwiki.internal.XWikiPersistence;
 import org.xwiki.environment.Environment;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
@@ -108,9 +108,6 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
     /** Is the component initialized ? */
     private boolean isInitialized = false;
-
-    /** Are we currently in a loading session ? */
-    private boolean locked = false;
 
     private Lock lock = new ReentrantLock();
 
@@ -664,10 +661,11 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 logger.debug("   creating new topic");
                 topicDocName = createTopicPage(m, confirm);
 
-                logger.debug("  loaded new topic " + topicDocName);
+                logger.info("Saved new topic " + topicDocName);
             } else if (textUtils.similarSubjects(m.getTopic(), existingTopics.get(existingTopicId).getSubject())) {
                 logger.debug("  topic already loaded " + m.getTopicId() + " : " + existingTopics.get(existingTopicId));
                 topicDocName = updateTopicPage(m, existingTopicId, dateFormatter, confirm);
+                logger.info("Updated topic " + topicDocName);
             } else {
                 // We consider this was a topic hack : someone replied to an existing thread, but to start on another
                 // subject.
@@ -684,6 +682,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                     existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId(), m.getMessageId(), m.getRefs());
                 logger.debug("  creating new topic");
                 topicDocName = createTopicPage(m, confirm);
+                logger.info("Saved new topic from hijacked thread " + topicDocName);
 
             }
         } // if not attached email
@@ -706,6 +705,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                     parent = existingTopics.get(m.getTopicId()).getFullName();
                 }
                 messageDocName = createMailPage(m, existingTopicId, isAttachedMail, parent, confirm);
+                logger.info("Saved new message " + messageDocName);
             } catch (Exception e) {
                 logger.error("Could not create mail page for " + m.getMessageId(), e);
                 return new MailLoadingResult(false, topicDocName, null);
@@ -729,6 +729,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                     persistence.saveAsUser(msgDoc, null, config.getLoadingUser(),
                         "Updated mail with existing topic id found");
                 }
+                logger.info("Updated message " + msgDoc.getFullName());
             }
 
             return new MailLoadingResult(true, topicDocName, messageDocName);

@@ -40,9 +40,10 @@ import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.IMailArchiveLoader;
 import org.xwiki.contrib.mailarchive.LoadingSession;
+import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.data.MailStore;
 import org.xwiki.contrib.mailarchive.internal.data.Server;
-import org.xwiki.contrib.mailarchive.internal.exceptions.MailArchiveException;
+import org.xwiki.contrib.mailarchive.utils.IAggregatedLoggerManager;
 import org.xwiki.logging.LogLevel;
 import org.xwiki.rendering.parser.StreamParser;
 

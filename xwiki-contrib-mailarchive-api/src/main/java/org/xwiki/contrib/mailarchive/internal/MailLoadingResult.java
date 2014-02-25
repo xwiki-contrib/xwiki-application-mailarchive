@@ -27,17 +27,17 @@ package org.xwiki.contrib.mailarchive.internal;
  */
 public class MailLoadingResult
 {
-    private boolean success;
+    private STATUS status;
 
     private String createdTopicDocumentName;
 
     private String createdMailDocumentName;
 
-    public MailLoadingResult(final boolean success, final String createdTopicDocumentName,
+    public MailLoadingResult(final STATUS status, final String createdTopicDocumentName,
         final String createdMailDocumentName)
     {
         super();
-        this.success = success;
+        this.status = status;
         this.createdTopicDocumentName = createdTopicDocumentName;
         this.createdMailDocumentName = createdMailDocumentName;
     }
@@ -49,7 +49,12 @@ public class MailLoadingResult
      */
     public boolean isSuccess()
     {
-        return success;
+        return STATUS.SUCCESS.equals(this.status) || STATUS.ALREADY_LOADED.equals(this.status);
+    }
+    
+    public STATUS getStatus()
+    {
+        return this.status;
     }
 
     /**
@@ -70,6 +75,13 @@ public class MailLoadingResult
     public String getCreatedMailDocumentName()
     {
         return createdMailDocumentName;
+    }
+
+    enum STATUS
+    {
+        SUCCESS,
+        FAILED,
+        ALREADY_LOADED
     }
 
 }

@@ -21,6 +21,9 @@ package org.xwiki.contrib.mailarchive.xwiki;
 
 import java.util.HashMap;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.xwiki.text.XWikiToStringBuilder;
+
 /**
  * A simple POJO to represent an XObject in memory with no link to XWiki API.
  * 
@@ -29,10 +32,21 @@ import java.util.HashMap;
 public class ObjectEntity
 {
     private HashMap<String, Object> fields = new HashMap<String, Object>();
+    
+    private HashMap<String, Boolean> dirty = new HashMap<String, Boolean>();
 
     private String xdoc;
 
     private String xclass;
+    
+    public ObjectEntity(){
+        
+    }
+    
+    public ObjectEntity(final String xdoc, final String xclass) {
+        this.xdoc = xdoc;
+        this.xclass = xclass;
+    }
 
     /**
      * @return the name
@@ -66,14 +80,47 @@ public class ObjectEntity
         this.xclass = xclass;
     }
 
+    /**
+     * Sets or updates a field value in memory.
+     * 
+     * @param key
+     * @param value
+     */
     public void setFieldValue(final String key, final Object value)
     {
         this.fields.put(key, value);
+        this.dirty.put(key, false);
     }
 
+    /**
+     * @param key
+     * @return Value of field identified by key.
+     */
     public Object getFieldValue(final String key)
     {
         return this.fields.get(key);
     }
+    
+    /**
+     * Sets or updates a field value in order for it to be persisted.
+     * 
+     * @param key
+     * @param value
+     */
+    public void updateFieldValue(final String key, final Object value)
+    {
+        this.fields.put(key, value);
+        this.dirty.put(key, true);
+    }
+    
 
+    public String toString()
+    {
+        ToStringBuilder builder = new XWikiToStringBuilder(this);
+        builder =
+            builder.append("xdoc", xdoc).append("xclass", xclass).append("fields", fields);
+
+        return builder.toString();
+    }
+    
 }

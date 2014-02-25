@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchivePrefs</web>
   <name>Type_Calendar</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchivePrefs.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179263000</creationDate>
+  <parent>MailArchivePrefs.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1375534272000</creationDate>
-  <date>1375534272000</date>
-  <contentUpdateDate>1375534272000</contentUpdateDate>
+  <date>1393179263000</date>
+  <contentUpdateDate>1393179263000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content/>
   <object>
+    <name>MailArchivePrefs.Type_Calendar</name>
+    <number>0</number>
+    <className>MailArchiveCode.TypeClass</className>
+    <guid>ce940e42-5a2b-4eda-89a6-eb05610b376f</guid>
     <class>
       <name>MailArchiveCode.TypeClass</name>
       <customClass/>
@@ -108,10 +112,6 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
     </class>
-    <name>MailArchivePrefs.Type_Calendar</name>
-    <number>0</number>
-    <className>MailArchiveCode.TypeClass</className>
-    <guid>ce940e42-5a2b-4eda-89a6-eb05610b376f</guid>
     <property>
       <builtin>1</builtin>
     </property>
@@ -125,5 +125,4 @@
       <name>Calendar Entry</name>
     </property>
   </object>
-  <content/>
 </xwikidoc>

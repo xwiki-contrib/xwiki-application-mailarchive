@@ -1,63 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>StatisticsData</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179261000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1353417892000</creationDate>
-  <date>1353417892000</date>
-  <contentUpdateDate>1353417892000</contentUpdateDate>
+  <date>1393179261000</date>
+  <contentUpdateDate>1393179261000</contentUpdateDate>
   <version>1.1</version>
   <title>Export of Statistics Data about MailArchiver mails and topics</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
-  <hidden>false</hidden>
-  <object>
-    <class>
-      <name>XWiki.TagClass</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <tags>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>input</displayType>
-        <multiSelect>1</multiSelect>
-        <name>tags</name>
-        <number>1</number>
-        <prettyName>Tags</prettyName>
-        <relationalStorage>1</relationalStorage>
-        <separator>|</separator>
-        <separators>|,</separators>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <values/>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </tags>
-    </class>
-    <name>MailArchiveCode.StatisticsData</name>
-    <number>0</number>
-    <className>XWiki.TagClass</className>
-    <guid>3bd86714-5c07-449d-8937-f1a4de99024d</guid>
-    <property>
-      <tags/>
-    </property>
-  </object>
+  <hidden/>
   <content>{{velocity}}
 $context.setCacheDuration(60)
 {{/velocity}}
@@ -153,4 +117,39 @@ if (results.size() &gt; 0) {
 
 {{/groovy}}
 </content>
+  <object>
+    <name>MailArchiveCode.StatisticsData</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>3bd86714-5c07-449d-8937-f1a4de99024d</guid>
+    <class>
+      <name>XWiki.TagClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <tags>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>tags</name>
+        <number>1</number>
+        <prettyName>Tags</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator>|</separator>
+        <separators>|,</separators>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </tags>
+    </class>
+    <property>
+      <tags/>
+    </property>
+  </object>
 </xwikidoc>

@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>MailArchiveLoadingJob</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179259000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1353417891000</creationDate>
-  <date>1353417891000</date>
-  <contentUpdateDate>1353417891000</contentUpdateDate>
+  <date>1393179259000</date>
+  <contentUpdateDate>1393179259000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content>{{include document="XWiki.SchedulerJobSheet"/}}</content>
   <object>
+    <name>MailArchiveCode.MailArchiveLoadingJob</name>
+    <number>0</number>
+    <className>XWiki.SchedulerJobClass</className>
+    <guid>e558ff65-b33d-41c6-992f-af72ef996021</guid>
     <class>
       <name>XWiki.SchedulerJobClass</name>
       <customClass/>
@@ -118,10 +122,6 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </status>
     </class>
-    <name>MailArchiveCode.MailArchiveLoadingJob</name>
-    <number>0</number>
-    <className>XWiki.SchedulerJobClass</className>
-    <guid>e558ff65-b33d-41c6-992f-af72ef996021</guid>
     <property>
       <contextDatabase>xwiki</contextDatabase>
     </property>
@@ -167,6 +167,10 @@ To configure options for loading sessions from this scheduled job, please visit 
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.MailArchiveLoadingJob</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>c651475a-2682-4f52-a7cf-575019f3e5ff</guid>
     <class>
       <name>XWiki.TagClass</name>
       <customClass/>
@@ -193,15 +197,15 @@ To configure options for loading sessions from this scheduled job, please visit 
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </tags>
     </class>
-    <name>MailArchiveCode.MailArchiveLoadingJob</name>
-    <number>0</number>
-    <className>XWiki.TagClass</className>
-    <guid>c651475a-2682-4f52-a7cf-575019f3e5ff</guid>
     <property>
       <tags/>
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.MailArchiveLoadingJob</name>
+    <number>0</number>
+    <className>XWiki.XWikiRights</className>
+    <guid>32c8482e-0076-463a-b955-b27ad5ec0a68</guid>
     <class>
       <name>XWiki.XWikiRights</name>
       <customClass/>
@@ -267,10 +271,6 @@ To configure options for loading sessions from this scheduled job, please visit 
         <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
       </users>
     </class>
-    <name>MailArchiveCode.MailArchiveLoadingJob</name>
-    <number>0</number>
-    <className>XWiki.XWikiRights</className>
-    <guid>32c8482e-0076-463a-b955-b27ad5ec0a68</guid>
     <property>
       <allow>1</allow>
     </property>
@@ -284,5 +284,4 @@ To configure options for loading sessions from this scheduled job, please visit 
       <users/>
     </property>
   </object>
-  <content>{{include document="XWiki.SchedulerJobSheet"/}}</content>
 </xwikidoc>

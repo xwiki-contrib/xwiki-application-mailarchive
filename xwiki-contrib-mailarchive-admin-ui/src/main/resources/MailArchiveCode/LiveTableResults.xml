@@ -1,67 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>LiveTableResults</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179258000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1375534142000</creationDate>
-  <date>1375534142000</date>
-  <contentUpdateDate>1375534142000</contentUpdateDate>
+  <date>1393179258000</date>
+  <contentUpdateDate>1393179258000</contentUpdateDate>
   <version>1.1</version>
   <title>$msg.get("xe.livetable.results")</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content>{{include document="MailArchiveCode.LiveTableResultsMacros" /}}
+
+{{velocity wiki="false"}}
+#set ($extra = '')
+#set ($params = [])
+#if ("$!request.space" != '')
+  #set ($extra = "${extra} and doc.space = ?")
+  #set ($discard = $params.add($request.space))
+#end
+#if ("$!request.parent" != '')
+  #set ($extra = "${extra} and doc.parent = ?")
+  #set ($discard = $params.add($request.parent))
+#end
+#if ("$!request.orphaned" == '1')
+  #set ($extra = "${extra} and doc.parent='' and doc.name&lt;&gt;'WebHome'")
+#end
+#gridresultwithfilter("$!request.classname" $request.collist.split(',') '' "${extra}" $params)
+{{/velocity}}</content>
   <attachment>
     <filename>star-table.gif</filename>
-    <filesize>1616</filesize>
     <author>XWiki.Admin</author>
-    <date>1375534142000</date>
+    <date>1393179257000</date>
     <version>1.1</version>
     <comment/>
-    <content>R0lGODlhGQBLAPcAAP////7+9f786v784f748/756P738v743Pf39//6zf76uvf39vf39f76xPf3
-4f75sf712PTz8vXz8vf3zfTz9PTy8PPy8vPy8P73nP73k/3v5ffw3fTzzf7wzffv5e/v7/7yq/Py
-zfDw7f72gP7uv/7vuP7uw+/v7f70bO/vzf70Y/7vlP7tpu3r6O3r6evq6uvq6evq6Ovq6/7xYevq
-zf7ql+no5P3kzufm5v3kvf/nnOfm5P7sXefl4P3ixP7mif7ngufmzf7ncebj3/3guv7oWeTi4+Ti
-4OPi3OPg3+TizePg4ePgzf7iav7emP/fed/e3v7kUt/e3P7hZeHd1/7dh9/ezd/d1/zYpv7fUd7b
-1PvVrP7dSv7ZedvY2dvY1/7Xc9vYzdfV1NfV1f7UadfVzf7XQ/7WSv7UUf/MmdTR0dTRzf/QO/7P
-Q/3LXPzGcv/MM/3GWfnAmf7FO/q/dfu+bf3ANvy8U/q5afm1gvu3T/u0TvqyTPmvU/mtSvioWPio
-T/ilTvilRfidQfeUQvaSOvaPOfWGNQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAAHAP8ALAAAAAAZAEsA
-AAj/ABMIHEiwoMGDBycoRMiQ4IQUNIJwaNiQQxIAEZhMoIiQBgwAAHak4GhwgpUFIAFICbGRpEAa
-UlICOBGGBoebNxEqTBHmhEyVX4J+SWLTYQgaTMR82fGzaUgaLScghRHBqdUdNAZOkGjVKgwrEwfS
-UNK1acYQBaUmQVkWwIIwaA+GCHOh7ZesDOfW7fplZEMaPrtipZgisNUTGv/u5dsyYZCqKXdIgcEW
-wJHGJZlAjnEXopUjVXdgTquEw4IjpbWmCCJydMHVQVK4Vug67UKXuHPrJkl7t2olSmqT5ADFgpHg
-vj2CHOM3t8kFJCB8kBIWN8wCcNoQWMIkJ8eHPXWw/2HzBMGYL1TSD/EuUOFRLWrUEDhjpn4JBBby
-y5DRun0KK1Dg8AECBfxQ34FNNPEDCwEAYANU7QUHwAE1NMHFhRhemMWGELhgRVwJbDUBAEBguOGG
-UaSY4goSKAGiQBwoMQQDQmRR3xxz2KHjHG0IsYASzREUghVKVNAFjki2oSQaBFCBXEJWWFHBE0qe
-YaWVUwCgRpAGzfUCC1ycmEURZAqwBJdpBSECCGTywMMMcM7QgAx46RREBRjAicIDCoygggoPWHCF
-cCFaYUEGKmQQgA1IuODAAwMAAAWhJkkQwAAtUEGkFUH0IIGDlCqRwAI9WCHbTkHQYAOar3FAAw0v
-hv/YW0O0EerbrbjmSuttvkmlBIS+pTAEAl6w+h0TLgDwwaS7reaBHAZ4gYStJVmBRB6H5EGsTThV
-V9JWZYhgyLg34KCGUFcMMdoERyUlhg1pECLvHxqAlJ8FMtjQmK9UAaDBFoEMMoggBAuCBx1EAICA
-aKolAEAagBQsiB8U+8HHxVgAYMSLUo3YR8UW+1HwHnu8QYARaMY4xAZ1DDLuIYeMOy4gJz9Z0JBF
-/lHIzgILLIgPL4wRq0NRVhAxwRTzoUcOOFBhawpriEDyHnfcEcfVTixrawjhXu3G12CDAYAX3hrE
-ARMVfE2GCQB04IQbZADQdEVBSFCFEwF8IK0LDBQtAAAFPTQUQt0gLUHFq1F6KoENtI4kAxRQ0QZR
-EPpSdBSs6/LK0Ky6du55bgEBADs=
-</content>
+    <content>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</content>
+    <filesize>1616</filesize>
   </attachment>
   <object>
+    <name>MailArchiveCode.LiveTableResults</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>df357a56-3f58-4050-97f7-d0f154d820a6</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -133,10 +125,6 @@ EPpSdBSs6/LK0Ky6du55bgEBADs=
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>MailArchiveCode.LiveTableResults</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>df357a56-3f58-4050-97f7-d0f154d820a6</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -212,6 +200,10 @@ document.observe("xwiki:livetable:ready", function(levent) {
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.LiveTableResults</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>3e77a3ef-6362-4fd9-9200-e704a1972773</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -283,10 +275,6 @@ document.observe("xwiki:livetable:ready", function(levent) {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>MailArchiveCode.LiveTableResults</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>3e77a3ef-6362-4fd9-9200-e704a1972773</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -369,6 +357,10 @@ document.observe("xwiki:livetable:ready", function(levent) {
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.LiveTableResults</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>c406ef28-2f3e-4b65-aca3-b94ee59d44a0</guid>
     <class>
       <name>XWiki.TagClass</name>
       <customClass/>
@@ -395,15 +387,15 @@ document.observe("xwiki:livetable:ready", function(levent) {
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </tags>
     </class>
-    <name>MailArchiveCode.LiveTableResults</name>
-    <number>0</number>
-    <className>XWiki.TagClass</className>
-    <guid>c406ef28-2f3e-4b65-aca3-b94ee59d44a0</guid>
     <property>
       <tags/>
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.LiveTableResults</name>
+    <number>0</number>
+    <className>XWiki.XWikiComments</className>
+    <guid>fcc00d10-fc9f-4305-aef9-ee85d003b4d7</guid>
     <class>
       <name>XWiki.XWikiComments</name>
       <customClass/>
@@ -523,10 +515,6 @@ document.observe("xwiki:livetable:ready", function(levent) {
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </target>
     </class>
-    <name>MailArchiveCode.LiveTableResults</name>
-    <number>0</number>
-    <className>XWiki.XWikiComments</className>
-    <guid>fcc00d10-fc9f-4305-aef9-ee85d003b4d7</guid>
     <property>
       <author>XWiki.jbousque</author>
     </property>
@@ -543,22 +531,4 @@ document.observe("xwiki:livetable:ready", function(levent) {
       <replyto/>
     </property>
   </object>
-  <content>{{include document="MailArchiveCode.LiveTableResultsMacros" /}}
-
-{{velocity wiki="false"}}
-#set ($extra = '')
-#set ($params = [])
-#if ("$!request.space" != '')
-  #set ($extra = "${extra} and doc.space = ?")
-  #set ($discard = $params.add($request.space))
-#end
-#if ("$!request.parent" != '')
-  #set ($extra = "${extra} and doc.parent = ?")
-  #set ($discard = $params.add($request.parent))
-#end
-#if ("$!request.orphaned" == '1')
-  #set ($extra = "${extra} and doc.parent='' and doc.name&lt;&gt;'WebHome'")
-#end
-#gridresultwithfilter("$!request.classname" $request.collist.split(',') '' "${extra}" $params)
-{{/velocity}}</content>
 </xwikidoc>

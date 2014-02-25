@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>TopicSheet</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179244000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1353930107000</creationDate>
-  <date>1354528935000</date>
-  <contentUpdateDate>1354528935000</contentUpdateDate>
+  <date>1393179244000</date>
+  <contentUpdateDate>1393179244000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <defaultTemplate/>
@@ -21,8 +21,150 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content>{{include reference="MailArchiveCode.DisplayMacros"/}}
+
+{{html wiki="false"}}
+&lt;SCRIPT LANGUAGE="JavaScript"&gt;
+function resizeIframeToFitContent(iframe, framenb) {
+    // This function resizes an IFrame object
+    // to fit its content.
+    // The IFrame tag must have a unique ID attribute.
+    iframe.height = window.frames[framenb].document.body.scrollHeight;
+}
+Event.observe(window, 'load', function() {
+  initialize();
+});
+&lt;/SCRIPT&gt;
+{{/html}}
+
+{{velocity}}
+## for display of message in modal box
+#set($discard = $xwiki.jsfx.use("js/scriptaculous/scriptaculous.js"))
+#set($discard = $xwiki.jsx.use("XWiki.ModalBox"))
+#set($discard = $xwiki.ssx.use("XWiki.ModalBox"))
+#set($discard = $xwiki.ssx.use('MailArchiveCode.TopicSheet'))
+#set($prefsdoc = $xwiki.getDocument('MailArchivePrefs.GlobalParameters'))
+#set($prefs = $prefsdoc.getObject('MailArchiveCode.AdminClass'))
+#set($obj = $doc.getObject('MailArchiveCode.TopicClass'))
+#set($showRatings = $prefs.getProperty('ratings').getValue() != "0")
+#if($prefs.getProperty('ratings').value != "0" &amp;&amp; $xwiki.exists('XWiki.Ratings') &amp;&amp; $xwiki.ratings)
+  #set($showRatings = true)
+#else
+  #set($showRatings = false)
+#end
+#if($showRatings)
+  #includeMacros("XWiki.RatingsMacros")
+#end
+#set($mode = $request.display)
+#if("$!mode" != "table" &amp;&amp; "$!mode" != "forum" &amp;&amp; "$!mode" != "threads")
+  #set($mode = $prefs.getProperty('defaulttopicsview').getValue())
+#end
+#if("$!doc.display('importance')" == "high")
+  #set($prefix = "(% style='color:red' %)[[image:icon:exclamation]] Important ")
+#end
+{{html wiki="true"}}
+&lt;div class="topic-header"&gt;
+&lt;div class="topic-header-info"&gt;
+$!prefix **$doc.display('author')** started **$datetool.format('medium', $obj.getProperty('startdate').getValue())** last updated **$datetool.format('medium', $obj.getProperty('lastupdatedate').getValue())**
+&lt;/div&gt;
+&lt;div class="topic-header-nav"&gt;
+{{html wiki="false"}}
+&lt;div class="buttons"&gt;
+&lt;span class="buttonwrapper"&gt;&lt;a class="button" id="choice_threads" href="$doc.getURL()?display=threads"&gt;Threads&lt;/a&gt;&lt;/span&gt;
+&lt;span class="buttonwrapper"&gt;&lt;a class="button" id="choice_list" href="$doc.getURL()?display=table&gt;List&lt;/a&gt;&lt;/span&gt;
+&lt;span class="buttonwrapper"&gt;&lt;a class="button" id="choice_forum" href="$doc.getURL()?display=forum&gt;Forum&lt;/a&gt;&lt;/span&gt;
+&lt;/div&gt;
+{{/html}}
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script type="text/javascript"&gt;
+
+function initialize() {
+  #if($mode == "table")
+    $('choice_list').addClassName('disabled');
+  #elseif ($mode == "threads")
+    $('choice_threads').addClassName('disabled');
+  #elseif ($mode == "forum")
+    $('choice_forum').addClassName('disabled');
+  #end
+}
+
+&lt;/script&gt;
+{{/html}}
+
+#if($mode == "table")
+  #set($discard = $xwiki.ssx.use("MailArchiveCode.TopicsLiveTableResults"))
+  #set($discard = $xwiki.jsx.use("MailArchiveCode.TopicsLiveTableResults"))
+  #set($collist = [ "date", "from", "messagesubject"])
+  #if($showRatings)
+    #set($discard = $collist.add("_ratings"))
+  #end
+  #set($colprops = { 
+   "from" : { "displayName":"From", "type" : "text", "sortable":"true", "filterable":"true", "html" : "true" },                  
+   "messagesubject" : { "displayName":"Subject", "type" : "text", "link" : "view", "sortable":"false", "filterable":"false", "html":"true" },    
+   "_ratings" : { "sortable" : "false" },
+   "date" : { "displayName":"Date", "type" : "date", "link" : "view" }
+                 })
+  #set($url = "$xwiki.getDocument('MailArchiveCode.TopicsLiveTableResults').getExternalURL('view')?topicid=${doc.topicid}&amp;collist=date,from,messagesubject,_ratings&amp;classname=MailArchiveCode.MailClass&amp;outputSyntax=plain&amp;xpage=plain")
+  #set($options = { "className":"MailArchiveCode.TopicClass",
+                  "url":"$url",
+                  "selectedColumn":"date",
+                  "tagCloud":"false",
+                  "defaultOrder":"asc",
+                  "translationPrefix" : "xe.mailarchive.",
+                  "rowCount": 20 })
+  #livetable("mails" $collist $colprops $options)
+
+#elseif ($mode == "threads")
+  #set($threadedMessages = $services.mailarchive.thread($doc.topicid))
+  #if($!threadedMessages[0].user)
+    #set($start = 0)
+  #else
+    #set($start = 1)
+  #end
+  #foreach($message in $threadedMessages) 
+    #set($star="")
+    #if($!message.user)
+      #set($maUser=$services.mailarchive.parseUser($message.user))
+      #foreach($i in [$start..$message.level]) #set($star="$!{star}*") #end
+$star $datetool.format('short', $message.date) - $maUser.displayName - #if($message.page) [[$message.subject&gt;&gt;$message.page]] #else $message.subject #end
+
+      #end
+    #end
+#elseif ($mode == "forum")
+  #set($threadedMessages = $services.mailarchive.thread($doc.topicid))
+  ## HEADER Part
+{{html wiki="true"}}
+&lt;table class="forum-table" id="table-forum"&gt;
+  &lt;tr&gt;
+    &lt;th class="forum-usercolumn"&gt;Author&lt;/th&gt;
+    &lt;th class="forum-contentcolumn" colspan="2"&gt;Message&lt;/th&gt;
+  &lt;/tr&gt;
+  ## By default, we show it sorted by dates for forum view
+  #set($threadedMessages = $sorttool.sort($threadedMessages, "date"))
+  #set($level = 0)
+  #set($providerUrl = $xwiki.getDocument('MailArchiveCode.HtmlProvider').getURL("view"))
+  
+  ## show messages
+  #foreach($mail in $threadedMessages)
+    #displayEmailInForum($mail $anchor $previousAnchor)
+  #end
+
+  ## Footer Part
+&lt;/table&gt;
+{{/html}}
+ 
+#end
+
+{{/velocity}}
+</content>
   <object>
+    <name>MailArchiveCode.TopicSheet</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>30a78c85-fa49-4a24-8cb2-2ad5c563268e</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -94,10 +236,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>MailArchiveCode.TopicSheet</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>30a78c85-fa49-4a24-8cb2-2ad5c563268e</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -223,6 +361,10 @@
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.TopicSheet</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>84fd6add-03bd-4e4f-b698-bd38ac128793</guid>
     <class>
       <name>XWiki.TagClass</name>
       <customClass/>
@@ -249,146 +391,8 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </tags>
     </class>
-    <name>MailArchiveCode.TopicSheet</name>
-    <number>0</number>
-    <className>XWiki.TagClass</className>
-    <guid>84fd6add-03bd-4e4f-b698-bd38ac128793</guid>
     <property>
       <tags/>
     </property>
   </object>
-  <content>{{include reference="MailArchiveCode.DisplayMacros"/}}
-
-{{html wiki="false"}}
-&lt;SCRIPT LANGUAGE="JavaScript"&gt;
-function resizeIframeToFitContent(iframe, framenb) {
-    // This function resizes an IFrame object
-    // to fit its content.
-    // The IFrame tag must have a unique ID attribute.
-    iframe.height = window.frames[framenb].document.body.scrollHeight;
-}
-Event.observe(window, 'load', function() {
-  initialize();
-});
-&lt;/SCRIPT&gt;
-{{/html}}
-
-{{velocity}}
-## for display of message in modal box
-#set($discard = $xwiki.jsfx.use("js/scriptaculous/scriptaculous.js"))
-#set($discard = $xwiki.jsx.use("XWiki.ModalBox"))
-#set($discard = $xwiki.ssx.use("XWiki.ModalBox"))
-#set($discard = $xwiki.ssx.use('MailArchiveCode.TopicSheet'))
-#set($prefsdoc = $xwiki.getDocument('MailArchivePrefs.GlobalParameters'))
-#set($prefs = $prefsdoc.getObject('MailArchiveCode.AdminClass'))
-#set($obj = $doc.getObject('MailArchiveCode.TopicClass'))
-#set($showRatings = $prefs.getProperty('ratings').getValue() != "0")
-#if($prefs.getProperty('ratings').value != "0" &amp;&amp; $xwiki.exists('XWiki.Ratings') &amp;&amp; $xwiki.ratings)
-  #set($showRatings = true)
-#else
-  #set($showRatings = false)
-#end
-#if($showRatings)
-  #includeMacros("XWiki.RatingsMacros")
-#end
-#set($mode = $request.display)
-#if("$!mode" != "table" &amp;&amp; "$!mode" != "forum" &amp;&amp; "$!mode" != "threads")
-  #set($mode = $prefs.getProperty('defaulttopicsview').getValue())
-#end
-#if("$!doc.display('importance')" == "high")
-  #set($prefix = "(% style='color:red' %)[[image:icon:exclamation]] Important ")
-#end
-{{html wiki="true"}}
-&lt;div class="topic-header"&gt;
-&lt;div class="topic-header-info"&gt;
-$!prefix **$doc.display('author')** started **$datetool.format('medium', $obj.getProperty('startdate').getValue())** last updated **$datetool.format('medium', $obj.getProperty('lastupdatedate').getValue())**
-&lt;/div&gt;
-&lt;div class="topic-header-nav"&gt;
-{{html wiki="false"}}
-&lt;span class="buttonwrapper"&gt;&lt;a class="button" id="choice_threads" href="$doc.getURL()?display=threads"&gt;Threads&lt;/a&gt; &lt;a class="button" id="choice_list" href="$doc.getURL()?display=table&gt;List&lt;/a&gt; &lt;a class="button" id="choice_forum" href="$doc.getURL()?display=forum&gt;Forum&lt;/a&gt;&lt;/span&gt;
-{{/html}}
-&lt;/div&gt;
-&lt;/div&gt;
-
-&lt;script type="text/javascript"&gt;
-
-function initialize() {
-  #if($mode == "table")
-    $('choice_list').addClassName('disabled');
-  #elseif ($mode == "threads")
-    $('choice_threads').addClassName('disabled');
-  #elseif ($mode == "forum")
-    $('choice_forum').addClassName('disabled');
-  #end
-}
-
-&lt;/script&gt;
-{{/html}}
-
-#if($mode == "table")
-  #set($discard = $xwiki.ssx.use("MailArchiveCode.TopicsLiveTableResults"))
-  #set($discard = $xwiki.jsx.use("MailArchiveCode.TopicsLiveTableResults"))
-  #set($collist = [ "date", "from", "messagesubject"])
-  #if($showRatings)
-    #set($discard = $collist.add("_ratings"))
-  #end
-  #set($colprops = { 
-   "from" : { "displayName":"From", "type" : "text", "sortable":"true", "filterable":"true", "html" : "true" },                  
-   "messagesubject" : { "displayName":"Subject", "type" : "text", "link" : "view", "sortable":"false", "filterable":"false", "html":"true" },    
-   "_ratings" : { "sortable" : "false" },
-   "date" : { "displayName":"Date", "type" : "date", "link" : "view" }
-                 })
-  #set($url = "$xwiki.getDocument('MailArchiveCode.TopicsLiveTableResults').getExternalURL('view')?topicid=${doc.topicid}&amp;collist=date,from,messagesubject,_ratings&amp;classname=MailArchiveCode.MailClass&amp;outputSyntax=plain&amp;xpage=plain")
-  #set($options = { "className":"MailArchiveCode.TopicClass",
-                  "url":"$url",
-                  "selectedColumn":"date",
-                  "tagCloud":"false",
-                  "defaultOrder":"asc",
-                  "translationPrefix" : "xe.mailarchive.",
-                  "rowCount": 20 })
-  #livetable("mails" $collist $colprops $options)
-
-#elseif ($mode == "threads")
-  #set($threadedMessages = $services.mailarchive.thread($doc.topicid))
-  #if($!threadedMessages[0].user)
-    #set($start = 0)
-  #else
-    #set($start = 1)
-  #end
-  #foreach($message in $threadedMessages) 
-    #set($star="")
-    #if($!message.user)
-      #set($maUser=$services.mailarchive.parseUser($message.user))
-      #foreach($i in [$start..$message.level]) #set($star="$!{star}*") #end
-$star $datetool.format('short', $message.date) - $maUser.displayName - #if($message.page) [[$message.subject&gt;&gt;$message.page]] #else $message.subject #end
-
-      #end
-    #end
-#elseif ($mode == "forum")
-  #set($threadedMessages = $services.mailarchive.thread($doc.topicid))
-  ## HEADER Part
-{{html wiki="true"}}
-&lt;table class="forum-table" id="table-forum"&gt;
-  &lt;tr&gt;
-    &lt;th class="forum-usercolumn"&gt;Author&lt;/th&gt;
-    &lt;th class="forum-contentcolumn" colspan="2"&gt;Message&lt;/th&gt;
-  &lt;/tr&gt;
-  ## By default, we show it sorted by dates for forum view
-  #set($threadedMessages = $sorttool.sort($threadedMessages, "date"))
-  #set($level = 0)
-  #set($providerUrl = $xwiki.getDocument('MailArchiveCode.HtmlProvider').getURL("view"))
-  
-  ## show messages
-  #foreach($mail in $threadedMessages)
-    #displayEmailInForum($mail $anchor $previousAnchor)
-  #end
-
-  ## Footer Part
-&lt;/table&gt;
-{{/html}}
- 
-#end
-
-{{/velocity}}
-</content>
 </xwikidoc>

@@ -604,7 +604,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         m = mailManager.parseHeaders(mail);
         if (StringUtils.isBlank(m.getFrom())) {
             logger.warn("Invalid email : missing 'from' header, skipping it");
-            return new MailLoadingResult(false, null, null);
+            return new MailLoadingResult(MailLoadingResult.STATUS.FAILED, null, null);
         }
         logger.debug("Parsing specific parts");
         setMailSpecificParts(m);
@@ -707,11 +707,11 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 messageDocName = createMailPage(m, existingTopicId, isAttachedMail, parent, confirm);
                 logger.info("Saved new message " + messageDocName);
             } catch (Exception e) {
-                logger.error("Could not create mail page for " + m.getMessageId(), e);
-                return new MailLoadingResult(false, topicDocName, null);
+                logger.warn("Could not create mail page for " + m.getMessageId(), e);
+                return new MailLoadingResult(MailLoadingResult.STATUS.FAILED, topicDocName, null);
             }
 
-            return new MailLoadingResult(true, topicDocName, messageDocName);
+            return new MailLoadingResult(MailLoadingResult.STATUS.SUCCESS, topicDocName, messageDocName);
         } else {
             // message already loaded
             logger.info("Mail already loaded - checking for updates ...");
@@ -730,9 +730,10 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                         "Updated mail with existing topic id found");
                 }
                 logger.info("Updated message " + msgDoc.getFullName());
+                return new MailLoadingResult(MailLoadingResult.STATUS.SUCCESS, topicDocName, messageDocName);
             }
 
-            return new MailLoadingResult(true, topicDocName, messageDocName);
+            return new MailLoadingResult(MailLoadingResult.STATUS.ALREADY_LOADED, topicDocName, messageDocName);
         }
     }
 

@@ -29,6 +29,7 @@ import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 
+import org.codehaus.plexus.util.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -122,7 +123,9 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
         try {
 
             if (session.isDebugMode()) {
-                enterDebugMode();
+                aggregatedLoggerManager.pushLogLevel(LogLevel.DEBUG);
+            } else {
+                aggregatedLoggerManager.pushLogLevel(LogLevel.INFO);
             }
 
             // Reinitialize configuration
@@ -175,9 +178,7 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
             nbSuccess = -1;
         } finally {
             mailArchive.unlock();
-            if (session.isDebugMode()) {
-                quitDebugMode();
-            }
+            aggregatedLoggerManager.popLogLevel();
         }
 
         return nbSuccess;
@@ -246,7 +247,7 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
                             result = mailArchive.loadMail(message, !session.isSimulationMode(), false, null);
                         }
                     } else {
-                        logger.warn("Unexpected exception occurred while loading email", me);
+                        logger.warn("Unexpected exception occurred while loading email [{}]", ExceptionUtils.getRootCause(me));
                     }
 
                 }
@@ -256,7 +257,7 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
                 }
 
                 if (result != null && result.isSuccess()) {
-                    nbSuccess++;
+                    nbSuccess++;                    
                     if (!session.isSimulationMode()) {
                         message.setFlag(Flags.Flag.SEEN, true);
 
@@ -267,13 +268,17 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
                     }
                     if (job != null) {
                         job.incNbSuccess();
+                        if (MailLoadingResult.STATUS.ALREADY_LOADED.equals(result.getStatus())) {
+                            job.incNbAlreadyLoaded();
+                        }
+                            
                     }
                 } else if (job != null) {
                     job.incNbFailure();
                 }
 
             } catch (Throwable e) {
-                logger.error("Failed to load mail", e);
+                logger.error("Failed to load mail [{}]", ExceptionUtils.getRootCause(e));
             }
 
             currentMsg++;
@@ -312,18 +317,6 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
         }
 
         return mailReader;
-    }
-
-    public void enterDebugMode()
-    {
-        logger.debug("DEBUG MODE ON");
-        aggregatedLoggerManager.pushLogLevel(LogLevel.DEBUG);
-    }
-
-    public void quitDebugMode()
-    {
-        aggregatedLoggerManager.popLogLevel();
-        logger.debug("DEBUG MODE OFF");
     }
 
 }

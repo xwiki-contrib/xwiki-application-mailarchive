@@ -1,29 +1,242 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>ReplySheet</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179260000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1375534143000</creationDate>
-  <date>1375534143000</date>
-  <contentUpdateDate>1375534143000</contentUpdateDate>
+  <date>1393179260000</date>
+  <contentUpdateDate>1393179260000</contentUpdateDate>
   <version>1.1</version>
   <title>$doc.display("messagesubject")</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content>{{groovy}}
+import org.apache.commons.lang.StringEscapeUtils
+ 
+xwiki.ssx.use("MailArchiveCode.ReplySheet")
+
+def repliedDoc = request.getParameter("replieddoc")
+repliedDoc = xwiki.getDocument(repliedDoc)
+repliedDoc.use("MailArchiveCode.MailClass")
+
+// Set a new object
+def obj = doc.getObject("MailArchiveCode.MailClass")
+doc.use(obj)
+
+initNewMailFields(repliedDoc)
+// doc.set('state', 'posted')
+
+
+def to = doc.getValue('to')
+def cc = doc.getValue('cc')
+def from = doc.getValue('from')
+
+println """== ${doc.display('messagesubject')} =="""
+
+println ""
+println """{{html wiki="true"}}
+&lt;script type="text/javascript"&gt;  
+  var icon_cross='&lt;img src="${xwiki.getSkinFile('icons/silk/cross.gif')}"/&gt;';
+  var icon_add='&lt;img src="${xwiki.getSkinFile('icons/silk/add.gif')}"/&gt;&lt;/a&gt;';"""
+print "var distribution_lists=["
+  def liste = ""
+  xwiki.getDocument('MailArchive.ListsSettings').getObjects('MailArchiveCode.MailingListClass').each() { list -&gt; 
+    liste += "'${list.pattern}',"
+  }
+  liste = liste[0..-2]
+  println "${liste}];"
+println """&lt;/script&gt;
+&lt;form action="." class="xform" method="post" name="form_mailreply"&gt;
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="input_from"&gt;From&lt;/label&gt;
+     &lt;/dt&gt;
+"""
+displayAddressFields(from, 'from', true)
+println """
+   &lt;/dl&gt;
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="input_to"&gt;TO&lt;/label&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;"""
+displayAddressFields(to, "to", false)
+println """
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="input_cc"&gt;CC&lt;/label&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;"""
+displayAddressFields(cc, "cc", false)
+println """
+     &lt;/dd&gt;
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for=""&gt;Body&lt;/label&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       ${doc.display('bodyhtml','edit',obj)}
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+   &lt;p&gt;
+     &lt;span class="buttonwrapper"&gt;
+       &lt;input class="button" type="button" value="Reply" onclick="javascript:if(validate())sendMail();"/&gt;
+     &lt;/span&gt;
+   &lt;/p&gt;"""
+
+showHiddenField('to', obj)
+showHiddenField('cc', obj)
+
+println """&lt;/form&gt;
+{{/html}}"""
+
+// Initialize new mail fields from replied mail
+def initNewMailFields(repliedDoc) {
+
+  // Address fields
+  def user = xwiki.getDocument(xwiki.user.user.user)
+  def from = user.last_name.toUpperCase() + " " + user.first_name + " &lt;" + xwiki.user.email + "&gt;"
+  def to = repliedDoc.getValue('from') + ',' + repliedDoc.getValue('to')
+  to = to.replaceAll(~/^,(.*)$/, "\$1").replaceAll(~/^(.*),$/,"\$1")
+  def cc = "" + repliedDoc.getValue('cc')
+  def references = "" + repliedDoc.getValue('') + '\n' + repliedDoc.getValue('references')
+
+  if (to == null) { to = "" }
+  if (cc == null) { cc = "" }
+
+  doc.set('from',from)
+  doc.set('to',to)
+  doc.set('cc',cc)
+  doc.set('references', references)
+  doc.set('messagesubject', repliedDoc.getValue('messagesubject'))
+
+
+}
+
+def displayAddressFields(list, field, readonly) {
+  println """&lt;div id="div_${field}"&gt;"""
+  list.split(',').each() { address -&gt;
+    address = address.trim().replaceAll(~/[\t\n\x0B\f\r]/, "")
+    def id = address.replaceAll(~/ /,"_").replaceAll(~/(&lt;|&gt;)/,"")
+    def address_class = "address"
+    if (address.startsWith("DL")) {
+      address_class += " address_DL"
+    }
+    print """&lt;span class="address_block"&gt;&lt;span class="${address_class}" id="${field}_${id}" name="${field}"&gt;${StringEscapeUtils.escapeHtml(address[0..address.indexOf('&lt;')-1])} &lt;/span&gt;"""
+    if (!readonly) {
+      print """&lt;a href="javascript:removeAddress('${field}','${StringEscapeUtils.escapeHtml(address)}')"&gt;&lt;img src="${xwiki.getSkinFile('icons/silk/cross.gif')}"/&gt;&lt;/a&gt;&lt;/span&gt; """
+    } else {
+      print """&lt;/span&gt; """
+    }
+  }
+  if (!readonly) {
+    println """&lt;br/&gt;
+&lt;input id="add_${field}" type="text" value=""/&gt;
+&lt;a href="javascript:addAddress('${field}')"&gt;&lt;img src="${xwiki.getSkinFile('icons/silk/add.gif')}"/&gt;&lt;/a&gt;"""
+  }
+  println "&lt;/div&gt;"
+}
+
+def showHiddenField(field, obj) {
+  def html = doc.display(field, "edit", obj)
+  html = html.replaceAll(~/\{\{html clean="false" wiki="false"\}\}/, "").replaceAll(~/\{\{\/html\}\}/, "")
+  if (html.contains("textarea")) {
+    html = html.replaceAll(~/&lt;textarea/, "&lt;textarea class='hidden'")
+  } else if (html.contains("input")) {
+    html = html.replaceAll(~/&lt;input/, "&lt;input class='hidden'")
+  }
+  println html
+}
+
+// To replace divs : document.getElementById('div1').innerHTML = 
+
+
+{{/groovy}}
+
+{{html}}
+&lt;script type="text/javascript"&gt;
+
+function validate() {
+  var form = document.getElementById('form_mailreply');
+  var to = document.getElementById('MailArchiveCode.MailClass_0_to').value;
+  var cc = document.getElementById('MailArchiveCode.MailClass_0_cc').value;
+  to = to.replace(/^\s\s*/, '').replace(/\s\s*$/, '').replace(/[\t\n\x0B\f\r]/g, "");
+  cc = cc.replace(/^\s\s*/, '').replace(/\s\s*$/, '').replace(/[\t\n\x0B\f\r]/g, "");
+alert('to:['+to+'], cc:['+cc+']');
+  var len = distribution_lists.length;
+  var found = false;
+  for (var i=0; i&lt;len; i++) {
+    var dl = distribution_lists[i];
+    var patt = new RegExp(dl, 'gi');
+    if (patt.test(to) || patt.test(cc)) {
+      found = true;
+    }
+  }
+  if (!found) {
+    alert('No recipient target a known delivery list, this mail will not be archived in MailArchive');
+    return false;
+  }
+}
+
+function removeAddress(field, address) {
+  var val = document.getElementById('MailArchiveCode.MailClass_0_' + field).value;
+  val = val.replace(/^\s\s*/, '').replace(/\s\s*$/, '').replace(/[\t\n\x0B\f\r]/g, "")
+alert('val [' + val + '], field ['+field+'], address ['+address+']')
+
+  var patt=new RegExp(address,'i');
+alert('found pattern ? ' + patt.test(val))
+  if (patt.test(val)) {
+    val = val.replace(patt, "");
+    val = val.replace(/^,/gi, '').replace(/,[\s]*,/gi, ',').replace(/,$/gi, ',')
+alert('new value : ' +val);    
+    displayAddressFields(val, field);
+    document.getElementById('MailArchiveCode.MailClass_0_' + field).value = val;
+  }
+}
+
+function displayAddressFields(list, field) {
+  var listarray = list.split(',');
+  var len=listarray.length;
+  var output = '';
+  for(var i=0; i&lt;len; i++) {
+    var address = listarray[i];
+    address = address.replace(/^\s\s*/, '').replace(/\s\s*$/, '').replace(/[\t\n\x0B\f\r]/g, "");
+    var id = address.replace(/ /g,"_").replace(/(&lt;|&gt;)/g,"");
+    var address_class = 'address';
+    var patt = /^DL/i;
+    if (patt.test(address)) {
+      address_class = address_class + ' address_DL';
+    }
+    output = output + '&lt;span class="address_block"&gt;&lt;span class="' + address_class + '" id="' + field + '_' + id + '" name="' + field + '"&gt;' + address.substring(0,address.indexOf('&lt;')-1) + '&lt;/span&gt; ';
+    output = output + '&lt;a href="javascript:removeAddress(\'' + field + '\',\'' + address + '\')"&gt;' + icon_cross + '&lt;/a&gt;&lt;/span&gt; ';
+  }
+  output = output + '&lt;a href="javascript:addAddress(\'' + address + '\')"&gt;' + icon_add + '&lt;/a&gt;'
+  document.getElementById('div_' + field).innerHTML = output;
+}
+
+
+&lt;/script&gt;
+{{/html}}
+</content>
   <object>
+    <name>MailArchiveCode.ReplySheet</name>
+    <number>0</number>
+    <className>MailArchiveCode.MailClass</className>
+    <guid>9bbe08f5-447d-48b3-b467-f225faf55a9d</guid>
     <class>
       <name>MailArchiveCode.MailClass</name>
       <customClass/>
@@ -282,12 +495,12 @@
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </type>
     </class>
-    <name>MailArchiveCode.ReplySheet</name>
-    <number>0</number>
-    <className>MailArchiveCode.MailClass</className>
-    <guid>9bbe08f5-447d-48b3-b467-f225faf55a9d</guid>
   </object>
   <object>
+    <name>MailArchiveCode.ReplySheet</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>85f62f27-9ed2-41ab-be83-d838a5e6789a</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -359,10 +572,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>MailArchiveCode.ReplySheet</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>85f62f27-9ed2-41ab-be83-d838a5e6789a</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -394,6 +603,10 @@
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.ReplySheet</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>4ed18871-0ea0-43e3-8a8a-7e574188e299</guid>
     <class>
       <name>XWiki.StyleSheetExtension</name>
       <customClass/>
@@ -465,10 +678,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>MailArchiveCode.ReplySheet</name>
-    <number>0</number>
-    <className>XWiki.StyleSheetExtension</className>
-    <guid>4ed18871-0ea0-43e3-8a8a-7e574188e299</guid>
     <property>
       <cache>forbid</cache>
     </property>
@@ -510,214 +719,4 @@
       <use>onDemand</use>
     </property>
   </object>
-  <content>{{groovy}}
-import org.apache.commons.lang.StringEscapeUtils
- 
-xwiki.ssx.use("MailArchiveCode.ReplySheet")
-
-def repliedDoc = request.getParameter("replieddoc")
-repliedDoc = xwiki.getDocument(repliedDoc)
-repliedDoc.use("MailArchiveCode.MailClass")
-
-// Set a new object
-def obj = doc.getObject("MailArchiveCode.MailClass")
-doc.use(obj)
-
-initNewMailFields(repliedDoc)
-// doc.set('state', 'posted')
-
-
-def to = doc.getValue('to')
-def cc = doc.getValue('cc')
-def from = doc.getValue('from')
-
-println """== ${doc.display('messagesubject')} =="""
-
-println ""
-println """{{html wiki="true"}}
-&lt;script type="text/javascript"&gt;  
-  var icon_cross='&lt;img src="${xwiki.getSkinFile('icons/silk/cross.gif')}"/&gt;';
-  var icon_add='&lt;img src="${xwiki.getSkinFile('icons/silk/add.gif')}"/&gt;&lt;/a&gt;';"""
-print "var distribution_lists=["
-  def liste = ""
-  xwiki.getDocument('MailArchive.ListsSettings').getObjects('MailArchiveCode.MailingListClass').each() { list -&gt; 
-    liste += "'${list.pattern}',"
-  }
-  liste = liste[0..-2]
-  println "${liste}];"
-println """&lt;/script&gt;
-&lt;form action="." class="xform" method="post" name="form_mailreply"&gt;
-   &lt;dl&gt;
-     &lt;dt&gt;
-       &lt;label for="input_from"&gt;From&lt;/label&gt;
-     &lt;/dt&gt;
-"""
-displayAddressFields(from, 'from', true)
-println """
-   &lt;/dl&gt;
-   &lt;dl&gt;
-     &lt;dt&gt;
-       &lt;label for="input_to"&gt;TO&lt;/label&gt;
-     &lt;/dt&gt;
-     &lt;dd&gt;"""
-displayAddressFields(to, "to", false)
-println """
-     &lt;/dd&gt;
-   &lt;/dl&gt;
-   &lt;dl&gt;
-     &lt;dt&gt;
-       &lt;label for="input_cc"&gt;CC&lt;/label&gt;
-     &lt;/dt&gt;
-     &lt;dd&gt;"""
-displayAddressFields(cc, "cc", false)
-println """
-     &lt;/dd&gt;
-   &lt;dl&gt;
-     &lt;dt&gt;
-       &lt;label for=""&gt;Body&lt;/label&gt;
-     &lt;/dt&gt;
-     &lt;dd&gt;
-       ${doc.display('bodyhtml','edit',obj)}
-     &lt;/dd&gt;
-   &lt;/dl&gt;
-   &lt;p&gt;
-     &lt;span class="buttonwrapper"&gt;
-       &lt;input class="button" type="button" value="Reply" onclick="javascript:if(validate())sendMail();"/&gt;
-     &lt;/span&gt;
-   &lt;/p&gt;"""
-
-showHiddenField('to', obj)
-showHiddenField('cc', obj)
-
-println """&lt;/form&gt;
-{{/html}}"""
-
-// Initialize new mail fields from replied mail
-def initNewMailFields(repliedDoc) {
-
-  // Address fields
-  def user = xwiki.getDocument(xwiki.user.user.user)
-  def from = user.last_name.toUpperCase() + " " + user.first_name + " &lt;" + xwiki.user.email + "&gt;"
-  def to = repliedDoc.getValue('from') + ',' + repliedDoc.getValue('to')
-  to = to.replaceAll(~/^,(.*)$/, "\$1").replaceAll(~/^(.*),$/,"\$1")
-  def cc = "" + repliedDoc.getValue('cc')
-  def references = "" + repliedDoc.getValue('') + '\n' + repliedDoc.getValue('references')
-
-  if (to == null) { to = "" }
-  if (cc == null) { cc = "" }
-
-  doc.set('from',from)
-  doc.set('to',to)
-  doc.set('cc',cc)
-  doc.set('references', references)
-  doc.set('messagesubject', repliedDoc.getValue('messagesubject'))
-
-
-}
-
-def displayAddressFields(list, field, readonly) {
-  println """&lt;div id="div_${field}"&gt;"""
-  list.split(',').each() { address -&gt;
-    address = address.trim().replaceAll(~/[\t\n\x0B\f\r]/, "")
-    def id = address.replaceAll(~/ /,"_").replaceAll(~/(&lt;|&gt;)/,"")
-    def address_class = "address"
-    if (address.startsWith("DL")) {
-      address_class += " address_DL"
-    }
-    print """&lt;span class="address_block"&gt;&lt;span class="${address_class}" id="${field}_${id}" name="${field}"&gt;${StringEscapeUtils.escapeHtml(address[0..address.indexOf('&lt;')-1])} &lt;/span&gt;"""
-    if (!readonly) {
-      print """&lt;a href="javascript:removeAddress('${field}','${StringEscapeUtils.escapeHtml(address)}')"&gt;&lt;img src="${xwiki.getSkinFile('icons/silk/cross.gif')}"/&gt;&lt;/a&gt;&lt;/span&gt; """
-    } else {
-      print """&lt;/span&gt; """
-    }
-  }
-  if (!readonly) {
-    println """&lt;br/&gt;
-&lt;input id="add_${field}" type="text" value=""/&gt;
-&lt;a href="javascript:addAddress('${field}')"&gt;&lt;img src="${xwiki.getSkinFile('icons/silk/add.gif')}"/&gt;&lt;/a&gt;"""
-  }
-  println "&lt;/div&gt;"
-}
-
-def showHiddenField(field, obj) {
-  def html = doc.display(field, "edit", obj)
-  html = html.replaceAll(~/\{\{html clean="false" wiki="false"\}\}/, "").replaceAll(~/\{\{\/html\}\}/, "")
-  if (html.contains("textarea")) {
-    html = html.replaceAll(~/&lt;textarea/, "&lt;textarea class='hidden'")
-  } else if (html.contains("input")) {
-    html = html.replaceAll(~/&lt;input/, "&lt;input class='hidden'")
-  }
-  println html
-}
-
-// To replace divs : document.getElementById('div1').innerHTML = 
-
-
-{{/groovy}}
-
-{{html}}
-&lt;script type="text/javascript"&gt;
-
-function validate() {
-  var form = document.getElementById('form_mailreply');
-  var to = document.getElementById('MailArchiveCode.MailClass_0_to').value;
-  var cc = document.getElementById('MailArchiveCode.MailClass_0_cc').value;
-  to = to.replace(/^\s\s*/, '').replace(/\s\s*$/, '').replace(/[\t\n\x0B\f\r]/g, "");
-  cc = cc.replace(/^\s\s*/, '').replace(/\s\s*$/, '').replace(/[\t\n\x0B\f\r]/g, "");
-alert('to:['+to+'], cc:['+cc+']');
-  var len = distribution_lists.length;
-  var found = false;
-  for (var i=0; i&lt;len; i++) {
-    var dl = distribution_lists[i];
-    var patt = new RegExp(dl, 'gi');
-    if (patt.test(to) || patt.test(cc)) {
-      found = true;
-    }
-  }
-  if (!found) {
-    alert('No recipient target a known delivery list, this mail will not be archived in MailArchive');
-    return false;
-  }
-}
-
-function removeAddress(field, address) {
-  var val = document.getElementById('MailArchiveCode.MailClass_0_' + field).value;
-  val = val.replace(/^\s\s*/, '').replace(/\s\s*$/, '').replace(/[\t\n\x0B\f\r]/g, "")
-alert('val [' + val + '], field ['+field+'], address ['+address+']')
-
-  var patt=new RegExp(address,'i');
-alert('found pattern ? ' + patt.test(val))
-  if (patt.test(val)) {
-    val = val.replace(patt, "");
-    val = val.replace(/^,/gi, '').replace(/,[\s]*,/gi, ',').replace(/,$/gi, ',')
-alert('new value : ' +val);    
-    displayAddressFields(val, field);
-    document.getElementById('MailArchiveCode.MailClass_0_' + field).value = val;
-  }
-}
-
-function displayAddressFields(list, field) {
-  var listarray = list.split(',');
-  var len=listarray.length;
-  var output = '';
-  for(var i=0; i&lt;len; i++) {
-    var address = listarray[i];
-    address = address.replace(/^\s\s*/, '').replace(/\s\s*$/, '').replace(/[\t\n\x0B\f\r]/g, "");
-    var id = address.replace(/ /g,"_").replace(/(&lt;|&gt;)/g,"");
-    var address_class = 'address';
-    var patt = /^DL/i;
-    if (patt.test(address)) {
-      address_class = address_class + ' address_DL';
-    }
-    output = output + '&lt;span class="address_block"&gt;&lt;span class="' + address_class + '" id="' + field + '_' + id + '" name="' + field + '"&gt;' + address.substring(0,address.indexOf('&lt;')-1) + '&lt;/span&gt; ';
-    output = output + '&lt;a href="javascript:removeAddress(\'' + field + '\',\'' + address + '\')"&gt;' + icon_cross + '&lt;/a&gt;&lt;/span&gt; ';
-  }
-  output = output + '&lt;a href="javascript:addAddress(\'' + address + '\')"&gt;' + icon_add + '&lt;/a&gt;'
-  document.getElementById('div_' + field).innerHTML = output;
-}
-
-
-&lt;/script&gt;
-{{/html}}
-</content>
 </xwikidoc>

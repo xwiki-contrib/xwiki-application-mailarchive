@@ -1,49 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchivePrefs</web>
   <name>GlobalParameters</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchivePrefs.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179263000</creationDate>
+  <parent>MailArchivePrefs.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1375534272000</creationDate>
-  <date>1378544261000</date>
-  <contentUpdateDate>1378544248000</contentUpdateDate>
+  <date>1393179263000</date>
+  <contentUpdateDate>1393179263000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content/>
   <attachment>
     <filename>email.png</filename>
-    <filesize>584</filesize>
     <author>XWiki.Admin</author>
-    <date>1378544248000</date>
+    <date>1393179263000</date>
     <version>1.1</version>
     <comment/>
-    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACD0lEQVR4XsVTMW/TQBh93/kcx0mc
-xE3i0Ba3AqSKtRIsbIBAiIWFBf4AK/wAdv4DG1IHGNiQCgytBAsImBg6FKkQaBvHDW0SJ/HF9nFx
-olCxZuBJz/d0+t7T992duZQS84BjTvDHTz9sZXPWut8d5XvDiCUSSCARK5FItSomSsd/KUHxaNQ/
-8Rs7u7u8ZpfcB3fWiuFIUtbQcBr0r6bJOggjbRDGS/eehEPudaLzIkpoY+sQNy85WLB0+D0JRgBj
-gEaKjBSBkknwjgU2tpu4e6XErJp7gQdhTIbOsLxYxJvPHm6pkHpRx3FfzoxjWgbB7wi8eN9EeaGI
-StmAAvH+MMIY588UQBLY/OTh9mUHtVIGgZBpB4WZ2UO1UsSiM66d+HgwjCdCUyFLBYQiwvPtBu5f
-c+GoECKk5mdvG6jV7bTmNHgwSJPSwmgUIcsTrCyX8eqjhxvr1XT/9RcfrtrTWQwmI3Cdz06W98MY
-EoAQEZrtLty6hUxGx0E7i3c7HTAAa66NesVEMBQ48Luo2hakBCBpHBDJOJHkHSlzzYKZ1QEJnHNy
-WFEkADR9GzyXAXcs7Lc6GJRNQCaSB+1fe2ru1YtnTSqYjGjc5nQkIpp2mnL64Vi1rWTvsCs6rZ/7
-XPRa368/3LQNK5/nhkaca2Da5PoYIzA+DaDZ2DKOhBic/D5qfWv84F9fPrr6f38mzIk/GJ7gMRcy
-04cAAAAASUVORK5CYII=
-</content>
+    <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACD0lEQVR4XsVTMW/TQBh93/kcx0mcxE3i0Ba3AqSKtRIsbIBAiIWFBf4AK/wAdv4DG1IHGNiQCgytBAsImBg6FKkQaBvHDW0SJ/HF9nFxolCxZuBJz/d0+t7T992duZQS84BjTvDHTz9sZXPWut8d5XvDiCUSSCARK5FItSomSsd/KUHxaNQ/8Rs7u7u8ZpfcB3fWiuFIUtbQcBr0r6bJOggjbRDGS/eehEPudaLzIkpoY+sQNy85WLB0+D0JRgBjgEaKjBSBkknwjgU2tpu4e6XErJp7gQdhTIbOsLxYxJvPHm6pkHpRx3FfzoxjWgbB7wi8eN9EeaGIStmAAvH+MMIY588UQBLY/OTh9mUHtVIGgZBpB4WZ2UO1UsSiM66d+HgwjCdCUyFLBYQiwvPtBu5fc+GoECKk5mdvG6jV7bTmNHgwSJPSwmgUIcsTrCyX8eqjhxvr1XT/9RcfrtrTWQwmI3Cdz06W98MYEoAQEZrtLty6hUxGx0E7i3c7HTAAa66NesVEMBQ48Luo2hakBCBpHBDJOJHkHSlzzYKZ1QEJnHNyWFEkADR9GzyXAXcs7Lc6GJRNQCaSB+1fe2ru1YtnTSqYjGjc5nQkIpp2mnL64Vi1rWTvsCs6rZ/7XPRa368/3LQNK5/nhkaca2Da5PoYIzA+DaDZ2DKOhBic/D5qfWv84F9fPrr6f38mzIk/GJ7gMRcy04cAAAAASUVORK5CYII=</content>
+    <filesize>584</filesize>
   </attachment>
   <object>
+    <name>MailArchivePrefs.GlobalParameters</name>
+    <number>0</number>
+    <className>MailArchiveCode.AdminClass</className>
+    <guid>3637e7b3-8348-41ea-8188-d6d25a3951bb</guid>
     <class>
       <name>MailArchiveCode.AdminClass</name>
       <customClass/>
@@ -359,10 +352,6 @@ XPRa368/3LQNK5/nhkaca2Da5PoYIzA+DaDZ2DKOhBic/D5qfWv84F9fPrr6f38mzIk/GJ7gMRcy
         <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
       </user>
     </class>
-    <name>MailArchivePrefs.GlobalParameters</name>
-    <number>0</number>
-    <className>MailArchiveCode.AdminClass</className>
-    <guid>3637e7b3-8348-41ea-8188-d6d25a3951bb</guid>
     <property>
       <adv_croptopicid>0</adv_croptopicid>
     </property>
@@ -422,6 +411,10 @@ XPRa368/3LQNK5/nhkaca2Da5PoYIzA+DaDZ2DKOhBic/D5qfWv84F9fPrr6f38mzIk/GJ7gMRcy
     </property>
   </object>
   <object>
+    <name>MailArchivePrefs.GlobalParameters</name>
+    <number>0</number>
+    <className>XWiki.ConfigurableClass</className>
+    <guid>8a2aa926-c91b-41a9-b8c5-6c67bfa817ce</guid>
     <class>
       <name>XWiki.ConfigurableClass</name>
       <customClass/>
@@ -539,10 +532,6 @@ XPRa368/3LQNK5/nhkaca2Da5PoYIzA+DaDZ2DKOhBic/D5qfWv84F9fPrr6f38mzIk/GJ7gMRcy
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </propertiesToShow>
     </class>
-    <name>MailArchivePrefs.GlobalParameters</name>
-    <number>0</number>
-    <className>XWiki.ConfigurableClass</className>
-    <guid>8a2aa926-c91b-41a9-b8c5-6c67bfa817ce</guid>
     <property>
       <codeToExecute>{{include reference="MailArchiveCode.AdminSheet"/}}</codeToExecute>
     </property>
@@ -568,5 +557,4 @@ XPRa368/3LQNK5/nhkaca2Da5PoYIzA+DaDZ2DKOhBic/D5qfWv84F9fPrr6f38mzIk/GJ7gMRcy
       <propertiesToShow/>
     </property>
   </object>
-  <content/>
 </xwikidoc>

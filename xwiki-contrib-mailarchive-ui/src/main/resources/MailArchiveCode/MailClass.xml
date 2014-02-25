@@ -1,28 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>MailClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179243000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1353930107000</creationDate>
-  <date>1354528932000</date>
-  <contentUpdateDate>1354528932000</contentUpdateDate>
+  <date>1393179242000</date>
+  <contentUpdateDate>1393179242000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content>{{velocity}}
+## Replace Main with the Space where you want your documents to be created.
+## Replace the default parent with the one of your choice and save the document.
+##
+#set($className = $doc.name.substring(0, $doc.name.indexOf("Class")))
+#set($defaultParent = "${doc.space}.${className}Class")
+#set($defaultSpace = 'MailArchive')
+{{/velocity}}
+
+{{include document="XWiki.ClassSheet"/}}</content>
   <class>
     <name>MailArchiveCode.MailClass</name>
     <customClass/>
@@ -282,6 +291,10 @@
     </type>
   </class>
   <object>
+    <name>MailArchiveCode.MailClass</name>
+    <number>0</number>
+    <className>XWiki.ClassSheetBinding</className>
+    <guid>675651f3-bb33-4a0a-a6e6-8827a073ae16</guid>
     <class>
       <name>XWiki.ClassSheetBinding</name>
       <customClass/>
@@ -305,15 +318,15 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </sheet>
     </class>
-    <name>MailArchiveCode.MailClass</name>
-    <number>0</number>
-    <className>XWiki.ClassSheetBinding</className>
-    <guid>675651f3-bb33-4a0a-a6e6-8827a073ae16</guid>
     <property>
       <sheet>MailArchiveCode.MailSheet</sheet>
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.MailClass</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>7b4ef674-3eeb-4ae2-b00d-60d6af927cae</guid>
     <class>
       <name>XWiki.TagClass</name>
       <customClass/>
@@ -340,22 +353,8 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </tags>
     </class>
-    <name>MailArchiveCode.MailClass</name>
-    <number>0</number>
-    <className>XWiki.TagClass</className>
-    <guid>7b4ef674-3eeb-4ae2-b00d-60d6af927cae</guid>
     <property>
       <tags/>
     </property>
   </object>
-  <content>{{velocity}}
-## Replace Main with the Space where you want your documents to be created.
-## Replace the default parent with the one of your choice and save the document.
-##
-#set($className = $doc.name.substring(0, $doc.name.indexOf("Class")))
-#set($defaultParent = "${doc.space}.${className}Class")
-#set($defaultSpace = 'MailArchive')
-{{/velocity}}
-
-{{include document="XWiki.ClassSheet"/}}</content>
 </xwikidoc>

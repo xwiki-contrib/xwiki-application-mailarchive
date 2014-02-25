@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>MailingListGroupCreationSheet</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179260000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1376155240000</creationDate>
-  <date>1376211824000</date>
-  <contentUpdateDate>1376211824000</contentUpdateDate>
+  <date>1393179260000</date>
+  <contentUpdateDate>1393179260000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <defaultTemplate/>
@@ -21,8 +21,97 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content>{{velocity}}
+#set($xClass = "MailArchiveCode.MailingListGroupClass")
+#if($request.get('save'))
+  #set($name = $request.get('$xClass_0_name'))
+  #set($newdoc = $xwiki.getDocument("MailArchivePrefs.ListGroup_${name}"))
+  #set($newobj = $newdoc.updateObjectFromRequest($xClass))
+  $newdoc.setParent('MailArchiveCode.AdminSheet')
+  #set($ok = $newdoc.save())
+  #if($ok)
+    $response.setContentType('text/xml')
+    &lt;response&gt;
+      &lt;status&gt;ok&lt;/status&gt;
+      &lt;message&gt;Successfully created new list group ${name}&lt;/message&gt;
+    &lt;/response&gt;
+  #else    
+    $response.setContentType('text/xml')
+    &lt;response&gt;
+      &lt;status&gt;ko&lt;/status&gt;
+      &lt;message&gt;Could not create new list group&lt;/message&gt;
+    &lt;/response&gt;
+  #end
+#else
+  #set($obj=$doc.getObject($xClass))
+  #if($request.getParameter('newgroupname'))
+    #set($discard=$obj.set('name', $request.getParameter('newgroupname')))
+  #end
+  #if($request.get('xpage'))
+    #set($assumeLightbox = true)
+  #end
+  #set($xClassDef=$doc.getObject($xClass).xWikiClass)
+
+== New Mailing-list Group Information ==
+
+{{html wiki="true"}}
+&lt;div class="xform"&gt;
+&lt;form action="" class="xform" method="post" name="form_$xClass_settings"&gt;
+  &lt;input type="hidden" name="form_token" value="$!{services.csrf.token}" /&gt;
+
+  {{include reference="MailArchiveCode.MailingListGroupSheet"/}}
+
+  &lt;span class="buttonwrapper"&gt;
+
+    #if($assumeLightbox)
+      ## LightBox detected...
+      &lt;script type="text/javascript"&gt;
+        ## Make the X button not reload the page. (overriding LbClose)
+        window.lb.lbClose = function() {
+          this.lbHide();
+          this.lbClearData();
+        }
+        window.lb.lbCloseAndRedirect = function() {
+          window.lb.lbClose();
+          if(this.redirectUrl!==undefined){window.location=this.redirectUrl;}
+        }
+        ## Post the form entry to the page and load the result. (we override lbSaveForm)
+        window.lb.lbSaveForm = function() {
+          var formParams = Form.serialize(this.form);
+          Form.disable(this.form);
+          var ajaxRequest = new Ajax.Request(this.saveUrl, {
+            parameters: formParams,
+            asynchronous: false,
+            method:'post'
+          });
+          var status = ajaxRequest.transport.responseXML.getElementsByTagName('status')[0].childNodes[0].nodeValue;
+          var message = ajaxRequest.transport.responseXML.getElementsByTagName('message')[0].childNodes[0].nodeValue;
+          this.redirectUrl = this.redirectUrl + '?status=' + status + '&amp;message=' + message + '&amp;tab=lists';
+          window.lb.lbFormDataLoaded(ajaxRequest.transport);
+          window.lb.lbCloseAndRedirect();
+        }
+      &lt;/script&gt;
+      &lt;input class="button" type="submit" value="$msg.get('save')" onclick="window.lb.lbSaveForm();"/&gt;
+      &lt;/span&gt;&lt;span class="buttonwrapper"&gt;
+      &lt;input class="button secondary" type="submit" value="$msg.get("cancel")" onclick="Form.disable(window.lb.form); window.lb.lbClose();"/&gt;
+    #else
+      ## Not using the LightBox
+      &lt;input type="submit" value="$msg.get('save')" class="button"/&gt;
+    #end
+  &lt;/span&gt;## ButtonWrapper
+&lt;/form&gt;
+&lt;/div&gt;
+{{/html}}
+
+#end
+
+{{/velocity}}</content>
   <object>
+    <name>MailArchiveCode.MailingListGroupCreationSheet</name>
+    <number>0</number>
+    <className>MailArchiveCode.MailingListGroupClass</className>
+    <guid>22a204cc-c506-42e3-b47b-082954790ddf</guid>
     <class>
       <name>MailArchiveCode.MailingListGroupClass</name>
       <customClass/>
@@ -117,10 +206,6 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
     </class>
-    <name>MailArchiveCode.MailingListGroupCreationSheet</name>
-    <number>0</number>
-    <className>MailArchiveCode.MailingListGroupClass</className>
-    <guid>22a204cc-c506-42e3-b47b-082954790ddf</guid>
     <property>
       <destinationSpace>MailArchiveItems</destinationSpace>
     </property>
@@ -135,6 +220,10 @@
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.MailingListGroupCreationSheet</name>
+    <number>0</number>
+    <className>XWiki.DocumentSheetBinding</className>
+    <guid>29254cc9-4a64-4f73-b3d0-9a1fd2157738</guid>
     <class>
       <name>XWiki.DocumentSheetBinding</name>
       <customClass/>
@@ -158,97 +247,8 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </sheet>
     </class>
-    <name>MailArchiveCode.MailingListGroupCreationSheet</name>
-    <number>0</number>
-    <className>XWiki.DocumentSheetBinding</className>
-    <guid>29254cc9-4a64-4f73-b3d0-9a1fd2157738</guid>
     <property>
       <sheet/>
     </property>
   </object>
-  <content>{{velocity}}
-#set($xClass = "MailArchiveCode.MailingListGroupClass")
-#if($request.get('save'))
-  #set($name = $request.get('$xClass_0_name'))
-  #set($newdoc = $xwiki.getDocument("MailArchivePrefs.ListGroup_${name}"))
-  #set($newobj = $newdoc.updateObjectFromRequest($xClass))
-  $newdoc.setParent('MailArchiveCode.AdminSheet')
-  #set($ok = $newdoc.save())
-  #if($ok)
-    $response.setContentType('text/xml')
-    &lt;response&gt;
-      &lt;status&gt;ok&lt;/status&gt;
-      &lt;message&gt;Successfully created new list group ${name}&lt;/message&gt;
-    &lt;/response&gt;
-  #else    
-    $response.setContentType('text/xml')
-    &lt;response&gt;
-      &lt;status&gt;ko&lt;/status&gt;
-      &lt;message&gt;Could not create new list group&lt;/message&gt;
-    &lt;/response&gt;
-  #end
-#else
-  #set($obj=$doc.getObject($xClass))
-  #if($request.getParameter('newgroupname'))
-    #set($discard=$obj.set('name', $request.getParameter('newgroupname')))
-  #end
-  #if($request.get('xpage'))
-    #set($assumeLightbox = true)
-  #end
-  #set($xClassDef=$doc.getObject($xClass).xWikiClass)
-
-== New Mailing-list Group Information ==
-
-{{html wiki="true"}}
-&lt;div class="xform"&gt;
-&lt;form action="" class="xform" method="post" name="form_$xClass_settings"&gt;
-  &lt;input type="hidden" name="form_token" value="$!{services.csrf.token}" /&gt;
-
-  {{include reference="MailArchiveCode.MailingListGroupSheet"/}}
-
-  &lt;span class="buttonwrapper"&gt;
-
-    #if($assumeLightbox)
-      ## LightBox detected...
-      &lt;script type="text/javascript"&gt;
-        ## Make the X button not reload the page. (overriding LbClose)
-        window.lb.lbClose = function() {
-          this.lbHide();
-          this.lbClearData();
-        }
-        window.lb.lbCloseAndRedirect = function() {
-          window.lb.lbClose();
-          if(this.redirectUrl!==undefined){window.location=this.redirectUrl;}
-        }
-        ## Post the form entry to the page and load the result. (we override lbSaveForm)
-        window.lb.lbSaveForm = function() {
-          var formParams = Form.serialize(this.form);
-          Form.disable(this.form);
-          var ajaxRequest = new Ajax.Request(this.saveUrl, {
-            parameters: formParams,
-            asynchronous: false,
-            method:'post'
-          });
-          var status = ajaxRequest.transport.responseXML.getElementsByTagName('status')[0].childNodes[0].nodeValue;
-          var message = ajaxRequest.transport.responseXML.getElementsByTagName('message')[0].childNodes[0].nodeValue;
-          this.redirectUrl = this.redirectUrl + '?status=' + status + '&amp;message=' + message + '&amp;tab=lists';
-          window.lb.lbFormDataLoaded(ajaxRequest.transport);
-          window.lb.lbCloseAndRedirect();
-        }
-      &lt;/script&gt;
-      &lt;input class="button" type="submit" value="$msg.get('save')" onclick="window.lb.lbSaveForm();"/&gt;
-      &lt;/span&gt;&lt;span class="buttonwrapper"&gt;
-      &lt;input class="button secondary" type="submit" value="$msg.get("cancel")" onclick="Form.disable(window.lb.form); window.lb.lbClose();"/&gt;
-    #else
-      ## Not using the LightBox
-      &lt;input type="submit" value="$msg.get('save')" class="button"/&gt;
-    #end
-  &lt;/span&gt;## ButtonWrapper
-&lt;/form&gt;
-&lt;/div&gt;
-{{/html}}
-
-#end
-
-{{/velocity}}</content>
 </xwikidoc>

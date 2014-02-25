@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
@@ -49,6 +50,7 @@ import com.xpn.xwiki.objects.BaseProperty;
 @Component
 @Named("extended")
 @Singleton
+@SuppressWarnings("deprecation")
 public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge implements IExtendedDocumentAccessBridge,
     Initializable
 {
@@ -91,8 +93,7 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.xwiki.IExtendedDocumentAccessBridge#exists(java.lang.String,
-     *      java.lang.String)
+     * @see org.xwiki.contrib.mailarchive.xwiki.IExtendedDocumentAccessBridge#exists(java.lang.String, java.lang.String)
      */
     public boolean exists(String docname, String classname)
     {
@@ -177,20 +178,39 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
     @Override
     public ObjectEntity getObjectEntity(final String xdocument, final String xclass)
     {
-        try {
+        if (logger.isDebugEnabled()) {
+            logger.debug("getObjectEntity({},{})", xdocument, xclass);
+        }
+        try {            
             XWikiDocument document = xwiki.getDocument(xdocument, context);
             BaseObject baseObject = document.getObject(xclass);
-            ObjectEntity objectEntity = new ObjectEntity();
+            final ObjectEntity objectEntity = new ObjectEntity();
             objectEntity.setXdoc(xdocument);
             objectEntity.setXclass(xclass);
 
             for (String name : baseObject.getXClass(context).getPropertyList()) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Property name " + name);
+                }
                 BaseProperty property = (BaseProperty) baseObject.get(name);
-                objectEntity.setFieldValue(property.getName(), property.getValue());
+                if (property != null && !StringUtils.isBlank(property.getName())) {
+                    objectEntity.setFieldValue(property.getName(), property.getValue());
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Property [{},{}]", property.getName(), property.getValue());
+                    }
+                } else {
+                    objectEntity.setFieldValue(name, null);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Property [{},{}]", name, null);
+                    }
+                }
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("getObjectEntity return {}", objectEntity);
             }
             return objectEntity;
         } catch (XWikiException e) {
-            logger.error("Could not parse XObject[" + xdocument + ',' + xclass + "]");
+            logger.error("Could not parse XObject[{},{}]", xdocument, xclass);
         }
         return null;
     }

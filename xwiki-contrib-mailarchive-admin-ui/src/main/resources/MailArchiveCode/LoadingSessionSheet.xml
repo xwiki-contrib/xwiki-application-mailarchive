@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>LoadingSessionSheet</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179259000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1353417891000</creationDate>
-  <date>1353417891000</date>
-  <contentUpdateDate>1353417891000</contentUpdateDate>
+  <date>1393180397000</date>
+  <contentUpdateDate>1393180397000</contentUpdateDate>
   <version>1.1</version>
   <title>#if($doc.name == 'LoadingSessionSheet')LoadingSession Sheet#{else}$services.display.title($doc, {'displayerHint': 'default'})#end</title>
   <defaultTemplate/>
@@ -21,7 +21,7 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
   <content>{{velocity}}
 #set($discard = $doc.use('MailArchiveCode.LoadingSessionClass'))
 #set($mode = "view")
@@ -36,16 +36,23 @@
 (((
 {{html wiki="true"}}
 #foreach($prop in $class.properties)
-  #if($velocityCount == 5)
+  #if($velocityCount == ($class.properties.size() / 2))
 {{/html}}
 )))
 (((
 {{html wiki="true"}}
   #end
   #if($prop.name != "job")
+    #if($prop.type == "BooleanClass")
+  ; &lt;label&gt;$doc.display($prop.getName(), $mode) $services.localization.render("mailarchive.loadingSession.fields.${prop.name}.label")&lt;/label&gt;
+#if($services.localization.get("mailarchive.loadingSession.fields.${prop.name}.hint")) (% class="xHint" %)((( $services.localization.render("mailarchive.loadingSession.fields.${prop.name}.hint") )))
+#end 
+    #else
   ; &lt;label&gt;$services.localization.render("mailarchive.loadingSession.fields.${prop.name}.label")&lt;/label&gt;
-#if($services.localization.get("mailarchive.loadingSession.fields.${prop.name}.hint")) (% class="xHint" %)$services.localization.render("mailarchive.loadingSession.fields.${prop.name}.hint") #end
+#if($services.localization.get("mailarchive.loadingSession.fields.${prop.name}.hint")) (% class="xHint" %)((( $services.localization.render("mailarchive.loadingSession.fields.${prop.name}.hint") ))) 
+#end
   : $doc.display($prop.getName(), $mode)
+    #end
   #end
 #end
 {{/html}}

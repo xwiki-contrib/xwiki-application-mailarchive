@@ -29,6 +29,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.util.ExceptionUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentManager;
@@ -182,6 +183,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
      */
     protected HashMap<String, IMailingList> loadMailingListsDefinitions() throws MailArchiveException
     {
+        logger.debug("Loading configured mailing-lists");
         final HashMap<String, IMailingList> lists = new HashMap<String, IMailingList>();
 
         String xwql =
@@ -205,6 +207,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         } catch (Exception e) {
             throw new MailArchiveException("Failed to load configured mailing-lists", e);
         }
+        logger.debug("Loaded {} mailing-lists from configuration", lists.size());
         return lists;
     }
 
@@ -217,6 +220,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
      */
     protected HashMap<String, IMailingListGroup> loadMailingListGroupsDefinitions() throws MailArchiveException
     {
+        logger.debug("Loading mailing-list groups configuration");
         final HashMap<String, IMailingListGroup> listgroups = new HashMap<String, IMailingListGroup>();
 
         String xwql =
@@ -228,36 +232,44 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
             List<Object[]> props = this.queryManager.createQuery(xwql, Query.XWQL).execute();
 
             for (Object[] prop : props) {
+                final String mailingListGroupName = (String) prop[0];
+                final String loadingUser = (String) prop[2];
+                final String destinationWiki = (String) prop[3];
+                final String destinationSpace = (String) prop[4];
                 List<IMailingList> mailingListItems = new ArrayList<IMailingList>();
-                if (StringUtils.isNotBlank((String) prop[0])) {
-                    String mailingListsString = (String) prop[1];
+                if (StringUtils.isNotBlank(mailingListGroupName)) {
+                    logger.debug("Searching mailing-lists for group {}", mailingListGroupName);
+                    final String mailingListsString = (String) prop[1];
                     if (StringUtils.isNotBlank(mailingListsString)) {
                         String[] splittedList = mailingListsString.split("|");
                         if (splittedList.length > 0) {
                             for (String list : splittedList) {
                                 if (this.getMailingLists().containsKey(list)) {
-                                    MailingList mailingListItem = (MailingList) this.getMailingLists().get(list);
+                                    final MailingList mailingListItem = (MailingList) this.getMailingLists().get(list);
                                     mailingListItems.add(mailingListItem);
+                                    logger.debug("Added list {}", mailingListItem.getDisplayName());
                                 }
                             }
                         }
                     }
                     IMailingListGroup listgroup =
-                        factory.createMailingListGroup((String) prop[0], mailingListItems, (String) prop[2],
-                            (String) prop[3], (String) prop[4]);
+                        factory.createMailingListGroup(mailingListGroupName, mailingListItems, loadingUser,
+                            destinationWiki, destinationSpace);
                     listgroups.put(listgroup.getName(), listgroup);
                     // Attach the group back to each mailing-list
                     for (IMailingList list : listgroup.getMailingLists()) {
                         ((MailingList) list).setGroup(listgroup);
                     }
-                    logger.info("Loaded list group " + listgroup);
+                    logger.debug("Loaded list group {}", listgroup);
                 } else {
-                    logger.warn("Incorrect mailing-list group found in db " + prop[1]);
+                    logger.warn("Incorrect mailing-list group {}", prop[1]);
                 }
             }
         } catch (Exception e) {
-            throw new MailArchiveException("Failed to load configured mailing-list groups", e);
+            throw new MailArchiveException("Failed to load configured mailing-list groups",
+                ExceptionUtils.getRootCause(e));
         }
+        logger.debug("Loaded {} mailing-list groups from configuration", listgroups.size());
         return listgroups;
     }
 
@@ -270,7 +282,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
      */
     protected Map<String, IType> loadMailTypesDefinitions() throws MailArchiveException
     {
-        logger.info("Loading mail types...");
+        logger.debug("Loading mail types");
         Map<String, IType> mailTypes = new HashMap<String, IType>();
 
         String xwql =
@@ -282,34 +294,34 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
 
             for (Object[] type : types) {
 
-                IType typeobj = factory.createMailType((String) type[0], (String) type[1], (String) type[2]);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Loaded type " + typeobj);
-                }
-                if (typeobj != null) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Loading matchers for type...");
-                    }
-                    xwql =
-                        "select matcher.fields, matcher.expression, matcher.isAdvanced, matcher.isIgnoreCase, matcher.isMultiLine "
-                            + "from Document doc, doc.object(" + XWikiPersistence.CLASS_MAIL_MATCHERS
-                            + ") as matcher where " + "doc.fullName='" + (String) type[3] + "'";
-                    List<Object[]> matchers = this.queryManager.createQuery(xwql, Query.XWQL).execute();
-                    for (Object[] matcher : matchers) {
-                        logger.debug("FIELDS " + matcher[0] + " " + matcher[0].getClass());
-                        IMailMatcher matcherobj =
-                            factory.createMailMatcher((String) matcher[0], (String) matcher[1], (Integer) matcher[2],
-                                (Integer) matcher[3], (Integer) matcher[4]);
-                        typeobj.getMatchers().add(matcherobj);
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Loaded matcher " + matcherobj);
-                        }
-                    }
+                try {
+                    IType typeobj = factory.createMailType((String) type[0], (String) type[1], (String) type[2]);
 
-                    mailTypes.put(typeobj.getId(), typeobj);
-                    logger.info("Loaded mail type " + typeobj);
-                } else {
-                    logger.warn("Invalid type " + type[0]);
+                    logger.debug("Loaded type {}", typeobj);
+
+                    if (typeobj != null) {
+                        logger.debug("Loading matchers for type");
+                        xwql =
+                            "select matcher.fields, matcher.expression, matcher.isAdvanced, matcher.isIgnoreCase, matcher.isMultiLine "
+                                + "from Document doc, doc.object(" + XWikiPersistence.CLASS_MAIL_MATCHERS
+                                + ") as matcher where " + "doc.fullName='" + (String) type[3] + "'";
+                        List<Object[]> matchers = this.queryManager.createQuery(xwql, Query.XWQL).execute();
+                        for (Object[] matcher : matchers) {
+                            logger.debug("FIELDS " + matcher[0] + " " + matcher[0].getClass());
+                            IMailMatcher matcherobj =
+                                factory.createMailMatcher((String) matcher[0], (String) matcher[1],
+                                    (Integer) matcher[2], (Integer) matcher[3], (Integer) matcher[4]);
+                            typeobj.getMatchers().add(matcherobj);
+                            logger.debug("Loaded matcher {}", matcherobj);
+                        }
+
+                        mailTypes.put(typeobj.getId(), typeobj);
+                        logger.debug("Loaded mail type {}", typeobj);
+                    } else {
+                        logger.warn("Invalid type {}", type[0]);
+                    }
+                } catch (Exception e) {
+                    logger.warn("Failed to load type", ExceptionUtils.getRootCause(e));
                 }
             }
 
@@ -317,6 +329,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
             throw new MailArchiveException("Failed to load configured mail types", e);
         }
 
+        logger.debug("Loaded {} types from configuration", mailTypes.size());
         return mailTypes;
     }
 
@@ -328,7 +341,8 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
      */
     protected List<IMASource> loadServersDefinitions() throws MailArchiveException
     {
-        final List<IMASource> lists = new ArrayList<IMASource>();
+        logger.debug("Loading servers from configuration");
+        final List<IMASource> servers = new ArrayList<IMASource>();
 
         String xwql =
             "select doc.fullName from Document doc, doc.object(" + XWikiPersistence.CLASS_MAIL_SERVERS
@@ -337,24 +351,25 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
             List<String> props = this.queryManager.createQuery(xwql, Query.XWQL).execute();
 
             for (String serverPrefsDoc : props) {
-                logger.info("Loading server definition from page " + serverPrefsDoc + " ...");
+                logger.debug("Loading server definition from page " + serverPrefsDoc + " ...");
                 if (StringUtils.isNotBlank(serverPrefsDoc)) {
                     Server server = factory.createMailServer(serverPrefsDoc);
                     if (server != null) {
-                        lists.add(server);
-                        logger.info("Loaded IServer connection definition " + server);
+                        servers.add(server);
+                        logger.debug("Loaded IServer connection definition {}", server);
                     } else {
-                        logger.warn("Invalid server definition from document " + serverPrefsDoc);
+                        logger.warn("Invalid server definition from document {}", serverPrefsDoc);
                     }
 
                 } else {
-                    logger.info("Incorrect IServer preferences doc found in db");
+                    logger.info("Incorrect server preferences doc skipped");
                 }
             }
         } catch (Exception e) {
             throw new MailArchiveException("Failed to load configured servers", e);
         }
-        return lists;
+        logger.debug("Loaded {} servers from configuration", servers.size());
+        return servers;
     }
 
     /**
@@ -365,7 +380,8 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
      */
     protected List<IMASource> loadStoresDefinitions() throws MailArchiveException
     {
-        final List<IMASource> lists = new ArrayList<IMASource>();
+        logger.debug("Loading stores from configuration");
+        final List<IMASource> stores = new ArrayList<IMASource>();
 
         String xwql =
             "select doc.fullName from Document doc, doc.object(" + XWikiPersistence.CLASS_MAIL_STORES
@@ -374,28 +390,30 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
             List<String> props = this.queryManager.createQuery(xwql, Query.XWQL).execute();
 
             for (String storePrefsDoc : props) {
-                logger.info("Loading store definition from page " + storePrefsDoc + " ...");
+                logger.debug("Loading store definition from page " + storePrefsDoc + " ...");
                 if (StringUtils.isNotBlank(storePrefsDoc)) {
                     MailStore store = factory.createMailStore(storePrefsDoc);
                     if (store != null) {
-                        lists.add(store);
-                        logger.info("Loaded IServer connection definition " + store);
+                        stores.add(store);
+                        logger.debug("Loaded IServer connection definition {}", store);
                     } else {
-                        logger.warn("Invalid server definition from document " + storePrefsDoc);
+                        logger.warn("Invalid server definition from document {}", storePrefsDoc);
                     }
 
                 } else {
-                    logger.info("Incorrect IServer preferences doc found in db");
+                    logger.info("Incorrect IServer preferences doc");
                 }
             }
         } catch (Exception e) {
             throw new MailArchiveException("Failed to load configured mail stores", e);
         }
-        return lists;
+        logger.debug("Loaded {} stores from configuration", stores.size());
+        return stores;
     }
 
     protected Map<String, LoadingSession> loadLoadingSessions() throws MailArchiveException
     {
+        logger.debug("Loading loading sessions from configuration");
         final Map<String, LoadingSession> sessions = new HashMap<String, LoadingSession>();
 
         final String xwql =
@@ -405,25 +423,25 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
             List<String> props = this.queryManager.createQuery(xwql, Query.XWQL).execute();
 
             for (String sessionPrefsDoc : props) {
-                logger.info("Loading loading session from page " + sessionPrefsDoc + " ...");
+                logger.debug("Loading loading session from page {} ...");
                 if (StringUtils.isNotBlank(sessionPrefsDoc)) {
                     // FIXME: ugly trick - MailArchiveConfiguration should not depend on IMailArchive...
                     LoadingSession session = factory.createLoadingSession(sessionPrefsDoc);
                     if (session != null) {
                         sessions.put(session.getId(), session);
-                        logger.info("Loaded Loading Session definition " + session);
+                        logger.debug("Loaded Loading Session definition {}" + session);
                     } else {
-                        logger.warn("Invalid loading session definition from document " + sessionPrefsDoc);
+                        logger.warn("Invalid loading session definition from document {}", sessionPrefsDoc);
                     }
 
                 } else {
-                    logger.info("Incorrect LoadingSession preferences doc found in db");
+                    logger.info("Incorrect LoadingSession preferences doc");
                 }
             }
         } catch (Exception e) {
             throw new MailArchiveException("Failed to load configured loading sessions", e);
         }
-
+        logger.debug("Loaded {} loading sessions from configuration", sessions.size());
         return sessions;
     }
 
@@ -617,38 +635,56 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         this.emailIgnoredText = emailIgnoredText;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString()
     {
         XWikiToStringBuilder builder = new XWikiToStringBuilder(this);
-        builder.append("adminPrefsPage", adminPrefsPage);
-        builder.append("servers", servers);
-        builder.append("lists", lists);
-        builder.append("mailingListGroups", mailingListGroups);
-        builder.append("types", types);
-        builder.append("loadingSessions", loadingSessions);
-        builder.append("loadingUser", loadingUser);
-        builder.append("defaultHomeView", defaultHomeView);
-        builder.append("defaultTopicsView", defaultTopicsView);
-        builder.append("defaultMailsOpeningMode", defaultMailsOpeningMode);
+        if (adminPrefsPage != null)
+            builder.append("adminPrefsPage", adminPrefsPage);
+        if (servers != null)
+            builder.append("servers", servers);
+        if (lists != null)
+            builder.append("lists", lists);
+        if (mailingListGroups != null)
+            builder.append("mailingListGroups", mailingListGroups);
+        if (types != null)
+            builder.append("types", types);
+        if (loadingSessions != null)
+            builder.append("loadingSessions", loadingSessions);
+        if (loadingUser != null)
+            builder.append("loadingUser", loadingUser);
+        if (defaultHomeView != null)
+            builder.append("defaultHomeView", defaultHomeView);
+        if (defaultTopicsView != null)
+            builder.append("defaultTopicsView", defaultTopicsView);
+        if (defaultMailsOpeningMode != null)
+            builder.append("defaultMailsOpeningMode", defaultMailsOpeningMode);
         builder.append("manageTimeline", manageTimeline);
         builder.append("maxTimelineItemsToLoad", maxTimelineItemsToLoad);
         builder.append("matchProfiles", matchProfiles);
         builder.append("matchLdap", matchLdap);
         builder.append("ldapCreateMissingProfiles", ldapCreateMissingProfiles);
         builder.append("ldapForcePhotoUpdate", ldapForcePhotoUpdate);
-        builder.append("ldapPhotoFieldName", ldapPhotoFieldName);
-        builder.append("ldapPhotoFieldContent", ldapPhotoFieldContent);
+        if (ldapPhotoFieldName != null)
+            builder.append("ldapPhotoFieldName", ldapPhotoFieldName);
+        if (ldapPhotoFieldContent != null)
+            builder.append("ldapPhotoFieldContent", ldapPhotoFieldContent);
         builder.append("cropTopicIds", cropTopicIds);
-        builder.append("itemsSpaceName", itemsSpaceName);
+        if (itemsSpaceName != null)
+            builder.append("itemsSpaceName", itemsSpaceName);
         builder.append("useStore", useStore);
-        builder.append("emailIgnoredText", emailIgnoredText);
-
+        if (emailIgnoredText != null)
+            builder.append("emailIgnoredText", emailIgnoredText);
+        if (queryManager != null)
+            builder.append("queryManager", queryManager);
+        if (logger != null)
+            builder.append("logger", logger);
+        if (factory != null)
+            builder.append("factory", factory);
+        if (bridge != null)
+            builder.append("bridge", bridge);
+        if (componentManager != null)
+            builder.append("componentManager", componentManager);
         return builder.toString();
     }
 

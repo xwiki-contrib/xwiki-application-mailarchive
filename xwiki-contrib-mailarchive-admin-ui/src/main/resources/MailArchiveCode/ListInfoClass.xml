@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>ListInfoClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179257000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1353417890000</creationDate>
-  <date>1353417890000</date>
-  <contentUpdateDate>1353417890000</contentUpdateDate>
+  <date>1393179257000</date>
+  <contentUpdateDate>1393179257000</contentUpdateDate>
   <version>1.1</version>
   <title>ListInfo Class</title>
   <defaultTemplate/>
@@ -21,7 +21,14 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content>{{velocity}}
+## Replace Main with the Space where you want your documents to be created.
+## Replace the default parent with the one of your choice and save the document.
+##
+#set($defaultParent = 'MailArchive.Admin')
+#set($defaultSpace = 'MailArchivePrefs')
+{{/velocity}}</content>
   <class>
     <name>MailArchiveCode.ListInfoClass</name>
     <customClass/>
@@ -124,6 +131,10 @@
     </unsubscribe>
   </class>
   <object>
+    <name>MailArchiveCode.ListInfoClass</name>
+    <number>0</number>
+    <className>XWiki.DocumentSheetBinding</className>
+    <guid>74874245-151b-4678-9863-b4b29e443a32</guid>
     <class>
       <name>XWiki.DocumentSheetBinding</name>
       <customClass/>
@@ -147,19 +158,8 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </sheet>
     </class>
-    <name>MailArchiveCode.ListInfoClass</name>
-    <number>0</number>
-    <className>XWiki.DocumentSheetBinding</className>
-    <guid>74874245-151b-4678-9863-b4b29e443a32</guid>
     <property>
       <sheet>XWiki.ClassSheet</sheet>
     </property>
   </object>
-  <content>{{velocity}}
-## Replace Main with the Space where you want your documents to be created.
-## Replace the default parent with the one of your choice and save the document.
-##
-#set($defaultParent = 'MailArchive.Admin')
-#set($defaultSpace = 'MailArchivePrefs')
-{{/velocity}}</content>
 </xwikidoc>

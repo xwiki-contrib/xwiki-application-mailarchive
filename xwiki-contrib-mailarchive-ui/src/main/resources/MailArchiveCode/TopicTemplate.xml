@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>TopicTemplate</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179244000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1353930107000</creationDate>
-  <date>1354528932000</date>
-  <contentUpdateDate>1354528932000</contentUpdateDate>
+  <date>1393179244000</date>
+  <contentUpdateDate>1393179244000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content>{{include document="MailArchiveCode.TopicSheet"/}}</content>
   <object>
+    <name>MailArchiveCode.TopicTemplate</name>
+    <number>0</number>
+    <className>MailArchiveCode.TopicClass</className>
+    <guid>9d7a6f87-de90-4946-a7fe-740a957350ea</guid>
     <class>
       <name>MailArchiveCode.TopicClass</name>
       <customClass/>
@@ -169,10 +173,6 @@
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </type>
     </class>
-    <name>MailArchiveCode.TopicTemplate</name>
-    <number>0</number>
-    <className>MailArchiveCode.TopicClass</className>
-    <guid>9d7a6f87-de90-4946-a7fe-740a957350ea</guid>
     <property>
       <lastupdatedate>2009-11-17 16:41:58.0</lastupdatedate>
     </property>
@@ -187,6 +187,10 @@
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.TopicTemplate</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>8cc9f2b7-11b9-46ea-86a8-e9dce649ab15</guid>
     <class>
       <name>XWiki.TagClass</name>
       <customClass/>
@@ -213,13 +217,8 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </tags>
     </class>
-    <name>MailArchiveCode.TopicTemplate</name>
-    <number>0</number>
-    <className>XWiki.TagClass</className>
-    <guid>8cc9f2b7-11b9-46ea-86a8-e9dce649ab15</guid>
     <property>
       <tags/>
     </property>
   </object>
-  <content>{{include document="MailArchiveCode.TopicSheet"/}}</content>
 </xwikidoc>

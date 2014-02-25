@@ -1,29 +1,127 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>DisplayMacros</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179242000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1378561614000</creationDate>
-  <date>1378715596000</date>
-  <contentUpdateDate>1378715596000</contentUpdateDate>
+  <date>1393179242000</date>
+  <contentUpdateDate>1393179242000</contentUpdateDate>
   <version>1.1</version>
   <title>DisplayMacros</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content>{{velocity}}
+
+## DISPLAY MACROS
+
+#macro (displayLastTopicsFromDL $dltag)
+  #set($xwql = "select topic.subject from Document doc, doc.object(MailArchiveCode.TopicClass) as topic, doc.object(XWiki.TagClass) as tagsobj where :dltag member of tagsobj.tags")
+  #set($topics = $services.query.xwql($xwql).bindValue("dltag", $dltag).execute())
+  #foreach($topic in $topics)
+* topic
+  #end
+#end
+
+#macro (displayEmailInForum $mail $anchor $previousAnchor)
+  #if($!mail.user)
+   #set($subject = $mail.subject.replaceAll("&lt;","&amp;lt;").replaceAll("&gt;","&amp;gt;"))
+   #set($link = "$mail.page")
+   #if($!anchor)
+     #set($previousAnchor = $anchor)
+   #end
+   #set($anchor = $escapetool.javascript($link))
+   #set($user = "$mail.user")
+   #set($userDisplay = $services.mail.parseAddressHeader($!user)[0].getPersonal())
+   #set($maUser = $services.mailarchive.parseUser($!user))
+   #set($userWiki = $maUser.wikiProfile)
+   ## Count mails from author
+   #set($xwql = "select count(mail.from) from Document doc, doc.object(MailArchiveCode.MailClass) as mail where mail.from = '$xwiki.sqlfilter($user)'")
+   #set($result = $services.query.xwql($xwql).execute())
+   #set($count = 0)          
+   #if($result.size()&gt;0)
+     #set($count = $result[0])
+   #end
+   #set($iframeid = "iframe_$mail.page")
+  &lt;tr&gt;
+    &lt;td class="forum-message-author-header"&gt;**$mail.user**&lt;/td&gt;
+    &lt;td class="forum-message-content-header-left" valign="top"&gt;
+      &lt;div style="float:left;"&gt;
+      {{html wiki="false"}}&lt;a href="$xwiki.getURL($link,'view')" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $subject'}); return false; " name="$anchor"&gt;$subject&lt;/a&gt;{{/html}}
+      &lt;/div&gt;
+      &lt;div style="float:right;"&gt;
+    #if($!previousAnchor) &lt;a href="${doc.getURL()}#${previousAnchor}"&gt; image:icon:bullet_arrow_up &lt;/a&gt; #end
+      &lt;a href="${doc.getURL()}#${anchor}"&gt; image:icon:bullet_arrow_down &lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/td&gt;
+    &lt;td class="forum-message-content-header-right" valign="top"&gt;
+    #if($showRatings) #displayFullRating($xwiki.getDocument("$mail.page"), "") #end
+      $datetool.format('medium', $mail.date)      
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td class="forum-message-author"&gt;
+    #if($userWiki) [[image:$xwiki.getDocument($userWiki).fullName@$xwiki.getDocument($userWiki).getObject('XWiki.XWikiUsers').avatar]] &lt;br/&gt;#end
+      **$!maUser.displayName**&lt;br/&gt;&lt;br/&gt;
+      **Posts**: $count&lt;br/&gt;&lt;br/&gt;
+      &lt;span class="buttonwrapper"&gt;
+        &lt;a href="${xwiki.getDocument('MailArchive.ViewUserMessages').getURL()}?user=$escapetool.html("$!{user}")&amp;wikiUser=$escapetool.html("$!{userWiki}")"&gt;Statistics&lt;/a&gt;&lt;br/&gt;
+      #if("$!userWiki" != "") &lt;br/&gt;&lt;a href="${xwiki.getDocument($userWiki).getURL()}"&gt;Profile&lt;/a&gt;&lt;br/&gt; #end
+      &lt;/span&gt;
+    &lt;/td&gt;
+    &lt;td class="forum-message-content" colspan="2"&gt;
+      {{html wiki="false"}}
+      &lt;iframe id="$iframeid" name="$iframeid" width="100%" height="0" scrolling="no" src="$providerUrl?page=$mail.page&amp;cut=true&amp;xpage=plain" onload="resizeIframeToFitContent(this, '$iframeid')"&gt;&lt;/iframe&gt;
+      {{/html}}    
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td class="forum-message-author-footer&gt;&amp;nbsp;&lt;/td&gt;
+    &lt;td class="forum-message-footer-left"&gt;
+    &lt;/td&gt;
+    &lt;td class="forum-message-footer-right"&gt;
+      &lt;div class="buttons"&gt;
+        &lt;span class="buttonwrapper"&gt;
+         &lt;a class="button" href="$xwiki.getURL($link,'view','xpage=plain')&amp;showdetails=false" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $escapetool.javascript($subject)'}); return false; "&gt;View&lt;/a&gt;
+        &lt;/span&gt;
+       #if($hasEdit)
+        &lt;span class="buttonwrapper"&gt; 
+         &lt;a class="button" href="$xwiki.getURL($link,'view','xpage=plain')&amp;showdetails=false" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $escapetool.javascript($subject)'}); return false; "&gt;Reply&lt;/a&gt;
+        &lt;/span&gt;
+       #end
+       #if($hasAdmin) 
+        &lt;span class="buttonwrapper"&gt;
+          &lt;a class="button" href="$xwiki.getURL($link,'view','xpage=plain')&amp;showdetails=false" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $escapetool.javascript($subject)'}); return false; "&gt;Edit&lt;/a&gt;
+        &lt;/span&gt;
+        &lt;span class="buttonwrapper" style="background: linear-gradient(to bottom, #AF2121 0%, #D43737 100%);"&gt;
+          &lt;a class="button"  style="background: linear-gradient(to bottom, #AF2121 0%, #D43737 100%);" href="#" title="Alert !"&gt;Alert !&lt;/a&gt;
+        &lt;/span&gt;
+       #end
+      &lt;/span&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+  #end
+#end
+
+#displayLastTopicsFromDL("test DL")
+
+{{/velocity}}</content>
   <object>
+    <name>MailArchiveCode.DisplayMacros</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>7787c58c-58e8-4fa8-a4f0-cb94a6022d68</guid>
     <class>
       <name>XWiki.JavaScriptExtension</name>
       <customClass/>
@@ -95,10 +193,6 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </use>
     </class>
-    <name>MailArchiveCode.DisplayMacros</name>
-    <number>0</number>
-    <className>XWiki.JavaScriptExtension</className>
-    <guid>7787c58c-58e8-4fa8-a4f0-cb94a6022d68</guid>
     <property>
       <cache>long</cache>
     </property>
@@ -120,86 +214,4 @@
       <use>onDemand</use>
     </property>
   </object>
-  <content>{{velocity}}
-
-## DISPLAY MACROS
-
-#macro (displayLastTopicsFromDL $dltag)
-  #set($xwql = "select topic.subject from Document doc, doc.object(MailArchiveCode.TopicClass) as topic, doc.object(XWiki.TagClass) as tagsobj where :dltag member of tagsobj.tags")
-  #set($topics = $services.query.xwql($xwql).bindValue("dltag", $dltag).execute())
-  #foreach($topic in $topics)
-* topic
-  #end
-#end
-
-#macro (displayEmailInForum $mail $anchor $previousAnchor)
-  #if($!mail.user)
-   #set($subject = $mail.subject.replaceAll("&lt;","&amp;lt;").replaceAll("&gt;","&amp;gt;"))
-   #set($link = "$mail.page")
-   #if($!anchor)
-     #set($previousAnchor = $anchor)
-   #end
-   #set($anchor = $escapetool.javascript($link))
-   #set($user = "$mail.user")
-   #set($userDisplay = $services.mail.parseAddressHeader($!user)[0].getPersonal())
-   #set($maUser = $services.mailarchive.parseUser($!user))
-   #set($userWiki = $maUser.wikiProfile)
-   ## Count mails from author
-   #set($xwql = "select count(mail.from) from Document doc, doc.object(MailArchiveCode.MailClass) as mail where mail.from = '$xwiki.sqlfilter($user)'")
-   #set($result = $services.query.xwql($xwql).execute())
-   #set($count = 0)          
-   #if($result.size()&gt;0)
-     #set($count = $result[0])
-   #end
-   #set($iframeid = "iframe_$mail.page")
-  &lt;tr&gt;
-    &lt;td class="forum-message-author-header"&gt;**$mail.user**&lt;/td&gt;
-    &lt;td class="forum-message-content-header-left" valign="top"&gt;
-      &lt;div style="float:left;"&gt;
-      {{html wiki="false"}}&lt;a href="$xwiki.getURL($link,'view')" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $subject'}); return false; " name="$anchor"&gt;$subject&lt;/a&gt;{{/html}}
-      &lt;/div&gt;
-      &lt;div style="float:right;"&gt;
-    #if($!previousAnchor) &lt;a href="${doc.getURL()}#${previousAnchor}"&gt; image:icon:bullet_arrow_up &lt;/a&gt; #end
-      &lt;a href="${doc.getURL()}#${anchor}"&gt; image:icon:bullet_arrow_down &lt;/a&gt;
-      &lt;/div&gt;
-    &lt;/td&gt;
-    &lt;td class="forum-message-content-header-right" valign="top"&gt;
-    #if($showRatings) #displayFullRating($xwiki.getDocument("$mail.page"), "") #end
-      $datetool.format('medium', $mail.date)      
-    &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-    &lt;td class="forum-message-author"&gt;
-    #if($userWiki) [[image:$xwiki.getDocument($userWiki).fullName@$xwiki.getDocument($userWiki).getObject('XWiki.XWikiUsers').avatar]] &lt;br/&gt;#end
-      **$!maUser.displayName**&lt;br/&gt;&lt;br/&gt;
-      **Posts**: $count&lt;br/&gt;&lt;br/&gt;
-      &lt;span class="buttonwrapper"&gt;
-        &lt;a href="${xwiki.getDocument('MailArchive.ViewUserMessages').getURL()}?user=$escapetool.html("$!{user}")&amp;wikiUser=$escapetool.html("$!{userWiki}")"&gt;Statistics&lt;/a&gt;&lt;br/&gt;
-      #if("$!userWiki" != "") &lt;br/&gt;&lt;a href="${xwiki.getDocument($userWiki).getURL()}"&gt;Profile&lt;/a&gt;&lt;br/&gt; #end
-      &lt;/span&gt;
-    &lt;/td&gt;
-    &lt;td class="forum-message-content" colspan="2"&gt;
-      {{html wiki="false"}}
-      &lt;iframe id="$iframeid" name="$iframeid" width="100%" height="0" scrolling="no" src="$providerUrl?page=$mail.page&amp;cut=true&amp;xpage=plain" onload="resizeIframeToFitContent(this, '$iframeid')"&gt;&lt;/iframe&gt;
-      {{/html}}    
-    &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-    &lt;td class="forum-message-author-footer&gt;&amp;nbsp;&lt;/td&gt;
-    &lt;td class="forum-message-footer-left"&gt;
-    &lt;/td&gt;
-    &lt;td class="forum-message-footer-right"&gt;
-      &lt;span class="buttonwrapper"&gt;
-       &lt;a class="button" href="$xwiki.getURL($link,'view','xpage=plain')&amp;showdetails=false" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $escapetool.javascript($subject)'}); return false; "&gt;View&lt;/a&gt;
-       #if($hasEdit) &lt;a class="button" href="$xwiki.getURL($link,'view','xpage=plain')&amp;showdetails=false" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $escapetool.javascript($subject)'}); return false; "&gt;Reply&lt;/a&gt; #end
-       #if($hasAdmin) &lt;a class="button" href="$xwiki.getURL($link,'view','xpage=plain')&amp;showdetails=false" title="Mail $escapetool.javascript($subject)" onclick="Modalbox.show(this.href, {width:1000, title: 'Mail $escapetool.javascript($subject)'}); return false; "&gt;Edit&lt;/a&gt; #end
-      &lt;/span&gt;
-    &lt;/td&gt;
-  &lt;/tr&gt;
-  #end
-#end
-
-#displayLastTopicsFromDL("test DL")
-
-{{/velocity}}</content>
 </xwikidoc>

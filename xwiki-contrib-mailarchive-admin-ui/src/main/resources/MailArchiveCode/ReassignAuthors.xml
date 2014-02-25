@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>ReassignAuthors</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179260000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1353417892000</creationDate>
-  <date>1353417892000</date>
-  <contentUpdateDate>1353417892000</contentUpdateDate>
+  <date>1393179260000</date>
+  <contentUpdateDate>1393179260000</contentUpdateDate>
   <version>1.1</version>
   <title>Reassign Authors</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
   <content>Helping tool to reassign real authors to wiki pages of MailArchive (Mails and Topics)
 
 {{groovy}}

@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>ServerSheet</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179261000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1353930107000</creationDate>
-  <date>1354528933000</date>
-  <contentUpdateDate>1354528933000</contentUpdateDate>
+  <date>1393179261000</date>
+  <contentUpdateDate>1393179261000</contentUpdateDate>
   <version>1.1</version>
   <title>#if($doc.name == 'ServerSheet')ServerSettings Sheet#{else}$services.display.title($doc, {'displayerHint': 'default'})#end</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
   <content>{{velocity}}
 #set($obj = $doc.getObject('MailArchiveCode.ServerClass'))
 #if($request.get('submit'))

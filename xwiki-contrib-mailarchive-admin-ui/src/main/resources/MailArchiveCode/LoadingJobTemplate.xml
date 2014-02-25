@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>LoadingJobTemplate</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179258000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1368961504000</creationDate>
-  <date>1370001012000</date>
-  <contentUpdateDate>1370001012000</contentUpdateDate>
+  <date>1393179258000</date>
+  <contentUpdateDate>1393179258000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content>{{include document="XWiki.SchedulerJobSheet"/}}</content>
   <object>
+    <name>MailArchiveCode.LoadingJobTemplate</name>
+    <number>0</number>
+    <className>MailArchiveCode.ScheduledSessionClass</className>
+    <guid>472710f4-b246-4c8c-80f1-10b0046a3dcd</guid>
     <class>
       <name>MailArchiveCode.ScheduledSessionClass</name>
       <customClass/>
@@ -58,18 +62,15 @@
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </sessions>
     </class>
-    <name>MailArchiveCode.LoadingJobTemplate</name>
-    <number>0</number>
-    <className>MailArchiveCode.ScheduledSessionClass</className>
-    <guid>472710f4-b246-4c8c-80f1-10b0046a3dcd</guid>
     <property>
-      <sessions>
-        <value>default</value>
-        <value>test</value>
-      </sessions>
+      <sessions>default|test</sessions>
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.LoadingJobTemplate</name>
+    <number>0</number>
+    <className>XWiki.SchedulerJobClass</className>
+    <guid>af1eb910-a272-4c3f-af85-0488dd0cb603</guid>
     <class>
       <name>XWiki.SchedulerJobClass</name>
       <customClass/>
@@ -164,10 +165,6 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </status>
     </class>
-    <name>MailArchiveCode.LoadingJobTemplate</name>
-    <number>0</number>
-    <className>XWiki.SchedulerJobClass</className>
-    <guid>af1eb910-a272-4c3f-af85-0488dd0cb603</guid>
     <property>
       <contextDatabase>xwiki</contextDatabase>
     </property>
@@ -218,6 +215,10 @@ To configure options for loading session(s) of this scheduled job, please visit 
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.LoadingJobTemplate</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>5c272a5e-04d5-443b-9393-678b24fc0b59</guid>
     <class>
       <name>XWiki.TagClass</name>
       <customClass/>
@@ -244,15 +245,15 @@ To configure options for loading session(s) of this scheduled job, please visit 
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </tags>
     </class>
-    <name>MailArchiveCode.LoadingJobTemplate</name>
-    <number>0</number>
-    <className>XWiki.TagClass</className>
-    <guid>5c272a5e-04d5-443b-9393-678b24fc0b59</guid>
     <property>
       <tags/>
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.LoadingJobTemplate</name>
+    <number>0</number>
+    <className>XWiki.XWikiRights</className>
+    <guid>d44ac813-cb95-4573-ae00-e5855707b91a</guid>
     <class>
       <name>XWiki.XWikiRights</name>
       <customClass/>
@@ -318,10 +319,6 @@ To configure options for loading session(s) of this scheduled job, please visit 
         <classType>com.xpn.xwiki.objects.classes.UsersClass</classType>
       </users>
     </class>
-    <name>MailArchiveCode.LoadingJobTemplate</name>
-    <number>0</number>
-    <className>XWiki.XWikiRights</className>
-    <guid>d44ac813-cb95-4573-ae00-e5855707b91a</guid>
     <property>
       <allow>1</allow>
     </property>
@@ -335,5 +332,4 @@ To configure options for loading session(s) of this scheduled job, please visit 
       <users/>
     </property>
   </object>
-  <content>{{include document="XWiki.SchedulerJobSheet"/}}</content>
 </xwikidoc>

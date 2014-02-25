@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchive</web>
   <name>WebHome</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>Main.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179242000</creationDate>
+  <parent>Main.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1353930103000</creationDate>
-  <date>1354528934000</date>
-  <contentUpdateDate>1354528934000</contentUpdateDate>
+  <date>1393179242000</date>
+  <contentUpdateDate>1393179242000</contentUpdateDate>
   <version>1.1</version>
   <title>$msg.get('mailarchive_home_title')</title>
   <defaultTemplate/>
@@ -21,46 +21,54 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content>{{velocity}}
+= $msg.get('mailarchive_home_title') =
+
+This application aims at storing and showing mailing-lists archives. To know what mailing-lists are available, and what types of mails are configured, please check the [[legend&gt;&gt;MailArchive.Legend]].
+
+#set($prefs = $xwiki.getDocument('MailArchivePrefs.GlobalParameters').getObject('MailArchiveCode.AdminClass'))
+#set($timeline = $prefs.getProperty('timeline').getValue())
+#if("$timeline" == "1")
+  #if($request.getParameter('display') != 'timeline')
+[[image:icon:timeline_marker]] [[Switch to Time-Line view&gt;&gt;MailArchive.WebHome||queryString="display=timeline"]]
+  #else
+[[image:icon:table]] [[Switch to Table view&gt;&gt;MailArchive.WebHome||queryString="display=table"]]
+  #end
+#end
+[[image:icon:chart_pie]] [[Mailing-list Statistics&gt;&gt;MailArchive.Statistics]] [[image:icon:help]] [[Documentation&gt;&gt;MailArchive.Mail Archive Documentation||rel="__blank"]] [[image:icon:page_white_code]] [[Feeds Generator&gt;&gt;MailArchive.FeedsGenerator]]  [[image:icon:bug]] [[Open issues&gt;&gt;http://jira.xwiki.org/browse/XMAILARCH]]
+#if($hasAdmin)
+[[image:icon:cog]] [[Administrate and Configure&gt;&gt;XWiki.XWikiPreferences||queryString="editor=globaladmin&amp;section=Mail+Archive"]] [[image:icon:wrench]] [[Operate&gt;&gt;MailArchive.Operate]] 
+#end
+#if($request.getParameter('display') == 'timeline')
+{{display reference="MailArchiveCode.TimeLineSheet"/}}
+#else
+{{display reference="MailArchiveCode.LiveTableSheet"/}}
+#end
+{{/velocity}}</content>
   <attachment>
     <filename>iconthumbs-mini.gif</filename>
-    <filesize>127</filesize>
     <author>XWiki.Admin</author>
-    <date>1380375090000</date>
+    <date>1393179242000</date>
     <version>1.1</version>
     <comment/>
-    <content>R0lGODlhGQAXAKECAAAAAAEBAf///////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACH5BAEKAAIALAAA
-AAAZABcAAAI7lI+py+0IwHtSzmYvNlnD03kcKDJhSXpRlJyms16rO4UuzVXVggv22fPNfChbSxZD
-BEQZS5A3REmnhwIAOw==
-</content>
+    <content>R0lGODlhGQAXAKECAAAAAAEBAf///////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACH5BAEKAAIALAAAAAAZABcAAAI7lI+py+0IwHtSzmYvNlnD03kcKDJhSXpRlJyms16rO4UuzVXVggv22fPNfChbSxZDBEQZS5A3REmnhwIAOw==</content>
+    <filesize>127</filesize>
   </attachment>
   <attachment>
     <filename>iconthumbs.gif</filename>
-    <filesize>925</filesize>
     <author>XWiki.Admin</author>
-    <date>1353930103000</date>
+    <date>1393179242000</date>
     <version>1.1</version>
     <comment/>
-    <content>R0lGODlhlgCHAOMIAAAAAAEBAQICAgMDAwQEBAUFBQYGBgcHB///////////////////////////
-/////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACH5BAEKAAgALAAAAACWAIcAAAT+EMlJq7046827/2Ao
-jmRpnmiqrmzrvnAsz3Rt33iu73zv/8CgcEgsGo/IpBIBECyfKQFgOoVaR9Qs4MrtBLTZrhgjBVMH
-47QELGVS1WMwev2GcwfaCqFut+YtYX1Pf4B8gkmEFYGHiIZ6joxEiYVbkUdUARuLlkObF56cQKCK
-kKE+oxSopjuqE62rN69uVbA/srK1NJiauLkxu7ylvjWyA1/CwzOyBscAc8k3zR1lU07QNs2VwcjX
-Lb1g3brfk+EuvbPc5SdZ1h3g6i/kGXtn8C7U2h30Uwf23ufoABTwt0KeBoMER2QLgTAhiIYYIDp0
-ly4iwImUaDGshxHLRQn+BRZ2FPFRwj5nIzdWtLgypauSEkS65CDxIEyHN2NSaTczQ80MeFqm/JkB
-X0+bQn3mHGbm3QmjE6dka7pUAr585ahqrSohKIBM6raK1YiCaKSxWnjCgMpU6ymzcKbi6eTUVN0h
-XtGS5cJOSQG9XHPAZQV4L5TAxAB3KdmUsNsr1B6KDYI4MValit8abrS5MFUCPYIGeLYEFVpSd3FU
-lqEKzDEOU3ms/sVNC2gPqS1f5ry77GyKSTX3RsH2RnElvxHkVavbz+omuZUFFz5cZdrqMJLHy0Ia
-y9TpKrRvZ/w9uvTNSrJ133B1smrwtrSsz8gun5n38HuU94w5P0nx5nj+lhYHBgCjG3ZFCHhOgf5J
-1qBgUzwjVgDM0QQgHV/xNcp9Hu3U3BXaneTheQhK8qAFDHIoDnpIDNafa7GciJ9Avm0F1oolmljN
-jf81pgWPtLHYoooetGeIbSTmSISRzijYW15KKiSjDvsV9oWFU1oQmRpfOZnjcSwYyKWVUZpngleC
-zNZYgEKCmGWXRBaUZQ9ciegiAlXGmcZSUpkxnwdQbnVIFkB+MGGhuGXWx4+34bYfAlf1eBojj7FE
-pJn0deOladwlWk1WXm5TYhaNlmOne1iihJSqBI1lHXp/cYTTg8bIg2k4OVFFX5TJwKQrfaVGBVCl
-FNjpUqwr/XoBlEc4Bfpia0geFZCVFU47kLQYbkosttPaOCGr3Gqp7EtU/Rnuueimq+667Lbr7rvw
-xivvvPTWa6+7EQAAOw==
-</content>
+    <content>R0lGODlhlgCHAOMIAAAAAAEBAQICAgMDAwQEBAUFBQYGBgcHB////////////////////////////////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACH5BAEKAAgALAAAAACWAIcAAAT+EMlJq7046827/2AojmRpnmiqrmzrvnAsz3Rt33iu73zv/8CgcEgsGo/IpBIBECyfKQFgOoVaR9Qs4MrtBLTZrhgjBVMH47QELGVS1WMwev2GcwfaCqFut+YtYX1Pf4B8gkmEFYGHiIZ6joxEiYVbkUdUARuLlkObF56cQKCKkKE+oxSopjuqE62rN69uVbA/srK1NJiauLkxu7ylvjWyA1/CwzOyBscAc8k3zR1lU07QNs2VwcjXLb1g3brfk+EuvbPc5SdZ1h3g6i/kGXtn8C7U2h30Uwf23ufoABTwt0KeBoMER2QLgTAhiIYYIDp0ly4iwImUaDGshxHLRQn+BRZ2FPFRwj5nIzdWtLgypauSEkS65CDxIEyHN2NSaTczQ80MeFqm/JkBX0+bQn3mHGbm3QmjE6dka7pUAr585ahqrSohKIBM6raK1YiCaKSxWnjCgMpU6ymzcKbi6eTUVN0hXtGS5cJOSQG9XHPAZQV4L5TAxAB3KdmUsNsr1B6KDYI4MValit8abrS5MFUCPYIGeLYEFVpSd3FUlqEKzDEOU3ms/sVNC2gPqS1f5ry77GyKSTX3RsH2RnElvxHkVavbz+omuZUFFz5cZdrqMJLHy0Iay9TpKrRvZ/w9uvTNSrJ133B1smrwtrSsz8gun5n38HuU94w5P0nx5nj+lhYHBgCjG3ZFCHhOgf5J1qBgUzwjVgDM0QQgHV/xNcp9Hu3U3BXaneTheQhK8qAFDHIoDnpIDNafa7GciJ9Avm0F1oolmljNjf81pgWPtLHYoooetGeIbSTmSISRzijYW15KKiSjDvsV9oWFU1oQmRpfOZnjcSwYyKWVUZpngleCzNZYgEKCmGWXRBaUZQ9ciegiAlXGmcZSUpkxnwdQbnVIFkB+MGGhuGXWx4+34bYfAlf1eBojj7FEpJn0deOladwlWk1WXm5TYhaNlmOne1iihJSqBI1lHXp/cYTTg8bIg2k4OVFFX5TJwKQrfaVGBVClFNjpUqwr/XoBlEc4Bfpia0geFZCVFU47kLQYbkosttPaOCGr3Gqp7EtU/Rnuueimq+667Lbr7rvwxivvvPTWa6+7EQAAOw==</content>
+    <filesize>925</filesize>
   </attachment>
   <object>
+    <name>MailArchive.WebHome</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>fd095702-c1a3-42ff-ad89-be8996425ab2</guid>
     <class>
       <name>XWiki.TagClass</name>
       <customClass/>
@@ -87,36 +95,8 @@ xivvvPTWa6+7EQAAOw==
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </tags>
     </class>
-    <name>MailArchive.WebHome</name>
-    <number>0</number>
-    <className>XWiki.TagClass</className>
-    <guid>fd095702-c1a3-42ff-ad89-be8996425ab2</guid>
     <property>
       <tags/>
     </property>
   </object>
-  <content>{{velocity}}
-= $msg.get('mailarchive_home_title') =
-
-This application aims at storing and showing mailing-lists archives. To know what mailing-lists are available, and what types of mails are configured, please check the [[legend&gt;&gt;MailArchive.Legend]].
-
-#set($prefs = $xwiki.getDocument('MailArchivePrefs.GlobalParameters').getObject('MailArchiveCode.AdminClass'))
-#set($timeline = $prefs.getProperty('timeline').getValue())
-#if("$timeline" == "1")
-  #if($request.getParameter('display') != 'timeline')
-[[image:icon:timeline_marker]] [[Switch to Time-Line view&gt;&gt;MailArchive.WebHome||queryString="display=timeline"]]
-  #else
-[[image:icon:table]] [[Switch to Table view&gt;&gt;MailArchive.WebHome||queryString="display=table"]]
-  #end
-#end
-[[image:icon:chart_pie]] [[Mailing-list Statistics&gt;&gt;MailArchive.Statistics]] [[image:icon:help]] [[Documentation&gt;&gt;MailArchive.Mail Archive Documentation||rel="__blank"]] [[image:icon:page_white_code]] [[Feeds Generator&gt;&gt;MailArchive.FeedsGenerator]]  [[image:icon:bug]] [[Open issues&gt;&gt;http://jira.xwiki.org/browse/XMAILARCH]]
-#if($hasAdmin)
-[[image:icon:cog]] [[Administrate and Configure&gt;&gt;XWiki.XWikiPreferences||queryString="editor=globaladmin&amp;section=Mail+Archive"]] [[image:icon:wrench]] [[Operate&gt;&gt;MailArchive.Operate]] 
-#end
-#if($request.getParameter('display') == 'timeline')
-{{display reference="MailArchiveCode.TimeLineSheet"/}}
-#else
-{{display reference="MailArchiveCode.LiveTableSheet"/}}
-#end
-{{/velocity}}</content>
 </xwikidoc>

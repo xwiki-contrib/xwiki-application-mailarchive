@@ -22,6 +22,7 @@ package org.xwiki.contrib.mailarchive.internal;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.codehaus.plexus.util.ExceptionUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
@@ -55,6 +56,8 @@ public class LoadingJob extends AbstractJob<DefaultRequest, DefaultJobStatus<Def
     private int nbSuccess = 0;
 
     private int nbFailure = 0;
+    
+    private int nbAlreadyLoaded = 0;
 
     private String currentSource = null;
 
@@ -110,23 +113,31 @@ public class LoadingJob extends AbstractJob<DefaultRequest, DefaultJobStatus<Def
     @Override
     protected void runInternal()
     {
-        logger.debug("Starting Loading Job");
+        logger.info("Starting MailArchive Loading Job");
         this.status.setState(State.RUNNING);
         try {
             LoadingSession session = (LoadingSession) getRequest().getProperty("sessionobj");
-
+            if (session == null) {
+                logger.info("No loading session provided from context, job is invalid");
+                return;
+            } else {
+                logger.debug("Loading job will use session {}", session);
+            }
+            
             if (session.isDebugMode()) {
                 enterDebugMode();
             }
 
             int success = loader.loadMails(session, this);
             setNbSuccess(success);
+            
+            logger.debug("MailArchive loading job finished, successfully loaded {} emails for this session", success);
 
             if (session.isDebugMode()) {
                 quitDebugMode();
             }
         } catch (Throwable t) {
-            logger.error("Loading Job failure", t);
+            logger.error("Loading Job failed", ExceptionUtils.getRootCause(t));
         } finally {
             this.status.setState(State.FINISHED);
         }
@@ -158,6 +169,16 @@ public class LoadingJob extends AbstractJob<DefaultRequest, DefaultJobStatus<Def
     public void incNbFailure()
     {
         this.nbFailure++;
+    }
+    
+    public int getNbAlreadyLoaded()
+    {
+        return nbAlreadyLoaded;
+    }
+    
+    public void incNbAlreadyLoaded()
+    {
+        this.nbAlreadyLoaded++;
     }
 
     /**

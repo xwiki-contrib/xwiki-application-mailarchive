@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>MailMatcherTemplate</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179260000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1355472875000</creationDate>
-  <date>1355472881000</date>
-  <contentUpdateDate>1355472881000</contentUpdateDate>
+  <date>1393179260000</date>
+  <contentUpdateDate>1393179260000</contentUpdateDate>
   <version>1.1</version>
   <title>MailMatcher Template</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content/>
   <object>
+    <name>MailArchiveCode.MailMatcherTemplate</name>
+    <number>0</number>
+    <className>MailArchiveCode.MailMatcherClass</className>
+    <guid>db9d8c12-190c-459e-b254-daae5d00ee73</guid>
     <class>
       <name>MailArchiveCode.MailMatcherClass</name>
       <customClass/>
@@ -110,10 +114,6 @@
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </isMultiLine>
     </class>
-    <name>MailArchiveCode.MailMatcherTemplate</name>
-    <number>0</number>
-    <className>MailArchiveCode.MailMatcherClass</className>
-    <guid>db9d8c12-190c-459e-b254-daae5d00ee73</guid>
     <property>
       <expression/>
     </property>
@@ -130,5 +130,4 @@
       <isMultiLine/>
     </property>
   </object>
-  <content/>
 </xwikidoc>

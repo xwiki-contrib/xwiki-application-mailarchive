@@ -101,9 +101,9 @@ public class AggregatedLoggerManager implements IAggregatedLoggerManager
         if (this.loggers != null) {
             for (String logger : loggers.keySet()) {
                 privateLogger
-                    .warn("Saving log level " + loggerManager.getLoggerLevel(logger) + " for logger " + logger);
+                    .debug("Saving log level " + loggerManager.getLoggerLevel(logger) + " for logger " + logger);
                 loggers.put(logger, loggerManager.getLoggerLevel(logger));
-                privateLogger.warn("Setting log level " + logLevel + " to logger " + logger);
+                privateLogger.debug("Setting log level " + logLevel + " to logger " + logger);
                 loggerManager.setLoggerLevel(logger, logLevel);
             }
         }
@@ -169,7 +169,7 @@ public class AggregatedLoggerManager implements IAggregatedLoggerManager
         if (packageName.endsWith("internal")) {
             packageName = packageName.substring(0, packageName.length() - 9);
         }
-        privateLogger.warn("adding managed logger for package " + packageName);
+        privateLogger.debug("adding managed logger for package " + packageName);
         addLogger(packageName);
 
     }

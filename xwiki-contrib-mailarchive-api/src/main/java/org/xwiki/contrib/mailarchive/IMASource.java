@@ -24,7 +24,7 @@ import java.util.Properties;
 import org.xwiki.contrib.mail.source.SourceType;
 
 /**
- * Defines some characteristics common to a mail source configuration.
+ * Defines some characteristics common to a Mail Archive source configuration.
  */
 public interface IMASource
 {

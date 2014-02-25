@@ -1,29 +1,133 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>StoreCreationSheet</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179261000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1361887132000</creationDate>
-  <date>1361887500000</date>
-  <contentUpdateDate>1361887498000</contentUpdateDate>
+  <date>1393179261000</date>
+  <contentUpdateDate>1393179261000</contentUpdateDate>
   <version>1.1</version>
   <title>Mail Store Creation</title>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content>{{velocity}}
+#if($request.get('save'))
+  #set($id = $request.get('MailArchiveCode.StoreClass_0_id'))
+  #set($newdoc = $xwiki.getDocument("MailArchivePrefs.Store_${id}"))
+  #if($xwiki.exists($newdoc.fullName))
+    #set($alreadyExisting = true)
+    #set($message = "A store with page name MailArchivePrefs.Store_${id} already exists")
+  #else
+    #set($newobj = $newdoc.updateObjectFromRequest('MailArchiveCode.StoreClass'))
+    #set($xwql="select doc.fullName from Document doc, doc.object('MailArchiveCode.StoreClass') as store where doc.space='MailArchivePrefs' and store.id='${newobj.id}'")
+    #set($result=$xwiki.queryManager.xwql($xwql).execute())
+    #if($result.size() &gt; 0)
+      #set($alreadyExisting = true)
+      #set($message = "A store already exists with id ${newobj.id} : ${result}")
+    #end 
+  #end
+  #if(!$alreadyExisting)
+    #set($pagename = "MailArchivePrefs.Store_${id}")
+    $newdoc.setParent('MailArchive.Admin')
+    #set($ok = $newdoc.save())   
+  #else
+    #set($ok = false)
+  #end
+  #if($ok)
+    $response.setContentType('text/xml')
+    &lt;response&gt;
+      &lt;status&gt;ok&lt;/status&gt;
+      &lt;message&gt;Successfully created new Store (${newdoc.fullName})&lt;/message&gt;
+    &lt;/response&gt;
+  #else    
+    $response.setContentType('text/xml')
+    &lt;response&gt;
+      &lt;status&gt;ko&lt;/status&gt;
+      &lt;message&gt;$message&lt;/message&gt;
+    &lt;/response&gt;
+  #end
+#else
+  #set($obj=$doc.getObject('MailArchiveCode.StoreClass'))
+  #if($request.get('xpage'))
+    #set($assumeLightbox = true)
+  #end
+  #set($storesClass=$obj.xWikiClass)
+
+== New Mail Store Information ==
+
+{{html wiki="true"}}
+&lt;form action="" class="xform" method="post" name="form_stores_creation"&gt;
+  &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
+  #foreach ($prop in $storesClass.properties)
+    #if("$!prop.getName()" != "lasttest" &amp;&amp; "$!prop.getName()" != "status")
+   &lt;dl&gt;
+     &lt;dt&gt;
+       &lt;label for="MailArchiveCode.StoreClass_0_$field.getName()"&gt;$prop.prettyName&lt;/label&gt;
+     &lt;/dt&gt;
+     &lt;dd&gt;
+       $doc.display($prop.getName(), 'edit', $obj)
+     &lt;/dd&gt;
+   &lt;/dl&gt;
+    #end
+   #end
+  &lt;span class="buttonwrapper"&gt;
+    #if($assumeLightbox)
+      ## LightBox detected...
+      &lt;script type="text/javascript"&gt;
+        ## Make the X button not reload the page. (overriding LbClose)
+        window.lb.lbClose = function() {
+          this.lbHide();
+          this.lbClearData();
+          if(this.redirectUrl!==undefined){window.location=this.redirectUrl;}
+        }
+        ## Post the form entry to the page and load the result. (we override lbSaveForm)
+        window.lb.lbSaveForm = function() {
+          var hostname = this.form['MailArchiveCode.StoreClass_0_hostname'];
+          
+          var formParams = Form.serialize(this.form);
+          Form.disable(this.form);
+          var ajaxRequest = new Ajax.Request(this.saveUrl, {
+            parameters: formParams,
+            asynchronous: false
+          });
+          var status = ajaxRequest.transport.responseXML.getElementsByTagName('status')[0].childNodes[0].nodeValue;
+          var message = ajaxRequest.transport.responseXML.getElementsByTagName('message')[0].childNodes[0].nodeValue;
+          this.redirectUrl = this.redirectUrl + '?status=' + status + '&amp;message=' + message + '&amp;tab=sources';
+          window.lb.lbFormDataLoaded(ajaxRequest.transport);
+          window.lb.lbClose();
+        }
+      &lt;/script&gt;
+      &lt;input class="button" type="submit" name="save" value="$msg.get('save')" onclick="window.lb.lbSaveForm();"/&gt;
+      &lt;/span&gt;&lt;span class="buttonwrapper"&gt;
+      &lt;input class="button secondary" type="submit" name="cancel" value="$msg.get("cancel")" onclick="Form.disable(window.lb.form); window.lb.lbClose();"/&gt;
+    #else
+      ## Not using the LightBox
+      &lt;input type="submit" name="save" value="$msg.get('save')" class="button"/&gt;
+    #end
+  &lt;/span&gt;## ButtonWrapper
+&lt;/form&gt;
+{{/html}}
+
+#end
+
+{{/velocity}}</content>
   <object>
+    <name>MailArchiveCode.StoreCreationSheet</name>
+    <number>0</number>
+    <className>MailArchiveCode.StoreClass</className>
+    <guid>2b594288-9584-4255-82d6-040fe7153675</guid>
     <class>
       <name>MailArchiveCode.StoreClass</name>
       <customClass/>
@@ -150,10 +254,6 @@
         <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
       </status>
     </class>
-    <name>MailArchiveCode.StoreCreationSheet</name>
-    <number>0</number>
-    <className>MailArchiveCode.StoreClass</className>
-    <guid>2b594288-9584-4255-82d6-040fe7153675</guid>
     <property>
       <additionalProperties/>
     </property>
@@ -180,6 +280,10 @@
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.StoreCreationSheet</name>
+    <number>0</number>
+    <className>XWiki.DocumentSheetBinding</className>
+    <guid>28a7f9f3-cffe-4799-b15d-f24fd32a8f45</guid>
     <class>
       <name>XWiki.DocumentSheetBinding</name>
       <customClass/>
@@ -203,113 +307,8 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </sheet>
     </class>
-    <name>MailArchiveCode.StoreCreationSheet</name>
-    <number>0</number>
-    <className>XWiki.DocumentSheetBinding</className>
-    <guid>28a7f9f3-cffe-4799-b15d-f24fd32a8f45</guid>
     <property>
       <sheet/>
     </property>
   </object>
-  <content>{{velocity}}
-#if($request.get('save'))
-  #set($id = $request.get('MailArchiveCode.StoreClass_0_id'))
-  #set($newdoc = $xwiki.getDocument("MailArchivePrefs.Store_${id}"))
-  #if($xwiki.exists($newdoc.fullName))
-    #set($alreadyExisting = true)
-    #set($message = "A store with page name MailArchivePrefs.Store_${id} already exists")
-  #else
-    #set($newobj = $newdoc.updateObjectFromRequest('MailArchiveCode.StoreClass'))
-    #set($xwql="select doc.fullName from Document doc, doc.object('MailArchiveCode.StoreClass') as store where doc.space='MailArchivePrefs' and store.id='${newobj.id}'")
-    #set($result=$xwiki.queryManager.xwql($xwql).execute())
-    #if($result.size() &gt; 0)
-      #set($alreadyExisting = true)
-      #set($message = "A store already exists with id ${newobj.id} : ${result}")
-    #end 
-  #end
-  #if(!$alreadyExisting)
-    #set($pagename = "MailArchivePrefs.Store_${id}")
-    $newdoc.setParent('MailArchive.Admin')
-    #set($ok = $newdoc.save())   
-  #else
-    #set($ok = false)
-  #end
-  #if($ok)
-    $response.setContentType('text/xml')
-    &lt;response&gt;
-      &lt;status&gt;ok&lt;/status&gt;
-      &lt;message&gt;Successfully created new Store (${newdoc.fullName})&lt;/message&gt;
-    &lt;/response&gt;
-  #else    
-    $response.setContentType('text/xml')
-    &lt;response&gt;
-      &lt;status&gt;ko&lt;/status&gt;
-      &lt;message&gt;$message&lt;/message&gt;
-    &lt;/response&gt;
-  #end
-#else
-  #set($obj=$doc.getObject('MailArchiveCode.StoreClass'))
-  #if($request.get('xpage'))
-    #set($assumeLightbox = true)
-  #end
-  #set($storesClass=$obj.xWikiClass)
-
-== New Mail Store Information ==
-
-{{html wiki="true"}}
-&lt;form action="" class="xform" method="post" name="form_stores_creation"&gt;
-  &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
-  #foreach ($prop in $storesClass.properties)
-    #if("$!prop.getName()" != "lasttest" &amp;&amp; "$!prop.getName()" != "status")
-   &lt;dl&gt;
-     &lt;dt&gt;
-       &lt;label for="MailArchiveCode.StoreClass_0_$field.getName()"&gt;$prop.prettyName&lt;/label&gt;
-     &lt;/dt&gt;
-     &lt;dd&gt;
-       $doc.display($prop.getName(), 'edit', $obj)
-     &lt;/dd&gt;
-   &lt;/dl&gt;
-    #end
-   #end
-  &lt;span class="buttonwrapper"&gt;
-    #if($assumeLightbox)
-      ## LightBox detected...
-      &lt;script type="text/javascript"&gt;
-        ## Make the X button not reload the page. (overriding LbClose)
-        window.lb.lbClose = function() {
-          this.lbHide();
-          this.lbClearData();
-          if(this.redirectUrl!==undefined){window.location=this.redirectUrl;}
-        }
-        ## Post the form entry to the page and load the result. (we override lbSaveForm)
-        window.lb.lbSaveForm = function() {
-          var hostname = this.form['MailArchiveCode.StoreClass_0_hostname'];
-          
-          var formParams = Form.serialize(this.form);
-          Form.disable(this.form);
-          var ajaxRequest = new Ajax.Request(this.saveUrl, {
-            parameters: formParams,
-            asynchronous: false
-          });
-          var status = ajaxRequest.transport.responseXML.getElementsByTagName('status')[0].childNodes[0].nodeValue;
-          var message = ajaxRequest.transport.responseXML.getElementsByTagName('message')[0].childNodes[0].nodeValue;
-          this.redirectUrl = this.redirectUrl + '?status=' + status + '&amp;message=' + message + '&amp;tab=sources';
-          window.lb.lbFormDataLoaded(ajaxRequest.transport);
-          window.lb.lbClose();
-        }
-      &lt;/script&gt;
-      &lt;input class="button" type="submit" name="save" value="$msg.get('save')" onclick="window.lb.lbSaveForm();"/&gt;
-      &lt;/span&gt;&lt;span class="buttonwrapper"&gt;
-      &lt;input class="button secondary" type="submit" name="cancel" value="$msg.get("cancel")" onclick="Form.disable(window.lb.form); window.lb.lbClose();"/&gt;
-    #else
-      ## Not using the LightBox
-      &lt;input type="submit" name="save" value="$msg.get('save')" class="button"/&gt;
-    #end
-  &lt;/span&gt;## ButtonWrapper
-&lt;/form&gt;
-{{/html}}
-
-#end
-
-{{/velocity}}</content>
 </xwikidoc>

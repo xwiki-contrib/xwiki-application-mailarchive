@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>MailTemplate</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179243000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1353930107000</creationDate>
-  <date>1354528933000</date>
-  <contentUpdateDate>1354528933000</contentUpdateDate>
+  <date>1393179243000</date>
+  <contentUpdateDate>1393179243000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content>{{include document="MailArchiveCode.MailSheet"/}}</content>
   <object>
+    <name>MailArchiveCode.MailTemplate</name>
+    <number>0</number>
+    <className>MailArchiveCode.MailClass</className>
+    <guid>fe4f76cc-7063-4efc-92c4-8887d7eb5cea</guid>
     <class>
       <name>MailArchiveCode.MailClass</name>
       <customClass/>
@@ -282,10 +286,6 @@
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </type>
     </class>
-    <name>MailArchiveCode.MailTemplate</name>
-    <number>0</number>
-    <className>MailArchiveCode.MailClass</className>
-    <guid>fe4f76cc-7063-4efc-92c4-8887d7eb5cea</guid>
     <property>
       <body/>
     </property>
@@ -321,6 +321,10 @@
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.MailTemplate</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>0d0ceeb5-1778-46f5-83ac-eaf8b65a0348</guid>
     <class>
       <name>XWiki.TagClass</name>
       <customClass/>
@@ -347,13 +351,8 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </tags>
     </class>
-    <name>MailArchiveCode.MailTemplate</name>
-    <number>0</number>
-    <className>XWiki.TagClass</className>
-    <guid>0d0ceeb5-1778-46f5-83ac-eaf8b65a0348</guid>
     <property>
       <tags/>
     </property>
   </object>
-  <content>{{include document="MailArchiveCode.MailSheet"/}}</content>
 </xwikidoc>

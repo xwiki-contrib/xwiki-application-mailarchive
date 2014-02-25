@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>ServerClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179261000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1353417892000</creationDate>
-  <date>1353417892000</date>
-  <contentUpdateDate>1353417892000</contentUpdateDate>
+  <date>1393179261000</date>
+  <contentUpdateDate>1393179261000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <defaultTemplate/>
@@ -21,7 +21,10 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/1.0</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content>#set($defaultparent = "MailArchive.WebHome")
+#set($defaultweb = "MailArchive")
+#includeForm("XWiki.ClassSheet")</content>
   <class>
     <name>MailArchiveCode.ServerClass</name>
     <customClass/>
@@ -194,6 +197,10 @@
     </user>
   </class>
   <object>
+    <name>MailArchiveCode.ServerClass</name>
+    <number>0</number>
+    <className>XWiki.ClassSheetBinding</className>
+    <guid>6508a214-1786-4013-a861-02c6dc5853a7</guid>
     <class>
       <name>XWiki.ClassSheetBinding</name>
       <customClass/>
@@ -217,15 +224,15 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </sheet>
     </class>
-    <name>MailArchiveCode.ServerClass</name>
-    <number>0</number>
-    <className>XWiki.ClassSheetBinding</className>
-    <guid>6508a214-1786-4013-a861-02c6dc5853a7</guid>
     <property>
       <sheet>ServerSheet</sheet>
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.ServerClass</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>cc3123a1-c741-48af-99a8-bd50beb6609b</guid>
     <class>
       <name>XWiki.TagClass</name>
       <customClass/>
@@ -252,15 +259,8 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </tags>
     </class>
-    <name>MailArchiveCode.ServerClass</name>
-    <number>0</number>
-    <className>XWiki.TagClass</className>
-    <guid>cc3123a1-c741-48af-99a8-bd50beb6609b</guid>
     <property>
       <tags/>
     </property>
   </object>
-  <content>#set($defaultparent = "MailArchive.WebHome")
-#set($defaultweb = "MailArchive")
-#includeForm("XWiki.ClassSheet")</content>
 </xwikidoc>

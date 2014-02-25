@@ -1,28 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>MailingListClass</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179259000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1353417890000</creationDate>
-  <date>1353417891000</date>
-  <contentUpdateDate>1353417891000</contentUpdateDate>
+  <date>1393179259000</date>
+  <contentUpdateDate>1393179259000</contentUpdateDate>
   <version>1.1</version>
   <title/>
-  <template/>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
-  <hidden>false</hidden>
+  <hidden/>
+  <content>{{velocity}}
+## Replace Main with the Space where you want your documents to be created.
+## Replace the default parent with the one of your choice and save the document.
+##
+#set($className = $doc.name.substring(0, $doc.name.indexOf("Class")))
+#set($defaultParent = "${doc.space}.${className}Class")
+#set($defaultSpace = 'MailArchiveCode')
+#set($lists = 'MailArchive.ListsSettings')
+#set($listsdoc = $xwiki.getDocument($lists))
+
+    #if("$!targetDocName" != '' &amp;&amp; $xwiki.exists($targetDocName))
+      {{warning}}The target document already exists. Please choose a different name, or [[view the existing document&gt;&gt;$targetDocName]]{{/warning}}
+    #elseif("$!targetDocName" != '')
+      {{warning}}You don't have permission to create that document{{/warning}}
+    #end
+
+   #set($xredirect = $request.getRequestURL())
+   #set($createUrl = $listsdoc.getURL('objectadd', "classname=MailArchiveCode.MailingListClass&amp;xredirect=${xredirect}"))
+
+    {{html}}
+      &lt;form action="$createUrl" id="newdoc" method="post"&gt;
+        &lt;div&gt;
+          &lt;input type="hidden" name="parent" value="${defaultParent}"/&gt;
+          &lt;input type="hidden" name="template" value="${classTemplateDoc}"/&gt;
+          &lt;input type="hidden" name="sheet" value="1"/&gt;
+          &lt;input type="hidden" name="spaceName" value="${defaultSpace}" size="8"/&gt;
+          &lt;span class="buttonwrapper"&gt;&lt;input type="submit" value="Add new list" class="button"/&gt;&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/form&gt;
+      &lt;div style="float:right;"&gt;#if($context.action=="view") #if($xwiki.hasAccessLevel("edit", $context.user, $listsdoc.fullName)) &lt;a href="$listsdoc.getURL('inline')" title="Edit component"&gt;#toolImage('edit.png' 'edit ')&lt;/a&gt;#if($xwiki.hasAccessLevel("delete", $context.user, $listsdoc.fullName))&lt;a href="$listsdoc.getURL('delete')" title="Delete component"&gt;#toolImage('delete.png' 'delete ')&lt;/a&gt; #end #end #end
+      &lt;/div&gt;
+    {{/html}}
+
+#set($class = $listsdoc.getObject("MailArchiveCode.MailingListClass").xWikiClass)
+#set($objects = $listsdoc.getObjects('MailArchiveCode.MailingListClass'))
+#foreach ($obj in $objects)
+  #foreach($prop in $class.properties)
+  * **${prop.prettyName}** = $listsdoc.display($prop.name, $obj) 
+  #end
+
+#end
+
+{{/velocity}}</content>
   <class>
     <name>MailArchiveCode.MailingListClass</name>
     <customClass/>
@@ -99,6 +141,10 @@
     </pattern>
   </class>
   <object>
+    <name>MailArchiveCode.MailingListClass</name>
+    <number>0</number>
+    <className>XWiki.ClassSheetBinding</className>
+    <guid>5f0bdad0-18ab-46a0-b350-efdab4313d97</guid>
     <class>
       <name>XWiki.ClassSheetBinding</name>
       <customClass/>
@@ -122,15 +168,15 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </sheet>
     </class>
-    <name>MailArchiveCode.MailingListClass</name>
-    <number>0</number>
-    <className>XWiki.ClassSheetBinding</className>
-    <guid>5f0bdad0-18ab-46a0-b350-efdab4313d97</guid>
     <property>
       <sheet>MailArchiveCode.MailingListSheet</sheet>
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.MailingListClass</name>
+    <number>0</number>
+    <className>XWiki.DocumentSheetBinding</className>
+    <guid>976d8774-ac6b-4049-9fec-5a8862e493ef</guid>
     <class>
       <name>XWiki.DocumentSheetBinding</name>
       <customClass/>
@@ -154,15 +200,15 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </sheet>
     </class>
-    <name>MailArchiveCode.MailingListClass</name>
-    <number>0</number>
-    <className>XWiki.DocumentSheetBinding</className>
-    <guid>976d8774-ac6b-4049-9fec-5a8862e493ef</guid>
     <property>
       <sheet>XWiki.ClassSheet</sheet>
     </property>
   </object>
   <object>
+    <name>MailArchiveCode.MailingListClass</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>85aabcca-36d5-4681-91d7-38d1890cbb95</guid>
     <class>
       <name>XWiki.TagClass</name>
       <customClass/>
@@ -189,55 +235,8 @@
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </tags>
     </class>
-    <name>MailArchiveCode.MailingListClass</name>
-    <number>0</number>
-    <className>XWiki.TagClass</className>
-    <guid>85aabcca-36d5-4681-91d7-38d1890cbb95</guid>
     <property>
       <tags/>
     </property>
   </object>
-  <content>{{velocity}}
-## Replace Main with the Space where you want your documents to be created.
-## Replace the default parent with the one of your choice and save the document.
-##
-#set($className = $doc.name.substring(0, $doc.name.indexOf("Class")))
-#set($defaultParent = "${doc.space}.${className}Class")
-#set($defaultSpace = 'MailArchiveCode')
-#set($lists = 'MailArchive.ListsSettings')
-#set($listsdoc = $xwiki.getDocument($lists))
-
-    #if("$!targetDocName" != '' &amp;&amp; $xwiki.exists($targetDocName))
-      {{warning}}The target document already exists. Please choose a different name, or [[view the existing document&gt;&gt;$targetDocName]]{{/warning}}
-    #elseif("$!targetDocName" != '')
-      {{warning}}You don't have permission to create that document{{/warning}}
-    #end
-
-   #set($xredirect = $request.getRequestURL())
-   #set($createUrl = $listsdoc.getURL('objectadd', "classname=MailArchiveCode.MailingListClass&amp;xredirect=${xredirect}"))
-
-    {{html}}
-      &lt;form action="$createUrl" id="newdoc" method="post"&gt;
-        &lt;div&gt;
-          &lt;input type="hidden" name="parent" value="${defaultParent}"/&gt;
-          &lt;input type="hidden" name="template" value="${classTemplateDoc}"/&gt;
-          &lt;input type="hidden" name="sheet" value="1"/&gt;
-          &lt;input type="hidden" name="spaceName" value="${defaultSpace}" size="8"/&gt;
-          &lt;span class="buttonwrapper"&gt;&lt;input type="submit" value="Add new list" class="button"/&gt;&lt;/span&gt;
-        &lt;/div&gt;
-      &lt;/form&gt;
-      &lt;div style="float:right;"&gt;#if($context.action=="view") #if($xwiki.hasAccessLevel("edit", $context.user, $listsdoc.fullName)) &lt;a href="$listsdoc.getURL('inline')" title="Edit component"&gt;#toolImage('edit.png' 'edit ')&lt;/a&gt;#if($xwiki.hasAccessLevel("delete", $context.user, $listsdoc.fullName))&lt;a href="$listsdoc.getURL('delete')" title="Delete component"&gt;#toolImage('delete.png' 'delete ')&lt;/a&gt; #end #end #end
-      &lt;/div&gt;
-    {{/html}}
-
-#set($class = $listsdoc.getObject("MailArchiveCode.MailingListClass").xWikiClass)
-#set($objects = $listsdoc.getObjects('MailArchiveCode.MailingListClass'))
-#foreach ($obj in $objects)
-  #foreach($prop in $class.properties)
-  * **${prop.prettyName}** = $listsdoc.display($prop.name, $obj) 
-  #end
-
-#end
-
-{{/velocity}}</content>
 </xwikidoc>

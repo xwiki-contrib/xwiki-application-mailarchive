@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xwikidoc>
+<xwikidoc version="1.1">
   <web>MailArchiveCode</web>
   <name>LiveTableResultsMacros</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
-  <parent>MailArchiveCode.WebHome</parent>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393179258000</creationDate>
+  <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <creationDate>1364998424000</creationDate>
-  <date>1368899248000</date>
-  <contentUpdateDate>1368899248000</contentUpdateDate>
+  <date>1393278102000</date>
+  <contentUpdateDate>1393278102000</contentUpdateDate>
   <version>1.1</version>
   <title>$msg.get("xe.livetable.resultsmacros")</title>
   <defaultTemplate/>
@@ -21,42 +21,7 @@
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
-  <hidden>false</hidden>
-  <object>
-    <class>
-      <name>XWiki.TagClass</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <tags>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>input</displayType>
-        <multiSelect>1</multiSelect>
-        <name>tags</name>
-        <number>1</number>
-        <prettyName>Tags</prettyName>
-        <relationalStorage>1</relationalStorage>
-        <separator>|</separator>
-        <separators>|,</separators>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <values/>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </tags>
-    </class>
-    <name>MailArchiveCode.LiveTableResultsMacros</name>
-    <number>0</number>
-    <className>XWiki.TagClass</className>
-    <guid>7f903443-2df4-44a8-9624-d167fd354ea5</guid>
-    <property>
-      <tags/>
-    </property>
-  </object>
+  <hidden/>
   <content>{{velocity output="false"}}
 #**
  * Macro to get the results of a livetable data call.
@@ -365,12 +330,13 @@
             #if ($colname=="author" || $colname=="from")
               #set($fieldDisplayValue = "$!itemDoc.getValue($colname)")
               #parseUser($fieldDisplayValue)
+              #set($pwikiuser = "$!parsedUser.displayName")
               #if("$!pwikiuser"=="")
                 #set($fieldDisplayValue ="")
               #else
                 #set($avatar = "#useravatarwithwidth($pwikiuser)") 
                 #set($avatar = $avatar.replaceAll("\r", "").replaceAll("\n",""))
-                #set($fieldDisplayValue = "${avatar} &lt;a href='$xwiki.getDocument('MailArchive.ViewUserMessages').getURL()?user=$!{itemDoc.getValue($colname)}&amp;wikiuser=$!pwikiuser'&gt;${fieldDisplayValue}&lt;/a&gt;")
+                #set($fieldDisplayValue = "${avatar} &lt;a href='$xwiki.getDocument('MailArchive.ViewUserMessages').getURL()?user=$!{itemDoc.getValue($colname)}&amp;wikiuser=$!pwikiuser'&gt;${pwikiuser}&lt;/a&gt;")
               #end
             #else
     #set($fieldDisplayValue = "$!itemDoc.display($colname, 'view')")
@@ -499,21 +465,7 @@
 #end
 
 #macro(parseUser $puser) 
-  #set($pstart = $puser.indexOf('&lt;'))
-  #set($pend = $puser.indexOf('&gt;'))
-  #set($pmail = "")
-  #if ("$pstart"!="-1" &amp;&amp; "$pend" != "-1") 
-    #set($pstart = $pstart + 1)
-    #set($pmail = $puser.substring($pstart, $pend).toLowerCase())
-  #end
-  #set($pwikiuser = "")
-  #if ("$!pmail" != "")
-    #set($phql = "select obj.name from BaseObject as obj, StringProperty as prop where obj.className='XWiki.XWikiUsers' and obj.id=prop.id and prop.name='email' and LOWER(prop.value) ='$pmail'")
-    #set($pwikiuser = $xwiki.search($phql))
-    #if($pwikiuser.size()!=0)
-      #set($pwikiuser = $pwikiuser.get(0))
-    #end
-  #end
+  #set($parsedUser = ${services.mailarchive.parseUser($puser)})
 #end
 
 #**
@@ -791,4 +743,39 @@
 #end
 
 {{/velocity}}</content>
+  <object>
+    <name>MailArchiveCode.LiveTableResultsMacros</name>
+    <number>0</number>
+    <className>XWiki.TagClass</className>
+    <guid>7f903443-2df4-44a8-9624-d167fd354ea5</guid>
+    <class>
+      <name>XWiki.TagClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <tags>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>tags</name>
+        <number>1</number>
+        <prettyName>Tags</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator>|</separator>
+        <separators>|,</separators>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </tags>
+    </class>
+    <property>
+      <tags/>
+    </property>
+  </object>
 </xwikidoc>

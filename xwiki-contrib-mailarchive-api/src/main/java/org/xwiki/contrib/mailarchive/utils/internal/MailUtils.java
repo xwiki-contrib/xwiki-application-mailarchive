@@ -45,12 +45,9 @@ import org.xwiki.contrib.mailarchive.utils.DecodedMailContent;
 import org.xwiki.contrib.mailarchive.utils.IMailUtils;
 import org.xwiki.contrib.mailarchive.utils.ITextUtils;
 import org.xwiki.contrib.mailarchive.xwiki.IExtendedDocumentAccessBridge;
-import org.xwiki.contrib.mailarchive.xwiki.IPersistence;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
-
-import com.xpn.xwiki.XWikiException;
 
 /**
  * @version $Id$
@@ -69,19 +66,10 @@ public class MailUtils implements IMailUtils
     private Logger logger;
 
     @Inject
-    private IPersistence persistence;
-
-    @Inject
     @Named("extended")
     private IExtendedDocumentAccessBridge bridge;
 
-    /**
-     * Parses an ID-type mail header, and extracts address part. An ID mail header usually is of the form:<br/>
-     * User Name <user.address@host.com>
-     * 
-     * @param id an address mail header value
-     * @return extracted address, or id itself if could not extract an address part
-     */
+    @Override
     public String extractAddress(final String id)
     {
         int start = id.indexOf('<');
@@ -93,11 +81,7 @@ public class MailUtils implements IMailUtils
         }
     }
 
-    /**
-     * parseUser Parses a user string of the form "user <usermail@com>" - extract mail and if matched in xwiki user
-     * profiles, returns page name for this profile - returns null string if no match is found - tries to return profile
-     * of a user that's authenticated from LDAP, if any, or else first profile found
-     */
+    @Override
     public IMAUser parseUser(final String user, final boolean isMatchLdap)
     {
         logger.debug("parseUser {}, {}", user, isMatchLdap);
@@ -125,7 +109,7 @@ public class MailUtils implements IMailUtils
                 }
             }
         } catch (AddressException e) {
-            logger.warn("Address does not follow standards : " + user);
+            logger.info("Email Address does not follow standards : " + user);
         }
         if (StringUtils.isBlank(address)) {
             String[] substrs = StringUtils.substringsBetween(user, "<", ">");
@@ -183,7 +167,7 @@ public class MailUtils implements IMailUtils
                     }
                     if (parsedUser != null) {
                         maUser.setWikiProfile(parsedUser);
-                        logger.info("parseUser return {}", maUser);
+                        logger.debug("parseUser return {}", maUser);
                         return maUser;
                     }
                 }
@@ -191,23 +175,17 @@ public class MailUtils implements IMailUtils
 
             // If none has authenticated from LDAP, we return the first user found
             maUser.setWikiProfile(profiles.get(0));
-            logger.info("parseUser return {}", maUser);
+            logger.debug("parseUser return {}", maUser);
             return maUser;
 
         } else {
-            logger.info("parseUser No email found to match");
+            logger.debug("parseUser No email found to match");
             return maUser;
         }
 
     }
 
-    /**
-     * @param mailPage
-     * @param cut
-     * @return
-     * @throws IOException
-     * @throws XWikiException
-     */
+    @Override
     public DecodedMailContent decodeMailContent(final String originalHtml, final String originalBody, final boolean cut)
         throws IOException
     {
@@ -246,17 +224,14 @@ public class MailUtils implements IMailUtils
 
     }
 
-    /**
-     * Find matching types for this mail.
-     * 
-     * @param m
-     */
     @Override
-    public List<IType> extractTypes(final Collection<IType> types, final MailItem m)
+    public List<IType> extractTypes(final Collection<IType> types, final MailItem mailItem)
     {
+        logger.debug("extractTypes(types={}, mailItem={})", types, mailItem);
+        
         List<IType> result = new ArrayList<IType>();
 
-        if (types == null || m == null) {
+        if (types == null || mailItem == null) {
             throw new IllegalArgumentException("extractTypes: Types and mailitem can't be null");
         }
 
@@ -298,13 +273,13 @@ public class MailUtils implements IMailUtils
                 for (String field : fields) {
                     String fieldValue = "";
                     if ("from".equals(field)) {
-                        fieldValue = m.getFrom();
+                        fieldValue = mailItem.getFrom();
                     } else if ("to".equals(field)) {
-                        fieldValue = m.getTo();
+                        fieldValue = mailItem.getTo();
                     } else if ("cc".equals(field)) {
-                        fieldValue = m.getCc();
+                        fieldValue = mailItem.getCc();
                     } else if ("subject".equals(field)) {
-                        fieldValue = m.getSubject();
+                        fieldValue = mailItem.getSubject();
                     }
                     logger.debug("  Checking field " + field + " with value [" + fieldValue + "] against pattern ["
                         + regexp + "] DEBUG [" + textUtils.byte2hex(regexp.getBytes()) + "]");

@@ -38,6 +38,15 @@ public interface IMailUtils
 {
 
     /**
+     * Parses an ID-type mail header, and extracts address part. An ID mail header usually is of the form:<br/>
+     * User Name <user.address@host.com>
+     * 
+     * @param id an address mail header value
+     * @return extracted address, or id itself if could not extract an address part
+     */
+    String extractAddress(String id);
+    
+    /**
      * parseUser Parses a user string of the form "user <usermail@com>" - extract mail and if matched in xwiki user
      * profiles, returns page name for this profile - returns null string if no match is found - tries to return profile
      * of a user that's authenticated from LDAP, if any, or else first profile found
@@ -45,20 +54,24 @@ public interface IMailUtils
     IMAUser parseUser(String user, boolean isMatchLdap);
 
     /**
-     * @param originalHtml
-     * @param originalBody
-     * @param cut
-     * @return
-     * @throws IOException
-     * @throws XWikiException
+     * Decodes an email body. 
+     * This methods decodes html part, returns both html and text part, optionally "cut" to remove history sections from content.
+     * 
+     * @param originalHtml The encoded HTML part of body.
+     * @param originalBody The plain text part of body.
+     * @param cut To remove history
+     * @return A DecodedMailContent with HTML part decoded.
+     * @throws IOException If HTML content can't be decoded.
      */
     DecodedMailContent decodeMailContent(String originalHtml, String originalBody, boolean cut) throws IOException;
 
     /**
-     * @param types
-     * @param m
-     * @return
+     * Filters the types that match provided email.
+     * 
+     * @param types The types to match against email fields.
+     * @param mailItem The email.
+     * @return A list of types matching the types/filters, or an empty list if none matches.
      */
-    List<IType> extractTypes(Collection<IType> types, MailItem m);
+    List<IType> extractTypes(Collection<IType> types, MailItem mailItem);
 
 }

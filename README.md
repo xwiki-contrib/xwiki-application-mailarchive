@@ -32,6 +32,6 @@ For testing
 
 * XWiki Global Administration / Mail Archive: to register needed configuration (servers, lists, types) - some elements are also automatically created when visiting the page (for now, so you'd better go there first).
 
-* MailArchive.Loading: to test servers connections and try loading some mails.
+* MailArchive.Loading: to test servers connections and try loading some mails. Note: new UI development is in progress for loading, can be seen in page MailArchiveTests.Loading
 
 * MailArchive.WebHome: to navigate into loaded topics and emails.

@@ -38,7 +38,7 @@ import org.xwiki.job.internal.DefaultJobStatus;
  */
 @Component
 @Named(LoadingJob.JOBTYPE)
-public class LoadingJob extends AbstractJob<DefaultRequest, DefaultJobStatus<DefaultRequest>> implements Initializable
+public class LoadingJob extends AbstractJob<DefaultRequest, EmailLoadingJobStatus> implements Initializable
 {
     public static final String JOBTYPE = "mailarchivejob";
 
@@ -52,16 +52,6 @@ public class LoadingJob extends AbstractJob<DefaultRequest, DefaultJobStatus<Def
 
     // @Inject
     // private Logger logger;
-
-    private int nbSuccess = 0;
-
-    private int nbFailure = 0;
-    
-    private int nbAlreadyLoaded = 0;
-
-    private String currentSource = null;
-
-    private String currentMail = null;
 
     /**
      * 
@@ -114,7 +104,7 @@ public class LoadingJob extends AbstractJob<DefaultRequest, DefaultJobStatus<Def
     protected void runInternal()
     {
         logger.info("Starting MailArchive Loading Job");
-        this.status.setState(State.RUNNING);
+        getStatus().setState(State.RUNNING);
         try {
             LoadingSession session = (LoadingSession) getRequest().getProperty("sessionobj");
             if (session == null) {
@@ -129,7 +119,7 @@ public class LoadingJob extends AbstractJob<DefaultRequest, DefaultJobStatus<Def
             }
 
             int success = loader.loadMails(session, this);
-            setNbSuccess(success);
+            getStatus().setNbSuccess(success);
             
             logger.debug("MailArchive loading job finished, successfully loaded {} emails for this session", success);
 
@@ -143,75 +133,6 @@ public class LoadingJob extends AbstractJob<DefaultRequest, DefaultJobStatus<Def
         }
     }
 
-    /**
-     * @return the success
-     */
-    public int getNbSuccess()
-    {
-        return nbSuccess;
-    }
-
-    protected void setNbSuccess(final int nbSuccess)
-    {
-        this.nbSuccess = nbSuccess;
-    }
-
-    public void incNbSuccess()
-    {
-        this.nbSuccess++;
-    }
-
-    public int getNbFailure()
-    {
-        return nbFailure;
-    }
-
-    public void incNbFailure()
-    {
-        this.nbFailure++;
-    }
-    
-    public int getNbAlreadyLoaded()
-    {
-        return nbAlreadyLoaded;
-    }
-    
-    public void incNbAlreadyLoaded()
-    {
-        this.nbAlreadyLoaded++;
-    }
-
-    /**
-     * @return the currentSource
-     */
-    public String getCurrentSource()
-    {
-        return currentSource;
-    }
-
-    /**
-     * @param currentSource the currentSource to set
-     */
-    public void setCurrentSource(final String currentSource)
-    {
-        this.currentSource = currentSource;
-    }
-
-    /**
-     * @return the currentMail
-     */
-    public String getCurrentMail()
-    {
-        return currentMail;
-    }
-
-    /**
-     * @param currentMail the currentMail to set
-     */
-    public void setCurrentMail(final String currentMail)
-    {
-        this.currentMail = currentMail;
-    }
 
     public void enterDebugMode()
     {
@@ -262,5 +183,15 @@ public class LoadingJob extends AbstractJob<DefaultRequest, DefaultJobStatus<Def
     {
         super.notifyStepPropress();
     }
-
+    
+    /**
+     * @param request contains information related to the job to execute
+     * @return the status of the job
+     */
+    @Override
+    protected EmailLoadingJobStatus createNewStatus(DefaultRequest request)
+    {
+        return new EmailLoadingJobStatus(request, this.observationManager, this.loggerManager,
+            this.jobContext.getCurrentJob() != null);
+    }    
 }

@@ -60,5 +60,11 @@ public interface IServerSource extends IMailSource
      * @return
      */
     String getPassword();
+    
+    /**
+     * 
+     * @return
+     */
+    Boolean isAutoTrustSSLCertificates();
 
 }

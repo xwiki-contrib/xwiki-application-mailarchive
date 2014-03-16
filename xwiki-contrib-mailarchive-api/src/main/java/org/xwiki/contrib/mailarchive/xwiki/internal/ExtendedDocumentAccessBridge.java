@@ -78,7 +78,13 @@ public class ExtendedDocumentAccessBridge extends DefaultDocumentAccessBridge im
         this.context = (XWikiContext) context.getProperty("xwikicontext");
         this.xwiki = this.context.getWiki();
     }
-
+    
+    @Override
+    public String getXWikiConfiguration(final String name)
+    {
+        return this.xwiki.Param("xwiki.authentication.encryptionKey");    
+    }
+    
     /**
      * {@inheritDoc}
      * 

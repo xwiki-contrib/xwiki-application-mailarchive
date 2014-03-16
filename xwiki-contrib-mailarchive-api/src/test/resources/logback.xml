@@ -45,10 +45,10 @@
   </appender>
   
    <logger name="org.xwiki.contrib.mailarchive.internal" level="debug">
-      <appender-ref ref="FILE" />
+      <appender-ref ref="stdout" />
    </logger>
    <logger name="org.xwiki.contrib.mail.internal" level="debug">
-      <appender-ref ref="FILE" />
+      <appender-ref ref="stdout" />
    </logger>
 
   <logger name="org.xwiki" level="debug"/>

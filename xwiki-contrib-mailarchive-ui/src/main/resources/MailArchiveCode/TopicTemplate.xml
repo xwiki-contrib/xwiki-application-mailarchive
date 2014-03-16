@@ -7,7 +7,7 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1393179244000</creationDate>
+  <creationDate>1394137261000</creationDate>
   <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
@@ -173,18 +173,6 @@
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </type>
     </class>
-    <property>
-      <lastupdatedate>2009-11-17 16:41:58.0</lastupdatedate>
-    </property>
-    <property>
-      <startdate>2009-11-17 16:41:58.0</startdate>
-    </property>
-    <property>
-      <status/>
-    </property>
-    <property>
-      <subject/>
-    </property>
   </object>
   <object>
     <name>MailArchiveCode.TopicTemplate</name>

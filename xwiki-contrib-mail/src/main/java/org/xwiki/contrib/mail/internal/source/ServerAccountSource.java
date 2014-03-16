@@ -39,6 +39,8 @@ public class ServerAccountSource implements IServerSource
     private String password;
 
     private Properties additionalProperties;
+    
+    private Boolean autoTrustSSLCertificates;
 
     /**
      * @param hostname
@@ -49,7 +51,7 @@ public class ServerAccountSource implements IServerSource
      * @param additionalProperties
      */
     public ServerAccountSource(String hostname, int port, String protocol, String username, String password,
-        Properties additionalProperties)
+        Properties additionalProperties, Boolean autoTrustSSLCertificates)
     {
         super();
         this.hostname = hostname;
@@ -58,6 +60,7 @@ public class ServerAccountSource implements IServerSource
         this.username = username;
         this.password = password;
         this.additionalProperties = additionalProperties;
+        this.autoTrustSSLCertificates = autoTrustSSLCertificates;
     }
 
     /**
@@ -154,6 +157,17 @@ public class ServerAccountSource implements IServerSource
     public void setAdditionalProperties(final Properties additionalProperties)
     {
         this.additionalProperties = additionalProperties;
+    }
+
+    @Override
+    public Boolean isAutoTrustSSLCertificates()
+    {
+        return autoTrustSSLCertificates;
+    }
+
+    public void setAutoTrustSSLCertificates(Boolean autoTrustSSLCertificates)
+    {
+        this.autoTrustSSLCertificates = autoTrustSSLCertificates;
     }
 
 }

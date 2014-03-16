@@ -89,7 +89,8 @@ public class Factory implements IFactory
             server.setProtocol(dab.getStringValue(serverPrefsDoc, className, "protocol"));
             server.setUsername(dab.getStringValue(serverPrefsDoc, className, "user"));
             server.setPassword(dab.getStringValue(serverPrefsDoc, className, "password"));
-            server.setFolder(dab.getStringValue(serverPrefsDoc, className, "folder"));
+            server.setFolder(dab.getStringValue(serverPrefsDoc, className, "folder"));            
+            server.setAutoTrustSSLCertificates(dab.getBooleanValue(serverPrefsDoc, className, "autotrust"));            
             server.setEnabled("on".equals(dab.getStringValue(serverPrefsDoc, className, "state")));
             server.setState(dab.getIntValue(serverPrefsDoc, className, "status"));
             String additionalProperties = dab.getStringValue(serverPrefsDoc, className, "additionalProperties");

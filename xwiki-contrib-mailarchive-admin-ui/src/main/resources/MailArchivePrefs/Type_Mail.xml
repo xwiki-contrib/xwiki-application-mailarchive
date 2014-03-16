@@ -7,13 +7,13 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1393179263000</creationDate>
-  <parent>MailArchivePrefs.WebHome</parent>
+  <creationDate>1394278549000</creationDate>
+  <parent/>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1393179263000</date>
-  <contentUpdateDate>1393179263000</contentUpdateDate>
+  <date>1394278549000</date>
+  <contentUpdateDate>1394278549000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <defaultTemplate/>
@@ -27,7 +27,7 @@
     <name>MailArchivePrefs.Type_Mail</name>
     <number>0</number>
     <className>MailArchiveCode.TypeClass</className>
-    <guid>a9b156e6-90bf-496b-b95c-c7cd0a7f27e6</guid>
+    <guid>c8903e75-4569-4732-b7b3-b749e00db93f</guid>
     <class>
       <name>MailArchiveCode.TypeClass</name>
       <customClass/>

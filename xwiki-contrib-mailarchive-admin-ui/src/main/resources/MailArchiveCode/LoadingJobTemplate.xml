@@ -7,7 +7,7 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1393179258000</creationDate>
+  <creationDate>1394137155000</creationDate>
   <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
@@ -62,9 +62,6 @@
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </sessions>
     </class>
-    <property>
-      <sessions>default|test</sessions>
-    </property>
   </object>
   <object>
     <name>MailArchiveCode.LoadingJobTemplate</name>

@@ -2,20 +2,20 @@
 
 <xwikidoc version="1.1">
   <web>MailArchiveTests</web>
-  <name>Loading</name>
+  <name>LoadingBis</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1394137212000</creationDate>
+  <creationDate>1394982915000</creationDate>
   <parent>MailArchiveTest.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1393363404000</date>
-  <contentUpdateDate>1393180700000</contentUpdateDate>
+  <date>1395003757000</date>
+  <contentUpdateDate>1395003757000</contentUpdateDate>
   <version>1.1</version>
-  <title>Loading</title>
+  <title>LoadingBis</title>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -35,27 +35,117 @@
 {{html wiki="false"}}
 
 &lt;script type="text/javascript"&gt;
-var updater = new Ajax.PeriodicalUpdater('jobinfo', '/xwiki/bin/get/MailArchiveTests/MonitorJob', {
-  parameters: { },
-  frequency: 1,
-  decay: 1.1
-});
-updater.stop();
 
-function triggerLoading() {
+var loadingCounter;
+
+var updater = Class.create({  
+    initialize: function(divToUpdate, interval, url) {  
+        this.divToUpdate = divToUpdate;  
+        this.interval = interval;  
+        this.url = url;  
+        this.pe = new PeriodicalExecuter(this.getUpdate.bind(this), this.interval);  
+    },  
+
+    getUpdate: function() {
+        var div = this.divToUpdate;
+        var interval = this.interval;
+        var url = this.url;
+        var oOptions = {
+            method: "POST",
+            asynchronous: true,
+            parameters: "intervalPeriod="+interval,
+            onComplete: function (oXHR, Json) {
+                var json = oXHR.responseJSON;
+                $('nbSuccess').innerHTML = json.status.nbSuccess;
+                $('nbFailure').innerHTML = json.status.nbFailure;
+                $('nbAlreadyLoaded').innerHTML = json.status.nbAlreadyLoaded;
+                $('nbNotMatching').innerHTML = json.status.nbNotMatching;
+                $('progressBar').innerHTML = json.progressBar;
+                $('extension-body-progress').innerHTML = json.logs;
+                $('state').innerHTML = json.state;
+                if (json.state == 'FINISHED') {
+                  stopUpdater();
+                }
+                if (json.status.paused == 'true') {
+                  $('status').innerHTML = 'PAUSED';
+                }
+                if (json.status.stopped == 'true') {
+                  $('status').innerHTML = 'STOPPED';
+                }
+            }
+        };
+        var oRequest = new Ajax.Request(url, oOptions);
+    },
+    
+    stop: function() {
+        this.pe.stop();
+    }
+});  
+
+function startLoading() {
   
   var params = $('loadingSessionForm').serialize(true)
-alert("ajax call " + params);
   new Ajax.Request("http://localhost:8080/xwiki/bin/get/MailArchiveTest/TriggerJob", {
     parameters: params,
     onSuccess: function(response) {
-      updater.start();
+      startUpdater();
     },
     onFailure: function() {
       alert('Failed to trigger loading job');
+      stopUpdater();
     }
   });
 }
+
+function stopLoading() {
+  new Ajax.Request("http://localhost:8080/xwiki/bin/get/MailArchiveTests/ManageJobs?xpage=plain&amp;action=stop", {
+    parameters: '',
+    onSuccess: function(response) {
+    },
+    onFailure: function() {
+      alert('Failed to trigger loading job');
+      stopUpdater();
+    }
+  });
+}
+
+function pauseLoading() {
+  new Ajax.Request("http://localhost:8080/xwiki/bin/get/MailArchiveTests/ManageJobs?xpage=plain&amp;action=pause", {
+    parameters: '',
+    onSuccess: function(response) {
+    },
+    onFailure: function() {
+      alert('Failed to trigger loading job');
+      stopUpdater();
+    }
+  });
+}
+
+function resumeLoading() {
+  new Ajax.Request("http://localhost:8080/xwiki/bin/get/MailArchiveTests/ManageJobs?xpage=plain&amp;action=resume", {
+    parameters: '',
+    onSuccess: function(response) {
+    },
+    onFailure: function() {
+      alert('Failed to trigger loading job');
+      stopUpdater();
+    }
+  });
+}
+
+function startUpdater()
+{
+  loadingCounter = new updater('jobinfo', 1, '/xwiki/bin/get/MailArchiveTests/ManageJobs?xpage=plain&amp;outputSyntax=plain');
+}
+
+function stopUpdater()
+{
+  if (loadingCounter) {
+    loadingCounter.stop();
+  }
+}
+
+
 &lt;/script&gt;
 {{/html}}
 
@@ -66,22 +156,41 @@ alert("ajax call " + params);
 {{include reference="MailArchiveCode.LoadingSessionSheet"/}}
 
   &lt;span class="buttonWrapper"&gt;
-    &lt;input type="button" value="Trigger" onClick="triggerLoading()"/&gt;
+    &lt;input type="button" value="Start" onClick="startLoading()"/&gt;
+    &lt;input type="button" value="Pause" onClick="pauseLoading()"/&gt;
+    &lt;input type="button" value="Resume" onClick="resumeLoading()"/&gt;
+    &lt;input type="button" value="Stop" onClick="stopLoading()"/&gt;
   &lt;/span&gt;
 
 &lt;/form&gt;
 
+&lt;br/&gt;&lt;br/&gt;
 &lt;div id='sessioninfo'/&gt;
-&lt;div id='jobinfo'/&gt;
+
+&lt;div id='jobinfo'&gt;
+&lt;span id="state"&gt; &lt;/span&gt; &lt;span id="status"&gt; &lt;/span&gt;&lt;br/&gt;
+&lt;table border="0"&gt;&lt;tr&gt;&lt;th&gt;Success&lt;/th&gt;&lt;th&gt;Failure&lt;/th&gt;&lt;th&gt;Already Loaded&lt;/th&gt;&lt;th&gt;Not matching&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;span id="nbSuccess"&gt; &lt;/span&gt;&lt;/td&gt;
+&lt;td&gt;&lt;span id="nbFailure"&gt; &lt;/span&gt;&lt;/td&gt;
+&lt;td&gt;&lt;span id="nbAlreadyLoaded"&gt; &lt;/span&gt;&lt;/td&gt;
+&lt;td&gt;&lt;span id="nbNotMatching"&gt; &lt;/span&gt;&lt;/td&gt;
+&lt;/tr&gt;&lt;/table&gt;
+&lt;br/&gt;&lt;br/&gt;
+&lt;div class="extension-item" id="extension-item"&gt;
+  &lt;div id="progressBar"&gt; &lt;/div&gt;
+  &lt;div id="extension-body-progress" class="extension-body-progress" style="display:block;";&gt; &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 
 {{/html}}
 
 {{/velocity}}</content>
   <object>
-    <name>MailArchiveTests.Loading</name>
+    <name>MailArchiveTests.LoadingBis</name>
     <number>0</number>
     <className>MailArchiveCode.LoadingSessionClass</className>
-    <guid>b20481bf-35bf-4165-8c27-d05c2c06b50d</guid>
+    <guid>af426d97-d0fd-4a91-ba11-9325ada836ab</guid>
     <class>
       <name>MailArchiveCode.LoadingSessionClass</name>
       <customClass/>
@@ -292,10 +401,10 @@ alert("ajax call " + params);
     </property>
   </object>
   <object>
-    <name>MailArchiveTests.Loading</name>
+    <name>MailArchiveTests.LoadingBis</name>
     <number>0</number>
     <className>XWiki.DocumentSheetBinding</className>
-    <guid>def50aa2-0f21-4c11-b456-635fc1879f70</guid>
+    <guid>70c8c0e8-86ee-450a-8c23-58ea2376ee6e</guid>
     <class>
       <name>XWiki.DocumentSheetBinding</name>
       <customClass/>

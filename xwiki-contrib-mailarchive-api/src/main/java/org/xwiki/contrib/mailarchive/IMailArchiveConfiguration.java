@@ -84,6 +84,8 @@ public interface IMailArchiveConfiguration
 
     Map<String, LoadingSession> getLoadingSessions();
 
-    public abstract void reloadConfiguration() throws MailArchiveException;
+    void reloadConfiguration() throws MailArchiveException;
+
+    boolean isNoLdMatch();
 
 }

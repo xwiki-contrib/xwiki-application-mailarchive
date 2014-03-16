@@ -40,6 +40,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Part;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.bridge.DocumentAccessBridge;
@@ -55,6 +56,7 @@ import org.xwiki.contrib.mail.IMailReader;
 import org.xwiki.contrib.mail.IStoreManager;
 import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mail.SourceConnectionErrors;
+import org.xwiki.contrib.mail.internal.FolderItem;
 import org.xwiki.contrib.mail.internal.JavamailMessageParser;
 import org.xwiki.contrib.mail.source.IMailSource;
 import org.xwiki.contrib.mail.source.SourceType;
@@ -110,6 +112,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     private boolean isInitialized = false;
 
     private Lock lock = new ReentrantLock();
+    private boolean locked = false;
 
     // Components injected by the Component Manager
 
@@ -322,7 +325,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         try {
             mailReader =
                 mailManager.getMailReader(server.getHostname(), server.getPort(), server.getProtocol(),
-                    server.getUsername(), server.getPassword(), server.getAdditionalProperties());
+                    server.getUsername(), server.getPassword(), server.getAdditionalProperties(), server.isAutoTrustSSLCertificates());
         } catch (ComponentLookupException e) {
             logger.error("Could not find appropriate mail reader for server " + server.getId(), e);
             return -1;
@@ -375,6 +378,92 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
         return nbMessages;
     }
+    
+    @Override
+    public ArrayList<FolderItem> getFolderTree(final String sourcePrefsDoc)
+    {
+        ArrayList<FolderItem> folderTree = null;
+        XWikiDocument serverDoc = null;
+        try {
+            serverDoc = xwiki.getDocument(sourcePrefsDoc, context);
+        } catch (XWikiException e) {
+            serverDoc = null;
+        }
+        if (serverDoc == null || !dab.exists(sourcePrefsDoc)) {
+            logger.error("Page " + sourcePrefsDoc + " does not exist");
+            return folderTree;
+        }
+        if (serverDoc.getObject(XWikiPersistence.CLASS_MAIL_SERVERS) != null) {
+            // Retrieve connection properties from prefs
+            Server server = factory.createMailServer(sourcePrefsDoc);
+            if (server == null) {
+                logger.warn("Could not retrieve server information from wiki page " + sourcePrefsDoc);
+                return folderTree;
+            }
+
+            return getFolderTree(server);
+        } else if (serverDoc.getObject(XWikiPersistence.CLASS_MAIL_STORES) != null) {
+            // Retrieve connection properties from prefs
+            MailStore store = factory.createMailStore(sourcePrefsDoc);
+            if (store == null) {
+                logger.warn("Could not retrieve store information from wiki page " + sourcePrefsDoc);
+                return folderTree;
+            }
+
+            return getFolderTree(store);
+
+        } else {
+            logger.error("Could not retrieve valid configuration object from page");
+            return folderTree;
+        }
+
+    }    
+    
+    public ArrayList<FolderItem> getFolderTree(final MailStore store)
+    {
+        logger.info("Checking store " + store);
+
+        IMailReader mailReader = null;
+        try {
+            mailReader = mailManager.getStoreManager(store.getFormat(), store.getLocation());
+        } catch (ComponentLookupException e) {
+            logger.warn("Could not find appropriate mail reader for store " + store.getId(), e);
+        }
+
+        ArrayList<FolderItem> folderTree = new ArrayList<FolderItem>();
+        try {
+            folderTree = mailReader.getFolderTree();
+        } catch (MessagingException e) {
+            logger.warn("Failed to retrieve folders from store " + store.getId(), e);
+        }
+        logger.debug("folder tree of store " + store.getId() + " returned " + folderTree);
+
+        return folderTree;
+    }
+    
+    public ArrayList<FolderItem> getFolderTree(final Server server)
+    {
+        logger.info("Checking server " + server);
+
+        IMailReader mailReader = null;
+        try {
+            mailReader = mailManager.getMailReader(server.getHostname(), server.getPort(), server.getProtocol(), server.getUsername(), server.getPassword(), server.getAdditionalProperties(), server.isAutoTrustSSLCertificates());
+        } catch (ComponentLookupException e) {
+            logger.warn("Could not find appropriate mail reader for server " + server.getId(), e);
+        }
+
+        ArrayList<FolderItem> folderTree = new ArrayList<FolderItem>();
+        try {
+            folderTree = mailReader.getFolderTree();
+        } catch (MessagingException e) {
+            logger.warn("Failed to retrieve folders from server " + server.getId(), e);
+        }
+        logger.debug("folder tree of server " + server.getId() + " returned " + folderTree);
+
+        return folderTree;
+    }
+    
+    
 
     /**
      * {@inheritDoc}
@@ -383,24 +472,31 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      */
     public ThreadableMessage computeThreads(final String topicId)
     {
+        logger.debug("computeThreads(topicId={})", topicId);
+        
+        ThreadableMessage threads = null;
+        
         try {
             if (topicId == null) {
-                return threads.thread();
+                threads = this.threads.thread();
             } else {
-                return threads.thread(topicId);
+                threads = this.threads.thread(topicId);
             }
         } catch (Exception e) {
             logger.error("Could not compute threads", e);
         }
-        return null;
+        
+        logger.debug("computeThreads return {}", threads);
+        
+        return threads;
     }
 
     @Override
     public List<IMASource> getSourcesList(final LoadingSession session)
     {
-        List<IMASource> servers = null;
+        logger.debug("Getting sources for session {}", session);
+        final List<IMASource> servers = new ArrayList<IMASource>();
         final Map<SourceType, String> sources = session.getSources();
-        servers = new ArrayList<IMASource>();
         boolean hasServers = false;
         if (sources != null) {
             for (Entry<SourceType, String> source : sources.entrySet()) {
@@ -429,11 +525,14 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             // Empty store config means no store
             servers.addAll(config.getServers());
         }
+        logger.debug("Found sources for session {} : {}", session.getId(), servers);
         return servers;
     }
 
     public String computeTimeline() throws XWikiException, InitializationException, MailArchiveException, IOException
     {
+        logger.debug("computeTimeline");
+        
         if (!this.isConfigured) {
             configure();
         }
@@ -449,6 +548,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             fw.write(timelineFeed);
             fw.close();
         }
+        
+        logger.debug("computeTimeline return {}" , timelineFeed);
 
         return timelineFeed;
     }
@@ -474,9 +575,10 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             logger.info("Local Store Location: " + maStoreLocation.getAbsolutePath());
             logger.info("Local Store Provider: mstor");
             try {
-                this.builtinStore = mailManager.getStoreManager("mstor", maStoreLocation.getAbsolutePath());
+                this.builtinStore = mailManager.getStoreManager("mbox", maStoreLocation.getAbsolutePath());
             } catch (ComponentLookupException e) {
-                throw new InitializationException("Could not create or connect to built-in store");
+                logger.error("Could not create or connect built-in store", e);
+                throw new InitializationException("Could not create or connect to built-in store", e);
             }
         }
 
@@ -639,101 +741,115 @@ public class DefaultMailArchive implements IMailArchive, Initializable
 
         SimpleDateFormat dateFormatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZZ", m.getLocale());
 
-        // Create a new topic if needed
-        String existingTopicId = "";
-        // we don't create new topics for attached emails
-        if (!isAttachedMail) {
-            existingTopicId =
-                existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId(), m.getMessageId(), m.getRefs());
-            if (existingTopicId == null) {
-                logger.debug("  did not find existing topic, creating a new one");
-                if (existingTopics.containsKey(m.getTopicId())) {
-                    // Topic hack ...
-                    logger.debug("  new topic but topicId already loaded, using messageId as new topicId");
+        // Do not archive email if nodlmatch option is set, and no mailing-list is matched
+        logger.debug("*** isAttachedMail {}", isAttachedMail);
+        logger.debug("*** isNoLdMatch {}", config.isNoLdMatch());
+        logger.debug("*** Extracted mailing-lists {}", extractMailingListsTags(m));
+        if (!isAttachedMail && !config.isNoLdMatch() && CollectionUtils.isEmpty(extractMailingListsTags(m))) {
+            logger.info("No mailing-list matched, skipping email creation");
+            return new MailLoadingResult(MailLoadingResult.STATUS.NOT_MATCHING_MAILING_LISTS, null, null);
+        } else {
+
+            // Create a new topic if needed
+            String existingTopicId = "";
+            // we don't create new topics for attached emails
+            if (!isAttachedMail) {
+                existingTopicId =
+                    existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId(), m.getMessageId(), m.getRefs());
+                if (existingTopicId == null) {
+                    logger.debug("  did not find existing topic, creating a new one");
+                    if (existingTopics.containsKey(m.getTopicId())) {
+                        // Topic hack ...
+                        logger.debug("  new topic but topicId already loaded, using messageId as new topicId");
+                        m.setTopicId(m.getMessageId());
+                        // FIX: "cut" properly mail history when creating a new topic
+                        m.setReplyToId("");
+                        existingTopicId =
+                            existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId(), m.getMessageId(), m.getRefs());
+                    } else {
+                        existingTopicId = m.getTopicId();
+                    }
+                    logger.debug("   creating new topic");
+                    topicDocName = createTopicPage(m, confirm);
+
+                    logger.info("Saved new topic " + topicDocName);
+                } else if (textUtils.similarSubjects(m.getTopic(), existingTopics.get(existingTopicId).getSubject())) {
+                    logger.debug("  topic already loaded " + m.getTopicId() + " : "
+                        + existingTopics.get(existingTopicId));
+                    topicDocName = updateTopicPage(m, existingTopicId, dateFormatter, confirm);
+                    logger.info("Updated topic " + topicDocName);
+                } else {
+                    // We consider this was a topic hack : someone replied to an existing thread, but to start on
+                    // another
+                    // subject.
+                    // In this case, we split, use messageId as a new topic Id, and set replyToId to empty string in
+                    // order
+                    // to treat this as a new topic to create.
+                    // In order for this new thread to be correctly threaded, we search for existing topic with this new
+                    // topicId,
+                    // so now all new mails in this case will be attached to this new topic.
+                    logger
+                        .debug("  found existing topic but subjects are too different, using new messageid as topicid ["
+                            + m.getMessageId() + "]");
                     m.setTopicId(m.getMessageId());
-                    // FIX: "cut" properly mail history when creating a new topic
                     m.setReplyToId("");
                     existingTopicId =
                         existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId(), m.getMessageId(), m.getRefs());
-                } else {
+                    logger.debug("  creating new topic");
+                    topicDocName = createTopicPage(m, confirm);
+                    logger.info("Saved new topic from hijacked thread " + topicDocName);
+
+                }
+            } // if not attached email
+
+            // Create a new message if needed
+            if (!existingMessages.containsKey(m.getMessageId())) {
+                logger.info("creating new message " + m.getMessageId() + " ...");
+                /*
+                 * Note : use already existing topic id if any, instead of the one from the message, to keep an easy to
+                 * parse link between thread messages
+                 */
+                if ("".equals(existingTopicId)) {
                     existingTopicId = m.getTopicId();
                 }
-                logger.debug("   creating new topic");
-                topicDocName = createTopicPage(m, confirm);
-
-                logger.info("Saved new topic " + topicDocName);
-            } else if (textUtils.similarSubjects(m.getTopic(), existingTopics.get(existingTopicId).getSubject())) {
-                logger.debug("  topic already loaded " + m.getTopicId() + " : " + existingTopics.get(existingTopicId));
-                topicDocName = updateTopicPage(m, existingTopicId, dateFormatter, confirm);
-                logger.info("Updated topic " + topicDocName);
-            } else {
-                // We consider this was a topic hack : someone replied to an existing thread, but to start on another
-                // subject.
-                // In this case, we split, use messageId as a new topic Id, and set replyToId to empty string in order
-                // to treat this as a new topic to create.
-                // In order for this new thread to be correctly threaded, we search for existing topic with this new
-                // topicId,
-                // so now all new mails in this case will be attached to this new topic.
-                logger.debug("  found existing topic but subjects are too different, using new messageid as topicid ["
-                    + m.getMessageId() + "]");
-                m.setTopicId(m.getMessageId());
-                m.setReplyToId("");
-                existingTopicId =
-                    existsTopic(m.getTopicId(), m.getTopic(), m.getReplyToId(), m.getMessageId(), m.getRefs());
-                logger.debug("  creating new topic");
-                topicDocName = createTopicPage(m, confirm);
-                logger.info("Saved new topic from hijacked thread " + topicDocName);
-
-            }
-        } // if not attached email
-
-        // Create a new message if needed
-        if (!existingMessages.containsKey(m.getMessageId())) {
-            logger.info("creating new message " + m.getMessageId() + " ...");
-            /*
-             * Note : use already existing topic id if any, instead of the one from the message, to keep an easy to
-             * parse link between thread messages
-             */
-            if ("".equals(existingTopicId)) {
-                existingTopicId = m.getTopicId();
-            }
-            // Note : correction bug of messages linked to same topic but with different topicIds
-            m.setTopicId(existingTopicId);
-            try {
-                String parent = parentMail;
-                if (StringUtils.isBlank(parentMail)) {
-                    parent = existingTopics.get(m.getTopicId()).getFullName();
+                // Note : correction bug of messages linked to same topic but with different topicIds
+                m.setTopicId(existingTopicId);
+                try {
+                    String parent = parentMail;
+                    if (StringUtils.isBlank(parentMail)) {
+                        parent = existingTopics.get(m.getTopicId()).getFullName();
+                    }
+                    messageDocName = createMailPage(m, existingTopicId, isAttachedMail, parent, confirm);
+                    logger.info("Saved new message " + messageDocName);
+                } catch (Exception e) {
+                    logger.warn("Could not create mail page for " + m.getMessageId(), e);
+                    return new MailLoadingResult(MailLoadingResult.STATUS.FAILED, topicDocName, null);
                 }
-                messageDocName = createMailPage(m, existingTopicId, isAttachedMail, parent, confirm);
-                logger.info("Saved new message " + messageDocName);
-            } catch (Exception e) {
-                logger.warn("Could not create mail page for " + m.getMessageId(), e);
-                return new MailLoadingResult(MailLoadingResult.STATUS.FAILED, topicDocName, null);
-            }
 
-            return new MailLoadingResult(MailLoadingResult.STATUS.SUCCESS, topicDocName, messageDocName);
-        } else {
-            // message already loaded
-            logger.info("Mail already loaded - checking for updates ...");
-
-            MailDescriptor msg = existingMessages.get(m.getMessageId());
-            logger.debug("TopicId of existing message " + msg.getTopicId() + " and of topic " + existingTopicId
-                + " are different ?" + (!msg.getTopicId().equals(existingTopicId)));
-            if (!msg.getTopicId().equals(existingTopicId)) {
-                messageDocName = existingMessages.get(m.getMessageId()).getFullName();
-                XWikiDocument msgDoc = xwiki.getDocument(messageDocName, context);
-                BaseObject msgObj = msgDoc.getObject(XWikiPersistence.SPACE_CODE + ".MailClass");
-                msgObj.set("topicid", existingTopicId, context);
-                if (confirm) {
-                    logger.debug("saving message " + m.getSubject());
-                    persistence.saveAsUser(msgDoc, null, config.getLoadingUser(),
-                        "Updated mail with existing topic id found");
-                }
-                logger.info("Updated message " + msgDoc.getFullName());
                 return new MailLoadingResult(MailLoadingResult.STATUS.SUCCESS, topicDocName, messageDocName);
-            }
+            } else {
+                // message already loaded
+                logger.info("Mail already loaded - checking for updates ...");
 
-            return new MailLoadingResult(MailLoadingResult.STATUS.ALREADY_LOADED, topicDocName, messageDocName);
+                MailDescriptor msg = existingMessages.get(m.getMessageId());
+                logger.debug("TopicId of existing message " + msg.getTopicId() + " and of topic " + existingTopicId
+                    + " are different ?" + (!msg.getTopicId().equals(existingTopicId)));
+                if (!msg.getTopicId().equals(existingTopicId)) {
+                    messageDocName = existingMessages.get(m.getMessageId()).getFullName();
+                    XWikiDocument msgDoc = xwiki.getDocument(messageDocName, context);
+                    BaseObject msgObj = msgDoc.getObject(XWikiPersistence.SPACE_CODE + ".MailClass");
+                    msgObj.set("topicid", existingTopicId, context);
+                    if (confirm) {
+                        logger.debug("saving message " + m.getSubject());
+                        persistence.saveAsUser(msgDoc, null, config.getLoadingUser(),
+                            "Updated mail with existing topic id found");
+                    }
+                    logger.info("Updated message " + msgDoc.getFullName());
+                    return new MailLoadingResult(MailLoadingResult.STATUS.SUCCESS, topicDocName, messageDocName);
+                }
+
+                return new MailLoadingResult(MailLoadingResult.STATUS.ALREADY_LOADED, topicDocName, messageDocName);
+            }
         }
     }
 
@@ -1024,7 +1140,8 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     @Override
     public boolean lock()
     {
-        return this.lock.tryLock();
+        this.locked = this.lock.tryLock();
+        return this.locked;
     }
 
     /**
@@ -1034,6 +1151,13 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     public void unlock()
     {
         this.lock.unlock();
+        this.locked = false;
+    }
+    
+    @Override
+    public boolean isLocked()
+    {
+        return this.locked;
     }
 
     @Override
@@ -1044,10 +1168,24 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             try {
                 // Use server id as folder to avoid colliding folders from different servers
                 builtinStore.write(serverId, message);
+                logger.info("Message written to internal store");
             } catch (MessagingException e) {
                 logger.error("Can't copy mail to local store", e);
             }
         }
+    }
+
+    @Override
+    public Message getFromStore(final String serverId, final String messageId)
+    {
+        Message message = null;
+
+        try {
+            message = builtinStore.read(serverId, messageId);
+        } catch (MessagingException e) {
+            logger.debug("Message with id {} not found from builtin store in folder {}", messageId, serverId);
+        }
+        return message;
     }
 
     @Override
@@ -1065,7 +1203,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
             fo.flush();
             fo.close();
 
-            logger.debug("Message dumped into " + id + ".eml");
+            logger.debug("Message dumped into {}.eml", id);
         } catch (Throwable t) {
             // we catch Throwable because we don't want to cause problems in debug mode
             logger.debug("Could not dump message for debug", t);

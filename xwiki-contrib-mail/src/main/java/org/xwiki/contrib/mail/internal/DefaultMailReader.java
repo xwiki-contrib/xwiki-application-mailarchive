@@ -110,7 +110,9 @@ public class DefaultMailReader extends AbstractMailReader
 
         logger.info("Trying to retrieve mails from server " + getMailSource().getHostname());
 
-        this.session = createSession(getMailSource().getProtocol(), getMailSource().getAdditionalProperties(), isGmail);
+        this.session =
+            createSession(getMailSource().getProtocol(), getMailSource().getAdditionalProperties(), isGmail,
+                getMailSource().isAutoTrustSSLCertificates());
 
         // Get a Store object
         store = session.getStore();
@@ -169,7 +171,9 @@ public class DefaultMailReader extends AbstractMailReader
 
         logger.info("Trying to retrieve mails from server " + getMailSource().getHostname());
 
-        this.session = createSession(getMailSource().getProtocol(), getMailSource().getAdditionalProperties(), isGmail);
+        this.session =
+            createSession(getMailSource().getProtocol(), getMailSource().getAdditionalProperties(), isGmail,
+                getMailSource().isAutoTrustSSLCertificates());
 
         // Get a Store object
         store = session.getStore();
@@ -196,6 +200,64 @@ public class DefaultMailReader extends AbstractMailReader
         logger.info("Found message " + message);
 
         return message;
+    }
+
+    @Override
+    public ArrayList<FolderItem> getFolderTree() throws MessagingException
+    {
+        assert (getMailSource() != null);
+        assert (getMailSource().getHostname() != null);
+
+        ArrayList<FolderItem> folderItems = new ArrayList<FolderItem>();
+        store = null;
+        boolean isGmail = getMailSource().getHostname() != null && getMailSource().getHostname().endsWith(".gmail.com");
+
+        logger.info("Listing folders for " + getMailSource().getHostname());
+
+        this.session =
+            createSession(getMailSource().getProtocol(), getMailSource().getAdditionalProperties(), isGmail,
+                getMailSource().isAutoTrustSSLCertificates());
+
+        // Get a Store object
+        store = session.getStore();
+
+        // Connect to the mail account
+        store.connect(getMailSource().getHostname(), getMailSource().getPort(), getMailSource().getUsername(),
+            getMailSource().getPassword());
+        Folder defaultFolder = store.getDefaultFolder();
+        FolderItem item = new FolderItem();
+        item.setIndex(0);
+        item.setLevel(0);
+        item.setName(defaultFolder.getName());
+        item.setFullName(defaultFolder.getFullName());
+        if ((defaultFolder.getType() & javax.mail.Folder.HOLDS_MESSAGES) != 0) {
+            item.setMessageCount(defaultFolder.getMessageCount());
+            item.setUnreadMessageCount(defaultFolder.getUnreadMessageCount());
+            item.setNewMessageCount(defaultFolder.getNewMessageCount());
+        }
+        Folder[] folders = defaultFolder.list("*");
+        int index = 1;
+        int level = 1;
+        // TODO not really managing folders here, just listing them
+        for (Folder folder : folders) {
+
+            item = new FolderItem();
+            item.setIndex(index);
+            item.setLevel(level);
+            item.setName(folder.getName());
+            item.setFullName(folder.getFullName());
+            if ((folder.getType() & javax.mail.Folder.HOLDS_MESSAGES) != 0) {
+                item.setMessageCount(folder.getMessageCount());
+                item.setUnreadMessageCount(folder.getUnreadMessageCount());
+                item.setNewMessageCount(folder.getNewMessageCount());
+                folderItems.add(item);
+            }
+        }
+
+        store.close();
+
+        return folderItems;
+
     }
 
     /**
@@ -251,12 +313,13 @@ public class DefaultMailReader extends AbstractMailReader
         return result;
     }
 
-    private Session createSession(final String protocol, final Properties additionalProperties, final boolean isGmail)
+    private Session createSession(final String protocol, final Properties additionalProperties, final boolean isGmail,
+        final boolean autoTrustSsl)
     {
         // Get a session. Use a blank Properties object.
         Properties props = new Properties(additionalProperties);
         // necessary to work with Gmail
-        if (isGmail) {
+        if (isGmail && !props.containsKey("mail.imap.partialfetch") && !props.containsKey("mail.imaps.partialfetch")) {
             props.put("mail.imap.partialfetch", "false");
             props.put("mail.imaps.partialfetch", "false");
         }
@@ -268,8 +331,10 @@ public class DefaultMailReader extends AbstractMailReader
          * MailSSLSocketFactory socketFactory = new MailSSLSocketFactory(); socketFactory.setTrustAllHosts(true);
          * props.put("mail.imaps.ssl.socketFactory", socketFactory);
          */
+        Session session = Session.getInstance(props, null);
+        session.setDebug(true);
 
-        return Session.getInstance(props, null);
+        return session;
     }
 
     public Session getSession()

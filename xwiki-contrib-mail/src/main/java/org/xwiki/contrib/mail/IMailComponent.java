@@ -52,7 +52,7 @@ public interface IMailComponent
      * @throws ComponentLookupException
      */
     IMailReader getMailReader(String hostname, int port, String protocol, String username, String password,
-        Properties additionalProperties) throws ComponentLookupException;
+        Properties additionalProperties, Boolean isAutoTrustSslCertificates) throws ComponentLookupException;
 
     IMailReader getMailReader(ServerAccountSource source) throws ComponentLookupException;
 

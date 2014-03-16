@@ -51,11 +51,11 @@ public class MailScriptService implements ScriptService, IMailScriptService
      */
     @Override
     public List<Message> fetch(String hostname, int port, String protocol, String folder, String username,
-        String password, Properties additionalProperties, boolean onlyUnread)
+        String password, Properties additionalProperties, boolean onlyUnread, boolean isAutoTrustSslCertificates)
     {
         try {
             IMailReader mailReader =
-                mailComp.getMailReader(hostname, port, protocol, username, password, additionalProperties);
+                mailComp.getMailReader(hostname, port, protocol, username, password, additionalProperties, isAutoTrustSslCertificates);
             if (mailReader != null) {
 
                 return mailReader.read(folder, onlyUnread);
@@ -78,11 +78,11 @@ public class MailScriptService implements ScriptService, IMailScriptService
      */
     @Override
     public int check(String hostname, int port, String protocol, String folder, String username, String password,
-        Properties additionalProperties, boolean onlyUnread)
+        Properties additionalProperties, boolean onlyUnread, boolean isAutoTrustSslCertificates)
     {
         try {
             IMailReader mailReader =
-                mailComp.getMailReader(hostname, port, protocol, username, password, additionalProperties);
+                mailComp.getMailReader(hostname, port, protocol, username, password, additionalProperties, isAutoTrustSslCertificates);
             if (mailReader != null) {
                 return mailReader.check(folder, onlyUnread);
             }
@@ -92,6 +92,8 @@ public class MailScriptService implements ScriptService, IMailScriptService
         }
         return -1;
     }
+    
+    
 
     /**
      * {@inheritDoc}

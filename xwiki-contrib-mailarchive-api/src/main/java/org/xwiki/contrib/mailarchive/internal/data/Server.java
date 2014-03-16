@@ -40,6 +40,8 @@ public class Server extends AbstractMASource implements IServerSource
     private String username;
 
     private String password;
+    
+    private Boolean autoTrustSSLCertificates;
 
     public Server()
     {
@@ -94,17 +96,23 @@ public class Server extends AbstractMASource implements IServerSource
     public void setPassword(final String password)
     {
         this.password = password;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.IMASource#getType()
-     */
+    }  
+    
     @Override
     public SourceType getType()
     {
         return SourceType.SERVER;
+    }
+    
+    @Override
+    public Boolean isAutoTrustSSLCertificates()
+    {        
+        return autoTrustSSLCertificates;
+    }
+    
+    public void setAutoTrustSSLCertificates(final Boolean autoTrust)
+    {        
+        this.autoTrustSSLCertificates = autoTrust;
     }
 
     /**
@@ -129,5 +137,7 @@ public class Server extends AbstractMASource implements IServerSource
         builder.append("getState()", getState());
         return builder.toString();
     }
+
+
 
 }

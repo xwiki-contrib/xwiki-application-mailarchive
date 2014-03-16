@@ -22,6 +22,7 @@ package org.xwiki.contrib.mailarchive.xwiki;
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Role;
 
+import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -105,5 +106,14 @@ public interface IExtendedDocumentAccessBridge extends DocumentAccessBridge
 
     DocumentEntity getDocumentEntity(final String wiki, final String space, final String page);
 
-    public abstract ObjectEntity getObjectEntity(final BaseObject xObject);
+    ObjectEntity getObjectEntity(final BaseObject xObject);
+
+    /**
+     * Returns a configuration parameter value from xwiki.cfg.
+     * 
+     * @param name Key of this property.
+     * @return value of the property or null if not found.
+     * @since 0.3
+     */
+    String getXWikiConfiguration(String name);
 }

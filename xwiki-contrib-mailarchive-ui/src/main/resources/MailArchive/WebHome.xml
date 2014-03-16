@@ -7,13 +7,13 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1393179242000</creationDate>
+  <creationDate>1394136883000</creationDate>
   <parent>Main.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1393179242000</date>
-  <contentUpdateDate>1393179242000</contentUpdateDate>
+  <date>1394136883000</date>
+  <contentUpdateDate>1394136883000</contentUpdateDate>
   <version>1.1</version>
   <title>$msg.get('mailarchive_home_title')</title>
   <defaultTemplate/>

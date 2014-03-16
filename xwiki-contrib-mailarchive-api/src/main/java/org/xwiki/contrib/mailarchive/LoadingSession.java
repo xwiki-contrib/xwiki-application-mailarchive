@@ -51,7 +51,7 @@ public class LoadingSession
     private boolean simulationMode = false;
 
     private boolean recentMails = false;
-
+    
     private int maxMailsNb = -1;
 
     private Map<SourceType, String> sources = null;

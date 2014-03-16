@@ -21,6 +21,7 @@ package org.xwiki.contrib.mail;
  */
 //package org.xwiki.contrib.mail;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.mail.Message;
@@ -28,6 +29,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.xwiki.component.annotation.Role;
+import org.xwiki.contrib.mail.internal.FolderItem;
 import org.xwiki.contrib.mail.source.IMailSource;
 
 /**
@@ -91,6 +93,8 @@ public interface IMailReader
      * @return if >=0, the number of available messages, if negative, represents a connection error.
      */
     int check(String folder, boolean onlyUnread);
+    
+    ArrayList<FolderItem> getFolderTree() throws MessagingException;
 
     /**
      * Returns a clone of provided email message. The clone should be unrelated to the store it was read from, even if
@@ -103,6 +107,6 @@ public interface IMailReader
      */
     MimeMessage cloneEmail(Message mail);
 
-    public abstract void close();
+    void close();
 
 }

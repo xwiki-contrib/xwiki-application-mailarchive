@@ -21,6 +21,9 @@ package org.xwiki.contrib.mailarchive.script;
 
 import java.util.ArrayList;
 
+import javax.mail.Message;
+
+import org.xwiki.contrib.mail.internal.FolderItem;
 import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.LoadingSession;
@@ -46,6 +49,8 @@ public interface IMailArchiveScriptService
      * @return
      */
     int check(String serverPrefsDoc);
+    
+    ArrayList<FolderItem> getFolderTree(String serverPrefsDoc);
 
     /**
      * Creates a new default loading session.
@@ -150,5 +155,14 @@ public interface IMailArchiveScriptService
      * @return The configuration object, or null if a problem occurred.
      */
     IMailArchiveConfiguration getConfig();
+    
+    /**
+     * 
+     * @param serverId
+     * @param messageId
+     * @return
+     */
+    String getOriginal(String serverId, String messageId);
+    
 
 }

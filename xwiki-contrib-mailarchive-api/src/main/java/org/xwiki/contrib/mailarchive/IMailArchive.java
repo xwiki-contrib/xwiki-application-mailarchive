@@ -21,6 +21,7 @@ package org.xwiki.contrib.mailarchive;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,7 @@ import javax.mail.Part;
 import org.xwiki.component.annotation.Role;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.contrib.mail.SourceConnectionErrors;
+import org.xwiki.contrib.mail.internal.FolderItem;
 import org.xwiki.contrib.mail.source.IMailSource;
 import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.internal.MailLoadingResult;
@@ -150,15 +152,50 @@ public interface IMailArchive
      * @throws MessagingException
      * @throws IOException
      */
-    public MailLoadingResult loadMail(Part mail, boolean confirm, boolean isAttachedMail, String parentMail)
+    MailLoadingResult loadMail(Part mail, boolean confirm, boolean isAttachedMail, String parentMail)
         throws XWikiException, ParseException, MessagingException, IOException;
 
-    public void saveToInternalStore(final String serverId, final IMailSource source, final Message message);
+    /**
+     * 
+     * @param message
+     */
+    void dumpEmail(Message message);
 
-    public void dumpEmail(Message message);
+    /**
+     * 
+     */
+    void unlock();
 
-    public abstract void unlock();
+    /**
+     * 
+     * @return
+     */
+    boolean lock();
+    
+    /**
+     * 
+     * @param serverId
+     * @param source
+     * @param message
+     */
+    void saveToInternalStore(final String serverId, final IMailSource source, final Message message);
 
-    public abstract boolean lock();
+    /**
+     * Retrieves a message from the internal store.
+     * 
+     * @param serverId The server id, ie the folder into the store.
+     * @param messageId The value of the Message-Id header of the message to find.
+     * @return A javamail Message, or null if it was not found for any reason.
+     */
+    Message getFromStore(final String serverId, final String messageId);
+    
+    /**
+     * 
+     * @param sourcePrefsDoc
+     * @return
+     */
+    ArrayList<FolderItem> getFolderTree(final String sourcePrefsDoc);
+
+    public abstract boolean isLocked();
 
 }

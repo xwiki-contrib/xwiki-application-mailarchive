@@ -37,6 +37,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.search.MessageIDTerm;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.contrib.mail.IStoreManager;
 import org.xwiki.contrib.mail.SourceConnectionErrors;
@@ -77,17 +78,20 @@ public abstract class AbstractMailStore extends AbstractMailReader implements IS
     {
         // getLogger().info("Delivering " + message + " to " + this.location + " / " + folder);
 
-        Store store = getJavamailStore(true);
+        final Store store = getJavamailStore(true);
         store.connect();
-        Folder mailFolder = store.getDefaultFolder().getFolder(folder);
+        final Folder mailFolder = store.getDefaultFolder().getFolder(folder);
         if (!mailFolder.exists()) {
             mailFolder.create(Folder.HOLDS_MESSAGES);
         }
         mailFolder.open(Folder.READ_WRITE);
         // If message is already archived, do nothing
-        Message existingMessage = read(folder, message.getHeader("Message-ID")[0]);
+        final Message existingMessage = read(folder, message.getHeader("Message-ID")[0]);
         if (existingMessage == null) {
-            mailFolder.appendMessages(new Message[] {message});
+            // The Store Provider may add some headers to the message to store, but IMAPMessage are read-only
+            // So we clone the message before storing it
+            final MimeMessage cloned = cloneEmail(message);
+            mailFolder.appendMessages(new Message[] {cloned});
         }
 
         mailFolder.close(true);
@@ -126,7 +130,10 @@ public abstract class AbstractMailStore extends AbstractMailReader implements IS
     {
         Store store = getJavamailStore();
         store.connect();
-        Folder mailFolder = store.getDefaultFolder().getFolder(folder);
+        Folder mailFolder = store.getDefaultFolder();
+        if (StringUtils.isNotEmpty(folder)) {
+            mailFolder = mailFolder.getFolder(folder);
+        }
         mailFolder.open(Folder.READ_WRITE);
         Message[] msgsArray = mailFolder.getMessages();
         if (max > 0 && msgsArray.length > max) {
@@ -205,6 +212,58 @@ public abstract class AbstractMailStore extends AbstractMailReader implements IS
             return SourceConnectionErrors.UNEXPECTED_EXCEPTION.getCode();
         }
         return messages == null ? -1 : messages.size();
+    }
+
+    @Override
+    public ArrayList<FolderItem> getFolderTree() throws MessagingException
+    {
+        getLogger().debug("getFolderTree");
+
+        assert (getMailSource() != null);
+
+        ArrayList<FolderItem> folderItems = new ArrayList<FolderItem>();
+
+        Store store = getJavamailStore();
+        store.connect();
+        Folder defaultFolder = store.getDefaultFolder();
+        FolderItem item = new FolderItem();
+        item.setIndex(0);
+        item.setLevel(0);
+        item.setName(defaultFolder.getName());
+        item.setFullName(defaultFolder.getFullName());
+        if ((defaultFolder.getType() & javax.mail.Folder.HOLDS_MESSAGES) != 0) {
+            item.setMessageCount(defaultFolder.getMessageCount());
+            item.setUnreadMessageCount(defaultFolder.getUnreadMessageCount());
+            item.setNewMessageCount(defaultFolder.getNewMessageCount());
+        }
+        Folder[] folders = defaultFolder.list("*");
+        if (ArrayUtils.isEmpty(folders)) {
+            folders = defaultFolder.list();
+        }
+
+        getLogger().debug("Found folders {}", ArrayUtils.toString(folders));
+        int index = 1;
+        int level = 1;
+        // TODO not really managing folders here, just listing them
+        for (Folder folder : folders) {
+
+            item = new FolderItem();
+            item.setIndex(index);
+            item.setLevel(level);
+            item.setName(folder.getName());
+            item.setFullName(folder.getFullName());
+            if ((folder.getType() & javax.mail.Folder.HOLDS_MESSAGES) != 0) {
+                item.setMessageCount(folder.getMessageCount());
+                item.setUnreadMessageCount(folder.getUnreadMessageCount());
+                item.setNewMessageCount(folder.getNewMessageCount());
+                folderItems.add(item);
+            }
+        }
+
+        store.close();
+
+        return folderItems;
+
     }
 
     /**

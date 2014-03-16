@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc version="1.1">
+  <web>MailArchiveTests</web>
+  <name>MonitorJob2</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1393358326000</creationDate>
+  <parent/>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1393360840000</date>
+  <contentUpdateDate>1393360799000</contentUpdateDate>
+  <version>1.1</version>
+  <title>MonitorJob2</title>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden/>
+  <content>{{velocity output="false"}}
+## NOTE: We don't use #template because it currently registers the Velocity macros in a different namespace which makes
+## them unavailable in the current wiki page or the current template. We also tried #parse but it "randomly" fails to
+## register the Velocity macros from the parsed template. The only solution we found is to use #evaluate with #include
+## but unfortunately this doesn't allow the template to be overridden from the skin.
+#evaluate("#include('extension.vm')")
+{{/velocity}}
+
+{{velocity}}
+{{html clean="false"}}
+
+#set($job = $services.mailarchive.getCurrentJob())
+#if($job.type == "mailarchivejob")
+&lt;div class="extension-item" id="extension-item"&gt;
+Job type $job.type
+$job.status.state - Success $job.nbSuccess / Failure $job.nbFailure
+Offsets $job.status.progress.offset
+
+&lt;div id="extension-body" class="extension-body"&gt;
+#displayJobProgressBar($job.status)
+##  &lt;div id="extension-body-progress" class="extension-body-progress loading" style="display:block";&gt;
+## #printStatusLog($job.status)
+##  &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+#end
+
+{{/html}}
+{{/velocity}}</content>
+</xwikidoc>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xwikidoc version="1.1">
+  <web>MailArchiveTests</web>
+  <name>ManageJobs</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1394981782000</creationDate>
+  <parent>MailArchiveTest.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <customClass/>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1395002699000</date>
+  <contentUpdateDate>1395002699000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <defaultTemplate/>
+  <validationScript/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden/>
+  <content>{{velocity output="false"}}
+## NOTE: We don't use #template because it currently registers the Velocity macros in a different namespace which makes
+## them unavailable in the current wiki page or the current template. We also tried #parse but it "randomly" fails to
+## register the Velocity macros from the parsed template. The only solution we found is to use #evaluate with #include
+## but unfortunately this doesn't allow the template to be overridden from the skin.
+#evaluate("#include('extension.vm')")
+
+#macro (printStatusLogTruncate $loggs)
+  #if ($loggs.size() &gt; 0)
+    #set($logs = $loggs.toArray())
+    #if($logs.size() &gt; 6)
+      #set($begin = $logs.size() - 6)
+      #set($end = $logs.size() - 1)
+    #else
+      #set($begin = 0)
+      #set($end = $logs.size() - 1)
+    #end
+    #set($range = [$begin..$end])
+  &lt;ul&gt;
+  #foreach ($logidx in $range)
+    #set($log = $logs[$logidx])
+    #set ($logLevel = $log.level.toString().toLowerCase())
+    #if (!$foreach.hasNext &amp;&amp; $status.state != 'FINISHED')
+      ## Display the last log item as loading if the job is in progress.
+      #set ($logLevel = 'loading')
+    #end
+    &lt;li class="extension-log-item extension-log-item-$logLevel"&gt;
+      #if ($log.throwable)
+        #set ($message = "#getThrowableRootCauseMessage($log.throwable)")
+        #if ("$!message.trim()" != '')
+          &lt;div&gt;$escapetool.xml($message)&lt;/div&gt;
+        #else
+          &lt;div&gt;#printLogMessage($log)&lt;/div&gt;
+        #end
+        #printThrowable($log.throwable)
+      #else
+        &lt;div&gt;#printLogMessage($log)&lt;/div&gt;
+      #end
+    &lt;/li&gt;
+  #end
+  &lt;/ul&gt;
+  #end
+#end
+{{/velocity}}
+
+{{velocity}}
+$response.setContentType('application/json')
+#set($job = $services.mailarchive.getCurrentJob())
+#if($job.type == "mailarchivejob")
+  #set($jobstatus = $job.status)
+  #if($!request.action == "info" || "$!request.action" == "")
+{
+  "id" : "$job.id",
+  "state" : "$jobstatus.state",
+  "status" : {
+    "nbSuccess" : "$!jobstatus.nbSuccess",
+    "nbFailure" : "$!jobstatus.nbFailure",
+    "nbAlreadyLoaded" : "$!jobstatus.nbAlreadyLoaded",
+    "nbNotMatching" : "$!jobstatus.nbNotMatchingMailingLists",
+    "currentSource" : "$!jobstatus.currentSource",
+    "currentMail" : "$!jobstatus.currentMail",
+    "paused" : "$!jobstatus.paused",
+    "stopped" : "$!jobstatus.stopped"
+  },
+  "logs" : "$escapetool.javascript("#printStatusLogTruncate($jobstatus.log)")",
+  "progressBar" : "$escapetool.javascript("#displayJobProgressBar($jobstatus)")"
+}
+  #end
+  #if($!request.action == "stop")
+$jobstatus.setStopped(true)
+$jobstatus.stopped
+$jobstatus.isStopped()
+  #end
+  #if($!request.action == "pause")
+$jobstatus.setPaused(true)
+$jobstatus.paused
+$jobstatus.isPaused()
+  #end
+  #if($!request.action == "resume")
+$jobstatus.setPaused(false)
+$jobstatus.paused
+$jobstatus.isPaused()
+  #end
+#end
+{{/velocity}}</content>
+</xwikidoc>

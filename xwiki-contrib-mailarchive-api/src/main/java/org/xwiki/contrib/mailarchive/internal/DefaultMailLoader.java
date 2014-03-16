@@ -55,6 +55,7 @@ import org.xwiki.rendering.parser.StreamParser;
 @Singleton
 public class DefaultMailLoader implements IMailArchiveLoader, Initializable
 {
+
     @Inject
     private IMailArchive mailArchive;
 
@@ -118,15 +119,15 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
         }
         logger.debug("Locked the archive");
 
-        logger.debug("Loading parameters: " + session.toString());
-
-        try {
+        try {                       
 
             if (session.isDebugMode()) {
                 aggregatedLoggerManager.pushLogLevel(LogLevel.DEBUG);
             } else {
                 aggregatedLoggerManager.pushLogLevel(LogLevel.INFO);
             }
+            
+            logger.debug("Loading parameters: " + session.toString());
 
             // Reinitialize configuration
             // FIXME: not very nice to call getConfiguration to reload configuration from db ...
@@ -140,9 +141,21 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
 
                 // Loop on all servers
                 for (IMASource server : servers) {
+
+                    if (job != null) {
+                        if (job.getStatus().isStopped())
+                            break;
+                        while (job.getStatus().isPaused()) {
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                            }
+                        }
+                    }
+
                     IMailReader mailReader = getReader(server);
                     if (job != null) {
-                        job.setCurrentSource("" + server.getType() + ':' + server.getId());
+                        job.getStatus().setCurrentSource("" + server.getType() + ':' + server.getId());
                     }
                     if (mailReader != null) {
                         nbSuccess += loadMails(mailReader, server.getFolder(), session, server.getId(), job);
@@ -196,6 +209,8 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
     protected int loadMails(IMailReader mailReader, final String folder, final LoadingSession session,
         final String serverId, final LoadingJob job)
     {
+        logger.debug("[{}] loadMails(mailReader={}, folder={}, session={}, serverId={}, job={}", serverId, mailReader,
+            folder, session, serverId, job);
 
         int currentMsg = 1;
         int nbSuccess = 0;
@@ -225,7 +240,16 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
         }
 
         MailLoadingResult result = null;
-        while (currentMsg < limit) {
+        while (currentMsg < limit && (job != null && !job.getStatus().isStopped())) {
+            logger.info("Current {} / limit {}", currentMsg, limit);
+
+            while (job != null && job.getStatus().isPaused()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                }
+            }
+
             Message message = messages.get(currentMsg - 1);
             logger.debug("[{}] Loading message {}/{}", new Object[] {serverId, currentMsg, total});
             try {
@@ -234,7 +258,7 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
                         mailArchive.dumpEmail(message);
                     }
                     if (job != null) {
-                        job.setCurrentMail(message.getSubject());
+                        job.getStatus().setCurrentMail(message.getSubject());
                     }
                     result = mailArchive.loadMail(message, !session.isSimulationMode(), false, null);
                 } catch (Exception me) {
@@ -247,7 +271,8 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
                             result = mailArchive.loadMail(message, !session.isSimulationMode(), false, null);
                         }
                     } else {
-                        logger.warn("Unexpected exception occurred while loading email [{}]", ExceptionUtils.getRootCause(me));
+                        logger.warn("Unexpected exception occurred while loading email [{}]",
+                            ExceptionUtils.getRootCause(me));
                     }
 
                 }
@@ -256,36 +281,43 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
                     job.notifyStepPropress();
                 }
 
-                if (result != null && result.isSuccess()) {
-                    nbSuccess++;                    
-                    if (!session.isSimulationMode()) {
-                        message.setFlag(Flags.Flag.SEEN, true);
+                if (result != null) {
+                    if (result.isSuccess()) {
+                        nbSuccess++;
+                        if (!session.isSimulationMode()) {
+                            message.setFlag(Flags.Flag.SEEN, true);
 
-                        // Back it up in the built-in store
-                        if (config.isUseStore()) {
-                            mailArchive.saveToInternalStore(serverId, mailReader.getMailSource(), message);
+                            // Back it up in the built-in store
+                            if (config.isUseStore()) {
+                                mailArchive.saveToInternalStore(serverId, mailReader.getMailSource(), message);
+                            }
                         }
+                        if (job != null) {
+                            job.getStatus().incNbSuccess();
+                        }
+                    } else if (job != null) {
+                        job.getStatus().incNbFailure();
                     }
                     if (job != null) {
-                        job.incNbSuccess();
                         if (MailLoadingResult.STATUS.ALREADY_LOADED.equals(result.getStatus())) {
-                            job.incNbAlreadyLoaded();
+                            job.getStatus().incNbAlreadyLoaded();
                         }
-                            
+                        if (MailLoadingResult.STATUS.NOT_MATCHING_MAILING_LISTS.equals(result.getStatus())) {
+                            job.getStatus().incNbNotMatchingMailingLists();
+                        }
                     }
-                } else if (job != null) {
-                    job.incNbFailure();
+
                 }
 
             } catch (Throwable e) {
-                logger.error("Failed to load mail [{}]", ExceptionUtils.getRootCause(e));
+                logger.error("[{}] Failed to load mail [{}]", serverId, ExceptionUtils.getRootCause(e));
             }
 
             currentMsg++;
         }
 
         if (job != null) {
-            job.setCurrentMail("");
+            job.getStatus().setCurrentMail("");
             job.notifyPopLevelProgress();
         }
 
@@ -298,7 +330,7 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
             logger.info("[{}] Server not enabled, skipping it", source.getId());
             return null;
         }
-        logger.info("[{}] Loading mails from server", source.getId());
+        logger.info("[{}] Creating reader", source.getId());
 
         IMailReader mailReader = null;
         try {
@@ -306,7 +338,7 @@ public class DefaultMailLoader implements IMailArchiveLoader, Initializable
                 Server s = (Server) source;
                 mailReader =
                     mailManager.getMailReader(s.getHostname(), s.getPort(), s.getProtocol(), s.getUsername(),
-                        s.getPassword(), source.getAdditionalProperties());
+                        s.getPassword(), source.getAdditionalProperties(), s.isAutoTrustSSLCertificates());
 
             } else if (source instanceof MailStore) {
                 MailStore s = (MailStore) source;

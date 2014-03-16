@@ -32,7 +32,8 @@ import org.xwiki.contrib.mailarchive.internal.LoadingJob;
 @Role
 public interface IMailArchiveLoader
 {
-    public int loadMails(LoadingSession session);
+    int loadMails(LoadingSession session);
 
-    public int loadMails(LoadingSession session, LoadingJob job);
+    int loadMails(LoadingSession session, LoadingJob job);
+
 }

@@ -7,13 +7,13 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1393179245000</creationDate>
+  <creationDate>1394137254000</creationDate>
   <parent>MailArchiveTest.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1393364282000</date>
-  <contentUpdateDate>1393364278000</contentUpdateDate>
+  <date>1394963838000</date>
+  <contentUpdateDate>1394963838000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <defaultTemplate/>
@@ -72,10 +72,11 @@
 
 #set($job = $services.mailarchive.getCurrentJob())
 #if($job.type == "mailarchivejob")
+#set($jobstatus = $job.status)
+Failures [$jobstatus.nbFailure], Success [$jobstatus.nbSuccess], Already Loaded [$jobstatus.nbAlreadyLoaded], Not matching any configured mailing-list [$jobstatus.nbNotMatchingMailingLists]&lt;br/&gt;
+Server [$jobstatus.currentSource] Mail [$jobstatus.currentMail]
 &lt;div class="extension-item" id="extension-item"&gt;
 ##&lt;div id="extension-body" class="extension-body"&gt;
-Failures [$job.nbFailure], Success [$job.nbSuccess], Already Loaded [$job.nbAlreadyLoaded]&lt;br/&gt;
-Server [$job.currentSource] Mail [$job.currentMail]
 #displayJobProgressBar($job.status)
   &lt;div id="extension-body-progress" class="extension-body-progress loading" style="display:block";&gt;
   #printStatusLogTruncate($job.status.log)

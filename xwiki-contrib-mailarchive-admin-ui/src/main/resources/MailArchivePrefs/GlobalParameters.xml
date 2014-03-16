@@ -7,13 +7,13 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1393179263000</creationDate>
+  <creationDate>1394136920000</creationDate>
   <parent>MailArchivePrefs.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1393179263000</date>
-  <contentUpdateDate>1393179263000</contentUpdateDate>
+  <date>1394236868000</date>
+  <contentUpdateDate>1394236868000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <defaultTemplate/>
@@ -154,7 +154,7 @@
         <customDisplay/>
         <defaultValue/>
         <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
+        <displayFormType>checkbox</displayFormType>
         <displayType/>
         <name>excelexport</name>
         <number>14</number>
@@ -275,11 +275,25 @@
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </matchwikiprofiles>
+      <nodlmatch>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>nodlmatch</name>
+        <number>20</number>
+        <prettyName>nodlmatch</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </nodlmatch>
       <ratings>
         <customDisplay/>
         <defaultValue>0</defaultValue>
         <disabled>0</disabled>
-        <displayFormType>select</displayFormType>
+        <displayFormType>checkbox</displayFormType>
         <displayType/>
         <name>ratings</name>
         <number>17</number>
@@ -392,13 +406,16 @@
       <matchldap>0</matchldap>
     </property>
     <property>
-      <matchwikiprofiles>0</matchwikiprofiles>
+      <matchwikiprofiles>1</matchwikiprofiles>
+    </property>
+    <property>
+      <nodlmatch>0</nodlmatch>
     </property>
     <property>
       <ratings>0</ratings>
     </property>
     <property>
-      <store>0</store>
+      <store>1</store>
     </property>
     <property>
       <timeline>1</timeline>

@@ -7,13 +7,13 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1393179244000</creationDate>
+  <creationDate>1394137264000</creationDate>
   <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1393180689000</date>
-  <contentUpdateDate>1393180689000</contentUpdateDate>
+  <date>1394363635000</date>
+  <contentUpdateDate>1394363635000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <defaultTemplate/>
@@ -25,12 +25,12 @@
   <content>{{velocity}}
 #set($mailarchive = $services.mailarchive)
 #if("$!request.loadingSession" != "")
-Triggering session $request.loadingSession
+Triggering session $request.loadingSession from id
   #set($loadingSession = $mailarchive.session("MailArchivePrefs.LoadingSession_${request.loadingSession}"))
 #else
   #set($loadingSessionObj = $doc.addObjectFromRequest('MailArchiveCode.LoadingSessionClass'))
   #if($loadingSessionObj.id)
-Triggering session with id $loadingSessionObj.id
+Triggering session $loadingSessionObj from Xobject
     #set($loadingSession = $mailarchive.sessionFromXObject($loadingSessionObj.getXWikiObject()))
   #end
 #end
@@ -44,7 +44,7 @@ LoadingSession $loadingSession
 
 #else
 
-{{error}}Could not start loading session job "$!{loadingSessionObj.id}"{{/error}}
+{{error}}Could not start loading session job "$!{loadingSessionObj}"{{/error}}
 
 #end
 

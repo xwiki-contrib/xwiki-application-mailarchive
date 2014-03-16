@@ -103,6 +103,8 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     private boolean useStore;
 
     private String emailIgnoredText;
+    
+    private boolean noLdMatch;
 
     // Components
 
@@ -160,14 +162,17 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         this.cropTopicIds = bridge.getBooleanValue(adminPrefsPage, CLASS_ADMIN, "adv_croptopicid");
         this.itemsSpaceName = bridge.getStringValue(adminPrefsPage, CLASS_ADMIN, "adv_itemsspace");
         this.useStore = bridge.getBooleanValue(adminPrefsPage, CLASS_ADMIN, "store");
+        this.noLdMatch = bridge.getBooleanValue(adminPrefsPage, CLASS_ADMIN, "noldmatch");
 
-        List<IMASource> sources = loadServersDefinitions();
+        // TODO test, load only "on demand" and not everything everytime, just load params everytime
+        /*List<IMASource> sources = loadServersDefinitions();
         sources.addAll(loadStoresDefinitions());
         this.servers = sources;
         this.lists = loadMailingListsDefinitions();
         this.mailingListGroups = loadMailingListGroupsDefinitions();
         this.types = loadMailTypesDefinitions();
         this.loadingSessions = loadLoadingSessions();
+        */
 
         if (logger.isDebugEnabled()) {
             logger.debug("loaded mail archive configuration: " + toString());
@@ -539,11 +544,6 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         this.itemsSpaceName = itemsSpaceName;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.IMailArchiveConfiguration#isUseStore()
-     */
     @Override
     public boolean isUseStore()
     {
@@ -555,6 +555,17 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         this.useStore = useStore;
     }
 
+    @Override
+    public boolean isNoLdMatch()
+    {
+        return noLdMatch;
+    }
+
+    public void setNoLdMatch(boolean noLdMatch)
+    {
+        this.noLdMatch = noLdMatch;
+    }
+
     /**
      * {@inheritDoc}
      * 
@@ -563,6 +574,11 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     @Override
     public Map<String, IMailingList> getMailingLists()
     {
+        try {
+            this.lists = loadMailingListsDefinitions();
+        } catch (MailArchiveException e) {
+            logger.warn("Failed to load mailing-lists definitions {}", ExceptionUtils.getRootCause(e));
+        }
         return this.lists;
     }
 
@@ -572,6 +588,12 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     @Override
     public Map<String, IMailingListGroup> getMailingListGroups()
     {
+        try {
+            this.mailingListGroups = loadMailingListGroupsDefinitions();
+        } catch (MailArchiveException e) {
+            logger.warn("Failed to load mailing-lists groups definitions {}", ExceptionUtils.getRootCause(e));
+        }
+        
         return mailingListGroups;
     }
 
@@ -583,6 +605,14 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     @Override
     public List<IMASource> getServers()
     {
+        try {
+            List<IMASource> sources = loadServersDefinitions();
+            sources.addAll(loadStoresDefinitions());
+            this.servers = sources;
+        } catch (MailArchiveException e) {
+            logger.warn("Failed to load sources definitions {}", ExceptionUtils.getRootCause(e));
+        }
+        
         return this.servers;
     }
 
@@ -594,12 +624,22 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
     @Override
     public Map<String, IType> getMailTypes()
     {
+        try {
+            this.types = loadMailTypesDefinitions();
+        } catch (MailArchiveException e) {
+            logger.warn("Failed to load types definitions {}", ExceptionUtils.getRootCause(e));
+        }
         return this.types;
     }
 
     @Override
     public Map<String, LoadingSession> getLoadingSessions()
     {
+        try {
+            this.loadingSessions = loadLoadingSessions();
+        } catch (MailArchiveException e) {
+            logger.warn("Failed to load types definitions {}", ExceptionUtils.getRootCause(e));
+        }
         return this.loadingSessions;
     }
 
@@ -675,16 +715,7 @@ public class MailArchiveConfiguration implements IMailArchiveConfiguration, Init
         builder.append("useStore", useStore);
         if (emailIgnoredText != null)
             builder.append("emailIgnoredText", emailIgnoredText);
-        if (queryManager != null)
-            builder.append("queryManager", queryManager);
-        if (logger != null)
-            builder.append("logger", logger);
-        if (factory != null)
-            builder.append("factory", factory);
-        if (bridge != null)
-            builder.append("bridge", bridge);
-        if (componentManager != null)
-            builder.append("componentManager", componentManager);
+        builder.append("noLdMatch", noLdMatch);
         return builder.toString();
     }
 

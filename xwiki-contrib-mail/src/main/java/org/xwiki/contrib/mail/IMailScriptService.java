@@ -33,11 +33,11 @@ public interface IMailScriptService
 {
 
     List<Message> fetch(String hostname, int port, String protocol, String folder, String username, String password,
-        Properties additionalProperties, boolean onlyUnread);
+        Properties additionalProperties, boolean onlyUnread, boolean isAutoTrustSslCertificates);
 
     int check(String hostname, int port, String protocol, String folder, String username, String password,
-        Properties additionalProperties, boolean onlyUnread);
+        Properties additionalProperties, boolean onlyUnread, boolean isAutoTrustSslCertificates);
 
     String parseAddressHeader(String header);
-
+    
 }

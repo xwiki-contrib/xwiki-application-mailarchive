@@ -81,7 +81,8 @@ public class MailLoadingResult
     {
         SUCCESS,
         FAILED,
-        ALREADY_LOADED
+        ALREADY_LOADED,
+        NOT_MATCHING_MAILING_LISTS
     }
 
 }

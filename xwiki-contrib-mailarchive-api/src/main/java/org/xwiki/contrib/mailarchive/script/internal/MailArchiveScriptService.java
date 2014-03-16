@@ -19,17 +19,23 @@
  */
 package org.xwiki.contrib.mailarchive.script.internal;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.mail.Message;
+import javax.mail.MessagingException;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.codehaus.plexus.util.StringOutputStream;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.phase.InitializationException;
+import org.xwiki.contrib.mail.internal.FolderItem;
 import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IMailArchive;
 import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
@@ -90,22 +96,12 @@ public class MailArchiveScriptService implements ScriptService, IMailArchiveScri
         return new LoadingSession();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#session(java.lang.String)
-     */
     @Override
     public LoadingSession session(final String sessionPrefsDoc)
     {
         return factory.createLoadingSession(sessionPrefsDoc);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#session(com.xpn.xwiki.objects.BaseObject)
-     */
     @Override
     public LoadingSession sessionFromXObject(final BaseObject sessionObject)
     {
@@ -113,57 +109,38 @@ public class MailArchiveScriptService implements ScriptService, IMailArchiveScri
         return factory.createLoadingSession(sessionObject);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#check(java.lang.String)
-     */
     @Override
     public int check(final String serverPrefsDoc)
     {
         return mailArchive.checkSource(serverPrefsDoc);
+    }    
+
+    @Override
+    public ArrayList<FolderItem> getFolderTree(String serverPrefsDoc)
+    {
+        return mailArchive.getFolderTree(serverPrefsDoc);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#load(org.xwiki.contrib.mailarchive.LoadingSession)
-     */
     @Override
     public int load(final LoadingSession session)
     {
 
         LoadingJob job = createLoadingJob(session, true);
-        return job != null ? job.getNbSuccess() : -1;
+        return job != null ? job.getStatus().getNbSuccess() : -1;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#startLoadingJob(org.xwiki.contrib.mailarchive.LoadingSession)
-     */
     @Override
     public Job startLoadingJob(final LoadingSession session)
     {
         return createLoadingJob(session, false);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#getCurrentJob()
-     */
     @Override
     public Job getCurrentJob()
     {
         return jobManager.getCurrentJob();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#thread(java.lang.String)
-     */
     @Override
     public ArrayList<ThreadMessageBean> thread(final String topicid)
     {
@@ -171,44 +148,24 @@ public class MailArchiveScriptService implements ScriptService, IMailArchiveScri
         return this.mailArchive.computeThreads(topicid).flatten();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#thread()
-     */
     @Override
     public ArrayList<ThreadMessageBean> thread()
     {
         return thread(null);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#parseUser(java.lang.String)
-     */
     @Override
     public IMAUser parseUser(final String internetAddress)
     {
         return mailArchive.parseUser(internetAddress);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#getTimeline()
-     */
     @Override
     public ITimeLineGenerator getTimeline()
     {
         return this.timeline;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#getDecodedMailText(java.lang.String, boolean)
-     */
     @Override
     public DecodedMailContent getDecodedMailText(final String mailPage, final boolean cut)
     {
@@ -221,11 +178,6 @@ public class MailArchiveScriptService implements ScriptService, IMailArchiveScri
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.xwiki.contrib.mailarchive.script.IMailArchiveScriptService#getConfig()
-     */
     @Override
     public IMailArchiveConfiguration getConfig()
     {
@@ -250,6 +202,12 @@ public class MailArchiveScriptService implements ScriptService, IMailArchiveScri
      */
     private LoadingJob createLoadingJob(final LoadingSession session, boolean synchronous)
     {
+
+        if (mailArchive.isLocked()) {
+            logger.info("Archive is locked, not running new job");
+            return null;
+        }
+        
         if (session == null) {
             logger.warn("Missing loading session object.");
             return null;
@@ -281,6 +239,24 @@ public class MailArchiveScriptService implements ScriptService, IMailArchiveScri
         }
 
         return job;
+    }
+
+    @Override
+    public String getOriginal(String serverId, String messageId)
+    {       
+        String original = null;
+        
+        try {
+            Message message = this.mailArchive.getFromStore(serverId, messageId);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            message.writeTo(baos);
+            // FIXME: not sure about utf-8 here...
+            original = baos.toString("UTF-8");            
+        } catch (Exception e) {
+            logger.debug("Error retrieving original message", e);
+        } 
+        
+        return original;
     }
 
 }

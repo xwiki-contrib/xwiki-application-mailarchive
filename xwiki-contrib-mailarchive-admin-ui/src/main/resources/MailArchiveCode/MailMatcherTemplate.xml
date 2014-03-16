@@ -7,7 +7,7 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1393179260000</creationDate>
+  <creationDate>1394137086000</creationDate>
   <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
@@ -114,20 +114,5 @@
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </isMultiLine>
     </class>
-    <property>
-      <expression/>
-    </property>
-    <property>
-      <fields/>
-    </property>
-    <property>
-      <isAdvanced/>
-    </property>
-    <property>
-      <isIgnoreCase/>
-    </property>
-    <property>
-      <isMultiLine/>
-    </property>
   </object>
 </xwikidoc>

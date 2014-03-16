@@ -83,12 +83,12 @@ public class DefaultMailComponent implements IMailComponent, Initializable
      */
     @Override
     public IMailReader getMailReader(final String hostname, final int port, final String protocol,
-        final String username, final String password, final Properties additionalProperties)
+        final String username, final String password, final Properties additionalProperties, final Boolean isAutoTrustSslCertificates)
         throws ComponentLookupException
     {
         final IMailReader reader = componentManager.getInstance(IMailReader.class);
         final ServerAccountSource source =
-            new ServerAccountSource(hostname, port, protocol, username, password, additionalProperties);
+            new ServerAccountSource(hostname, port, protocol, username, password, additionalProperties, isAutoTrustSslCertificates);
         reader.setMailSource(source);
         return reader;
     }

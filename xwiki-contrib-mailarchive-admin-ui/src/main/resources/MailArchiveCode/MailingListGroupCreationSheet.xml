@@ -7,7 +7,7 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1393179260000</creationDate>
+  <creationDate>1394137214000</creationDate>
   <parent>MailArchiveCode.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
@@ -206,18 +206,6 @@
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </name>
     </class>
-    <property>
-      <destinationSpace>MailArchiveItems</destinationSpace>
-    </property>
-    <property>
-      <destinationWiki>xwiki</destinationWiki>
-    </property>
-    <property>
-      <mailingLists/>
-    </property>
-    <property>
-      <name/>
-    </property>
   </object>
   <object>
     <name>MailArchiveCode.MailingListGroupCreationSheet</name>

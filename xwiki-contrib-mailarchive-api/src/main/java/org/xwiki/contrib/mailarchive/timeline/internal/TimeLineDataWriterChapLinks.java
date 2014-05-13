@@ -104,7 +104,7 @@ public class TimeLineDataWriterChapLinks implements ITimeLineDataWriter
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("start", event.beginDate.getTime());
         // FIXME dummy content
-        jsonObject.put("content", event.title + " " + event.tags + " " + event.author);
+        jsonObject.put("content", event.title + " " + event.lists + " " + event.author);
 
         jsonArray.add(jsonObject);
     }
@@ -116,7 +116,7 @@ public class TimeLineDataWriterChapLinks implements ITimeLineDataWriter
         jsonObject.put("start", event.beginDate.getTime());
         jsonObject.put("end", event.endDate.getTime());
         // FIXME dummy content
-        jsonObject.put("content", event.title + " " + event.tags + " " + event.author);
+        jsonObject.put("content", event.title + " " + event.lists + " " + event.author);
 
         jsonArray.add(jsonObject);
 

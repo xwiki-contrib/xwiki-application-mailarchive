@@ -22,6 +22,7 @@ package org.xwiki.contrib.mail;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import javax.mail.Message;
@@ -86,7 +87,9 @@ public class MailItem
 
     private String builtinType;
 
-    private ArrayList<String> types = new ArrayList<String>();
+    private List<String> types = new ArrayList<String>();
+    
+    private List<String> mailingLists = new ArrayList<String>();
 
     private String wikiuser;
 
@@ -351,7 +354,7 @@ public class MailItem
     /**
      * @return the types
      */
-    public ArrayList<String> getTypes()
+    public List<String> getTypes()
     {
         return types;
     }
@@ -359,9 +362,22 @@ public class MailItem
     /**
      * @param types the types to set
      */
-    public void addType(String type)
+    public void addType(final String type)
     {
         this.types.add(type);
+    }
+    
+    public List<String> getMailingLists()
+    {
+        return mailingLists;
+    }
+    
+    public void addMailingList(final String mailingList) {
+        this.mailingLists.add(mailingList);
+    }
+    
+    public void setMailingLists(final List<String> lists) {
+        this.mailingLists = lists;
     }
 
     /**
@@ -499,6 +515,7 @@ public class MailItem
         builder.append("sensitivity", sensitivity);
         builder.append("builtinType", builtinType);
         builder.append("types", types);
+        builder.append("mailingLists", mailingLists);
         builder.append("wikiuser", wikiuser);
         builder.append("isFirstInTopic", isFirstInTopic);
         builder.append("importance", importance);

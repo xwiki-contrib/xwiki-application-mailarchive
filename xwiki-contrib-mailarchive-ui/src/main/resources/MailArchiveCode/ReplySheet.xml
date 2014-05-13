@@ -251,7 +251,7 @@ function displayAddressFields(list, field) {
         <disabled>0</disabled>
         <editor>---</editor>
         <name>attachedMails</name>
-        <number>15</number>
+        <number>13</number>
         <picker>0</picker>
         <prettyName>Attached Mails</prettyName>
         <rows>5</rows>
@@ -304,11 +304,11 @@ function displayAddressFields(list, field) {
         <picker>0</picker>
         <prettyName>Built-in Type</prettyName>
         <relationalStorage>1</relationalStorage>
-        <separator> </separator>
+        <separator> , </separator>
         <separators/>
         <size>5</size>
         <sort>none</sort>
-        <sql/>
+        <sql>select proptypeid.value, proptype.value from XWikiDocument doc, BaseObject as obj, StringProperty as proptype, StringProperty as proptypeid, IntegerProperty as propbuiltin where proptype.id.id=obj.id and obj.className='MailArchiveCode.TypeClass' and doc.fullName=obj.name and doc.space='MailArchivePrefs' and proptype.name='name' and proptypeid.id.id=obj.id and proptypeid.name='id' and propbuiltin.id.id=obj.id and propbuiltin.name='builtin' and propbuiltin.value=1</sql>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
@@ -375,6 +375,30 @@ function displayAddressFields(list, field) {
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
       </inreplyto>
+      <list>
+        <cache>0</cache>
+        <classname>MailArchiveCode.MailingListClass</classname>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <idField>Tag</idField>
+        <multiSelect>1</multiSelect>
+        <name>list</name>
+        <number>17</number>
+        <picker>0</picker>
+        <prettyName>Mailing-List</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> , </separator>
+        <separators/>
+        <size>1</size>
+        <sort>none</sort>
+        <sql>select propid.value, prop.value from XWikiDocument doc, BaseObject as obj, StringProperty as prop, StringProperty as propid where prop.id.id=obj.id and obj.className='MailArchiveCode.MailingListClass' and doc.fullName=obj.name and doc.space='MailArchivePrefs' and prop.name='displayname' and propid.id.id=obj.id and propid.name='Tag'</sql>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <valueField>displayname</valueField>
+        <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
+      </list>
       <messageid>
         <customDisplay/>
         <disabled>0</disabled>
@@ -420,7 +444,7 @@ function displayAddressFields(list, field) {
         <customDisplay/>
         <disabled>0</disabled>
         <name>sensitivity</name>
-        <number>16</number>
+        <number>14</number>
         <picker>0</picker>
         <prettyName>Sensitivity</prettyName>
         <size>30</size>
@@ -487,7 +511,7 @@ function displayAddressFields(list, field) {
         <separators/>
         <size>5</size>
         <sort>value</sort>
-        <sql/>
+        <sql>select proptypeid.value, proptype.value from XWikiDocument doc, BaseObject as obj, StringProperty as proptype, StringProperty as proptypeid, IntegerProperty as propbuiltin where proptype.id.id=obj.id and obj.className='MailArchiveCode.TypeClass' and doc.fullName=obj.name and doc.space='MailArchivePrefs' and proptype.name='name' and proptypeid.id.id=obj.id and proptypeid.name='id' and propbuiltin.id.id=obj.id and propbuiltin.name='builtin' and propbuiltin.value=0</sql>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>

@@ -194,9 +194,8 @@ public class MailUtils implements IMailUtils
 
         if (!StringUtils.isEmpty(originalHtml)) {
             html = textUtils.unzipString(originalHtml);
-
-            // body is only plain text
         } else {
+         // body is only plain text
             if (!StringUtils.isBlank(originalBody)) {
                 if (originalBody.startsWith("<html") || originalBody.startsWith("<meta")
                     || originalBody.contains("<br>") || originalBody.contains("<br/>")) {

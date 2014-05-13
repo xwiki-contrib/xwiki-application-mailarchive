@@ -41,6 +41,7 @@ import javax.inject.Singleton;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.slf4j.Logger;
@@ -52,6 +53,7 @@ import org.xwiki.contrib.mail.MailContent;
 import org.xwiki.contrib.mail.MailItem;
 import org.xwiki.contrib.mail.internal.MailAttachment;
 import org.xwiki.contrib.mail.internal.util.Utils;
+import org.xwiki.contrib.mailarchive.internal.DefaultMailArchive;
 import org.xwiki.contrib.mailarchive.utils.ITextUtils;
 import org.xwiki.contrib.mailarchive.xwiki.IExtendedDocumentAccessBridge;
 import org.xwiki.contrib.mailarchive.xwiki.IPersistence;
@@ -165,7 +167,7 @@ public class XWikiPersistence implements IPersistence, Initializable
      * @throws XWikiException
      */
     @Override
-    public String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
+    public String createTopic(final String pagename, final MailItem m, final List<String> taglist,
         final String loadingUser, final boolean create) throws XWikiException
     {
         logger.debug("createTopic(pagename=" + pagename + ", m=" + m + ", taglist=" + taglist + ", loadingUser="
@@ -189,18 +191,31 @@ public class XWikiPersistence implements IPersistence, Initializable
         topicObj.set("sensitivity", m.getSensitivity(), context);
         topicObj.set("importance", m.getImportance(), context);
 
-        String types = StringUtils.join(m.getTypes().toArray(new String[] {}), ',');
-        topicObj.set("type", types, context);
+        if (CollectionUtils.isNotEmpty(m.getTypes())) {
+            String types = StringUtils.join(m.getTypes().toArray(new String[] {}), ',');
+            topicObj.set("type", types, context);
+        }
         topicDoc.setParent(SPACE_HOME + ".WebHome");
-        topicDoc.setTitle("Topic " + m.getTopic());
-        topicDoc.setComment("Created topic from mail [" + m.getMessageId() + "]");
+
+        if (StringUtils.isNotEmpty(m.getBuiltinType())) {
+            topicObj.set("builtinType", m.getBuiltinType(), context);
+        } else {
+            topicObj.set("builtinType", DefaultMailArchive.MAIL_TYPE, context);
+        }
+        if (CollectionUtils.isNotEmpty(m.getMailingLists())) {
+            String mailingLists = StringUtils.join(m.getMailingLists().toArray(new String[] {}), ',');
+            topicObj.set("list", mailingLists, context);
+        }
 
         // Materialize mailing-lists information and mail IType in Tags
         if (taglist.size() > 0) {
             BaseObject tagobj = topicDoc.newObject("XWiki.TagClass", context);
             String tags = StringUtils.join(taglist.toArray(new String[] {}), ',');
-            tagobj.set("tags", tags.replaceAll(" ", "_"), context);
+            tagobj.set("tags", tags, context);
         }
+
+        topicDoc.setTitle("Topic " + m.getTopic());
+        topicDoc.setComment("Created topic from mail [" + m.getMessageId() + "]");
 
         if (create) {
             saveAsUser(topicDoc, m.getWikiuser(), loadingUser, "Created topic from mail [" + m.getMessageId() + "]");
@@ -403,9 +418,18 @@ public class XWikiPersistence implements IPersistence, Initializable
             msgObj.set("attached", "1", context);
             // m.setBuiltinType(IType.BUILTIN_TYPE_ATTACHED_MAIL);
         }
-        if (m.getTypes().size() > 0) {
+        if (CollectionUtils.isNotEmpty(m.getTypes())) {
             String types = StringUtils.join(m.getTypes().toArray(new String[] {}), ',');
             msgObj.set("type", types, context);
+        }
+        if (!StringUtils.isEmpty(m.getBuiltinType())) {
+            msgObj.set("buildinType", m.getBuiltinType(), context);
+        } else {
+            msgObj.set("builtinType", DefaultMailArchive.MAIL_TYPE, context);
+        }
+        if (CollectionUtils.isNotEmpty(m.getMailingLists())) {
+            String mailingLists = StringUtils.join(m.getMailingLists().toArray(new String[] {}), ',');
+            msgObj.set("list", mailingLists, context);
         }
 
         msgDoc.setParent(parentMail);
@@ -416,7 +440,7 @@ public class XWikiPersistence implements IPersistence, Initializable
             msgDoc.setComment("Attached mail created");
         }
 
-        if (taglist.size() > 0) {
+        if (CollectionUtils.isNotEmpty(taglist)) {
             BaseObject tagobj = msgDoc.newObject("XWiki.TagClass", context);
             String tags = StringUtils.join(taglist.toArray(new String[] {}), ',');
             tagobj.set("tags", tags, context);

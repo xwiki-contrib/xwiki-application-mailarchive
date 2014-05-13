@@ -21,7 +21,6 @@ package org.xwiki.contrib.mailarchive.xwiki;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.mail.MessagingException;
@@ -41,7 +40,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 public interface IPersistence
 {
 
-    public String createTopic(final String pagename, final MailItem m, final ArrayList<String> taglist,
+    public String createTopic(final String pagename, final MailItem m, final List<String> taglist,
         final String loadingUser, final boolean create) throws XWikiException;
 
     public String updateTopicPage(MailItem m, String existingTopicPage, SimpleDateFormat dateFormatter,

@@ -20,14 +20,26 @@
 package org.xwiki.contrib.mailarchive.timeline.internal;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import javax.inject.Named;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
 import org.xwiki.rendering.renderer.printer.WikiPrinter;
 import org.xwiki.rendering.renderer.printer.XMLWikiPrinter;
+
+import edu.emory.mathcs.util.security.action.GetLongAction;
 
 /**
  * Specialized Writer for TimeLine events.
@@ -39,11 +51,14 @@ import org.xwiki.rendering.renderer.printer.XMLWikiPrinter;
 public class TimeLineDataWriterSimile extends XMLWikiPrinter implements ITimeLineDataWriter
 {
 
-    private static final DateFormat dateFormatter = DateFormat.getDateInstance();
+    private static final DateFormat eventsDateFormatter =
+        new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US);
+
+    private static final DateFormat displayDateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM);
 
     public TimeLineDataWriterSimile()
     {
-        super(null);
+        super(new DefaultWikiPrinter());
     }
 
     /**
@@ -51,7 +66,8 @@ public class TimeLineDataWriterSimile extends XMLWikiPrinter implements ITimeLin
      */
     public TimeLineDataWriterSimile(WikiPrinter printer)
     {
-        super(printer);
+        this();
+        this.setWikiPrinter(printer);
     }
 
     public void setWikiPrinter(final WikiPrinter printer)
@@ -83,6 +99,11 @@ public class TimeLineDataWriterSimile extends XMLWikiPrinter implements ITimeLin
     @Override
     public void print(TimeLineEvent event)
     {
+        if (event.beginDate == null) {
+            // skipping invalid event
+            return;
+        }
+
         if (event.endDate != null) {
             // This is a topic
             printTopic(event);
@@ -99,20 +120,38 @@ public class TimeLineDataWriterSimile extends XMLWikiPrinter implements ITimeLin
      */
     protected void printTopic(TimeLineEvent event)
     {
+        // We use color of first mailing-list found for timeline band
+        String classname = "";
+        if (CollectionUtils.isNotEmpty(event.lists)) {
+            classname = event.lists.get(0).replaceAll("\\s", "-");
+        }
+
         String[][] attributes =
-            new String[][] { {"start", dateFormatter.format(event.beginDate)},
-            {"end", dateFormatter.format(event.endDate)}, {"title", event.title}, {"icon", event.icons.get(0)},
-            {"image", event.icons.get(0)}, {"classname", event.tags}, {"durationEvent", "true"}, {"link", event.url}};
+            new String[][] { {"start", eventsDateFormatter.format(event.beginDate)},
+            {"end", eventsDateFormatter.format(event.endDate)}, {"title", event.title},
+            {"icon", (event.icons != null && event.icons.size() > 0 ? event.icons.get(0) : "")},
+            {"image", (event.icons != null && event.icons.size() > 0 ? event.icons.get(0) : "")},
+            {"classname", classname}, {"durationEvent", "true"}, {"link", event.url}};
 
         printXMLStartElement("event", attributes);
 
         // FIXME HTML generation here
-        printXML((!event.tags.equals("") ? "<span class=\"tape-" + event.tags + "\">___</span> " + event.tags + "<br/>"
-            : "") + "<br/> " + event.action + " by " + event.author + "<br/> ");
+        if (CollectionUtils.isNotEmpty(event.lists)) {
+            for (String tag : event.lists) {
+                printXML("<span class=\"block-" + tag.replaceAll("\\s", "-") + "\">OO</span> " + tag + ' ');
+            }
+        }
+        printXML("<br/><br/> " + event.action + " by " + event.author + "<br/> ");
 
         // Print extract
-        for (Entry<Long, TopicEventBubble> bubbleInfo : event.messages.entrySet()) {
-            print(bubbleInfo.getValue());
+        printXML("<br/>");
+        printXML("\"" + event.extract + "\"");
+        printXML("<br/>");
+        printXML("<br/>");
+        if (MapUtils.isNotEmpty(event.messages)) {
+            for (Entry<Long, TopicEventBubble> bubbleInfo : event.messages.entrySet()) {
+                print(bubbleInfo.getValue());
+            }
         }
 
         printXMLEndElement("event");
@@ -126,14 +165,23 @@ public class TimeLineDataWriterSimile extends XMLWikiPrinter implements ITimeLin
     protected void printMail(TimeLineEvent event)
     {
         String[][] attributes =
-            new String[][] { {"start", dateFormatter.format(event.beginDate)}, {"title", event.title},
-            {"icon", event.icons.get(0)}, {"image", event.icons.get(0)}, {"link", event.url}};
+            new String[][] { {"start", eventsDateFormatter.format(event.beginDate)}, {"title", event.title},
+            {"icon", (event.icons != null && event.icons.size() > 0 ? event.icons.get(0) : "")},
+            {"image", (event.icons != null && event.icons.size() > 0 ? event.icons.get(0) : "")}, {"link", event.url}};
 
         printXMLStartElement("event", attributes);
 
         // FIXME HTML generation here
-        printXML((!event.tags.equals("") ? "<span class=\"tape-" + event.tags + "\">___</span> " + event.tags + "<br/>"
-            : "") + "<br/>" + event.action + " by " + event.author + "<br/> " + event.extract);
+        if (CollectionUtils.isNotEmpty(event.lists)) {
+            for (String tag : event.lists) {
+                printXML("<span class=\"block-" + tag.replaceAll("\\s", "-") + "\">OO</span> " + tag + ' ');
+            }
+        }
+        printXML("<br/><br/>" + event.action + " by " + event.author + "<br/>");
+        printXML("<br/>");
+        printXML("\"" + event.extract + "\"");
+        printXML("<br/>");
+        printXML("<br/>");
 
         printXMLEndElement("event");
 
@@ -148,30 +196,22 @@ public class TimeLineDataWriterSimile extends XMLWikiPrinter implements ITimeLin
     public void print(final TopicEventBubble bubbleInfo)
     {
 
-        String[][] attributes = new String[][] {{"href", "javascript:centerTimeline(" + bubbleInfo.date + ");\">"}};
-
-        printXMLStartElement("a", attributes);
-        printXML(dateFormatter.format(bubbleInfo.date));
-        printXMLEndElement("a");
-
+        // FIXME HTML Generation ?
+        printXML("<a href=\"javascript:centerTimeline('" + bubbleInfo.date + "');\">"
+            + displayDateFormatter.format(bubbleInfo.date) + "</a>");
         printXML(" - ");
 
-        attributes = new String[][] {{"href", bubbleInfo.url}};
-        printXMLStartElement("a", attributes);
-        printXML(bubbleInfo.subject);
-        printXMLEndElement("a");
-
+        printXML("<a href=\"" + bubbleInfo.url + "\">" + bubbleInfo.subject + "</a>");
         printXML(" - ");
+
         if (bubbleInfo.link != null) {
-            attributes = new String[][] {{"href", bubbleInfo.link}};
-            printXMLStartElement("a", attributes);
+            printXML("<a href=\"" + bubbleInfo.link + "\">");
         }
         printXML(bubbleInfo.user);
         if (bubbleInfo.link != null) {
-            printXMLEndElement("a");
+            printXML("</a>");
         }
-
-        printXMLElement("br");
+        printXML("<br/>");
 
         /*
          * <a href="javascript:centerTimeline();"> formatter.format(maildate)</a> - <a href=\"" + +"\">" + subject +

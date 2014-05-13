@@ -19,6 +19,7 @@
  */
 package org.xwiki.contrib.mailarchive.timeline.internal;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,18 +31,25 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.phase.Initializable;
 import org.xwiki.component.phase.InitializationException;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
+import org.xwiki.contrib.mailarchive.IMAUser;
 import org.xwiki.contrib.mailarchive.IMailArchiveConfiguration;
 import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.timeline.ITimeLineGenerator;
+import org.xwiki.contrib.mailarchive.utils.DecodedMailContent;
+import org.xwiki.contrib.mailarchive.utils.IMailUtils;
+import org.xwiki.contrib.mailarchive.utils.ITextUtils;
 import org.xwiki.contrib.mailarchive.xwiki.internal.XWikiPersistence;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.query.Query;
@@ -86,8 +94,16 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
     private DocumentReferenceResolver<String> docResolver;
 
     @Inject
-    @Named("chaplinks")
+    @Named("simile")
     ITimeLineDataWriter timelineWriter;
+
+    @Inject
+    private IMailUtils mailUtils;
+
+    @Inject
+    private ITextUtils textUtils;
+
+    private String userStatsUrl = "";
 
     /**
      * {@inheritDoc}
@@ -100,6 +116,7 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
         ExecutionContext context = execution.getContext();
         this.context = (XWikiContext) context.getProperty("xwikicontext");
         this.xwiki = this.context.getWiki();
+
     }
 
     public String compute()
@@ -123,6 +140,13 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
         }
         Map<String, IMailingList> mailingLists = config.getMailingLists();
         Map<String, IType> types = config.getMailTypes();
+
+        try {
+            this.userStatsUrl =
+                xwiki.getDocument(docResolver.resolve("MailArchive.ViewUserMessages"), context).getURL("view", context);
+        } catch (XWikiException e1) {
+            logger.warn("Could not retrieve user stats url {}", ExceptionUtils.getRootCauseMessage(e1));
+        }
 
         TreeMap<Long, TimeLineEvent> sortedEvents = new TreeMap<Long, TimeLineEvent>();
 
@@ -162,38 +186,53 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
                         }
 
                         doc = xwiki.getDocument(docResolver.resolve(docurl), context);
-                        String tags = doc.getTags(context);
+                        final List<String> tagsList = doc.getTagsList(context);                        
                         List<String> topicTypes = doc.getListValue(XWikiPersistence.CLASS_TOPICS, "type");
 
                         // Email type icon
                         List<String> icons = new ArrayList<String>();
-                        // FIXME: an email/topic can have more than one type...
                         for (String topicType : topicTypes) {
                             IType type = types.get(topicType);
                             if (type != null && !StringUtils.isEmpty(type.getIcon())) {
-                                icons.add(xwiki.getSkinFile("icons/silk/" + type.getIcon(), context));
+                                icons.add(xwiki.getSkinFile("icons/silk/" + type.getIcon() + ".png", context));
+                                // http://localhost:8080/xwiki/skins/colibri/icons/silk/bell
+                                // http://localhost:8080/xwiki/resources/icons/silk/bell.png
+
                             }
                         }
 
-                        // Author avatar
-                        String authorAvatar = getAuthorAvatar(doc.getCreator());
+                        // Author and avatar
+                        final IMAUser wikiUser = mailUtils.parseUser(author, config.isMatchLdap());
+                        final String authorAvatar = getAuthorAvatar(wikiUser.getWikiProfile());
 
-                        TimeLineEvent timelineEvent = new TimeLineEvent();
+                        final TimeLineEvent timelineEvent = new TimeLineEvent();
+                        TimeLineEvent additionalEvent = null;
                         timelineEvent.beginDate = date;
                         timelineEvent.title = subject;
                         timelineEvent.icons = icons;
-                        timelineEvent.tags = tags;
-                        timelineEvent.author = author;
+                        timelineEvent.lists = doc.getListValue(XWikiPersistence.CLASS_TOPICS, "list");
+                        timelineEvent.author = wikiUser.getDisplayName();
                         timelineEvent.authorAvatar = authorAvatar;
+                        timelineEvent.extract = getExtract(topicId);
 
                         if (emails.size() == 1) {
-                            logger.debug("Adding email '" + subject + "'");
+                            logger.debug("Adding instant event for email '" + subject + "'");
                             // Unique email, we show a punctual email event
                             timelineEvent.url = emails.firstEntry().getValue().link;
                             timelineEvent.action = "New Email ";
+
                         } else {
+                            // For email with specific type icon, and a duration, both a band and a point should be added (so 2 events)
+                            // because no icon is displayed for duration events.
+                            if (CollectionUtils.isNotEmpty(icons)) {
+                                logger.debug("Adding additional instant event to display type icon for first email in topic");
+                                additionalEvent = new TimeLineEvent(timelineEvent);
+                                additionalEvent.url = emails.firstEntry().getValue().link;
+                                additionalEvent.action = "New Email ";                                
+                            }
+                            
                             // Email thread, we show a topic event (a range)
-                            logger.debug("Adding topic '" + subject + "'");
+                            logger.debug("Adding duration event for topic '" + subject + "'");
                             timelineEvent.endDate = end;
                             timelineEvent.url = doc.getURL("view", context);
                             timelineEvent.action = "New Topic ";
@@ -202,9 +241,13 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
 
                         // Add the generated Event to the list
                         if (sortedEvents.containsKey(date.getTime())) {
+                            // Avoid having more than 1 event at exactly the same time, because some timeline don't like it
                             date.setTime(date.getTime() + 1);
                         }
                         sortedEvents.put(date.getTime(), timelineEvent);
+                        if (additionalEvent != null) {
+                            sortedEvents.put(date.getTime() + 1, additionalEvent);
+                        }
                     }
 
                 } catch (Throwable t) {
@@ -234,6 +277,7 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
         timelineWriter.print(sortedEvents);
 
         logger.debug("Loaded " + sortedEvents.size() + " into Timeline feed");
+        logger.debug("Timeline data {}", printer.toString());
         return printer.toString();
 
     }
@@ -255,45 +299,32 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
 
         logger.debug("Retrieving emails linked to topic with id " + topicid);
 
-        TreeMap<Long, TopicEventBubble> bubblesInfo = new TreeMap<Long, TopicEventBubble>();
-        boolean first = true;
+        final TreeMap<Long, TopicEventBubble> bubblesInfo = new TreeMap<Long, TopicEventBubble>();
         String xwql_topic =
-            "select doc.fullName, doc.author, mail.date, mail.messagesubject ,mail.from from Document doc, "
+            "select doc.fullName, mail.date, mail.messagesubject ,mail.from from Document doc, "
                 + "doc.object(" + XWikiPersistence.CLASS_MAILS + ") as  mail where  mail.topicid='" + topicid
                 + "' and doc.space='MailArchiveItems' order by mail.date asc";
-        List<Object[]> msgs = queryManager.createQuery(xwql_topic, Query.XWQL).execute();
+        final List<Object[]> msgs = queryManager.createQuery(xwql_topic, Query.XWQL).execute();
+
+        String previousSubject = StringUtils.normalizeSpace(topicsubject);
+
         for (Object[] msg : msgs) {
-            String docfullname = (String) msg[0];
-            String docauthor = (String) msg[1];
-            Date maildate = (Date) msg[2];
-            String mailmessagesubject = (String) msg[3];
-            String mailfrom = (String) msg[4];
-            // formatter for formatting dates for display
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-            // FIXME this thing with doc author does work only if ldap link is activated and if user exists in xwiki
-            XWikiDocument userdoc = xwiki.getDocument(docResolver.resolve(docauthor), context);
-            String user = "";
-            String link = null;
-            if (!userdoc.isNew()) {
-                BaseObject userobj = userdoc.getXObject(docResolver.resolve("XWiki.XWikiUsers"));
-                if (userobj != null) {
-                    user = userobj.getStringValue("first_name") + " " + userobj.getStringValue("last_name");
-                    link = userdoc.getURL("view", context);
-                }
-            } else {
-                // TODO replace with parse user method
-                int start = mailfrom.indexOf("<");
-                if (start != -1) {
-                    user = mailfrom.substring(0, start);
-                }
+            final String docfullname = (String) msg[0];
+            final Date maildate = (Date) msg[1];
+            String mailmessagesubject = (String) msg[2];
+            final String mailfrom = (String) msg[3];
+
+            IMAUser parsedUser = mailUtils.parseUser(mailfrom, config.isMatchLdap());
+            String user = parsedUser.getDisplayName();
+            String link = this.userStatsUrl + "?user=" + mailfrom;
+            if (StringUtils.isNotEmpty(parsedUser.getWikiProfile())) {
+                link += "&wikiUser=" + parsedUser.getWikiProfile();
             }
-            String subject = topicsubject;
-            if (!first) {
-                subject = mailmessagesubject.replace(topicsubject, "...");
-            } else {
-                subject = StringUtils.normalizeSpace(topicsubject);
-                subject = StringUtils.abbreviate(subject, 23);
-            }
+
+            mailmessagesubject = StringUtils.normalizeSpace(mailmessagesubject);
+            String subject = mailmessagesubject.replace(previousSubject, "...");
+            previousSubject = mailmessagesubject;
+
             TopicEventBubble bubbleEvent = new TopicEventBubble();
             bubbleEvent.date = maildate;
             bubbleEvent.url = xwiki.getDocument(docResolver.resolve(docfullname), context).getURL("view", context);
@@ -301,8 +332,6 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
             bubbleEvent.link = link;
             bubbleEvent.user = user;
             bubblesInfo.put(maildate.getTime(), bubbleEvent);
-
-            first = false;
         }
 
         return bubblesInfo;
@@ -332,6 +361,57 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
         }
 
         return authorAvatar;
+    }
+
+    /**
+     * Formats a timeline bubble content, ie html presenting list of mails related to a given topic.
+     * 
+     * @param topicid
+     * @param topicsubject
+     * @return
+     * @throws QueryException
+     * @throws XWikiException
+     */
+    protected String getExtract(String topicid) throws QueryException, XWikiException
+    {
+        String extract = "";
+
+        logger.debug("Retrieving first email linked to topic with id " + topicid);
+
+        String xwql_topic =
+            "select mail.body, mail.bodyhtml from Document doc, " + "doc.object(" + XWikiPersistence.CLASS_MAILS
+                + ") as  mail where  mail.topicid='" + topicid
+                + "' and doc.space='MailArchiveItems' order by mail.date asc";
+        final List<Object[]> msgs = queryManager.createQuery(xwql_topic, Query.XWQL).setLimit(1).execute();
+
+        if (CollectionUtils.isNotEmpty(msgs)) {
+
+            final String body = (String) msgs.get(0)[0];
+            final String bodyhtml = (String) msgs.get(0)[1];
+
+            extract = body;
+
+            try {
+                DecodedMailContent decoded = mailUtils.decodeMailContent(bodyhtml, body, true);
+                if (decoded != null) {
+                    if (decoded.isHtml() && StringUtils.isEmpty(decoded.getText())) {
+                        extract = textUtils.htmlToPlainText(bodyhtml);
+                    } else {
+                        extract = decoded.getText();
+                    }
+                }
+
+            } catch (IOException e) {
+                Log.warn("Could not decoded HTML content {}", e);
+            }
+            
+            extract = StringUtils.normalizeSpace(extract);
+            extract = StringUtils.abbreviate(extract, 200);
+
+        }
+
+        return extract;
+
     }
 
 }

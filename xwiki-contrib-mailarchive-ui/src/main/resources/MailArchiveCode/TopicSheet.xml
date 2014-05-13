@@ -107,7 +107,7 @@ function initialize() {
    "_ratings" : { "sortable" : "false" },
    "date" : { "displayName":"Date", "type" : "date", "link" : "view" }
                  })
-  #set($url = "$xwiki.getDocument('MailArchiveCode.TopicsLiveTableResults').getExternalURL('view')?topicid=${doc.topicid}&amp;collist=date,from,messagesubject,_ratings&amp;classname=MailArchiveCode.MailClass&amp;outputSyntax=plain&amp;xpage=plain")
+  #set($url = "$xwiki.getDocument('MailArchiveCode.TopicsLiveTableResults').getExternalURL('get')?topicid=${escapetool.url($doc.topicid)}&amp;collist=date,from,messagesubject,_ratings&amp;classname=MailArchiveCode.MailClass&amp;outputSyntax=plain&amp;xpage=plain")
   #set($options = { "className":"MailArchiveCode.TopicClass",
                   "url":"$url",
                   "selectedColumn":"date",

@@ -23,16 +23,11 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden/>
   <content>{{velocity filter="none"}}
-$xwiki.ssx.use('MailArchiveCode.TimeLine')
+$xwiki.ssx.use('MailArchiveCode.TimeLineSheet')
 {{html clean="false" wiki="false"}}
 &lt;script type="text/javascript"&gt;
-#set($path=false)
-#if($!path) 
-addJavascriptText('Timeline_ajax_url="http://localhost:8080/xwiki/bin/skin/resources/js/timeline/src/ajax/api/simile-ajax-api.js";\nTimeline_urlPrefix="http://localhost:8080/xwiki/bin/skin/resources/js/timeline/src/webapp/api/";\nTimeline_parameters="bundle=false";', 'head');
-addJavascript('http://localhost:8080/xwiki/bin/skin/resources/js/timeline/src/webapp/api/timeline-api.js', 'head');
-#else
-addJavascript('http://api.simile-widgets.org/timeline/2.3.1/timeline-api.js', 'head');
-#end
+addJavascript('http://localhost:8080/xwiki/resources/js/timeline/src/webapp/api/timeline-api.js', 'head');
+addJavascriptText('Timeline_ajax_url="http://localhost:8080/xwiki/resources/js/timeline/src/ajax/api/simile-ajax-api.js";\nTimeline_urlPrefix="http://localhost:8080/xwiki/resources/js/timeline/src/webapp/api/";\nTimeline_parameters="bundle=false&amp;timeline-use-local-resources=true";', 'head');
 
 
 // onload events and included javascript 
@@ -63,6 +58,7 @@ function onLoad() {
  theme.event.label.width = 250; // px
  theme.event.bubble.width = 450;
  theme.event.bubble.height = 150;
+// theme.mouseWheel = 'zoom'; // FIXME: zooming mouseWheel does not seem compatible at all with HotZones ... So to go this way I have to remove HotZones first. We'll see that later ...
  var bandInfos = [
     Timeline.createHotZoneBandInfo({
          zones: [
@@ -81,7 +77,22 @@ function onLoad() {
          intervalUnit: Timeline.DateTime.DAY,
          intervalPixels: 150,
          theme: theme,
-         layout: 'original' }),
+         layout: 'original',
+         zoomIndex:      10,
+         zoomSteps:      new Array(
+           {pixelsPerInterval: 280,  unit: Timeline.DateTime.HOUR},
+           {pixelsPerInterval: 140,  unit: Timeline.DateTime.HOUR},
+           {pixelsPerInterval:  70,  unit: Timeline.DateTime.HOUR},
+           {pixelsPerInterval:  35,  unit: Timeline.DateTime.HOUR},
+           {pixelsPerInterval: 400,  unit: Timeline.DateTime.DAY},
+           {pixelsPerInterval: 200,  unit: Timeline.DateTime.DAY},
+           {pixelsPerInterval: 100,  unit: Timeline.DateTime.DAY},
+           {pixelsPerInterval:  50,  unit: Timeline.DateTime.DAY},
+           {pixelsPerInterval: 400,  unit: Timeline.DateTime.MONTH},
+           {pixelsPerInterval: 200,  unit: Timeline.DateTime.MONTH},
+           {pixelsPerInterval: 100,  unit: Timeline.DateTime.MONTH} // DEFAULT zoomIndex
+         )
+    }),
     Timeline.createHotZoneBandInfo({
          zones: [
              { start: SimileAjax.DateTime.parseGregorianDateTime(startMagnifyDays.toUTCString()),
@@ -103,7 +114,11 @@ function onLoad() {
  bandInfos[1].syncWith = 0;
  bandInfos[1].highlight = true;
  tl = Timeline.create(document.getElementById("my-timeline"), bandInfos);
- Timeline.loadXML("http://localhost:8080/xwiki/bin/skin/resources/js/timeline/TimeLineFeed-MailArchiver.xml?"+ (new Date().getTime()), function(xml, url) { eventSource.loadXML(xml, url); }); 
+
+ tl.loadXML("http://localhost:8080/xwiki/bin/view/MailArchiveTests/TimelineDataStaticXml?xpage=plain&amp;outputSyntax=plain&amp;"+ (new Date().getTime()), function(xml, url) {
+       eventSource.loadXML(xml, url);
+   });
+ //Timeline.loadXML("http://localhost:8080/xwiki/resources/TimeLineFeed-MailArchiver_TU7.xml", function(xml, url) { eventSource.loadXML(xml, url); }); 
  
 }; // onload
 
@@ -140,11 +155,11 @@ function addJavascriptText(text,pos) {
 #set($xwql = "select list.Tag, list.color, list.displayname from Document doc, doc.object(MailArchiveCode.MailingListClass) as list where doc.name&lt;&gt;'MailArchiveCode.ListsSettingsTemplate'")
 #set($lists = $services.query.xwql($xwql).execute())
 #foreach($list in $lists)
-  &lt;span style="font-weight:bold;color:white;text-shadow: 0.2em 0.2em 0.2em black;" class="tape-${list[0]}" style="color:${list[1]}"&gt;&amp;nbsp;${list[2]}&amp;nbsp;&lt;/span&gt;
+  &lt;span style="font-weight:bold;color:black;text-shadow: 2px 2px 0px white" class="tape-${list[0].replaceAll(' ', '-')}"&gt;&amp;nbsp;${list[2]}&amp;nbsp;&lt;/span&gt;
 #end
 &lt;/div&gt;
 
-&lt;div id="my-timeline" class="timeline-default" style="height: 500px; border: 1px solid #aaa"&gt;&lt;/div&gt;
+&lt;div id="my-timeline" class="timeline-default" style="height: 800px; border: 1px solid #aaa"&gt;&lt;/div&gt;
 {{/html}}
 {{/velocity}}</content>
   <attachment>
@@ -347,8 +362,8 @@ function addJavascriptText(text,pos) {
   font-size: 10pt; 
 }
 .timeline-band img {   
-  width:16px; 
-  height:16px; 
+  width:13px; 
+  height:13px; 
 }
 .timeline-event-bubble-body img {   
   float:left; 
@@ -363,8 +378,12 @@ function addJavascriptText(text,pos) {
 #set($xwql = "select list.Tag, list.color from Document doc, doc.object(MailArchiveCode.MailingListClass) as list where doc.name&lt;&gt;'MailArchiveCode.ListsSettingsTemplate'")
 #set($lists = $services.query.xwql($xwql).execute())
 #foreach($list in $lists)
-.tape-${list[0]} {
+.tape-${list[0].replaceAll(' ', '-')} {
   background-color:${list[1]} !important;
+}
+.block-${list[0].replaceAll(' ', '-')} {
+  background-color:${list[1]} !important;
+  color:${list[1]};
 }
 #end
 {{/velocity}}</code>

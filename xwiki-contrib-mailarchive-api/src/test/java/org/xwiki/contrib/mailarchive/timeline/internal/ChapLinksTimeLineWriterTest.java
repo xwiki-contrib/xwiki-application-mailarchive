@@ -17,8 +17,9 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.internal.timeline.chaplinks;
+package org.xwiki.contrib.mailarchive.timeline.internal;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TreeMap;
@@ -67,7 +68,8 @@ public class ChapLinksTimeLineWriterTest
         event.beginDate = new Date();
         event.title = "Testing the Chap-links library";
         event.author = "Michel Alki";
-        event.tags = "XWiki Devs";
+        event.lists = new ArrayList<String>();
+        event.lists.add("XWiki Devs");
         events.put(event.beginDate.getTime(), event);
 
         event = new TimeLineEvent();
@@ -77,7 +79,8 @@ public class ChapLinksTimeLineWriterTest
         event.endDate = calendar.getTime();
         event.title = "Testing the Chap-links long event";
         event.author = "Toto The Hero";
-        event.tags = "XWiki Users";
+        event.lists = new ArrayList<String>(); 
+        event.lists.add("XWiki Users");
         events.put(event.beginDate.getTime() + 1, event);
 
         writer.print(events);

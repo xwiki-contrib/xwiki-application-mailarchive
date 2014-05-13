@@ -101,6 +101,8 @@ import com.xpn.xwiki.objects.BaseObject;
 public class DefaultMailArchive implements IMailArchive, Initializable
 {
 
+    public static final String MAIL_TYPE = "mail";
+
     /**
      * XWiki profile name of a non-existing user.
      */
@@ -625,6 +627,10 @@ public class DefaultMailArchive implements IMailArchive, Initializable
     {
         logger.debug("Extracting types");
         try {
+            // Built-in types
+            // TODO: manage calendar built-in type, for now default is mail for all emails
+            m.setBuiltinType(MAIL_TYPE);
+            
             // Types
             List<IType> foundTypes = mailutils.extractTypes(config.getMailTypes().values(), m);
             logger.debug("Extracted types " + foundTypes);
@@ -638,6 +644,9 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                * else { logger.debug("No specific type found for this mail");
                * m.addType(getType(IType.BUILTIN_TYPE_MAIL).getId()); }
                */
+            
+            // Mailing-lists
+            m.setMailingLists(extractMailingListsTags(m));
 
             // User
             logger.debug("Extracting user information");
@@ -863,7 +872,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         String pageName = "T" + m.getTopic().replaceAll(" ", "");
 
         // Materialize mailing-lists information and mail IType in Tags
-        ArrayList<String> taglist = extractTags(m);
+        List<String> taglist = extractTags(m);
 
         String createdTopicName = persistence.createTopic(pageName, m, taglist, config.getLoadingUser(), create);
 
@@ -932,10 +941,10 @@ public class DefaultMailArchive implements IMailArchive, Initializable
         return attachedMailsPages;
     }
 
-    protected ArrayList<String> extractTags(final MailItem m)
+    protected List<String> extractTags(final MailItem m)
     {
         // Materialize mailing-lists information and mail IType in Tags
-        ArrayList<String> taglist = extractMailingListsTags(m);
+        List<String> taglist = extractMailingListsTags(m);
 
         for (String typeid : m.getTypes()) {
             IType type = config.getMailTypes().get(typeid);
@@ -950,19 +959,19 @@ public class DefaultMailArchive implements IMailArchive, Initializable
      * @param m
      * @return
      */
-    protected ArrayList<String> extractMailingListsTags(final MailItem m)
+    protected List<String> extractMailingListsTags(final MailItem m)
     {
-        ArrayList<String> taglist = new ArrayList<String>();
+        List<String> mailingLists = new ArrayList<String>();
 
         for (IMailingList list : config.getMailingLists().values()) {
             if (m.getFrom().contains(list.getDisplayName()) || m.getTo().contains(list.getPattern())
                 || m.getCc().contains(list.getPattern())) {
                 // Add tag of this mailing-list to the list of tags
-                taglist.add(list.getTag());
+                mailingLists.add(list.getTag());
             }
         }
 
-        return taglist;
+        return mailingLists;
     }
 
     /**

@@ -522,7 +522,7 @@ public class DefaultMailArchive implements IMailArchive, Initializable
                 }
             }
         }
-        if (!hasServers && config.getServers() != null) {
+        if (!hasServers && servers.isEmpty() && config.getServers() != null) {
             // Empty server config means all servers
             // Empty store config means no store
             servers.addAll(config.getServers());

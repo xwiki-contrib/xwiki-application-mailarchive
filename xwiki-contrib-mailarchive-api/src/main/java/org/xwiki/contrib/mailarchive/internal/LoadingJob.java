@@ -127,7 +127,8 @@ public class LoadingJob extends AbstractJob<DefaultRequest, EmailLoadingJobStatu
                 quitDebugMode();
             }
         } catch (Throwable t) {
-            logger.error("Loading Job failed", ExceptionUtils.getRootCause(t));
+            logger.error("Loading Job failed", t);
+            t.printStackTrace();
         } finally {
             this.status.setState(State.FINISHED);
         }

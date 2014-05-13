@@ -43,7 +43,7 @@ The following mail types are configured in the mail archive:
 
 {{velocity wiki="true"}}
 {{html wiki="true"}}
-#set($xwql = "select type.displayName, type.icon from Document doc, doc.object(MailArchiveCode.TypeClass) as type where doc.space='MailArchivePrefs'")
+#set($xwql = "select type.name, type.icon from Document doc, doc.object(MailArchiveCode.TypeClass) as type where doc.space='MailArchivePrefs'")
 #set($types = $services.query.xwql($xwql).execute())
 |=Name|=Icon
 #foreach($type in $types)

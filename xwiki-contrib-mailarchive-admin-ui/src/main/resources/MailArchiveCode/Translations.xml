@@ -282,6 +282,7 @@ mailarchive.listsgroups.table.headers.name=Name
 mailarchive.listsgroups.table.headers.mailingLists=Mailing-Lists
 mailarchive.listsgroups.table.headers.destinationWiki=Target (Sub)Wiki
 mailarchive.listsgroups.table.headers.destinationSpace=Target Space
+mailarchive.listsgroups.table.headers.emptyvalue=n/a
 # Types
 mailarchive.types.table.headers.name=Display Name
 mailarchive.types.table.headers.id=ID

@@ -2,20 +2,20 @@
 
 <xwikidoc version="1.1">
   <web>MailArchive</web>
-  <name>Statistics</name>
+  <name>Statistics2</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1394137259000</creationDate>
-  <parent>MailArchive.WebHome</parent>
+  <creationDate>1398600809000</creationDate>
+  <parent/>
   <author>xwiki:XWiki.Admin</author>
   <customClass/>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1394879953000</date>
-  <contentUpdateDate>1394879953000</contentUpdateDate>
+  <date>1398601367000</date>
+  <contentUpdateDate>1398601282000</contentUpdateDate>
   <version>1.1</version>
-  <title>Mail Archive Statistics</title>
+  <title>Statistics2</title>
   <defaultTemplate/>
   <validationScript/>
   <comment/>
@@ -27,13 +27,12 @@ Please note that these statistics are based on //counts// of mails and topics, a
 {{/info}}
 
 {{velocity}}
-#set($prefsdoc = $xwiki.getDocument('MailArchivePrefs.GlobalParameters'))
-#set($prefs = $prefsdoc.getObject('MailArchiveCode.AdminClass'))
 #set($full = $request.full)
 #set($restrict = $request.restrict)
-#set($nbitemstoshow = 10)
-#if (!$full)
+#set($nbitemstoshow = 0)
+#if (!$full || "$full" == "false")
   #set($nbitemstoshow = 10)
+  #set($full = false)
 #end
 #if (!$restrict) 
   #set($restrict = "All")
@@ -42,7 +41,7 @@ Please note that these statistics are based on //counts// of mails and topics, a
 #if($restrict == "All")
   #set($linksstr = "$linksstr __**All DLs**__")
 #else
-  #set($linksstr = "$linksstr [[All DLs&gt;&gt;${doc.web}.${doc.name}||queryString='full=$!{full}']]")
+  #set($linksstr = "$linksstr [[All DLs&gt;&gt;${doc.web}.${doc.name}||queryString='full=${full}']]")
 #end
 ## List of DL tags
 #set($xwql = "select list.Tag, list.displayname, list.color from Document doc, doc.object(MailArchiveCode.MailingListClass) as list where doc.name not like '%Sheet' and doc.name not like '%Template' order by list.displayname asc")
@@ -58,38 +57,68 @@ Please note that these statistics are based on //counts// of mails and topics, a
     #set($linksstr = "$linksstr [[${listdisplay}&gt;&gt;${doc.web}.${doc.name}||queryString=" + '"' + "restrict=${listtag}&amp;full=$!{full}" + '"' + "]]")
   #end
 #end
+#set($restrictdisplay = $request.restrictdisplay)
 
 $linksstr
 
 #displayAllTimeActivity()
 
-## Number of posts without answer
-#set($xwql = "select count(mail.topicid) from Document doc, doc.object(MailArchiveCode.MailClass) as mail, doc.object(XWiki.TagClass) as tag where mail.name = tag.name and doc.space&lt;&gt;'MailArchiveCode'")
-#if($restrict != "All")
-  #set($xwql = "$xwql and :tagvalue MEMBER OF tag.tags ")
+#set($sql = "select count(prop.value) as nbPosts 
+           from BaseObject as obj, 
+                StringProperty as prop,
+                StringProperty as proptype")
+#if($restrict!="All")
+  #set($sql = "$sql,
+                BaseObject as objtag, 
+                DBStringListProperty as tags, IN(tags.list) tagsvalue")
 #end
-#set($xwql = "$xwql group by mail.topicid having (count(mail.topicid) = 1)")
-#set($query = $services.query.xwql($xwql))
-#if($restrict != "All")
-  #set($query = $query.bindValue("tagvalue", $restrict))
+#set($sql = "$sql
+          where obj.className='MailArchiveCode.MailClass' 
+                and obj.name!='MailArchiveCode.MailClassTemplate'
+                and obj.id=prop.id and prop.name='topicid'
+                and proptype.name='builtinType' and proptype.id=obj.id and proptype.value='mail'")
+#if($restrict!="All")
+  #set($sql = "$sql
+                and objtag.className='XWiki.TagClass'
+                and objtag.name=obj.name
+                and tags.id.id=objtag.id and tags.id.name='tags'
+                and tagsvalue='$restrict'")
 #end
-#set($results = $query.execute())
-#set($nbUnansweredPosts = $results.size() + 1)
+#set($sql = "$sql
+       group by prop.value
+         having (count(prop.value) = 1)")
 
-## Number of posts with an answer
-#set($xwql = "select count(mail.topicid) from Document doc, doc.object(MailArchiveCode.MailClass) as mail, doc.object(XWiki.TagClass) as tag where mail.name = tag.name and doc.space&lt;&gt;'MailArchiveCode'")
-#if($restrict != "All")
-  #set($xwql = "$xwql and :tagvalue MEMBER OF tag.tags ")
-#end
-#set($xwql = "$xwql group by mail.topicid having (count(mail.topicid) &gt; 1)")
-#set($query = $services.query.xwql($xwql))
-#if($restrict != "All")
-  #set($query = $query.bindValue("tagvalue", $restrict))
-#end
-#set($results = $query.execute())
-#set($nbAnsweredPosts = $results.size() + 1)
+#set($results = $xwiki.search($sql, 0, 0))
+#set($nbUnansweredPosts = $results.size())
 
-## Total Number of posts
+#set($sql = "select count(prop.value) as nbPosts 
+           from BaseObject as obj, 
+                StringProperty as prop,
+                StringProperty as proptype")
+#if ($restrict!="All") 
+  #set($sql = "$sql,
+                BaseObject as objtag, 
+                DBStringListProperty as tags, IN(tags.list) tagsvalue")
+#end
+#set($sql = "$sql
+          where obj.className='MailArchiveCode.MailClass' 
+                and obj.name!='MailArchiveCode.MailClassTemplate'
+                and obj.id=prop.id and prop.name='topicid' 
+                and proptype.name='builtinType' and proptype.id=obj.id and proptype.value='mail'")
+#if ($restrict!="All")
+  #set($sql = "$sql
+                and objtag.className='XWiki.TagClass'
+                and objtag.name=obj.name
+                and tags.id.id=objtag.id and tags.id.name='tags'
+                and tagsvalue='$restrict'") 
+#end
+#set($sql = "$sql                               
+       group by prop.value
+         having (count(prop.value) &gt; 1)")
+
+#set($results = $xwiki.search($sql, 0, 0))
+#set($nbAnsweredPosts = $results.size())
+
 #set($nbTotalPosts = $nbUnansweredPosts + $nbAnsweredPosts)
 
 Total number of posts : $nbTotalPosts
@@ -97,15 +126,38 @@ Total number of posts : $nbTotalPosts
 {{container layoutStyle="columns"}}
 
 (((
-{{chart type="pie" source="inline" params="range:B1-B2;series:columns;" title="Answered posts" height="200"}}
+{{chart type="pie" source="inline" params="range:B1-B2;series:columns;" title="Answered posts" height="240"}}
 |Posts without answer=${nbUnansweredPosts}|${nbUnansweredPosts}
 |Answered Posts=${nbAnsweredPosts}|${nbAnsweredPosts}
 {{/chart}}
 )))
 
-{{/container}}
+(((
+## Topics types : Newsletters, product releases, ...
+#if ($restrict!="All") 
+  #set($extraFrom = ", BaseObject as objtag, DBStringListProperty as tags, IN(tags.list) tagsvalue")
+  #set($extraWhere = "and objtag.className='XWiki.TagClass'
+                and objtag.name=obj.name
+                and tags.id.id=objtag.id and tags.id.name='tags'
+                and tagsvalue='$restrict'") 
+#end
+#set($sql = "select count(prop.name),prop.value
+               from BaseObject as obj, StringProperty as prop $!extraFrom
+              where prop.name = 'type' and obj.id=prop.id and obj.className='MailArchiveCode.TopicClass' $!extraWhere
+           group by prop.value")
+#set($results = $xwiki.search($sql, 0, 0))
+#set($nb = $results.size())
+#if ($nb &gt; 0) 
+{{chart type="pie" source="inline" params="range:B1-B${nb};series:columns;" title="Topics Types" height="240"}}
 
-### TOP POSTERS
+  #foreach($result in $results)
+|${result[1]}=${result[0]}|${result[0]}
+  #end
+{{/chart}}
+#end
+)))
+
+{{/container}}
 
 #set($sql = "select count(prop.value) as nbPosts, 
                 prop.value from BaseObject as obj, 
@@ -118,8 +170,8 @@ Total number of posts : $nbTotalPosts
 #end
 #set($sql = "$sql 
           where obj.className='MailArchiveCode.TopicClass' 
-                and prop.id=obj.id and prop.name='author'") 
-                    ## TODO ## and proptype.name='type' and proptype.id=obj.id") and proptype.value='mail'")
+                and prop.id=obj.id and prop.name='author' 
+                    and proptype.name='type' and proptype.id=obj.id and proptype.value='Mail'")
 #if ($restrict!="All")
   #set($sql = "$sql
                 and objtag.className='XWiki.TagClass'
@@ -131,23 +183,26 @@ Total number of posts : $nbTotalPosts
        group by prop.value 
        order by count(prop.value) desc")
 
-#set($results = $services.query.hql($sql).execute())
+#set($results = $xwiki.search($sql, $nbitemstoshow, 0))
 
 {{container layoutStyle="columns"}}
 (((
-== Top Posters ==
 #if ($results.size() &gt; 0) 
+== Top Posters ==
 (posters are creators of new discussion threads - not newsletters)
-|=Person|=Topics
+|=Person|=Threads
   #foreach($result in $results)
     #set($author = $result[1])
-    #set($maUser = $services.mailarchive.parseUser($author))
-    #set($wikiUser = $maUser.wikiProfile)
+    #if(!$author)
+      #set($author = "unknown")
+    #end
+    #parseUser($author)
+    #set($wikiUser = $parsedUser)
     #if (!$wikiUser) 
-      #set($wikiUser = "[[$maUser.displayName&gt;&gt;MailArchive.ViewUserMessages||queryString='user=${author}&amp;wikiUser=']]")
+      #set($wikiUser = $author.substring(0,$author.indexOf('&lt;'))) 
     #else
       #set($prettyName = $xwiki.getLocalUserName($wikiUser, false))
-      #set($wikiUser = "{{useravatar username='${wikiUser}' width='30'/}} [[${prettyName}&gt;&gt;MailArchive.ViewUserMessages?user=${author}&amp;wikiUser=wikiUser.wikiProfile]]")
+      #set($wikiUser = "{{useravatar username='${wikiUser}' width='30'/}} [[${prettyName}&gt;&gt;MailArchive.ViewUserMessages||queryString='user=${author}&amp;wikiUser=wikiUser']]")
     #end
 |${wikiUser}|${result[0]}
   #end
@@ -155,8 +210,6 @@ Total number of posts : $nbTotalPosts
   No data
 #end
 )))
-
-### TOP CONTRIBUTORS
 
 #set($sql = "select count(prop.value) as nbPosts, 
                 prop.value 
@@ -171,7 +224,7 @@ Total number of posts : $nbTotalPosts
 #set($sql = "$sql
           where obj.className='MailArchiveCode.MailClass' 
                 and prop.id=obj.id and prop.name='from'
-                and proptype.name='builtinType' and proptype.id=obj.id and proptype.value='mail'")
+                and proptype.name='type' and proptype.id=obj.id and proptype.value='Mail'")
 #if ($restrict!="All")
   #set($sql = "$sql
                 and objtag.className='XWiki.TagClass'
@@ -186,8 +239,8 @@ Total number of posts : $nbTotalPosts
 #set($results = $xwiki.search($sql, $nbitemstoshow, 0))
 
 (((
-== Top Contributors ==
 #if ($results.size() &gt; 0)
+== Top Contributors ==
 (contributors consider all mails sent except newsletters)
 |=Person|=Messages
   #foreach($result in $results)
@@ -198,13 +251,10 @@ Total number of posts : $nbTotalPosts
     #parseUser($author)
     #set($wikiUser = $parsedUser)
     #if (!$wikiUser) 
-      #set($index = $author.indexOf('&lt;'))
-      #if($index &gt; 0)
-        #set($wikiUser = $author.substring(0,$index))
-      #end
+      #set($wikiUser = $author.substring(0,$author.indexOf('&lt;')))
     #else
       #set($prettyName = $xwiki.getLocalUserName($wikiUser, false))
-      #set($wikiUser = "{{useravatar username='${wikiUser}' width='30'/}} [[${prettyName}&gt;&gt;MailArchive.ViewUserMessages?user=${author}&amp;wikiUser=wikiUser]]")
+      #set($wikiUser = "{{useravatar username='${wikiUser}' width='30'/}} [[${prettyName}&gt;&gt;MailArchive.ViewUserMessages||queryString='user=${author}&amp;wikiUser=wikiUser']]")
     #end
 |${wikiUser}|${result[0]}
   #end
@@ -214,18 +264,16 @@ Total number of posts : $nbTotalPosts
 )))
 {{/container}}
 
-[[Show complete stats&gt;&gt;${doc.web}.${doc.name}?restrict=${restrict}&amp;full=true]] - [[View only top ten&gt;&gt;${doc.web}.${doc.name}?restrict=${restrict}&amp;full=null]]
+[[Show complete stats&gt;&gt;${doc.web}.${doc.name}||queryString="restrict=${restrict}&amp;full=true"]] - [[View only top ten&gt;&gt;${doc.web}.${doc.name}||queryString="restrict=${restrict}&amp;full=false"]]
 
-== Mails Distribution ==
+#if("$!restrict" == "" || $restrict == "All")
 
 #set($sql = "select count(tagsvalue), tagsvalue, str2.value
              from BaseObject as obj,
-                  BaseObject as objtopic,
                   DBStringListProperty as tags, IN(tags.list) tagsvalue,
                   StringProperty str1, StringProperty str2
             where obj.className='XWiki.TagClass' 
-                  and obj.name=objtopic.name
-                  and objtopic.className='MailArchiveCode.TopicClass'
+                  and obj.name like 'MailArchive.T%'
                   and tags.id.id=obj.id  and tags.id.name='tags'
                   and tagsvalue in (select settings.value
                                      from  BaseObject as objsettings,
@@ -236,30 +284,15 @@ Total number of posts : $nbTotalPosts
                   and str1.id=str2.id and str1.name='Tag' and str1.value=tagsvalue and str2.name='displayname'
         group by  tagsvalue, str2.value")
 #set($results = $xwiki.search($sql, 0, 0))
-RESULTS $results
 #set($nb = $results.size())
 #if ($results.size()&gt;0) 
-{{chart type="pie" source="inline" params="range:B1-B${nb};series:columns;" title="Mails distribution" height="600" width="800"}}
+{{chart type="pie" source="inline" params="range:B1-B${nb};series:columns;" title="Distribution of emails / mailing-list" height="600" width="800"}}
   #foreach($result in $results)
 |${result[2]}=${result[0]}|${result[0]}
   #end
 {{/chart}}
 #end
 
-## Topics types : Newsletters, product releases, ...
-#set($sql = "select count(typevalue),typevalue
-               from BaseObject as obj, DBStringListProperty as prop, IN(prop.list) typevalue
-              where prop.name = 'type' and obj.id=prop.id and obj.className='MailArchiveCode.TopicClass'
-           group by typevalue")
-#set($results = $xwiki.search($sql, 0, 0))
-#set($nb = $results.size())
-#if ($nb &gt; 0) 
-{{chart type="pie" source="inline" params="range:B1-B${nb};series:columns;" title="Topics Types" height="600" width="800"}}
-
-  #foreach($result in $results)
-|${result[1]}=${result[0]}|${result[0]}
-  #end
-{{/chart}}
 #end
 
 ##
@@ -293,12 +326,21 @@ RESULTS $results
 ##
 #macro(displayAllTimeActivity )
   ## ***** Query info from database *****
-  #set($hql = "select year(dateprop.value), month(dateprop.value), count(mailobj) from XWikiDocument doc, BaseObject as mailobj, DateProperty as dateprop where mailobj.className='MailArchiveCode.MailClass' and mailobj.id=dateprop.id and dateprop.name='date' and doc.space = 'MailArchiveItems' and doc.fullName=mailobj.name group by year(dateprop.value), month(dateprop.value) order by year(dateprop.value), month(dateprop.value)")
+#if($restrict!="All")
+  #set($extraFrom = ",BaseObject as objtag, DBStringListProperty as tags, IN(tags.list) tagsvalue")
+  #set($extraWhere = "and objtag.className='XWiki.TagClass'
+                and objtag.name=obj.name
+                and tags.id.id=objtag.id and tags.id.name='tags'
+                and tagsvalue='$restrict'")
+#end
+  #set($hql = "select year(dateprop.value), month(dateprop.value), count(obj) from BaseObject as obj, DateProperty as dateprop $!extraFrom where obj.className='MailArchiveCode.MailClass' and obj.id=dateprop.id and dateprop.name='date' $!extraWhere group by year(dateprop.value), month(dateprop.value) order by year(dateprop.value), month(dateprop.value)")
   #set($alltimemails = $services.query.hql($hql).execute())
   #set($nballtimemails = $alltimemails.size())
-  #set($hql = "select year(dateprop.value), month(dateprop.value), count(topicobj) from XWikiDocument doc, BaseObject as topicobj, DateProperty as dateprop where topicobj.className='MailArchiveCode.TopicClass' and topicobj.id=dateprop.id and dateprop.name='startdate' and doc.space = 'MailArchiveItems' and doc.fullName=topicobj.name group by year(dateprop.value), month(dateprop.value) order by year(dateprop.value), month(dateprop.value)")
+  #set($hql = "select year(dateprop.value), month(dateprop.value), count(obj) from BaseObject as obj, DateProperty as dateprop $!extraFrom where obj.className='MailArchiveCode.TopicClass' and obj.id=dateprop.id and dateprop.name='startdate' $!extraWhere group by year(dateprop.value), month(dateprop.value) order by year(dateprop.value), month(dateprop.value)")
   #set($alltimetopics = $services.query.hql($hql).execute())
   #set($nballtimetopics = $alltimetopics.size())
+
+  #if($nballtimemails &gt; 0 &amp;&amp; $nballtimetopics &gt; 0)
 
   #set($allmails = {})
   #foreach($result in $alltimemails)
@@ -310,13 +352,13 @@ RESULTS $results
   #end
   ## ***** Compute number of months that will be displayed ****
   #set($now = $xwiki.jodatime.dateTime)
-  #set($yearStart = ${alltimemails[1][0]})
+  #set($yearStart = $alltimemails[0][0])
   #set($last = $alltimemails.size() - 1)
-  #set($yearEnd = ${alltimemails[$last][0]})
+  #set($yearEnd = $alltimemails[$last][0])
   #set($count=0)
   #foreach ($year in [$yearStart..$yearEnd])
     #if($year == $yearStart)
-      #set($monthStart = ${alltimemails[1][1]})
+      #set($monthStart = $alltimemails[0][1])
     #else
       #set($monthStart = 1)
     #end
@@ -332,11 +374,11 @@ RESULTS $results
   #set($count = $count + 1)
 
   ## ***** Display chart *****
-{{chart source="inline" type="line" params="range:B2-C${count};series:columns;" title="Activity : ${yearStart}/$alltimemails[1][1] - ${yearEnd}/$alltimemails[$last][1]" height="500" width="800"}}
+{{chart source="inline" type="line" params="range:B2-C${count};series:columns;" title="$!restrictdisplay Activity : ${yearStart}/$alltimemails[0][1] - ${yearEnd}/$alltimemails[$last][1]" height="500" width="800"}}
 |=Date|=Topics Count|=Mails Count
   #foreach ($year in [$yearStart..$yearEnd])
     #if($year == $yearStart)
-      #set($monthStart = $alltimemails[1][1])
+      #set($monthStart = $alltimemails[0][1])
     #else
       #set($monthStart = 1)
     #end
@@ -360,80 +402,46 @@ RESULTS $results
     #end
   #end
 {{/chart}}
+
+  #else
+No activity in this $!restrictdisplay.
+  #end
+
 #end
-
-
-
 
 {{/velocity}}
 
 {{groovy}}
-// Check if "city" field exists in user class
-def userClass = xwiki.getDocument('XWiki.XWikiUsers').getxWikiClass()
-if (userClass.propertyNames.contains('city')) {
-def xwql = """select user.city, count(user.city) from Document as doc, doc.object(XWiki.XWikiUsers) as user group by user.city"""
-results = services.get("query").xwql(xwql).execute()
-def laciotat = 0
-println results.class
-def newresults = []
-results.each() { result -&gt;
-  if (result[0].toUpperCase().contains("CIOTA")) {
-     laciotat += result[1]
-  } else if (result[0] == "") {
-    result[0] = "&lt;unknown&gt;"
-    newresults += result
-  } else {
-    newresults += result
-  }
-}
-results = newresults
-results.add(["La Ciotat - La Vigie",laciotat])
-nb = results.size()
-
-println('{{chart type="pie" source="inline" params="range:B1-B'+nb+';series:columns;" title="Posters Localization" height="600" width="800"}}')
-
-if (results.size()&gt;0) {
+def restrict = request.restrict
+if (restrict == null || restrict == "" || restrict == "all") {
+  def xwql = """select user.city, count(user.city) from Document as doc, doc.object(XWiki.XWikiUsers) as user group by user.city"""
+  results = services.get("query").xwql(xwql).execute()
+  def laciotat = 0
+  println results.class
+  def newresults = []
   results.each() { result -&gt;
-    println("|${result[0]}=${result[1]}|${result[1]}")
+    if (result[0].toUpperCase().contains("CIOTA")) {
+       laciotat += result[1]
+    } else if (result[0] == "") {
+      result[0] = "&lt;unknown&gt;"
+      newresults += result
+    } else {
+      newresults += result
+    }
   }
-}
-println "{{/chart}}"
+  results = newresults
+  results.add(["La Ciotat - La Vigie",laciotat])
+  nb = results.size()
+
+  println('{{chart type="pie" source="inline" params="range:B1-B'+nb+';series:columns;" title="Posters Localization" height="600" width="800"}}')
+
+  if (results.size()&gt;0) {
+    results.each() { result -&gt;
+      println("|${result[0]}=${result[1]}|${result[1]}")
+    }
+  }
+  println "{{/chart}}"
 }
 
 {{/groovy}}</content>
-  <object>
-    <name>MailArchive.Statistics</name>
-    <number>0</number>
-    <className>XWiki.TagClass</className>
-    <guid>ac89744d-a885-48a4-9278-39aca737ec9a</guid>
-    <class>
-      <name>XWiki.TagClass</name>
-      <customClass/>
-      <customMapping/>
-      <defaultViewSheet/>
-      <defaultEditSheet/>
-      <defaultWeb/>
-      <nameField/>
-      <validationScript/>
-      <tags>
-        <cache>0</cache>
-        <disabled>0</disabled>
-        <displayType>input</displayType>
-        <multiSelect>1</multiSelect>
-        <name>tags</name>
-        <number>1</number>
-        <prettyName>Tags</prettyName>
-        <relationalStorage>1</relationalStorage>
-        <separator>|</separator>
-        <separators>|,</separators>
-        <size>30</size>
-        <unmodifiable>0</unmodifiable>
-        <values/>
-        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-      </tags>
-    </class>
-    <property>
-      <tags/>
-    </property>
-  </object>
 </xwikidoc>

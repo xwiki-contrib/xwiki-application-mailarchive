@@ -38,6 +38,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
@@ -150,52 +151,26 @@ public class JavamailMessageParser implements IMessageParser<Part>
         }
         // Decode the date
         try {
-            logger.error("Parsing date [" + date + "] with Javamail MailDateFormat");
+            logger.debug("Parsing date [" + date + "] with Javamail MailDateFormat");
             decodedDate = new MailDateFormat().parse(date);
         } catch (ParseException e) {
-            logger.error("Could not parse date header " + e.getLocalizedMessage());
+            logger.debug("Could not parse date header " + ExceptionUtils.getRootCauseMessage(e));
             decodedDate = null;
         }
         if (decodedDate == null) {
             try {
-                logger.error("Parsing date [" + date + "] with GMail parser");
+                logger.debug("Parsing date [" + date + "] with GMail parser");
                 decodedDate = new GMailMailDateFormat().parse(date);
             } catch (ParseException e) {
-                logger.error("Could not parse date header with GMail parser " + e.getLocalizedMessage());
+                logger.info("Could not parse date header with GMail parser " + ExceptionUtils.getRootCauseMessage(e));
                 decodedDate = new Date();
-                logger.debug("Using 'now' as date");
+                logger.info("Using 'now' as date as date could not be parsed");
             }
         }
         m.setDate(decodedDate);
 
-        // // @TODO : not generic part
-        // boolean isNewsletter = (subject.toUpperCase().contains("COMMUNITY NEWSLETTER"));
-        // boolean isProductRelease =
-        // ((from.toUpperCase().contains("DONOTREPLY@GEMALTO.COM") || from.toUpperCase().contains("DOWNLOADZONE"))
-        // && (subject
-        // .toUpperCase().startsWith("DELIVERY OF")));
-        // // end of not generic part
-        // String type = "Mail";
-        // // @TODO : not generic part
-        // if (isNewsletter) {
-        // type = "Newsletter";
-        // }
-        // if (isProductRelease) {
-        // type = "Product Release";
-        // }
-        // // end of not generic part
-        // m.setType(type);
-
         boolean firstInTopic = ("".equals(m.getReplyToId()));
         m.setFirstInTopic(firstInTopic);
-
-        // // @TODO Try to retrieve wiki user
-        // // @TODO : here, or after ? (link with ldap and xwiki profiles
-        // // options to be checked ...)
-        // /*
-        // * String userwiki = parseUser(from); if (userwiki == null || userwiki == "") { userwiki = unknownUser; }
-        // */
-        // m.setWikiuser(null);
 
         m.setOriginalMessage((Message) mail);
         m.setBodypart(mail.getContent());
@@ -340,25 +315,27 @@ public class JavamailMessageParser implements IMessageParser<Part>
                 .isMimeType("text/html"))) {
             mailContent.addAttachment((MimeBodyPart) part);
         } else if (part.isMimeType("text/plain")) {
-            logger.debug("Adding PLAIN TEXT");
+            logger.debug("Extracting part PLAIN TEXT");
             mailContent.appendText(MimeUtility.decodeText((String) part.getContent()));
         } else if (part.isMimeType("text/html")) {
-            logger.debug("Adding HTML");
+            logger.debug("Extracting part HTML");
             mailContent.appendHtml(MimeUtility.decodeText((String) part.getContent()));
         } else if (part.isMimeType("message/rfc822")) {
+            logger.debug("Extracting part message/rfc822");
             Message innerMessage = (Message) part.getContent();
             mailContent.addAttachedMail(innerMessage);
             // FIXME attached mails should be loaded previously to their container
         } else if (contentType.startsWith("multipart/")) {
-            logger.debug("Adding a MULTIPART");
+            logger.debug("Extracting MULTIPART");
             Multipart multipart = (Multipart) part.getContent();
             if (contentType.startsWith("multipart/signed")) {
                 // Signed multiparts contain 2 parts: first is the content, second is the control information
                 // We just ignore the control information
-                logger.debug("Adding SIGNED MULTIPART CONTENT");
+                logger.debug("Extracting SIGNED MULTIPART");
                 mailContent.append(extractPartsContent(multipart.getBodyPart(0)));
             } else if (part.isMimeType("multipart/related") || part.isMimeType("multipart/mixed")
                 || part.isMimeType("multipart/alternative")) {
+                logger.debug("Extracting multipart / related or mixed or alternative");
                 // FIXME multipart/alternative should be treated differently than other parts, though the same treatment
                 // should be ok most of the time
                 // (multipart/alternative is usually one part text/plain and the alternative text/html, so as text and
@@ -372,7 +349,7 @@ public class JavamailMessageParser implements IMessageParser<Part>
                         final MailContent innerMailContent = extractPartsContent(multipart.getBodyPart(i));
                         mailContent.append(innerMailContent);
                     } catch (Exception e) {
-                        logger.warn("Could not add MULTIPART #{}", i, e);
+                        logger.warn("Could not add MULTIPART #{} because of {}", i, ExceptionUtils.getRootCause(e));
                     }
                     i++;
                 }
@@ -401,11 +378,10 @@ public class JavamailMessageParser implements IMessageParser<Part>
                 fileName = bodypart.getFileName();
                 cid = bodypart.getContentID();
             } catch (MessagingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.warn("Failed to retrieve attachment information", e);
             }
             if (!StringUtils.isBlank(cid) && fileName != null) {
-                logger.debug("fillAttachmentContentIds: Treating attachment: " + fileName + " with contentid " + cid);
+                logger.debug("fillAttachmentContentIds: Treating attachment: {} with contentid {}", fileName, cid);
                 String name = getAttachmentValidName(fileName);
                 int nb = 1;
                 if (!name.contains(".")) {

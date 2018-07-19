@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.xwiki.contrib.mailarchive.timeline.internal;
+package org.xwiki.contrib.mailarchive.timeline;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,7 +54,7 @@ public class TimeLineEvent
 
     public String extract = null;
 
-    public Map<Long, TopicEventBubble> messages = null;
+    public Map<Long, TimeLineSubEvent> messages = null;
 
     public TimeLineEvent() {
         super();
@@ -82,7 +82,7 @@ public class TimeLineEvent
         }
         this.messages = event.messages;
         if (event.messages != null) {
-            this.messages = new TreeMap<Long, TopicEventBubble>();
+            this.messages = new TreeMap<Long, TimeLineSubEvent>();
             this.messages.putAll(event.messages);
         }
         this.title = event.title;

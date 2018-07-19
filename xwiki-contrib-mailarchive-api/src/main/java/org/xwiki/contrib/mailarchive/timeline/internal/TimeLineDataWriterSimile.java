@@ -35,6 +35,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.contrib.mailarchive.timeline.TimeLineEvent;
+import org.xwiki.contrib.mailarchive.timeline.TimeLineSubEvent;
 import org.xwiki.rendering.renderer.printer.DefaultWikiPrinter;
 import org.xwiki.rendering.renderer.printer.WikiPrinter;
 import org.xwiki.rendering.renderer.printer.XMLWikiPrinter;
@@ -70,7 +72,11 @@ public class TimeLineDataWriterSimile extends XMLWikiPrinter implements ITimeLin
         this.setWikiPrinter(printer);
     }
 
-    public void setWikiPrinter(final WikiPrinter printer)
+    /* (non-Javadoc)
+	 * @see org.xwiki.contrib.mailarchive.timeline.internal.ITimeLineDataWriter#setWikiPrinter(org.xwiki.rendering.renderer.printer.WikiPrinter)
+	 */
+    @Override
+	public void setWikiPrinter(final WikiPrinter printer)
     {
         super.setWikiPrinter(printer);
     }
@@ -149,7 +155,7 @@ public class TimeLineDataWriterSimile extends XMLWikiPrinter implements ITimeLin
         printXML("<br/>");
         printXML("<br/>");
         if (MapUtils.isNotEmpty(event.messages)) {
-            for (Entry<Long, TopicEventBubble> bubbleInfo : event.messages.entrySet()) {
+            for (Entry<Long, TimeLineSubEvent> bubbleInfo : event.messages.entrySet()) {
                 print(bubbleInfo.getValue());
             }
         }
@@ -190,10 +196,10 @@ public class TimeLineDataWriterSimile extends XMLWikiPrinter implements ITimeLin
     /**
      * {@inheritDoc}
      * 
-     * @see org.xwiki.contrib.mailarchive.timeline.internal.ITimeLineDataWriter#print(org.xwiki.contrib.mailarchive.timeline.internal.TopicEventBubble)
+     * @see org.xwiki.contrib.mailarchive.timeline.internal.ITimeLineDataWriter#print(org.xwiki.contrib.mailarchive.timeline.internal.TimeLineSubEvent)
      */
     @Override
-    public void print(final TopicEventBubble bubbleInfo)
+    public void print(final TimeLineSubEvent bubbleInfo)
     {
 
         // FIXME HTML Generation ?

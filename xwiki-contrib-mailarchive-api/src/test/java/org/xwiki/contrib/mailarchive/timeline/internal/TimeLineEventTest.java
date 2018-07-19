@@ -9,7 +9,8 @@ import java.util.TreeMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.xwiki.contrib.mailarchive.timeline.internal.TimeLineEvent;
+import org.xwiki.contrib.mailarchive.timeline.TimeLineSubEvent;
+import org.xwiki.contrib.mailarchive.timeline.TimeLineEvent;
 
 public class TimeLineEventTest
 {
@@ -40,8 +41,8 @@ public class TimeLineEventTest
         event.lists = new ArrayList<String>();
         event.lists.add("list1");
         event.lists.add("list2");
-        event.messages= new TreeMap<Long, TopicEventBubble>();
-        event.messages.put(10L, new TopicEventBubble());
+        event.messages= new TreeMap<Long, TimeLineSubEvent>();
+        event.messages.put(10L, new TimeLineSubEvent());
         TimeLineEvent clone = new TimeLineEvent(event);
         assertEquals(event, clone);
     }    

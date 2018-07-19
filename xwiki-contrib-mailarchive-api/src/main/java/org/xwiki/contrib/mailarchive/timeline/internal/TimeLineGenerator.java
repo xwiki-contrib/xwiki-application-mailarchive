@@ -47,6 +47,8 @@ import org.xwiki.contrib.mailarchive.IMailingList;
 import org.xwiki.contrib.mailarchive.IType;
 import org.xwiki.contrib.mailarchive.exceptions.MailArchiveException;
 import org.xwiki.contrib.mailarchive.timeline.ITimeLineGenerator;
+import org.xwiki.contrib.mailarchive.timeline.TimeLineEvent;
+import org.xwiki.contrib.mailarchive.timeline.TimeLineSubEvent;
 import org.xwiki.contrib.mailarchive.utils.DecodedMailContent;
 import org.xwiki.contrib.mailarchive.utils.IMailUtils;
 import org.xwiki.contrib.mailarchive.utils.ITextUtils;
@@ -174,7 +176,7 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
                     String action = "";
 
                     // Retrieve associated emails
-                    TreeMap<Long, TopicEventBubble> emails = getTopicMails(topicId, subject);
+                    TreeMap<Long, TimeLineSubEvent> emails = getTopicMails(topicId, subject);
 
                     if (emails == null || emails.isEmpty()) {
                         // Invalid topic, not emails attached, do not show it
@@ -291,7 +293,7 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
      * @throws QueryException
      * @throws XWikiException
      */
-    protected TreeMap<Long, TopicEventBubble> getTopicMails(String topicid, String topicsubject) throws QueryException,
+    protected TreeMap<Long, TimeLineSubEvent> getTopicMails(String topicid, String topicsubject) throws QueryException,
         XWikiException
     {
         // TODO there should/could be an api to retrieve mails related to a topic somewhere else than in timeline
@@ -299,7 +301,7 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
 
         logger.debug("Retrieving emails linked to topic with id " + topicid);
 
-        final TreeMap<Long, TopicEventBubble> bubblesInfo = new TreeMap<Long, TopicEventBubble>();
+        final TreeMap<Long, TimeLineSubEvent> bubblesInfo = new TreeMap<Long, TimeLineSubEvent>();
         String xwql_topic =
             "select doc.fullName, mail.date, mail.messagesubject ,mail.from from Document doc, "
                 + "doc.object(" + XWikiPersistence.CLASS_MAILS + ") as  mail where  mail.topicid='" + topicid
@@ -325,7 +327,7 @@ public class TimeLineGenerator implements Initializable, ITimeLineGenerator
             String subject = mailmessagesubject.replace(previousSubject, "...");
             previousSubject = mailmessagesubject;
 
-            TopicEventBubble bubbleEvent = new TopicEventBubble();
+            TimeLineSubEvent bubbleEvent = new TimeLineSubEvent();
             bubbleEvent.date = maildate;
             bubbleEvent.url = xwiki.getDocument(docResolver.resolve(docfullname), context).getURL("view", context);
             bubbleEvent.subject = subject;

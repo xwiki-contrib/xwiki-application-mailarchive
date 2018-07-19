@@ -30,6 +30,8 @@ import net.sf.json.JSONObject;
 
 import org.slf4j.Logger;
 import org.xwiki.component.annotation.Component;
+import org.xwiki.contrib.mailarchive.timeline.TimeLineEvent;
+import org.xwiki.contrib.mailarchive.timeline.TimeLineSubEvent;
 import org.xwiki.rendering.renderer.printer.WikiPrinter;
 
 /**
@@ -125,7 +127,7 @@ public class TimeLineDataWriterChapLinks implements ITimeLineDataWriter
     @Override
     // FIXME: move to a 3rd component, in charge of generating topic extract (same HTML generated whatever timeline
     // feed)
-    public void print(final TopicEventBubble bubbleInfo)
+    public void print(final TimeLineSubEvent bubbleInfo)
     {
         // FIXME dummy content
     }

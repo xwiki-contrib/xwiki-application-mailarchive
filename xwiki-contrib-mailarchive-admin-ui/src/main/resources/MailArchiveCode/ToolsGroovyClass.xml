@@ -157,7 +157,7 @@ class Tools {
     String searchWikiUserFromMail (mail) {
       def parsedUser = null
       if (mail != "") {
-        // to match "-external" emails and old mails with '@gemplus.com'...
+        // to match old mails ...
         mail = mail.toLowerCase()
         mail = mail.replaceAll(~/^([^-]*)(?:-.*)?@.*[.]com$/, "\$1%@%.com")   
         // Try to find a wiki profile with this email as parameter.

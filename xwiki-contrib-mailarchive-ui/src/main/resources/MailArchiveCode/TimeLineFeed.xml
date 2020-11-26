@@ -31,7 +31,6 @@ def count=200
 def curdoc = doc
 def TreeMap sortedEvents = new TreeMap()
 def maxstrlenght = 150
-def skinurl='http://r-wikiggs.gemalto.com/xwiki/bin/download/XWiki/GSESkin'
 
 // Utility class for mail archive
 def tools = xwiki.parseGroovyFromPage('MailArchiveCode.ToolsGroovyClass')
@@ -73,11 +72,7 @@ try {
                 extract = getTopicMails(obj.topicid, subject)                
                 type = obj.getProperty("type").value
                 tags = ""
-                if (doc.getTags().contains("GGS_WW_")) {
-                    tags = "GGS_WW"
-                }
                 doc.getTagList().grep(~/^Community.*$/).each() {
-                    if (tags == "GGS_WW") { tags = "" }
                     tags += "${it.value} "
                 }
                 if (type == "Mail") {
@@ -91,13 +86,9 @@ try {
 
 
                 } else {
-                    if (type == "Newsletter") {
-                        action = "Newsletter posted"
-                        icon = "${xwiki.getDocument('XWiki.GSESkin').getURL('download')}/667%2D2_pupils_speech.png"
-                    }
-                    if (type == "Product Release") {
-                        action = "Product Release published"
-                        icon = "http://r-wikiggs.gemalto.com/xwiki/resources/icons/silk/cd.gif"
+                    if (type == "//TBD//") {
+                        action = "//TBD posted//"
+                        icon = "//TBD icon url//"
                     }
                     link = xwiki.getDocument("MailArchive.M${doc.name[1..-1]}").getURL()
                     sortedEvents.put(date.getTime(), '&lt;event start="'+date.toLocaleString()+'" title="'+xwiki.getXMLEncoded(docshortname)+'" icon="'+icon+'" image="'+icon+'" link="'+link+'" &gt;'+xwiki.getXMLEncoded((tags!=""?'&lt;span class="tape-'+tags+'"&gt;___&lt;/span&gt; '+tags+'&lt;br/&gt;':'')+'&lt;br/&gt;'+action+' by '+author+'&lt;br/&gt; '+extract)+'&lt;/event&gt;')

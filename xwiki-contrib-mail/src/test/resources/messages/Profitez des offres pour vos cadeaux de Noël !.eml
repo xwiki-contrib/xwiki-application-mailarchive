@@ -1,0 +1,1310 @@
+Delivered-To: q.u.i.n.e.x.i.s.t.e.p.a.s@gmail.com
+Received: by 2002:a4f:ac09:0:0:0:0:0 with SMTP id v9csp138861ive;
+        Wed, 18 Nov 2020 00:27:48 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwvgch/d1e9MiOCAvVHfNXs+ufmUyOfhiKYNwV5krmb2sAc6w8B69W1hLfX9Ha9EOaoio2m
+X-Received: by 2002:a5d:5711:: with SMTP id a17mr3521144wrv.136.1605688068791;
+        Wed, 18 Nov 2020 00:27:48 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1605688068; cv=none;
+        d=google.com; s=arc-20160816;
+        b=DpRt9ooikNaI9XBieUfSXk0/Dz0jwEb2V9q7yYpWr25nBSKPhREmqvfJ8FfV3tjPWi
+         yT+3P0cYDjm1K7q7/JeiQYjitaaZohaAVQ076C5STb0lyHDblOqO5/nl+YJ1m1VlzNec
+         X2t/Pf2UWfnaYSar1f1puKbFMmfV2vllELjzDt4cFdZeJNTMIeOZs9m5ztraN/hVwh5b
+         wnOEWf26rwRY1SVibM56QWqv1sQRNM2jc2apZwQJvBkjjUtI8SEYKOQPEIQ/fH/W2xOT
+         tabCjtjcW5ejrua8qUQiBLF0AxvYniY+q7lsk/eVeouK28Jw6UAnFoMECKl5np6621X+
+         u3pw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=date:precedence:subject:to:from:mime-version:feedback-id:list-id
+         :list-unsubscribe-post:list-unsubscribe:message-id:dkim-signature
+         :dkim-signature;
+        bh=VkC36A/vcLD8hYajVsurfBP33ca0v45XyKO76RgqAHw=;
+        b=Z9xZ/PCcBehUDX6banhU01UPvl229OHHrfDLyVXcO+jAOtIpwtmM6gPchgi5NqEJ0F
+         oRjZvqnXvztDwC0f2eoYQy2r2wpLYYARDTPrHx5kxZgHAJL6zqSzJtotCOG9zchfw6ee
+         IqRVQPD5hBsePNsezEcnUjBbQgc1IA9nLEpsHmgIqVLi6xbGZ3/0PTS2VJe1ybOOh9cJ
+         iTjwNhI31ia8gIuM5IPIqLMNbqqcj606zbuBCCRlAHo701Zl1Jek+O4ghIoBORK6nvav
+         SuTFiYHAF9cCMl90WWiTt7cDnzrolscNA4wxhikzS7I/g5bx+0WRLGK2OtHAtFb7d/Ed
+         l1og==
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@news.devred.fr header.s=splio header.b=Bdga9ZYa;
+       dkim=pass header.i=@s3s-main.net header.s=dkim02 header.b=NAzOQWpJ;
+       spf=pass (google.com: domain of devred1902@news.devred.fr designates 91.190.168.173 as permitted sender) smtp.mailfrom=devred1902@news.devred.fr
+Return-Path: <devred1902@news.devred.fr>
+Received: from poc-mt173.splio.com (poc-mt173.splio.com. [91.190.168.173])
+        by mx.google.com with ESMTPS id q8si22932496wrn.503.2020.11.18.00.27.48
+        for <q.u.i.n.e.x.i.s.t.e.p.a.s@gmail.com>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Nov 2020 00:27:48 -0800 (PST)
+Received-SPF: pass (google.com: domain of devred1902@news.devred.fr designates 91.190.168.173 as permitted sender) client-ip=91.190.168.173;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@news.devred.fr header.s=splio header.b=Bdga9ZYa;
+       dkim=pass header.i=@s3s-main.net header.s=dkim02 header.b=NAzOQWpJ;
+       spf=pass (google.com: domain of devred1902@news.devred.fr designates 91.190.168.173 as permitted sender) smtp.mailfrom=devred1902@news.devred.fr
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; s=splio; d=news.devred.fr;
+ h=X-CSA-complaints:Message-ID:List-Unsubscribe:List-Unsubscribe-Post:List-ID:
+ Feedback-ID:MIME-Version:From:To:Subject:Content-Type:Date;
+ i=contact@news.devred.fr;
+ bh=VkC36A/vcLD8hYajVsurfBP33ca0v45XyKO76RgqAHw=;
+ b=Bdga9ZYaBW1U4EpyhxlFDQHHRumvcwaoR9uoFskRyWGzz5/dhViwKntwK/NtLGDmHUIV4eMwua50
+   wm2UBJxSE/bLZI7d9khHTnItepSuXxHKJhpPFe7QU4LRnCvKZMDrfd0Txz+V0j2pueev34Pm2iE8
+   z+cDttM68lLeVXJ+DRc=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; s=dkim02; d=s3s-main.net;
+ h=X-CSA-complaints:Message-ID:List-Unsubscribe:List-Unsubscribe-Post:List-ID:
+ Feedback-ID:MIME-Version:From:To:Subject:Content-Type:Date;
+ bh=VkC36A/vcLD8hYajVsurfBP33ca0v45XyKO76RgqAHw=;
+ b=NAzOQWpJvpVu+UkdQkeZy6Qpz5CTux6J2A6TtxyGGZq7FQTXGbJRv6UYtEGabbMyNjhtzQw32Rzp
+   p2Q8XVjCtYcrBckDjs6Cx+mc63FyPiT4MP4HQ3VV3GCrXZbYjZseUc5XFlg46Eru8UkfmbfINZq4
+   rNLZDkwCz+YsnSLm8Xo=
+Received: by poc-mt173.splio.com id hmjdg82ls1gr for <q.u.i.n.e.x.i.s.t.e.p.a.s@gmail.com>; Wed, 18 Nov 2020 09:26:54 +0100 (envelope-from <devred1902@news.devred.fr>)
+X-Abuse-Reports-To: abuse@splio.com
+X-CSA-complaints: csa-complaints@eco.de
+Message-ID: <7LvypiDsM-1509231@news.devred.fr>
+X-Auto-Response-Suppress: OOF,AutoReply
+X-CampaignID: 7LvypiDsM
+List-Unsubscribe: <https://s3s-main.net/l-uns/7411366/1509231/3993420090.html>, <mailto:un-7411366-1509231-3993420090@news.devred.fr>
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+List-ID: v3devred1902
+Feedback-ID: 7LvypiDsM:v3devred1902:splio
+X-SignalSpam-CID: 7LvypiDsM:v3devred1902:splio
+MIME-Version: 1.0
+From: "=?UTF-8?Q?DEVRED_1902?=" <contact@news.devred.fr>
+To: =?UTF-8?Q?Jeremie_Bousquet?= <q.u.i.n.e.x.i.s.t.e.p.a.s@gmail.com>
+Subject: =?UTF-8?Q?Profitez_des_offres_pour_vos_cadeaux_de_No=C3=ABl_!?=
+Precedence: bulk
+Content-Type: multipart/alternative;
+    boundary="23b937f34df773e29d0d82ffab688155355af230_alt"
+Date: Wed, 18 Nov 2020 09:27:48 +0100
+
+--23b937f34df773e29d0d82ffab688155355af230_alt
+Content-Type: text/plain;
+    charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+=0D
+Nos offres du moment, id=C3=A9ales pour commencer vos cadeaux (https://www.=
+devred.com/?utm_source=3DemailMD_cartes&utm_medium=3Demail&tpc=3D0154010002=
+306&utm_campaign=3D18-11-20-IDEESKDO)=0D
+Si ce message ne s=E2=80=99affiche pas correctement,  suivez ce lien (https=
+://s3s-main.net/mrx/7LvypiDsM/1509231/2505756794.html)=0D
+DEVRED1902 (https://www.devred.com/?utm_source=3DemailMD_cartes&utm_medium=
+=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=0D
+(https://www.devred.com/hub-cadeaux-noel?utm_source=3DemailMD_cartes&utm_me=
+dium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=0D
+(https://www.devred.com/hub-cadeaux-noel?utm_source=3DemailMD_cartes&utm_me=
+dium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=0D
+(https://www.devred.com/hub-cadeaux-noel?utm_source=3DemailMD_cartes&utm_me=
+dium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=0D
+Laissez-vous inspirer (https://www.devred.com/hub-cadeaux-noel?utm_source=
+=3DemailMD_cartes&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-=
+11-20-IDEESKDO)=0D
+(https://www.devred.com/?utm_source=3DemailMD_cartes&utm_medium=3Demail&tpc=
+=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=0D
+(https://www.devred.com/?utm_source=3DemailMD_cartes&utm_medium=3Demail&tpc=
+=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=0D
+Je craque avec le code : EXTRA10 (https://www.devred.com/?utm_source=3Demai=
+lMD_cartes&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-I=
+DEESKDO)=0D
+(https://www.devred.com/?utm_source=3DemailMD_cartes&utm_medium=3Demail&tpc=
+=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=0D
+(https://www.devred.com/?utm_source=3DemailMD_cartes&utm_medium=3Demail&tpc=
+=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=0D
+Derniers jours=0D
+Pour profiter de nos autres offres=0D
+(https://www.devred.com/nos-offres/immanquables/?utm_source=3DemailMD_carte=
+s&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=
+=0D
+(https://www.devred.com/nos-offres/immanquables/?utm_source=3DemailMD_carte=
+s&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=
+=0D
+(https://www.devred.com/nos-offres/immanquables/immanquables-chemises/?utm_=
+source=3DemailMD_cartes&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=
+=3D18-11-20-IDEESKDO)=0D
+(https://www.devred.com/nos-offres/immanquables/les-bas-immanquables/?utm_s=
+ource=3DemailMD_cartes&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=
+=3D18-11-20-IDEESKDO)=0D
+(https://www.devred.com/nos-offres/immanquables/immanquables-vestes/?utm_so=
+urce=3DemailMD_cartes&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=
+=3D18-11-20-IDEESKDO)=0D
+(https://www.devred.com/nos-offres/immanquables/immanquables-pulls-et-gilet=
+s/?utm_source=3DemailMD_cartes&utm_medium=3Demail&tpc=3D0154010002306&utm_c=
+ampaign=3D18-11-20-IDEESKDO)=0D
+Voir tous les Immanquables (https://www.devred.com/nos-offres/immanquables/=
+?utm_source=3DemailMD_cartes&utm_medium=3Demail&tpc=3D0154010002306&utm_cam=
+paign=3D18-11-20-IDEESKDO)=0D
+et toujours des prix r=C3=A9duits sur=0D
+les manteaux, blousons & parkas=0D
+(https://www.devred.com/hauts/blousons-manteaux/?utm_source=3DemailMD_carte=
+s&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=
+=0D
+(https://www.devred.com/hauts/blousons-manteaux/?utm_source=3DemailMD_carte=
+s&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=
+=0D
+je d=C3=A9couvre tous les manteaux, blousons et parkas (https://www.devred.=
+com/hauts/blousons-manteaux/?utm_source=3DemailMD_cartes&utm_medium=3Demail=
+&tpc=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=0D
+Soyez s=C3=BBr de lui faire plaisir (https://www.devred.com/carte-cadeau.ht=
+ml?utm_source=3DemailMD_cartes&utm_medium=3Demail&tpc=3D0154010002306&utm_c=
+ampaign=3D18-11-20-IDEESKDO)=0D
+(https://www.devred.com/carte-cadeau.html?utm_source=3DemailMD_cartes&utm_m=
+edium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=
+=0D
+Pleine=0D
+=0D
+de magie...=0D
+=0D
+la carte cadeau=0D
+=0D
+D=C3=A9couvrir=0D
+ (https://www.devred.com/carte-cadeau.html?utm_source=3DemailMD_cartes&utm_=
+medium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=
+=0D
+Plus solidaires que jamais, ensemble=0D
+ (https://www.devred.com/?utm_source=3DemailMD_cartes&utm_medium=3Demail&tp=
+c=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=0D
+Livraisons et retours (https://www.devred.com/services/?utm_source=3DemailM=
+D_cartes&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-IDE=
+ESKDO)=0D
+Paiement s=C3=A9curis=C3=A9 (https://www.devred.com/services/?utm_source=3D=
+emailMD_cartes&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-=
+20-IDEESKDO)=0D
+Besoin de temps ? (https://www.devred.com/services/?utm_source=3DemailMD_ca=
+rtes&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-IDEESKD=
+O)=0D
+Livraison=0D
+Livraison=0D
+=C3=A0 domicile offerte (https://www.devred.com/services/?utm_source=3Demai=
+lMD_cartes&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-I=
+DEESKDO)=0D
+paiement s=C3=A9curis=C3=A9=0D
+Paiement=0D
+100% s=C3=A9curis=C3=A9 (https://www.devred.com/services/?utm_source=3Demai=
+lMD_cartes&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-I=
+DEESKDO)=0D
+Besoin de temps ?=0D
+30 jours=0D
+pour changer d'avis (https://www.devred.com/services/?utm_source=3DemailMD_=
+cartes&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-IDEES=
+KDO)=0D
+Si vous ne souhaitez plus recevoir d'emails de notre part : Suivez ce lien =
+(https://s3s-main.net/uns/7411366/1509231/3993420090.html)=0D
+* Offre de R=C3=A9duction de 10=E2=82=AC tous les 60=E2=82=AC d'achats fact=
+ur=C3=A9s, valable du 03/11/2020 au 19/11/2020 sur www.devred.com en indiqu=
+ant le code EXTRA10 au moment de la validation de votre panier. R=C3=A9duct=
+ion valable sur tout le site, m=C3=AAme les articles =C3=A0 prix Immanquabl=
+es. Non applicable sur les articles outlet, les produits des marques Komono=
+, Poupechkoff, Colonel Moutarde, Philemon, Amalone, Pipolaki, Famacobox, Le=
+xon, Bleu de peau, sur l'achat de carte cadeaux, boites cadeaux, et costume=
+ personnalis=C3=A9. Retouches payantes (hors Homme d'Exception).=0D
+** Offre valable jusqu'au 19/11/2020 sur une s=C3=A9lection d'articles sign=
+al=C3=A9s dans les boutiques DEVRED1902 et affili=C3=A9s aux r=C3=A9seaux p=
+articipants en France m=C3=A9tropolitaine, Belgique, Luxembourg, Suisse et =
+sur le site internet dans la limite des stocks disponibles. Offre non cumul=
+able avec les promotions en cours, achat de cartes cadeaux. Retouches payan=
+tes (hors Homme d'Exception).=0D
+*** Offre de r=C3=A9duction jusqu'=C3=A0 50=E2=82=AC, valable du 04/11/2020=
+ au 19/11/2020 sur www.devred.com sur une s=C3=A9lection d'articles de la c=
+at=C3=A9gorie : Blousons et manteaux  (https://www.devred.com/hauts/blouson=
+s-manteaux)=0D
+Vos donn=C3=A9es personnelles sont trait=C3=A9es par DEVRED*, agissant en q=
+ualit=C3=A9 de responsable de traitement, =C3=A0 des fins d'information, d'=
+organisation d'=C3=A9v=C3=A9nements ou de prospection commerciale. Elles so=
+nt exclusivement destin=C3=A9es =C3=A0 DEVRED, et dans certains cas =C3=A0 =
+ses sous-traitants pour les besoins mentionn=C3=A9s ci-avant. Vos donn=C3=
+=A9es sont susceptibles d'=C3=AAtre transf=C3=A9r=C3=A9es vers un pays tier=
+s. Ce transfert est effectu=C3=A9 conform=C3=A9ment =C3=A0 des garanties ap=
+propri=C3=A9es. Vos donn=C3=A9es personnelles sont conserv=C3=A9es durant a=
+u moins trois ans.=0D
+Vous pouvez exercer vos droits et demander une copie des garanties appropri=
+=C3=A9es en envoyant un email =C3=A0 notre d=C3=A9l=C3=A9gu=C3=A9 =C3=A0 la=
+ protection des donn=C3=A9es : dpo-devred@devred.fr.=0D
+Si vous ne souhaitez plus recevoir de communication sur ce sujet, merci de =
+bien vouloir envoyer un email =C3=A0 dpo-devred@devred.fr ou devred@viasmt=
+p.com. Pour ne plus recevoir aucune communication de DEVRED, merci de bien =
+vouloir le demander en envoyant un email =C3=A0 dpo-devred@devred.fr ou dev=
+red@viasmtp.com.=0D
+Conform=C3=A9ment =C3=A0 la loi "Informatique et libert=C3=A9s", vous dispo=
+sez d'un droit d'acc=C3=A8s et de rectification aux donn=C3=A9es vous conce=
+rnant, d'un droit de suppression, d'un droit =C3=A0 la portabilit=C3=A9, d'=
+un droit de donner des directives sur le sort de vos donn=C3=A9es en cas de=
+ d=C3=A9c=C3=A8s, d'un droit =C3=A0 la limitation du traitement de vos donn=
+=C3=A9es, du droit de vous opposer =C3=A0 leur traitement, ainsi que d'un d=
+roit d'introduire une r=C3=A9clamation aupr=C3=A8s de la CNIL.=0D
+* =C2=ABDEVRED=C2=BB d=C3=A9signe DEVRED S.A.S., une soci=C3=A9t=C3=A9 par =
+actions simplifi=C3=A9e de droit fran=C3=A7ais, dont le si=C3=A8ge social s=
+e situe 4 rue Rougemont, 75009 PARIS.=C2=A0=C2=BB=0D
+=0D
+=C2=A9 2019 DEVRED S.A.S.=0D
+Si vous ne souhaitez plus recevoir d'emails de notre part : Suivez ce lien =
+(https://s3s-main.net/uns/7411366/1509231/3993420090.html)=0D
+www.devred.com R.C.S. PARIS B 342 948 965.=0D
+=0D
+Photos non contractuelles.=0D
+Twitter (https://twitter.com/Devred__1902)=0D
+Instagram (https://instagram.com/devred/)=0D
+Facebook (https://www.facebook.com/Devred-1902-129044723876098/)=0D
+CGV (https://www.devred.com/general_terms_and_conditions_devred/?utm_source=
+=3DemailMD_cartes&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=3D202=
+0XXX)=0D
+Mentions l=C3=A9gales (https://www.devred.com/conditions_des_offres/?utm_so=
+urce=3DemailMD_cartes&utm_medium=3Demail&tpc=3D0154010002306&utm_campaign=
+=3D2020XXX)=0D
+Devred1902 (https://www.devred.com/?utm_source=3DemailMD_cartes&utm_medium=
+=3Demail&tpc=3D0154010002306&utm_campaign=3D18-11-20-IDEESKDO)=0D
+
+
+--23b937f34df773e29d0d82ffab688155355af230_alt
+Content-Type: text/html;
+     charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.=
+w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml" xmlns:o=3D"urn:schemas-microso=
+ft-com:office:office">
+<head>
+
+
+
+<link href=3D"https://fonts.googleapis.com/css?family=3DRoboto@400;700;900&=
+display=3Dswap" rel=3D"stylesheet">=20
+
+
+
+<style type=3D"text/css">
+
+ @import url('https://fonts.googleapis.com/css?family=3DRoboto@400;700;900&=
+display=3Dswap');
+
+
+
+=20
+ @import url('https://prod-v3.cdn.devred.com/static/version1603089775/front=
+end/Devred/default/fr_FR/css/fonts/SuisseIntl-Bold.woff2?family=3DSuisseInt=
+l:wght@700&display=3Dswap');
+=20
+=20
+ @import url('https://prod-v3.cdn.devred.com/static/version1603089775/front=
+end/Devred/default/fr_FR/css/fonts/SuisseIntl-Light.woff2?family=3DSuisseIn=
+tl:wght@300&display=3Dswap');
+=20
+=20
+
+
+  /* Action : emp=C3=AAche Windows 10 Mail de souligner les liens malgr=C3=
+=A9 le CSS en ligne. Les styles des liens soulign=C3=A9s doivent =C3=AAtre =
+en ligne. */
+        a {
+            text-decoration: none;
+        }
+
+ /* Fonctionnement: survolez les styles des boutons */
+     .button-td,
+     .button-a {
+         transition: all 100ms ease-in;
+     }
+     .button-td-bleu:hover,
+     .button-a-bleu:hover {
+         background: #FFFFFF !important;
+         border-color: #FFFFFF !important;
+     }
+=20=20
+=20=20
+=20=20
+   .button-td-bleu1:hover,
+     .button-a-bleu1:hover {
+         background: #082038 !important;
+         border-color: #082038 !important;
+     }
+=20=20
+=20=20
+=20=20
+=20=20
+=20=20
+=20
+
+=20
+
+ @media only screen and (min-device-width : 320px) and (max-device-width : =
+480px) {
+=20=20=20
+=20=20=20
+   body {
+    -webkit-text-size-adjust:100%;
+    -ms-text-size-adjust:100%;
+    border :0px;
+   }
+=20=20=20
+   table {
+    border :0px;
+   }
+=20=20=20
+   div, p, a, li, td {
+    -webkit-text-size-adjust:none;
+    border:0px;
+   }=20
+=20=20=20
+  }
+  @media only screen and (min-device-width: 768px) and (max-device-width: 1=
+024px) {
+   body {
+    -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; border :0px=
+;
+   }
+=20=20=20
+   table {
+    border :0px;
+   }
+=20=20=20
+   div, p, a, li, td { -webkit-text-size-adjust:none;
+         border :0px;
+   }=20
+  }
+  @media only screen and (-webkit-min-device-pixel-ratio : 1.5),
+  only screen and (min-device-pixel-ratio : 1.5) {
+   body {
+    -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; border :0px=
+;
+   }
+=20=20=20
+   table {
+    border :0px;
+   }
+=20=20=20
+   div, p, a, li, td {
+    -webkit-text-size-adjust:none;
+    border :0px;
+   }=20
+ }
+</style>
+
+
+=20=20=20
+
+
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8" /=
+>
+
+<title>DEVRED</title>
+</head>
+<body  bgcolor=3D"#FFFFFF" style=3D"background-color:#FFFFFF;"><img src=3D"=
+https://s3s-main.net/ouv2/7LvypiDsM/1509231/2505756794.gif?g=3D3D1" alt=3D"=
+" width=3D"1" height=3D"1" border=3D"0" style=3D"display:block;" />
+
+
+
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"650" bgcolor=3D"#FFFFFF" style=3D"background-color:#FFFFFF; =
+text-align:center; vertical-align:middle; padding:2px; font-size:13px; padd=
+ing:8px;"><a href=3D"https://s3s-main.net/l2/7LvypiDsM0/1509231/2505756794.=
+html?"  target=3D"_blank" style=3D"color: #000000; font-family:SuisseIntl-L=
+ight, Arial, sans-serif; font-weight:300; font-size:13px; text-decoration:n=
+one; font-style:normal; line-height: 18px; background-color:#FFFFFF; text-a=
+lign:center;">Nos offres du moment, id=C3=A9ales pour commencer vos cadeaux=
+</a></td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"650" bgcolor=3D"#FFFFFF" style=3D"background-color:#FFFFFF; =
+text-align:center; vertical-align:middle; padding:7px;">
+=20=20
+        <font face=3D"Arial, Helvetica, sans-serif" style=3D"color:#555555;=
+ font-size:12px;">Si ce message ne s&rsquo;affiche pas correctement,  <a hr=
+ef=3D"https://s3s-main.net/l2/7LvypiDsM1/1509231/2505756794.html?" target=
+=3D"_blank" style=3D"color:#828386;">suivez ce lien</a></font>
+=20=20=20=20=20=20=20=20
+        </td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"650" height=3D"70" align=3D"center" valign=3D"middle" bgcolo=
+r=3D"#FFFFFF" style=3D"background-color:#FFFFFF; text-align:center; vertica=
+l-align:middle; border-bottom:0px solid #808080;"><a href=3D"https://s3s-ma=
+in.net/l2/7LvypiDsM2/1509231/2505756794.html?" target=3D"_blank"> <img src=
+=3D"http://s3s-main.net/7Lv/vW/0YAb/devred1902-noir.png" alt=3D"DEVRED1902"=
+ width=3D"250" height=3D"29" border=3D"0" title=3D"DEVRED1902"/></a></td=
+>
+=20=20
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20
+=20=20
+=20=20
+=20=20
+=20=20
+=20=20
+=20=20
+=20=20
+=20=20
+=20=20
+=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"650" height=3D"65" bgcolor=3D"#FFFFFF" style=3D"background-c=
+olor:#FFFFFF; text-align:center; vertical-align:middle;"><a href=3D"https:/=
+/s3s-main.net/l2/7LvypiDsM3/1509231/2505756794.html?" target=3D"_blank"><im=
+g style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv/vW/0Y=
+Ab/livraison.gif" width=3D"650" height=3D"65" alt=3D"Livraison &#224; domic=
+ile offerte"></a></td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"650" height=3D"222" bgcolor=3D"#0E2758" style=3D"background-=
+color:#0E2758; text-align:center; vertical-align:middle;"><a href=3D"https:=
+//s3s-main.net/l2/7LvypiDsM4/1509231/2505756794.html?" target=3D"_blank"><i=
+mg style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv/vW/0=
+YAb/idees.gif" width=3D"650" height=3D"222" alt=3D"Id&#233;es cadeaux"></a>=
+</td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"650" height=3D"491" bgcolor=3D"#0E2758" style=3D"background-=
+color:#0E2758; text-align:center; vertical-align:middle;"><a href=3D"https:=
+//s3s-main.net/l2/7LvypiDsM5/1509231/2505756794.html?" target=3D"_blank"><i=
+mg style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv/vW/0=
+YAb/laissez.jpg" width=3D"650" height=3D"491" alt=3D"Laissez-vous inspirer"=
+></a></td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0">
+    <tbody>
+ <tr>
+                                <td style=3D"padding: 10px 15px 10px 15px;"=
+>
+                                    <!-- Button : DEBUT -->
+                                    <table align=3D"center" role=3D"present=
+ation" cellspacing=3D"0" cellpadding=3D"0" border=3D"0" style=3D"margin: au=
+to;">
+                                        <tr>
+                                     <td class=3D"button-td button-td-bleu"=
+ style=3D"background: #FFFFFF;">
+                <a class=3D"button-a button-a-bleu" href=3D"https://s3s-mai=
+n.net/l2/7LvypiDsM6/1509231/2505756794.html?" style=3D"background: #FFFFFF;=
+ border: 1px solid #FFFFFF; font-family: SuisseIntl-Light, Arial, sans-seri=
+f; font-size: 15px; font-weight:300; font-style:normal; line-height: 19px; =
+text-decoration: underline; padding: 15px 55px; color: #000000; display: bl=
+ock; text-transform:uppercase;">Laissez-vous inspirer</a>
+           </td>
+                                        </tr>
+                                    </table>
+                                    <!-- Button : FIN -->
+                                </td>
+                             </tr>
+    </tbody>
+    </table>=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"650" height=3D"171" bgcolor=3D"#FFFFFF" style=3D"background-=
+color:#FFFFFF; text-align:center; vertical-align:middle;"><a href=3D"https:=
+//s3s-main.net/l2/7LvypiDsM7/1509231/2505756794.html?" target=3D"_blank"><i=
+mg style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv/vW/0=
+YAb/offre10.gif" width=3D"650" height=3D"171" alt=3D"10=E2=82=AC Offerts to=
+us les 60=E2=82=AC d&#39;achats*"></a></td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"60" height=3D"53" bgcolor=3D"#FFFFFF" style=3D"background-co=
+lor:#FFFFFF; text-align:center; vertical-align:middle;"><a href=3D"https://=
+s3s-main.net/l2/7LvypiDsM8/1509231/2505756794.html?" target=3D"_blank"><img=
+ style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv/vW/0YA=
+b/l1.gif" width=3D"60" height=3D"53"></a></td>
+  <td width=3D"528" height=3D"53" bgcolor=3D"#FFFFFF" style=3D"background-c=
+olor:#FFFFFF; text-align:center; vertical-align:middle;">
+=20=20
+=20=20=20=20=20=20=20=20
+        <table width=3D"528" border=3D"0" align=3D"center" cellpadding=3D"0=
+" cellspacing=3D"0">
+    <tbody>
+ <tr>
+                                <td style=3D"padding: 1px 10px 1px 10px;"=
+>
+                                    <!-- Button : DEBUT -->
+                                    <table align=3D"center" role=3D"present=
+ation" cellspacing=3D"0" cellpadding=3D"0" border=3D"0" style=3D"margin: au=
+to;">
+                                        <tr>
+                                     <td class=3D"button-td button-td-bleu"=
+ style=3D"background: #FFFFFF;">
+               <a class=3D"button-a button-a-bleu" href=3D"https://s3s-mai=
+n.net/l2/7LvypiDsM9/1509231/2505756794.html?" style=3D"background: #FFFFFF;=
+ border: 1px solid #FFFFFF; font-family: SuisseIntl-Light, Arial, sans-seri=
+f; font-size: 15px; font-weight:300; font-style:normal; line-height: 19px; =
+text-decoration: underline; padding: 13px 25px; color: #000000; display: bl=
+ock; text-transform:uppercase;">Je craque avec le code :<span style=3D"font=
+-family:SuisseIntl-Bold, Arial, sans-serif; font-weight:700;"> EXTRA10</spa=
+n></a>
+            </td>
+                                        </tr>
+                                    </table>
+                                    <!-- Button : FIN -->
+                                </td>
+            </tr>
+    </tbody>
+    </table>
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+  </td>
+  <td width=3D"62" height=3D"53" bgcolor=3D"#FFFFFF" style=3D"background-co=
+lor:#FFFFFF; text-align:center; vertical-align:middle;"><a href=3D"https://=
+s3s-main.net/l2/7LvypiDsM10/1509231/2505756794.html?" target=3D"_blank"><im=
+g style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv/vW/0Y=
+Ab/d1.gif" width=3D"62" height=3D"53"></a></td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"650" height=3D"25" bgcolor=3D"#FFFFFF" style=3D"background-c=
+olor:#FFFFFF; text-align:center; vertical-align:middle;"><a href=3D"https:/=
+/s3s-main.net/l2/7LvypiDsM11/1509231/2505756794.html?" target=3D"_blank"><i=
+mg style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv/vW/0=
+YAb/code.gif" width=3D"650" height=3D"25" alt=3D"Avec le code web : EXTRA10=
+"></a></td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+   <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" cel=
+lspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"650" height=3D"100" bgcolor=3D"#FFFFFF" style=3D"background-=
+color:#FFFFFF; text-align:center; vertical-align:middle;">
+=20=20
+=20=20=20=20=20=20=20=20
+        <a href=3D"https://s3s-main.net/l2/7LvypiDsM12/1509231/2505756794.h=
+tml?" target=3D"_blank" style=3D"color: #666666; font-family:SuisseIntl-Lig=
+ht, Arial, sans-serif; font-size:19px; font-weight:300; text-decoration:non=
+e; font-style:normal; line-height: 30px; background-color:#FFFFFF; text-ali=
+gn:center; text-transform:uppercase;"><span style=3D"letter-spacing:1px;">D=
+erniers jours</span><br /><span style=3D"font-family:'SuisseIntl-Light', Su=
+isseIntl-Bold, Arial, sans-serif; font-weight:300; text-transform:normal; l=
+ine-height:31px; font-size:26px; color:#000000">Pour profiter de nos autres=
+ offres</span>
+=20=20=20=20=20=20=20=20
+</a>=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+        </td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"650" height=3D"283" bgcolor=3D"#FFFFFF" style=3D"background-=
+color:#FFFFFF; text-align:center; vertical-align:middle;"><a href=3D"https:=
+//s3s-main.net/l2/7LvypiDsM13/1509231/2505756794.html?" target=3D"_blank"><=
+img style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv/vW/=
+0YAb/immanquables.jpg" width=3D"650" height=3D"283" alt=3D"Les Immanquables=
+ jusqu&#39;&#224; -50%"></a></td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"284" height=3D"372" bgcolor=3D"#FFFFFF" style=3D"background-=
+color:#FFFFFF; text-align:center; vertical-align:middle;"><a href=3D"https:=
+//s3s-main.net/l2/7LvypiDsM14/1509231/2505756794.html?" target=3D"_blank"><=
+img style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv/vW/=
+0YAb/chemises.jpg" width=3D"284" height=3D"372" alt=3D"Les chemises"></a></=
+td>
+  <td width=3D"366" height=3D"372" bgcolor=3D"#FFFFFF" style=3D"background-=
+color:#FFFFFF; text-align:center; vertical-align:middle;"><a href=3D"https:=
+//s3s-main.net/l2/7LvypiDsM15/1509231/2505756794.html?" target=3D"_blank"><=
+img style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv/vW/=
+0YAb/pantalons.jpg" width=3D"366" height=3D"372" alt=3D"Les pantalons"></a>=
+</td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"371" height=3D"387" bgcolor=3D"#FFFFFF" style=3D"background-=
+color:#FFFFFF; text-align:center; vertical-align:middle;"><a href=3D"https:=
+//s3s-main.net/l2/7LvypiDsM16/1509231/2505756794.html?" target=3D"_blank"><=
+img style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv/vW/=
+0YAb/vestes.jpg" width=3D"371" height=3D"387" alt=3D"Les vestes"></a></td=
+>
+  <td width=3D"279" height=3D"387" bgcolor=3D"#FFFFFF" style=3D"background-=
+color:#FFFFFF; text-align:center; vertical-align:middle;"><a href=3D"https:=
+//s3s-main.net/l2/7LvypiDsM17/1509231/2505756794.html?" target=3D"_blank"><=
+img style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv/vW/=
+0YAb/pulls.jpg" width=3D"279" height=3D"387" alt=3D"Les pulls et gilets"></=
+a></td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0">
+    <tbody>
+ <tr>
+                                <td style=3D"padding: 10px 15px 10px 15px;"=
+>
+                                    <!-- Button : DEBUT -->
+                                    <table align=3D"center" role=3D"present=
+ation" cellspacing=3D"0" cellpadding=3D"0" border=3D"0" style=3D"margin: au=
+to;">
+                                        <tr>
+                                     <td class=3D"button-td button-td-bleu"=
+ style=3D"background: #FFFFFF;">
+                <a class=3D"button-a button-a-bleu" href=3D"https://s3s-mai=
+n.net/l2/7LvypiDsM18/1509231/2505756794.html?" style=3D"background: #FFFFFF=
+; border: 1px solid #FFFFFF; font-family: SuisseIntl-Light, Arial, sans-ser=
+if; font-size: 15px; font-weight:300; font-style:normal; line-height: 19px;=
+ text-decoration: underline; padding: 15px 55px; color: #000000; display: b=
+lock; text-transform:uppercase;">Voir tous les Immanquables</a>
+           </td>
+                                        </tr>
+                                    </table>
+                                    <!-- Button : FIN -->
+                                </td>
+                             </tr>
+    </tbody>
+    </table>=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"650" height=3D"100" bgcolor=3D"#FFFFFF" style=3D"background-=
+color:#FFFFFF; text-align:center; vertical-align:middle;">
+=20=20
+=20=20=20=20=20=20=20=20
+        <a href=3D"https://s3s-main.net/l2/7LvypiDsM19/1509231/2505756794.h=
+tml?" target=3D"_blank" style=3D"color: #666666; font-family:SuisseIntl-Lig=
+ht, Arial, sans-serif; font-size:19px; font-weight:300; text-decoration:non=
+e; font-style:normal; line-height: 30px; background-color:#FFFFFF; text-ali=
+gn:center; text-transform:uppercase;"><span style=3D"letter-spacing:1px;">e=
+t toujours des prix r=C3=A9duits sur</span><br /><span style=3D"font-family=
+:'SuisseIntl-Light', SuisseIntl-Bold, Arial, sans-serif; font-weight:300; t=
+ext-transform:normal; line-height:31px; font-size:26px; color:#000000">les =
+manteaux, blousons &amp; parkas</span>
+=20=20=20=20=20=20=20=20
+</a>=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+        </td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"650" height=3D"604" bgcolor=3D"#FFFFFF" style=3D"background-=
+color:#FFFFFF; text-align:center; vertical-align:middle;"><a href=3D"https:=
+//s3s-main.net/l2/7LvypiDsM20/1509231/2505756794.html?" target=3D"_blank"><=
+img style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv/vW/=
+0YAb/jusqua50.jpg" width=3D"650" height=3D"604" alt=3D"Jusqu&#39;&#224; -50=
+=E2=82=AC de r&#233;duction"></a></td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0">
+    <tbody>
+ <tr>
+                                <td style=3D"padding: 20px 15px 10px 15px;"=
+>
+                                    <!-- Button : DEBUT -->
+                                    <table align=3D"center" role=3D"present=
+ation" cellspacing=3D"0" cellpadding=3D"0" border=3D"0" style=3D"margin: au=
+to;">
+                                        <tr>
+                                     <td class=3D"button-td button-td-bleu"=
+ style=3D"background: #FFFFFF;">
+                <a class=3D"button-a button-a-bleu" href=3D"https://s3s-mai=
+n.net/l2/7LvypiDsM21/1509231/2505756794.html?" style=3D"background: #FFFFFF=
+; border: 1px solid #FFFFFF; font-family: SuisseIntl-Light, Arial, sans-ser=
+if; font-size: 15px; font-weight:300; font-style:normal; line-height: 19px;=
+ text-decoration: underline; padding: 15px 55px; color: #000000; display: b=
+lock; text-transform:uppercase;">je d=C3=A9couvre tous les manteaux, blouso=
+ns et parkas</a>
+           </td>
+                                        </tr>
+                                    </table>
+                                    <!-- Button : FIN -->
+                                </td>
+                             </tr>
+    </tbody>
+    </table>=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"150" height=3D"74" bgcolor=3D"#FFFFFF" style=3D"background-c=
+olor:#FFFFFF; text-align:center; vertical-align:middle;">
+   <img style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv=
+/vW/0YAb/l2.gif" width=3D"150" height=3D"74"></td>
+  <td width=3D"350" height=3D"74" bgcolor=3D"#FFFFFF" style=3D"background-c=
+olor:#FFFFFF; text-align:center; vertical-align:middle;">
+=20=20
+         <a href=3D"https://s3s-main.net/l2/7LvypiDsM22/1509231/2505756794.=
+html?" target=3D"_blank" style=3D"color: #666666; font-family:SuisseIntl-Li=
+ght, Arial, sans-serif; font-size:15px; font-weight:300; text-decoration:no=
+ne; font-style:normal; line-height: 30px; background-color:#FFFFFF; text-al=
+ign:center; text-transform:uppercase;"><span style=3D"font-family:SuisseInt=
+l-Light, Arial, sans-serif; font-weight:300; text-transform:normal; line-he=
+ight:20px; font-size:14px; color:#000000; letter-spacing:2px;">Soyez s=C3=
+=BBr de lui faire plaisir</span></a>=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+        </td>
+  <td width=3D"150" height=3D"74" bgcolor=3D"#FFFFFF" style=3D"background-c=
+olor:#FFFFFF; text-align:center; vertical-align:middle;">
+   <img style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv=
+/vW/0YAb/d2.gif" width=3D"150" height=3D"74"></td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"358" height=3D"317" bgcolor=3D"#FFFFFF" style=3D"background-=
+color:#FFFFFF; text-align:center; vertical-align:middle;"><a href=3D"https:=
+//s3s-main.net/l2/7LvypiDsM23/1509231/2505756794.html?" target=3D"_blank"><=
+img style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv/vW/=
+0YAb/cartecadeau.jpg" width=3D"358" height=3D"317" alt=3D"Une carte cadeau =
+pleine de magie"></a></td>
+  <td width=3D"292" height=3D"317" bgcolor=3D"#FFFFFF" style=3D"background-=
+color:#FFFFFF; text-align:left; vertical-align:middle;">
+=20=20
+        <a href=3D"https://s3s-main.net/l2/7LvypiDsM24/1509231/2505756794.h=
+tml?" target=3D"_blank" style=3D"color: #666666; font-family:SuisseIntl-Lig=
+ht, Arial, sans-serif; font-size:15px; font-weight:300; text-decoration:non=
+e; font-style:normal; line-height: 30px; background-color:#FFFFFF; text-ali=
+gn:left;"><span style=3D"font-family:'SuisseIntl-Light', SuisseIntl-Bold, A=
+rial, sans-serif; font-weight:300; text-transform:uppercase; line-height:22=
+px; font-size:20px; color:#b69452;">Pleine<br />
+de magie...<br /></span>
+<span style=3D"font-family:'SuisseIntl-Bold', Arial, sans-serif; font-weigh=
+t:700; text-transform:normal; line-height:30px; font-size:28px; color:#1523=
+52; ">la carte cadeau</span><br />
+<span style=3D"font-family: SuisseIntl-Light, Arial, sans-serif; font-size:=
+ 15px; font-weight:300; font-style:normal; line-height: 59px; text-decorati=
+on: underline; text-transform:uppercase; color:#000;">D=C3=A9couvrir</span=
+>
+</a>=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+      </td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"650" height=3D"80" bgcolor=3D"#FFFFFF" style=3D"background-c=
+olor:#FFFFFF; text-align:center; vertical-align:middle;">
+=20=20
+        <a href=3D"https://s3s-main.net/l2/7LvypiDsM25/1509231/2505756794.h=
+tml?" target=3D"_blank" style=3D"color: #000000; font-family:SuisseIntl-Bol=
+d, Arial, sans-serif; font-size:18px; font-weight:700; text-decoration:none=
+; font-style:normal; line-height: 25px; background-color:#FFFFFF; text-alig=
+n:center; text-transform:uppercase;">
+Plus solidaires que jamais, ensemble
+</a>=20=20=20=20
+=20=20=20=20=20=20=20=20
+        </td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+
+=20=20
+=20=20
+=20=20
+=20=20
+=20=20
+=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20
+=20=20
+=20=20=20
+=20=20=20
+=20=20=20
+=20=20=20
+=20=20=20
+=20=20=20=20
+      <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" =
+cellspacing=3D"0">
+      <tbody>
+ <tr>
+=20=20
+  <td width=3D"217" height=3D"80" align=3D"center" bgcolor=3D"#FFFFFF" styl=
+e=3D"background-color:#FFFFFF; text-align:center; vertical-align:middle;"><=
+a href=3D"https://s3s-main.net/l2/7LvypiDsM26/1509231/2505756794.html?"  ta=
+rget=3D"_blank"> <img align=3D"center" alt=3D"Livraisons et retours" border=
+=3D"0" src=3D"http://s3s-main.net/7Lv/vW/0YAb/livraison.png"  style=3D"text=
+-decoration: none; -ms-interpolation-mode: bicubic; height: auto; border: n=
+one; width: 100%; max-width: 80px;" title=3D"Livraisons et retours" width=
+=3D"80"/></a></td>
+  <td width=3D"216" height=3D"80" align=3D"center" bgcolor=3D"#FFFFFF" styl=
+e=3D"background-color:#FFFFFF; text-align:center; vertical-align:middle;"><=
+a href=3D"https://s3s-main.net/l2/7LvypiDsM27/1509231/2505756794.html?"  ta=
+rget=3D"_blank"> <img align=3D"center" alt=3D"Paiement s=C3=A9curis=C3=A9" =
+border=3D"0" src=3D"http://s3s-main.net/7Lv/vW/0YAb/paiement.png"  style=3D=
+"text-decoration: none; -ms-interpolation-mode: bicubic; height: auto; bord=
+er: none; width: 100%; max-width: 80px;" title=3D"Paiement s=C3=A9curis=C3=
+=A9" width=3D"80"/></a></td>
+  <td width=3D"217" height=3D"80" align=3D"center" bgcolor=3D"#FFFFFF" styl=
+e=3D"background-color:#FFFFFF; text-align:center; vertical-align:middle;"><=
+a href=3D"https://s3s-main.net/l2/7LvypiDsM28/1509231/2505756794.html?"  ta=
+rget=3D"_blank"> <img align=3D"center" alt=3D"Besoin de temps ?" border=3D"=
+0" src=3D"http://s3s-main.net/7Lv/vW/0YAb/retours.png"  style=3D"text-decor=
+ation: none; -ms-interpolation-mode: bicubic; height: auto; border: none; w=
+idth: 100%; max-width: 80px;" title=3D"Besoin de temps ?" width=3D"80"/></a=
+></td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0">
+    <tbody>
+ <tr>
+=20=20
+  <td width=3D"217" height=3D"76" bgcolor=3D"#FFFFFF" style=3D"background-c=
+olor:#FFFFFF; text-align:center; vertical-align:middle;">
+=20=20
+        <a style=3D"FONT-FAMILY: SuisseIntl-Bold, Arial, sans-serif; font-w=
+eight:700; COLOR: #808080; FONT-SIZE: 13px; TEXT-DECORATION: none; text-ali=
+gn:center; display:block; background-color:#FFFFFF; line-height:24px; text-=
+transform:uppercase;" href=3D"https://s3s-main.net/l2/7LvypiDsM29/1509231/2=
+505756794.html?" target=3D"_blank"><strong style=3D"color:#000000;">Livrais=
+on</strong><br />
+        <span style=3D"font-size:13px; font-family:SuisseIntl-Light, Arial,=
+ sans-serif; font-weight:300; text-transform:none; line-height:17px;">Livra=
+ison<br />
+        =C3=A0 domicile offerte</span></a>
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+      </td>
+  <td width=3D"216" height=3D"76" bgcolor=3D"#FFFFFF" style=3D"background-c=
+olor:#FFFFFF; text-align:center; vertical-align:middle;">
+=20=20
+        <a style=3D"FONT-FAMILY: SuisseIntl-Bold, Arial, sans-serif; font-w=
+eight:700; COLOR: #808080; FONT-SIZE: 13px; TEXT-DECORATION: none; text-ali=
+gn:center; display:block; background-color:#FFFFFF; line-height:24px; text-=
+transform:uppercase;" href=3D"https://s3s-main.net/l2/7LvypiDsM30/1509231/2=
+505756794.html?" target=3D"_blank"><strong style=3D"color:#000000;">paiemen=
+t s&eacute;curis&eacute;</strong><br />
+        <span style=3D"font-size:13px; font-family:SuisseIntl-Light, Arial,=
+ sans-serif; font-weight:300; text-transform:none; line-height:17px;">Paiem=
+ent<br />
+        100% s&eacute;curis&eacute;</span></a>
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+    </td>
+  <td width=3D"217" height=3D"76" bgcolor=3D"#FFFFFF" style=3D"background-c=
+olor:#FFFFFF; text-align:center; vertical-align:middle;">
+=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+        <a style=3D"FONT-FAMILY: SuisseIntl-Bold, Arial, sans-serif; font-w=
+eight:700; COLOR: #808080; FONT-SIZE: 13px; TEXT-DECORATION: none; text-ali=
+gn:center; display:block; background-color:#FFFFFF; line-height:24px; text-=
+transform:uppercase;" href=3D"https://s3s-main.net/l2/7LvypiDsM31/1509231/2=
+505756794.html?" target=3D"_blank"><strong style=3D"color:#000000;">Besoin =
+de temps ?</strong><br />
+        <span style=3D"font-size:13px; font-family:SuisseIntl-Light, Arial,=
+ sans-serif; font-weight:300; text-transform:none; line-height:17px;">30 jo=
+urs<br />
+        pour changer d'avis</span></a>
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+      </td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20
+=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0">
+    <tbody>
+ <tr>
+  <td width=3D"650" height=3D"20" bgcolor=3D"#FFFFFF" style=3D"background-c=
+olor:#FFFFFF; text-align:center; vertical-align:middle;">
+   <img style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv=
+/vW/0YAb/spacer.gif"></td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20
+=20=20=20
+=20=20=20
+=20=20=20
+=20=20=20
+=20=20=20
+=20=20=20
+=20=20=20
+=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"650" height=3D"100" bgcolor=3D"#FFFFFF" style=3D"background-=
+color:#FFFFFF; text-align:center; vertical-align:middle; text-align:justify=
+; padding:20px; font-size:12px; color:#333; font-family:SuisseIntl-Light, A=
+rial, sans-serif; line-height:16px; font-weight:300;">
+=20=20
+=20=20=20=20=20=20
+=20=20=20=20=20=20
+=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20
+        Si vous ne souhaitez plus recevoir d'emails de notre part : <a href=
+=3D"https://s3s-main.net/l2/7LvypiDsM32/1509231/2505756794.html?" target=3D=
+"_blank" style=3D"color:#333;">Suivez ce lien</a> <br /><br />
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20=20
+         * Offre de R=C3=A9duction de 10=E2=82=AC tous les 60=E2=82=AC d'ac=
+hats factur=C3=A9s, valable du 03/11/2020 au 19/11/2020 sur www.devred.com =
+en indiquant le code <span style=3D"font:SuisseIntl-Bold, Arial, sans-serif=
+; font-weight:700;">EXTRA10</span> au moment de la validation de votre pani=
+er. R=C3=A9duction valable sur tout le site, m=C3=AAme les articles =C3=A0 =
+prix Immanquables. Non applicable sur les articles outlet, les produits des=
+ marques Komono, Poupechkoff, Colonel Moutarde, Philemon, Amalone, Pipolaki=
+, Famacobox, Lexon, Bleu de peau, sur l'achat de carte cadeaux, boites cade=
+aux, et costume personnalis=C3=A9. Retouches payantes (hors Homme d'Excepti=
+on). <br /><br />
+=20=20=20=20=20=20=20=20=20
+         ** Offre valable jusqu'au 19/11/2020 sur une s=C3=A9lection d'arti=
+cles signal=C3=A9s dans les boutiques DEVRED1902 et affili=C3=A9s aux r=C3=
+=A9seaux participants en France m=C3=A9tropolitaine, Belgique, Luxembourg, =
+Suisse et sur le site internet dans la limite des stocks disponibles. Offre=
+ non cumulable avec les promotions en cours, achat de cartes cadeaux. Retou=
+ches payantes (hors Homme d'Exception).
+=20=20=20=20=20=20=20=20=20
+         <br /><br />
+=20=20=20=20=20=20=20=20=20
+         *** Offre de r=C3=A9duction jusqu'=C3=A0 50=E2=82=AC, valable du 0=
+4/11/2020 au 19/11/2020 sur www.devred.com sur une s=C3=A9lection d'article=
+s de la cat=C3=A9gorie : <a href=3D"https://s3s-main.net/l2/7LvypiDsM33/150=
+9231/2505756794.html?" target=3D"_blank" style=3D"color:#000; text-decorati=
+on:underline;">Blousons et manteaux </a>
+=20=20=20=20=20=20=20=20=20
+         <br /><br />
+=20=20=20=20=20=20=20=20=20
+
+        Vos donn=C3=A9es personnelles sont trait=C3=A9es par DEVRED*, agiss=
+ant en qualit=C3=A9 de responsable de traitement, =C3=A0 des fins d'informa=
+tion, d'organisation d'=C3=A9v=C3=A9nements ou de prospection commerciale. =
+Elles sont exclusivement destin=C3=A9es =C3=A0 DEVRED, et dans certains cas=
+ =C3=A0 ses sous-traitants pour les besoins mentionn=C3=A9s ci-avant. Vos d=
+onn=C3=A9es sont susceptibles d'=C3=AAtre transf=C3=A9r=C3=A9es vers un pay=
+s tiers. Ce transfert est effectu=C3=A9 conform=C3=A9ment =C3=A0 des garant=
+ies appropri=C3=A9es. Vos donn=C3=A9es personnelles sont conserv=C3=A9es du=
+rant au moins trois ans.
+<br /><br />
+Vous pouvez exercer vos droits et demander une copie des garanties appropri=
+=C3=A9es en envoyant un email =C3=A0 notre d=C3=A9l=C3=A9gu=C3=A9 =C3=A0 la=
+ protection des donn=C3=A9es : <a style=3D"color:#555555;" href=3D"https://=
+s3s-main.net/l2/7LvypiDsM34/1509231/2505756794.html?">dpo-devred@devred.fr<=
+/a>.
+<br /><br />
+Si vous ne souhaitez plus recevoir de communication sur ce sujet, merci de =
+bien vouloir envoyer un email =C3=A0 <a style=3D"color:#555555;" href=3D"ht=
+tps://s3s-main.net/l2/7LvypiDsM35/1509231/2505756794.html?">dpo-devred@devr=
+ed.fr</a> ou <a style=3D"color:#555555;" href=3D"https://s3s-main.net/l2/7L=
+vypiDsM36/1509231/2505756794.html?">devred@viasmtp.com</a>. Pour ne plus re=
+cevoir aucune communication de DEVRED, merci de bien vouloir le demander en=
+ envoyant un email =C3=A0 <a style=3D"color:#555555;" href=3D"https://s3s-m=
+ain.net/l2/7LvypiDsM37/1509231/2505756794.html?">dpo-devred@devred.fr</a> o=
+u <a style=3D"color:#555555;" href=3D"https://s3s-main.net/l2/7LvypiDsM38/1=
+509231/2505756794.html?">devred@viasmtp.com</a>.
+<br /><br />
+Conform=C3=A9ment =C3=A0 la loi "Informatique et libert=C3=A9s", vous dispo=
+sez d'un droit d'acc=C3=A8s et de rectification aux donn=C3=A9es vous conce=
+rnant, d'un droit de suppression, d'un droit =C3=A0 la portabilit=C3=A9, d'=
+un droit de donner des directives sur le sort de vos donn=C3=A9es en cas de=
+ d=C3=A9c=C3=A8s, d'un droit =C3=A0 la limitation du traitement de vos donn=
+=C3=A9es, du droit de vous opposer =C3=A0 leur traitement, ainsi que d'un d=
+roit d'introduire une r=C3=A9clamation aupr=C3=A8s de la CNIL.
+
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+        </td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+   <td width=3D"650" height=3D"100" bgcolor=3D"#FFFFFF" style=3D"background=
+-color:#FFFFFF; text-align:center; vertical-align:middle; text-align:center=
+; padding:15px; font-size:12px; color:#333; font-family:SuisseIntl-Light, A=
+rial, sans-serif; line-height:16px; font-weight:300;">
+=20=20
+=20=20=20=20=20=20=20=20
+* =C2=ABDEVRED=C2=BB d=C3=A9signe DEVRED S.A.S., une soci=C3=A9t=C3=A9 par =
+actions simplifi=C3=A9e de droit fran=C3=A7ais, dont le si=C3=A8ge social s=
+e situe 4 rue Rougemont, 75009 PARIS.=C2=A0=C2=BB<br />
+&copy; 2019 DEVRED S.A.S.<br />
+<br />
+<span style=3D"font:SuisseIntl-Bold, Arial, sans-serif; font-weight:700;">S=
+i vous ne souhaitez plus recevoir d'emails de notre part :</span> <a href=
+=3D"https://s3s-main.net/l2/7LvypiDsM39/1509231/2505756794.html?" target=3D=
+"_blank" style=3D"color:#333;">Suivez ce lien</a> <br />
+www.devred.com R.C.S. PARIS B 342 948 965.<br />
+Photos non contractuelles.
+
+        </td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+    <table width=3D"650" border=3D"0" align=3D"center" cellpadding=3D"0" ce=
+llspacing=3D"0" style=3D"border:0px;">
+     <tbody>
+ <tr>
+  <td width=3D"650" height=3D"20" bgcolor=3D"#FFFFFF" style=3D"background-c=
+olor:#FFFFFF; text-align:center; vertical-align:middle;">
+   <img style=3D"display:block" border=3D"0" src=3D"http://s3s-main.net/7Lv=
+/vW/0YAb/spacer.gif"></td>
+ </tr>
+    </tbody>
+    </table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+<table align=3D"center" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" wi=
+dth=3D"200">
+ <tbody>
+  <tr>
+   <td align=3D"center" bgcolor=3D"#FFF" style=3D"background-color:#FFF;" w=
+idth=3D"33%"><a href=3D"https://s3s-main.net/l2/7LvypiDsM40/1509231/2505756=
+794.html?" target=3D"_blank"><img alt=3D"Twitter" border=3D"0" height=3D"53=
+" src=3D"http://s3s-main.net/7Lv/vW/0YAb/twitter.jpg" style=3D"display:bloc=
+k" width=3D"60" /></a></td>
+   <td align=3D"center" bgcolor=3D"#FFF" style=3D"background-color:#FFF;" w=
+idth=3D"33%"><a href=3D"https://s3s-main.net/l2/7LvypiDsM41/1509231/2505756=
+794.html?" target=3D"_blank"><img alt=3D"Instagram" border=3D"0" height=3D"=
+53" src=3D"http://s3s-main.net/7Lv/vW/0YAb/insta.jpg" style=3D"display:bloc=
+k" width=3D"60" /></a></td>
+   <td align=3D"right" bgcolor=3D"#FFF" style=3D"background-color:#FFF;" wi=
+dth=3D"33%"><a href=3D"https://s3s-main.net/l2/7LvypiDsM42/1509231/25057567=
+94.html?" target=3D"_blank"><img alt=3D"Facebook" border=3D"0" height=3D"53=
+" src=3D"http://s3s-main.net/7Lv/vW/0YAb/face.jpg" style=3D"display:block" =
+width=3D"60" /></a></td>
+  </tr>
+ </tbody>
+</table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20
+=20=20=20=20
+=20=20=20=20
+<table align=3D"center" bgcolor=3D"#FFF" border=3D"0" cellpadding=3D"0" cel=
+lspacing=3D"0" width=3D"650">
+ <tbody>
+  <tr>
+   <td bgcolor=3D"#FFF" height=3D"30" style=3D"text-align:center;" width=3D=
+"650"><font face=3D"Arial, Helvetica, sans-serif" style=3D"color:#000; font=
+-size:10px;"><a href=3D"https://s3s-main.net/l2/7LvypiDsM43/1509231/2505756=
+794.html?" style=3D"color:#000; text-decoration:none;" target=3D"_blank">CG=
+V</a></font> <font face=3D"Arial, Helvetica, sans-serif" style=3D"color:#00=
+0; font-size:10px;">&nbsp;&nbsp;&nbsp;&nbsp;</font>
+=20=20=20
+   <font face=3D"Arial, Helvetica, sans-serif" style=3D"color:#000; font-si=
+ze:10px;"><a href=3D"https://s3s-main.net/l2/7LvypiDsM44/1509231/250575679=
+4.html?" style=3D"color:#000; text-decoration:none;" target=3D"_blank">Ment=
+ions l&eacute;gales</a></font> <font face=3D"Arial, Helvetica, sans-serif" =
+style=3D"color:#000; font-size:10px;">&nbsp;&nbsp;&nbsp;&nbsp;</font>
+=20=20=20
+   <font face=3D"Arial, Helvetica, sans-serif" style=3D"color:#000; font-si=
+ze:10px;"><a href=3D"https://s3s-main.net/l2/7LvypiDsM45/1509231/250575679=
+4.html?" style=3D"color:#000; text-decoration:none;" target=3D"_blank">Devr=
+ed1902</a></font></td>
+  </tr>
+ </tbody>
+</table>
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+=20=20=20=20
+ <div style=3D"max-height:0; overflow:hidden; mso-hide:all;" aria-hidden=3D=
+"true">
+<img src=3D"https://px.devred.com?pid=3Dp-f8e877fc&sid=3Ddvd3sr6my&so=3DCRM=
+DEVRED&cp=3D18-11-20-IDEESKDO&tpc=3D0154010002306&ch=3Demail"/>
+</div>
+
+</body></html>
+
+=20=20=20=20
+=20=20=20
+
+
+--23b937f34df773e29d0d82ffab688155355af230_alt--

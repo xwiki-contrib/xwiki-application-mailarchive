@@ -136,9 +136,9 @@ public class MailUtils implements IMailUtils
         logger.debug("parseUser extracted email {}", address);
         String parsedUser = null;
         if (!StringUtils.isBlank(address)) {
-            // to match "-external" emails and old mails with '@gemplus.com'...
+            // to match "-external" emails and old mails...
             String pattern = address.toLowerCase();
-            pattern = pattern.replace("-external", "").replaceAll("^(.*)@.*[.]com$", "$1%@%.com");
+            pattern = pattern.replaceAll("^(.*)@.*[.]com$", "$1%@%.com");
             logger.debug("parseUser pattern applied {}", pattern);
             // Try to find a wiki profile with this email as parameter.
             // TBD : do this in the loading phase, and only try to search db if it was not found ?

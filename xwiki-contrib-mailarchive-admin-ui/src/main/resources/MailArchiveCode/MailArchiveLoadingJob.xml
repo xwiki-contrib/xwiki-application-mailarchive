@@ -138,7 +138,7 @@
       <jobClass>com.xpn.xwiki.plugin.scheduler.GroovyJob</jobClass>
     </property>
     <property>
-      <jobDescription>Automatic loading of emails from GGS mailing-lists. Emails will be read from a mailbox, loaded and set with READ flag or deleted.
+      <jobDescription>Automatic loading of emails from mailing-lists. Emails will be read from a mailbox, loaded and set with READ flag or deleted.
 
 To configure options for loading sessions from this scheduled job, please visit [[MailArchive.Loading]].</jobDescription>
     </property>

@@ -198,9 +198,9 @@ try {
       mail = user.substring(start+1, end).toLowerCase()
     }
     if (mail != "") {
-      // to match "-external" emails and old mails with '@gemplus.com'...
+      // to match "-external" emails and old mails ...
       mail = mail.toLowerCase()
-      mail = mail.replace("-external", "").replaceAll(~/^(.*)@.*[.]com$/, "\$1%@%.com")   
+      mail = mail.replaceAll(~/^(.*)@.*[.]com$/, "\$1%@%.com")
       // Try to find a wiki profile with this email as parameter.
       // TBD : do this in the loading phase, and only try to search db if it was not found ?
       def hql = "select obj.name from BaseObject as obj, StringProperty as prop where obj.className='XWiki.XWikiUsers' and obj.id=prop.id and prop.name='email' and LOWER(prop.value) like '" + mail + "'"

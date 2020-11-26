@@ -1,0 +1,1834 @@
+Delivered-To: q.u.i.n.e.x.i.s.t.e.p.a.s@gmail.com
+Received: by 2002:a4f:ac09:0:0:0:0:0 with SMTP id v9csp1426828ive;
+        Fri, 20 Nov 2020 08:32:59 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwoyvmTlg1j9JgaLTD87BNu8UewyMlWqPVqvg8y/Q12xZFMVKgn2VmyvT8VURc3yyEjXNuL
+X-Received: by 2002:adf:fd85:: with SMTP id d5mr15967119wrr.99.1605889979249;
+        Fri, 20 Nov 2020 08:32:59 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1605889979; cv=none;
+        d=google.com; s=arc-20160816;
+        b=JcZaUQ81+rIrCH+3VvoZW4mm2/2Q3jKJuF/aFo9EMGS4Qz32AobjERCxid4mwIEouT
+         dWAuADD5uvScPOiAG2W4AzducAv88USpbCbui7X4S/NohE0FUjBf7sfoDdInvVy/ZtuE
+         23eLSEu6MXDa0t2EcIDH74lj4fjoCKKCZdYLHPJVq/CIgHvUwT5QUlENc2TgDyrYCU9f
+         ulOXuCKcypxDuOUpli6M4ELiyXHaY0Xt5VqjbJqrxO03JwLsaFACk0yoM9x2p6JF82S8
+         0uHypYKeT/QRMpAyH5veIjU+B7wF0kZR5kUgI4M/CK3gTQrcFwUA/MycTVH9kn8N3m+R
+         vNag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=feedback-id:mime-version:date:message-id:subject:reply-to:to:from
+         :dkim-signature:dkim-signature;
+        bh=9M1GJWnF1WVDnGr2jIFZdnNtXEiLbt8iTA0Sd7ds480=;
+        b=YKOFbHilHo9acw+NsYPOrxF2LhEkU5dK7rHeAPlH+ZYxogsBe7iWEwqtDgIMZtZXfz
+         egySbz1te8GFAg51A4j0PpBUCWq6JXw5Rv5Q/IftDBv89lUkPtwzivQhadJq5J7M7q2X
+         4m0F7PSbw4oPbSmhIrvF5SSI4uhwa/kuE8WlbbZghVZoSEJf2zjmSAylpM/rST0Q7HHP
+         dEHiOaYdqFTxZCDKoNMD6hbhi6MW/UP91hNgVHyZbwchrL2YWiTQSFJhmx5IWwh7hRbx
+         yfzBQXUiQFbpH5Khy67XYHfVqvPV3bhI/JjnzwXJIvFh1wK8nH7xfGt2GbJ68O4vkrHr
+         Wxuw==
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@subscription.taschen-mail.com header.s=4r2mfwg4iqd5fdouy6dcpai3pg4sv2db header.b=YP46ype0;
+       dkim=pass header.i=@amazonses.com header.s=shh3fegwg5fppqsuzphvschd53n6ihuv header.b=R1+XdEx7;
+       spf=pass (google.com: domain of 01020175e68071ca-e29d4d49-669d-4da5-af68-a580d080146f-000000@mail.subscription.taschen-mail.com designates 69.169.231.57 as permitted sender) smtp.mailfrom=01020175e68071ca-e29d4d49-669d-4da5-af68-a580d080146f-000000@mail.subscription.taschen-mail.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=subscription.taschen-mail.com
+Return-Path: <01020175e68071ca-e29d4d49-669d-4da5-af68-a580d080146f-000000@mail.subscription.taschen-mail.com>
+Received: from b231-57.smtp-out.eu-west-1.amazonses.com (b231-57.smtp-out.eu-west-1.amazonses.com. [69.169.231.57])
+        by mx.google.com with ESMTPS id n63si3935164wmn.17.2020.11.20.08.32.59
+        for <q.u.i.n.e.x.i.s.t.e.p.a.s@gmail.com>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Fri, 20 Nov 2020 08:32:59 -0800 (PST)
+Received-SPF: pass (google.com: domain of 01020175e68071ca-e29d4d49-669d-4da5-af68-a580d080146f-000000@mail.subscription.taschen-mail.com designates 69.169.231.57 as permitted sender) client-ip=69.169.231.57;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@subscription.taschen-mail.com header.s=4r2mfwg4iqd5fdouy6dcpai3pg4sv2db header.b=YP46ype0;
+       dkim=pass header.i=@amazonses.com header.s=shh3fegwg5fppqsuzphvschd53n6ihuv header.b=R1+XdEx7;
+       spf=pass (google.com: domain of 01020175e68071ca-e29d4d49-669d-4da5-af68-a580d080146f-000000@mail.subscription.taschen-mail.com designates 69.169.231.57 as permitted sender) smtp.mailfrom=01020175e68071ca-e29d4d49-669d-4da5-af68-a580d080146f-000000@mail.subscription.taschen-mail.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=subscription.taschen-mail.com
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=4r2mfwg4iqd5fdouy6dcpai3pg4sv2db;
+	d=subscription.taschen-mail.com; t=1605889978;
+	h=Content-Type:From:To:Reply-To:Subject:Message-ID:Date:MIME-Version;
+	bh=+p3V1RQjwDK330LMW4q+Ze2Xetrn6+2t04rywSqHyio=;
+	b=YP46ype03BGui2ESv/n3kIu60AOMMGpUV3QGpk/rq0WiTSnUZ0X0FbsHgoGEmV1q
+	BzxOyPv40GoaVnneHFLz0rTzqPNVTOH0CW31nRu7hbranLBGhQHYN7fTKA3Te7r+oRJ
+	zDWrCkyRP4ixgrOPX3aUQVr5+ac4JsPnjsYwtR9s=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=shh3fegwg5fppqsuzphvschd53n6ihuv; d=amazonses.com; t=1605889978;
+	h=Content-Type:From:To:Reply-To:Subject:Message-ID:Date:MIME-Version:Feedback-ID;
+	bh=+p3V1RQjwDK330LMW4q+Ze2Xetrn6+2t04rywSqHyio=;
+	b=R1+XdEx7UxGWOhVylWVwKQpdrZkVvookskyCSz46UsWBS9pQ9YQ47f1JTrWDOTxC
+	htWY7f2jUv2lW4X3+0NVCDDv1H3TcNYOLt96w0CAYh4NPyBufFwwthutMtxDcss/7kE
+	hv4TuppZ/ij0pkisHRC2x3m5djYK5tD3LN6uTAeg=
+Content-Type: multipart/alternative;
+ boundary="--_NmP-753a90bcb351e42c-Part_1"
+X-Mj-Customid: subscription.taschen-mail.com
+X-Mailin-Custom: subscription.taschen-mail.com
+From: TASCHEN <contact@subscription.taschen-mail.com>
+To: q.u.i.n.e.x.i.s.t.e.p.a.s@gmail.com
+Reply-To: TASCHEN <contact@subscription.taschen-mail.com>
+Subject: Explorer le zodiaque
+Message-ID: <01020175e68071ca-e29d4d49-669d-4da5-af68-a580d080146f-000000@eu-west-1.amazonses.com>
+Date: Fri, 20 Nov 2020 16:32:58 +0000
+MIME-Version: 1.0
+X-SES-Outgoing: 2020.11.20-69.169.231.57
+Feedback-ID: 1.eu-west-1.UP/92glSc/bUpVg9NmFgYZwYLm5lTbkVsOufUkuWz4M=:AmazonSES
+
+----_NmP-753a90bcb351e42c-Part_1
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Tourn=C3=A9 vers le ciel, le deuxi=C3=A8me tome de la Biblioth=C3=A8que
+=C3=89sot=C3=A9rique de TASCHEN plonge dans la tr=C3=A9pidante histoire =
+visuelle
+de l=E2=80=99astrologie occidentale. De sa naissance comme petite =
+soeur
+de la science astronomique =C3=A0 notre =C3=88re du Verseau, =
+l=E2=80=99=C3=A9volution de
+cette pratique ancestrale se raconte =C3=A0 =
+travers plus de 400
+images, des temples =C3=A9gyptiens =C3=A0 l=E2=80=99art=
+ contemporain, organis=C3=A9es de
+fa=C3=A7on =C3=A0 refl=C3=A9ter la =
+r=C3=A9volution des plan=C3=A8tes et la roue du
+zodiaque.
+
+TASCHEN ( https://www.taschen.com/?utm_campaign=3Dva_esoterica_astrology&ut=
+m_source=3Dtas&utm_medium=3Dnl )
+
+TASCHEN ( https://www.taschen.=
+com/pages/fr/catalogue/art/all/08004/facts.astrology.htm?=
+utm_campaign=3Dva_esoterica_astrology&utm_source=3Dtas&utm_medium=3Dnl )
+
+L=E2=80=99art de l=E2=80=99astrologie, des sciences antiques
+=C3=A0 la pratique moderne
+
+L=E2=80=99art de l=E2=80=99astrologie,des =
+sciences antiques=C3=A0 la pratique
+moderne
+
+Tourn=C3=A9 vers le ciel, le =
+deuxi=C3=A8me tome de la Biblioth=C3=A8que
+=C3=89sot=C3=A9rique de TASCHEN =
+plonge dans la tr=C3=A9pidante histoire visuelle
+de l=E2=80=99astrologie =
+occidentale. De sa naissance comme petite s=C5=93ur de
+la science astronomique =C3=A0 notre =C3=88re du Verseau, =
+l=E2=80=99=C3=A9volution de
+cette pratique ancestrale se raconte =C3=A0 =
+travers plus de 400
+images, des temples =C3=A9gyptiens =C3=A0 l=E2=80=99art=
+ contemporain, organis=C3=A9es de
+fa=C3=A7on =C3=A0 refl=C3=A9ter la =
+r=C3=A9volution des plan=C3=A8tes et la roue du
+zodiaque.
+
+Tourn=C3=A9 vers le ciel, le deuxi=C3=A8me tome de la Biblioth=C3=A8que
+=C3=89sot=C3=A9rique de TASCHEN plonge dans la tr=C3=A9pidante histoire =
+visuelle
+de l=E2=80=99astrologie occidentale. De sa naissance comme petite =
+s=C5=93ur de
+la science astronomique =C3=A0 notre =C3=88re du Verseau, =
+l=E2=80=99=C3=A9volution de
+cette pratique ancestrale se raconte =C3=A0 =
+travers plus de 400
+images, des temples =C3=A9gyptiens =C3=A0 l=E2=80=99art=
+ contemporain, organis=C3=A9es de
+fa=C3=A7on =C3=A0 refl=C3=A9ter la =
+r=C3=A9volution des plan=C3=A8tes et la roue du
+zodiaque.
+
+TASCHEN ( https://www.taschen.com/pages/fr/catalogue/art/all/08004/facts.=
+astrology.htm?utm_campaign=3Dva_esoterica_astrology&utm_source=3Dtas&utm_me=
+dium=3Dnl )
+
+Astrology
+
+=E2=82=AC 30
+
+Buy now ( https://www.taschen.=
+com/pages/fr/shopping_cart/index.htm?action=3Daddtocart&crt_code=3D08004&ut=
+m_campaign=3Dva_esoterica_astrology&utm_source=3Dtas&utm_medium=3Dnl )
+
+TASCHEN ( https://www.taschen.com/pages/fr/catalogue/art/all/08004/facts.=
+astrology.htm?utm_campaign=3Dva_esoterica_astrology&utm_source=3Dtas&utm_me=
+dium=3Dnl )
+
+=C3=89galement disponible:
+
+=C3=89galement disponible:
+
+TASCHEN ( https://www.taschen.com/pages/fr/catalogue/art/all/08003/facts.=
+tarot.htm?utm_campaign=3Dva_esoterica_astrology&utm_source=3Dtas&utm_medium=
+=3Dnl )
+
+Tarot
+
+=E2=82=AC 30
+
+Buy now ( https://www.taschen.=
+com/pages/fr/shopping_cart/index.htm?action=3Daddtocart&crt_code=3D08003&ut=
+m_campaign=3Dva_esoterica_astrology&utm_source=3Dtas&utm_medium=3Dnl )
+
+=C2=ABCe livre nous ram=C3=A8ne =C3=A0 notre =C3=A9ternelle et universelle =
+qu=C3=AAte de
+sens, de raison d=E2=80=99=C3=AAtre et de divin.=C2=BB
+
+=E2=80=94 itsnicethat.com
+
+=C2=ABCe livre nous ram=C3=A8ne =C3=A0 notre =
+=C3=A9ternelle et universelle
+qu=C3=AAte de sens, de raison =
+d=E2=80=99=C3=AAtre et de divin.=C2=BB
+
+=E2=80=94 itsnicethat.com
+
+=C2=A9 2020 =E2=80=93 TASCHEN
+
+www.taschen.com ( https://www.taschen.com/?=
+utm_campaign=3Dva_esoterica_astrology&utm_source=3Dtas&utm_medium=3Dnl ) | =
+Retrouvez toutes nos coordonn=C3=A9es ici. ( https://www.taschen.=
+com/pages/fr/company/contact_area_1/index.contact_us.htm?=
+utm_campaign=3Dva_esoterica_astrology&utm_source=3Dtas&utm_medium=3Dnl )
+Mentions l=C3=A9gales ( https://www.taschen.com/pages/fr/company/about/inde=
+x.mentions_legales.htm?utm_campaign=3Dva_esoterica_astrology&utm_source=3Dt=
+as&utm_medium=3Dnl ) | D=C3=A9sinscription de la newsletter. ( https://www.=
+taschen.com/pages/fr/company/newsletter/unsubscribe.htm?=
+email_unsubscribe=3Dq.u.i.n.e.x.i.s.t.e.p.a.s@gmail.com&chk=3D1f0373bff530165669f990=
+3af78e515c&utm_campaign=3Dva_esoterica_astrology&utm_source=3Dtas&utm_mediu=
+m=3Dnl )
+
+facebook ( https://www.facebook.com/taschen/?=
+utm_campaign=3Dva_esoterica_astrology&utm_source=3Dtas&utm_medium=3Dnl ) =
+Youtube ( https://www.youtube.com/TASCHEN?utm_campaign=3Dva_esoterica_astro=
+logy&utm_source=3Dtas&utm_medium=3Dnl ) Instagram ( https://www.instagram.=
+com/taschen/?utm_campaign=3Dva_esoterica_astrology&utm_source=3Dtas&utm_med=
+ium=3Dnl )
+----_NmP-753a90bcb351e42c-Part_1
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.=
+w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns=3D"http://www.w3=
+.org/1999/xhtml" xmlns:v=3D"urn:schemas-microsoft-com:vml" =
+xmlns:o=3D"urn:schemas-microsoft-com:office:office">
+  <head>
+    <meta http-equiv=3D"Content-Type" content=3D"text/html; =
+charset=3Dutf-8" />
+    <!--[if !mso]>
+    <meta http-equiv=3D"X-UA-Compati=
+ble" content=3D"IE=3Dedge" />
+    <![endif]-->
+    <meta name=3D"viewport" =
+content=3D"width=3Ddevice-width, initial-scale=3D1.0" />
+    <!-- enable media queries for windows phone 8 -->
+    <meta name=3D"format-detection" content=3D"telephone=3Dno" />
+   =20
+    <!--[if (gte mso 9)|(IE)]>
+
+<![endif]-->
+
+<!--[if gte mso 9]><xml>
+ <o:OfficeDocumentSettings>
+  <o:AllowPNG></o:AllowPNG>
+  <o:PixelsPerInch>96</o:PixelsPerInch>
+ </o:OfficeDocumentSettings>
+</xml><![endif]-->
+  <style type=3D"text/css">
+=20
+ @media screen {
+  body,
+.a {
+    font-family: "", Helvetica, Arial, Verdana, sans-serif; } }
+=20
+ @media screen and (max-width: 756px) {
+  .b > .c {
+    display: none !important; }
+  .b .d {
+    display: table !important; } =
+}
+=20
+ @media screen and (max-width: 756px) {
+  .e > .c {
+    display: none !important; }
+  .e .d {
+    display: table !important; } =
+}
+=20
+ @media screen and (max-width: 756px) {
+  .f > .c {
+    display: none !important; }
+  .f .d {
+    display: table !important; } =
+}
+=20
+ @media (max-width: 756px) {
+  .b {
+    text-align: left !important; =
+}
+  .e {
+    text-align: center !important; }
+  .f {
+    text-align: right !important; }
+  .g {
+    text-align: left !important;=
+ }
+    .g * {
+      text-align: left !important; }
+  .h {
+    text-align: center !important; }
+    .h * {
+      text-align: center !=
+important; }
+  .i {
+    text-align: right !important; }
+    .i * {
+      text-align: right !important; } }
+=20
+ @media (max-width: 756px) {
+  .c {
+    display: none !important; }
+  .d {
+    mso-hide: none;
+    overflow: visible !important;
+    max-height: none !important;
+    display: block !important;
+    line-height: initial !important;
+    font-size: initial !important;
+    visibility: visible !important; }
+    .d table, .d tr, .d td, .d div, .d * {
+      mso-hide: none !important;=
+ } }
+=20
+ @media (max-width: 756px) {
+  table.d {
+    display: table !=
+important; } }
+=20
+ @media screen and (max-width: 756px) {
+  .j {
+    width: 10% !important; }
+  .k {
+    width: 20% !important; }
+  .l {
+    width: 30% !important; }
+  .m {
+    width: 40% !important; }
+  .n {
+    width: 50% !important; }
+  .o {
+    width: 60% !important; }
+  .p {
+    width: 70% !important; }
+  .q {
+    width: 80% !important; }
+  .r {
+    width: 90% !important; }
+  .s {
+    width: 100% !important; } }
+=20
+ @media screen and (max-width: 756px) {
+  .t {
+    background-size: 100% =
+auto !important; }
+  .u {
+    background-size: auto 100% !important; }
+  .v {
+    background-size: 100% 100% !important; }
+  .w {
+    background-size: auto auto !important; }
+  .x {
+    background-position: left top !important; }
+  .y {
+    background-position: center top !important; }
+  .z {
+    background-position: right top !important; }
+  .ab {
+    background-position: left center !important; }
+  .bb {
+    background-position: center center !important; }
+  .cb {
+    background-position: right center !important; }
+  .db {
+    background-position: left bottom !important; }
+  .eb {
+    background-position: center bottom !important; }
+  .fb {
+    background-position: right bottom !important; }
+  .gb {
+    background-repeat: repeat-x !important; }
+  .hb {
+    background-repeat: repeat-y !important; }
+  .ib {
+    background-repeat: repeat !important; }
+  .jb {
+    background-repeat: no-repeat !important; } }
+=20
+ @media screen and (max-width: 756px) {
+  .kb {
+    height: auto !=
+important; } }
+=20
+ @media screen and (max-width: 756px) {
+  .lb {
+    max-width: 100% !important; } }
+=20
+ @media screen and (min-width: 1px)=
+ {
+  .mb {
+    font-family: "", Helvetica, Arial, Verdana, sans-serif; }
+    .mb center {
+      font-family: "", Helvetica, Arial, Verdana, =
+sans-serif; } }
+=20
+ @media screen and (min-width: 1px) {
+  .nb {
+    font-family: "", Helvetica, Arial, Verdana, sans-serif; }
+    .nb center {
+      font-family: "", Helvetica, Arial, Verdana, =
+sans-serif; } }
+=20
+ @media screen and (min-width: 1px) {
+  .ob {
+    font-family: "", Helvetica, Arial, Verdana, sans-serif; }
+    .ob center {
+      font-family: "", Helvetica, Arial, Verdana, =
+sans-serif; } }
+=20
+ @media screen and (min-width: 1px) {
+  .pb {
+    font-family: "", Helvetica, Arial, Verdana, sans-serif; }
+    .pb center {
+      font-family: "", Helvetica, Arial, Verdana, =
+sans-serif; } }
+=20
+ @media screen and (min-width: 1px) {
+  .qb {
+    font-family: "", Helvetica, Arial, Verdana, sans-serif; }
+    .qb center {
+      font-family: "", Helvetica, Arial, Verdana, =
+sans-serif; } }
+=20
+ @media screen and (min-width: 1px) {
+  .rb {
+    font-family: "", Helvetica, Arial, Verdana, sans-serif; }
+    .rb center {
+      font-family: "", Helvetica, Arial, Verdana, =
+sans-serif; } }
+=20
+ @media screen and (min-width: 1px) {
+  .sb {
+    font-family: "", Helvetica, Arial, Verdana, sans-serif; } }
+=20
+ @media screen and (min-width: 1px) {
+  .tb {
+    font-family: "", =
+Helvetica, Arial, Verdana, sans-serif; } }
+=20
+ @media screen and =
+(min-width: 1px) {
+  .ub {
+    font-family: "", Helvetica, Arial, Verdana, =
+sans-serif; } }
+=20
+ @media screen and (min-width: 1px) {
+  .vb {
+    font-family: "", Helvetica, Arial, Verdana, sans-serif; } }
+=20
+ @media screen and (min-width: 1px) {
+  .wb {
+    font-family: "", =
+Helvetica, Arial, Verdana, sans-serif; } }
+
+</style><style =
+type=3D"text/css">
+@media screen and (min-width: 1px) {
+  .xb {
+    font-family: "", Helvetica, Arial, Verdana, sans-serif; } }
+=20
+ @media screen and (min-width: 1px) {
+  .yb {
+    font-family: "", =
+Helvetica, Arial, Verdana, sans-serif; } }
+=20
+ @media screen and =
+(min-width: 1px) {
+  .zb {
+    font-family: "", Helvetica, Arial, Verdana, =
+sans-serif; } }
+=20
+ @media screen and (min-width: 1px) {
+  .ac {
+    font-family: "", Helvetica, Arial, Verdana, sans-serif; } }
+=20
+ @media screen and (min-width: 1px) {
+  .bc {
+    font-family: "", =
+Helvetica, Arial, Verdana, sans-serif; } }
+=20
+ @media screen and =
+(min-width: 1px) {
+  .cc {
+    font-family: "", Helvetica, Arial, Verdana, =
+sans-serif; } }
+=20
+ @media screen and (min-width: 1px) {
+  .dc {
+    font-family: "", Helvetica, Arial, Verdana, sans-serif; } }
+=20
+ @media screen and (max-width: 756px) {
+  .ec {
+    width: 100%; }
+    body[data-outlook-cycle] .ec {
+      display: inline-table !important; =
+}
+      body[data-outlook-cycle] .ec tbody {
+        display: =
+table-row-group !important;
+        width: 100% !important; }
+      body[data-outlook-cycle] .ec tr {
+        display: table-row !=
+important;
+        width: 100% !important; }
+      body[data-outlook-cycle]=
+ .ec td {
+        display: table-cell !important;
+        width: 100% !=
+important;
+        text-align: center !important; }
+      body[data-outlook-cycle] .ec a {
+        text-align: center !=
+important;
+        width: 100% !important;
+        padding: 0px !important;=
+ }
+    .sb {
+      width: 100% !important; }
+    .tb {
+      width: 100% !important; }
+    .ub {
+      width: 100% !important; }
+    .vb {
+      width: 100% !important; }
+    .wb {
+      width: 100% !important; }
+    .xb {
+      width: 100% !important; } }
+=20
+ @media screen and (min-width: 1px) {
+  .fc {
+    font-family: "", =
+Helvetica, Arial, Verdana, sans-serif; }
+  small {
+    font-family: "Source=
+ Sans Pro", Helvetica, Arial, Verdana, sans-serif; }
+  p {
+    font-family: "", Helvetica, Arial, Verdana, sans-serif; }
+  li {
+    font-family: "Source Sans Pro", Helvetica, Arial, Verdana, sans-serif; =
+}
+  h1 {
+    font-family: "", Helvetica, Arial, Verdana, sans-serif; }
+  h2 {
+    font-family: "", Helvetica, Arial, Verdana, sans-serif; }
+  h3 {
+    font-family: "", Helvetica, Arial, Verdana, sans-serif; }
+  h4 {
+    font-family: "", Arial, Verdana, sans-serif; }
+  h5 {
+    font-family: "Source Sans Pro", Helvetica, Arial, Verdana, sans-serif; =
+}
+  h6 {
+    font-family: "Source Sans Pro", Helvetica, Arial, Verdana, =
+sans-serif; } }
+=20
+ @media screen and (max-width: 756px) {
+  .gc {
+    width: 100% !important; } }
+=20
+ @media screen and (min-width: 1px) {
+  .hc {
+    font-family: "Source Sans Pro", Helvetica, Arial, Verdana, =
+sans-serif; } }
+=20
+ @media screen and (max-width: 756px) {
+  .ic {
+    width: 100% !important; }
+    .ic img {
+      max-width: 100% !=
+important;
+      height: auto !important; } }
+
+</style><style =
+type=3D"text/css">
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .jc img {
+    display: block !important;
+    width: 100% !important; }
+  .kc:checked ~ .lc .mc .nc, .kc[data-checked] ~ .lc .mc .nc {
+    display: block !important; }
+  .kc:checked ~ .lc .oc, .kc[data-checked]=
+ ~ .lc .oc {
+    left: 0% !important; }
+  .pc:checked ~ .lc .mc .qc, .=
+pc[data-checked] ~ .lc .mc .qc {
+    display: block !important; }
+  .pc:checked ~ .lc .oc, .pc[data-checked] ~ .lc .oc {
+    left: -100% !important; }
+  .rc:checked ~ .lc .mc .sc, .=
+rc[data-checked] ~ .lc .mc .sc {
+    display: block !important; }
+  .rc:checked ~ .lc .oc, .rc[data-checked] ~ .lc .oc {
+    left: -200% !important; }
+  .tc:checked ~ .lc .mc .uc, .=
+tc[data-checked] ~ .lc .mc .uc {
+    display: block !important; }
+  .tc:checked ~ .lc .oc, .tc[data-checked] ~ .lc .oc {
+    left: -300% !important; }
+  .vc:checked ~ .lc .mc .wc, .=
+vc[data-checked] ~ .lc .mc .wc {
+    display: block !important; }
+  .vc:checked ~ .lc .oc, .vc[data-checked] ~ .lc .oc {
+    left: -400% !important; }
+  .xc:checked ~ .lc .mc .yc, .=
+xc[data-checked] ~ .lc .mc .yc {
+    display: block !important; }
+  .xc:checked ~ .lc .oc, .xc[data-checked] ~ .lc .oc {
+    left: -500% !important; }
+  .zc:checked ~ .lc .mc .bd, .=
+zc[data-checked] ~ .lc .mc .bd {
+    display: block !important; }
+  .zc:checked ~ .lc .oc, .zc[data-checked] ~ .lc .oc {
+    left: -600% !important; }
+  .cd:checked ~ .lc .mc .dd, .=
+cd[data-checked] ~ .lc .mc .dd {
+    display: block !important; }
+  .cd:checked ~ .lc .oc, .cd[data-checked] ~ .lc .oc {
+    left: -700% !important; }
+  .ed:checked ~ .lc .mc .fd, .=
+ed[data-checked] ~ .lc .mc .fd {
+    display: block !important; }
+  .ed:checked ~ .lc .oc, .ed[data-checked] ~ .lc .oc {
+    left: -800% !important; }
+  .gd:checked ~ .lc .mc .hd, .=
+gd[data-checked] ~ .lc .mc .hd {
+    display: block !important; }
+  .gd:checked ~ .lc .oc, .gd[data-checked] ~ .lc .oc {
+    left: -900% !important; }
+  .ic {
+    display: block !important;
+    max-height: none !important;
+    width: 756px; }
+  .id:checked ~ .jd, .id[data-checked] ~ .jd {
+    display: none !=
+important; }
+  .id:checked ~ .ic, .id[data-checked] ~ .ic {
+    -webkit-animation: none !important; }
+    .id:checked ~ .ic *, .=
+id[data-checked] ~ .ic * {
+      -webkit-animation: none !important; } }
+=20
+ @media screen and (-webkit-min-device-pixel-ratio: 0) {
+  [class=3D"x__jc-slider__slides-wrapper"] {
+    display: none !important; =
+}
+  [class=3D"x__jc-slider__fallback"] {
+    display: block !important; } }
+=20
+ @media screen and (max-width: 756px) {
+  body[data-outlook-cycle] .ic =
+{
+    display: none !important; }
+  body[data-outlook-cycle] .jd {
+    display: block !important; } }
+
+</style><style type=3D"text/css">
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .kd .ic {
+    width: 746px; }
+  .ld .ic {
+    width: 736px; }
+  .md .ic {
+    width: 716px; }
+  .nd .ic {
+    width: 696px; }
+  .od .ic {
+    width: 456px; }
+  .pd .ic {
+    width: 742px; }
+  .qd .ic {
+    width: 732px; }
+  .rd .ic {
+    width: 712px; }
+  .sd .ic {
+    width: 692px; }
+  .td .ic {
+    width: 452px; }
+  .ud .ic {
+    width: 742px; }
+  .vd .ic {
+    width: 732px; }
+  .wd .ic {
+    width: 712px; }
+  .xd .ic {
+    width: 692px; }
+  .yd .ic {
+    width: 452px; }
+  .zd.ud .ic {
+    width: 738px; }
+  .zd.vd .ic {
+    width: 728px; }
+  .zd.wd .ic {
+    width: 708px; }
+  .zd.xd .ic {
+    width: 688px; }
+  .zd.yd .ic {
+    width: 448px; } }
+=20
+ @media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .ae {
+    display: table-cell !important;
+    max-height: none !important;
+    visibility: visible !important; }
+  .be {
+    display: none !important;
+    mso-hide: all !important; }
+    .be ~ .ce {
+      display: none !=
+important; }
+      .be ~ .de {
+        display: block !important; }
+    .be ~ [class=3D"x_jc-accordion__header"] {
+      display: none !=
+important; }
+    .be ~ [class=3D"x_jc-accordion__target"] {
+      display: block !important; }
+    .be:checked ~ .ce, .be[data-checked]=
+ ~ .ce {
+      display: block !important; }
+  .ee .fe {
+    display: none;
+    mso-hide: all; }
+  .ee .ce {
+    display: block !important; }
+  .ee .be {
+    display: none;
+    mso-hide: all; } }
+=20
+ @media screen and (max-width: 756px) {
+  .ee .fe {
+    display: block;
+    mso-hide: all; }
+  .ee .ce {
+    display: none !important; }
+  .ee .be {
+    display: none !important;
+    mso-hide: all !important; }
+    .ee .be ~ .ce {
+      display: none !important; }
+      .ee .be ~ .de {
+        display: block !important; }
+    .ee .be:checked ~ .ce, .ee .=
+be[data-checked] ~ .ce {
+      display: block !important; } }
+=20
+ @media screen and (max-width: 756px) {
+  body[data-outlook-cycle] .fe {
+    display: none !important; }
+  body[data-outlook-cycle] .ce {
+    display: block !important; } }
+
+</style><style type=3D"text/css">
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .ge:checked ~ .he, .ge[data-checked] ~ .he {
+    display: none; }
+  .ge:checked ~ .ie .je, .ge[data-checked] ~ .ie .je {
+    display: block !important;
+    max-height: none !important; }
+  .ke {
+    position: relative;
+    display: block !important; }
+  .le {
+    display: block !important;
+    max-height: none !important;
+    cursor: pointer;
+    visibility: visible !important;
+    z-index: 20;
+    position: absolute !important; }
+  .me {
+    display: none; }
+  .ne:checked ~ .oe, .ne[data-checked] ~ .oe {
+    display: block !=
+important;
+    z-index: 10; }
+  .pe:checked ~ .qe, .pe[data-checked] ~ .qe =
+{
+    display: block !important;
+    z-index: 10; }
+  .re:checked ~ .se, .re[data-checked] ~ .se {
+    display: block !=
+important;
+    z-index: 10; }
+  .te:checked ~ .ue, .te[data-checked] ~ .ue =
+{
+    display: block !important;
+    z-index: 10; }
+  .ve:checked ~ .we, .ve[data-checked] ~ .we {
+    display: block !=
+important;
+    z-index: 10; }
+  .xe:checked ~ .ye, .xe[data-checked] ~ .ye =
+{
+    display: block !important;
+    z-index: 10; }
+  .ze:checked ~ .af, .ze[data-checked] ~ .af {
+    display: block !=
+important;
+    z-index: 10; }
+  .bf:checked ~ .cf, .bf[data-checked] ~ .cf =
+{
+    display: block !important;
+    z-index: 10; }
+  .df:checked ~ .ef, .df[data-checked] ~ .ef {
+    display: block !=
+important;
+    z-index: 10; }
+  .ff:checked ~ .gf, .ff[data-checked] ~ .gf =
+{
+    display: block !important;
+    z-index: 10; } }
+</style><style type=3D"text/css">
+.hf { mso-table-lspace: -1pt; =
+mso-table-rspace: -1pt; }
+</style></head>
+  <body leftmargin=3D"0" =
+topmargin=3D"0" marginwidth=3D"0" marginheight=3D"0" =
+style=3D"-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; color:=
+ #000000; font-family: '', Helvetica, Arial, Verdana, sans-serif; =
+font-size: 14px; line-height: 20px; margin: 0; min-width: 100%; padding: 0;=
+ background-image: url('none'); background-repeat: no-repeat no-repeat; =
+background-position: top center" bgcolor=3D"#ffffff" =
+background=3D"none"><div style=3D"display: none !important; font-size: 0px;=
+ line-height: 0px; max-height: 0px; max-width: 0px; width: 0px; opacity: 0;=
+ overflow: hidden; mso-hide: all;">Tourn=C3=A9 vers le ciel, le =
+deuxi=C3=A8me tome de la Biblioth=C3=A8que =C3=89sot=C3=A9rique de TASCHEN =
+plonge dans la tr=C3=A9pidante histoire visuelle de l=E2=80=99astrologie =
+occidentale. De sa naissance comme petite soeur de la science astronomique =
+=C3=A0 notre =C3=88re du Verseau, l=E2=80=99=C3=A9volution de cette =
+pratique ancestrale se raconte =C3=A0 travers plus de 400 images, des =
+temples =C3=A9gyptiens =C3=A0 l=E2=80=99art contemporain, organis=C3=A9es =
+de fa=C3=A7on =C3=A0 refl=C3=A9ter la r=C3=A9volution des plan=C3=A8tes et =
+la roue du zodiaque.</div>
+    <div class=3D"a" style=3D"background: =
+#ffffff url('none') repeat-y center top / 100% auto; color: #000000; =
+font-family: '', Helvetica, Arial, Verdana, sans-serif; font-size: 14px; =
+line-height: 20px"> <table class=3D"" width=3D"100%" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" style=3D"border-collapse: collapse; =
+border-spacing: 0; font-size: 0; line-height: 0; margin: 0; width: 100%">
+    <tr>
+		<td align=3D"center" class=3D"" style=3D"margin: 0 auto; =
+padding: 0">
+			<div class=3D"" data-mimetype-switch=3D"html" =
+style=3D"display: none !important; font-size: 1px !important; line-height: =
+0px !important; mso-hide: all !important">
+				<a name=3D"" id=3D"" =
+target=3D"_blank">&nbsp;</a>
+			</div>
+			<div class=3D"" =
+style=3D"max-width: 756px">
+				<!--[if (gte mso 9)|(IE)]>
+				<table class=3D"" align=3D"center" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" style=3D"border-collapse: collapse; border-spacing: 0; =
+width: 756px" width=3D"756">
+					<tr>
+						<td class=3D"" =
+style=3D"margin: 0">
+				<![endif]-->
+
+				<table class=3D"" width=3D"100%"=
+ border=3D"0" cellpadding=3D"0" cellspacing=3D"0" style=3D"border-collapse:=
+ separate; border-spacing: 0; max-width: 756px; width: 100%">
+					<tr>
+						<td valign=3D"top" class=3D"" style=3D"background: top center / 100% =
+auto; margin: 0">
+							<div> <table width=3D"100%" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" class=3D"d" style=3D"border-collapse: =
+collapse; border-spacing: 0; display: none; font-size: 1px; line-height: 0;=
+ max-height: 0; mso-hide: all; overflow: hidden; visibility: hidden; width:=
+ 100%">
+	<tr style=3D"mso-hide: all">
+		<td class=3D"" style=3D"height: =
+40px; margin: 0; mso-hide: all" height=3D"40">
+			&nbsp;
+		</td>
+	</tr>
+</table>  <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+width=3D"100%" class=3D"c" style=3D"border-collapse: collapse">
+	<tr>
+		<td class=3D"e" style=3D"-premailer-align: center !important; height: px;=
+ padding-bottom: 10px; padding-top: 10px; text-align: center; =
+vertical-align: top !important" align=3D"center" valign=3D"top" =
+height=3D"0"> <a href=3D"https://engagement.juneapp.=
+com/campaigns/5fb6568adcbe3550907ade38/click/link/5fb7e47ef037571d5761acfd/=
+5ea318d13df35a040f954084/NaN?utm_campaign=3Dva_esoterica_astrology&utm_sour=
+ce=3Dtas&utm_medium=3Dnl" class=3D"" width=3D"185" style=3D"display: =
+inline-block; vertical-align: top !important; width: auto !important" =
+target=3D"_blank" id=3D"5fb7e47ef037571d5761acfd">
+    <img =
+src=3D"https://taschen-bf09.kxcdn.com/ab1ae1bc1daaa1f1240543cde67cfa91.png"=
+ alt=3D"TASCHEN" width=3D"185" class=3D"" style=3D"max-width: 100%">
+</a> </td>
+	</tr>
+</table> </div>
+						</td>
+					</tr>
+				</table>
+
+				<!--[if (gte mso 9)|(IE)]>
+				</td>
+				</tr>
+				</table>
+				<![endif]-->
+			</div>
+		</td>
+	</tr>
+</table>  <table class=3D"" =
+width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+style=3D"border-collapse: collapse; border-spacing: 0; font-size: 0; =
+line-height: 0; margin: 0; width: 100%">
+    <tr>
+		<td align=3D"center" =
+class=3D"" style=3D"margin: 0 auto; padding: 0">
+			<div class=3D"" =
+data-mimetype-switch=3D"html" style=3D"display: none !important; font-size:=
+ 1px !important; line-height: 0px !important; mso-hide: all !important">
+				<a name=3D"" id=3D"" target=3D"_blank">&nbsp;</a>
+			</div>
+			<div class=3D"" style=3D"max-width: 756px">
+				<!--[if (gte mso =
+9)|(IE)]>
+				<table class=3D"" align=3D"center" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" style=3D"border-collapse: collapse; =
+border-spacing: 0; width: 756px" width=3D"756">
+					<tr>
+						<td class=3D"" style=3D"margin: 0">
+				<![endif]-->
+
+				<table class=3D"" width=3D"100%" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" style=3D"border-collapse: separate; border-spacing: 0; =
+max-width: 756px; width: 100%">
+					<tr>
+						<td valign=3D"top" =
+class=3D"" style=3D"background: top center / 100% auto; margin: 0">
+							<div> <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+width=3D"100%" class=3D"" style=3D"border-collapse: collapse">
+	<tr>
+		<td class=3D"e" style=3D"-premailer-align: center !important; height: px;=
+ text-align: center; vertical-align: top !important" align=3D"center" =
+valign=3D"top" height=3D"0"> <a href=3D"https://engagement.juneapp.=
+com/campaigns/5fb6568adcbe3550907ade38/click/link/5fb7e47ef037571d5761acfe/=
+5ea318d13df35a040f954084/NaN?utm_campaign=3Dva_esoterica_astrology&utm_sour=
+ce=3Dtas&utm_medium=3Dnl" class=3D"" width=3D"660" style=3D"display: =
+inline-block; vertical-align: top !important; width: auto !important" =
+target=3D"_blank" id=3D"5fb7e47ef037571d5761acfe">
+    <img =
+src=3D"https://taschen-bf09.kxcdn.com/19950ce6f1cd0e45a27852d9cd8b6c56.gif"=
+ alt=3D"TASCHEN" width=3D"660" class=3D"" style=3D"max-width: 100%">
+</a> </td>
+	</tr>
+</table> </div>
+						</td>
+					</tr>
+				</table>
+
+				<!--[if (gte mso 9)|(IE)]>
+				</td>
+				</tr>
+				</table>
+				<![endif]-->
+			</div>
+		</td>
+	</tr>
+</table>  <table class=3D"" =
+width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+style=3D"border-collapse: collapse; border-spacing: 0; font-size: 0; =
+line-height: 0; margin: 0; width: 100%">
+    <tr>
+		<td align=3D"center" =
+class=3D"" style=3D"margin: 0 auto; padding: 0">
+			<div class=3D"" =
+data-mimetype-switch=3D"html" style=3D"display: none !important; font-size:=
+ 1px !important; line-height: 0px !important; mso-hide: all !important">
+				<a name=3D"" id=3D"" target=3D"_blank">&nbsp;</a>
+			</div>
+			<div class=3D"zd" style=3D"max-width: 756px">
+				<!--[if (gte mso =
+9)|(IE)]>
+				<table class=3D"" align=3D"center" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" style=3D"border-collapse: collapse; =
+border-spacing: 0; width: 756px" width=3D"756">
+					<tr>
+						<td class=3D"" style=3D"margin: 0">
+				<![endif]-->
+
+				<table class=3D"" width=3D"100%" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" style=3D"background-color: #FFFFFF !important; =
+border-collapse: separate; border-left-color: #ffffff; border-left-style: =
+solid; border-left-width: 4px; border-right-color: #ffffff; =
+border-right-style: solid; border-right-width: 4px; border-spacing: 0; =
+max-width: 752px; width: 100%" bgcolor=3D"#FFFFFF">
+					<tr>
+						<td valign=3D"top" class=3D"ld" style=3D"background: top center / =
+100% auto; margin: 0; padding-left: 10px; padding-right: 10px">
+							<div> <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+width=3D"100%" class=3D"c" style=3D"border-collapse: collapse">
+	<tr>
+		<td class=3D"e" style=3D"-premailer-align: center !important; height: px;=
+ padding: 20px 40px 5px; text-align: center; vertical-align: top !=
+important" align=3D"center" valign=3D"top" height=3D"0"> <div class=3D"fc" =
+style=3D"color: #000000; display: inline-block; font-family: Helvetica, =
+Arial, Verdana, sans-serif; font-size: 14px; text-align: left" =
+align=3D"left"><p style=3D"font-family: Helvetica, Arial, Verdana, =
+sans-serif; font-size: 12px; font-weight: normal; letter-spacing: 0px; =
+line-height: 24px; margin: 0 0 5px; text-align: center" class=3D"" =
+align=3D"center"><span style=3D"font-size: 24px"><strong><span =
+style=3D"color: #000000; font-family: arial, helvetica, sans-serif" =
+class=3D""><span class=3D"">L=E2=80=99art de l=E2=80=99astrologie, des =
+sciences antiques<br />=C3=A0 la pratique moderne</span></span></strong></s=
+pan></p></div> </td>
+	</tr>
+</table>  <table border=3D"0" cellpadding=3D"0"=
+ cellspacing=3D"0" width=3D"100%" class=3D"d" style=3D"border-collapse: =
+collapse; display: none; font-size: 1px; line-height: 0; max-height: 0; =
+mso-hide: all; overflow: hidden; visibility: hidden">
+	<tr style=3D"mso-hide: all">
+		<td class=3D"b" style=3D"-premailer-align: =
+left !important; height: px; mso-hide: all; padding-bottom: 5px; =
+padding-left: 10px; padding-top: 20px; text-align: left; vertical-align: =
+top !important" align=3D"left" valign=3D"top" height=3D"0"> <div =
+class=3D"fc" style=3D"color: #000000; display: inline-block; font-family: =
+Helvetica, Arial, Verdana, sans-serif; font-size: 14px; mso-hide: all; =
+text-align: left" align=3D"left"><p style=3D"font-family: Helvetica, Arial,=
+ Verdana, sans-serif; font-size: 12px; font-weight: normal; letter-spacing:=
+ 0px; line-height: 24px; margin: 0 0 5px; mso-hide: all; text-align: left" =
+class=3D"" align=3D"left"><span style=3D"font-size: 24px; mso-hide: =
+all"><strong style=3D"mso-hide: all"><span style=3D"color: #000000; =
+font-family: arial, helvetica, sans-serif; mso-hide: all" class=3D""><span =
+class=3D"" style=3D"mso-hide: all">L=E2=80=99art de l=E2=80=99astrologie,=
+<br style=3D"mso-hide: all" />des sciences antiques<br style=3D"mso-hide: =
+all" />=C3=A0 la pratique moderne</span></span></strong></span></p></div> =
+</td>
+	</tr>
+</table> </div>
+						</td>
+					</tr>
+				</table>
+
+				<!--[if (gte mso 9)|(IE)]>
+				</td>
+				</tr>
+				</table>
+				<![endif]-->
+			</div>
+		</td>
+	</tr>
+</table>  <table class=3D"" =
+width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+style=3D"border-collapse: collapse; border-spacing: 0; font-size: 0; =
+line-height: 0; margin: 0; width: 100%">
+    <tr>
+		<td align=3D"center" =
+class=3D"" style=3D"margin: 0 auto; padding: 0">
+			<div class=3D"" =
+data-mimetype-switch=3D"html" style=3D"display: none !important; font-size:=
+ 1px !important; line-height: 0px !important; mso-hide: all !important">
+				<a name=3D"" id=3D"" target=3D"_blank">&nbsp;</a>
+			</div>
+			<div class=3D"zd" style=3D"max-width: 756px">
+				<!--[if (gte mso =
+9)|(IE)]>
+				<table class=3D"" align=3D"center" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" style=3D"border-collapse: collapse; =
+border-spacing: 0; width: 756px" width=3D"756">
+					<tr>
+						<td class=3D"" style=3D"margin: 0">
+				<![endif]-->
+
+				<table class=3D"" width=3D"100%" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" style=3D"background-color: #FFFFFF !important; =
+border-collapse: separate; border-left-color: #ffffff; border-left-style: =
+solid; border-left-width: 4px; border-right-color: #ffffff; =
+border-right-style: solid; border-right-width: 4px; border-spacing: 0; =
+max-width: 752px; width: 100%" bgcolor=3D"#FFFFFF">
+					<tr>
+						<td valign=3D"top" class=3D"ld" style=3D"background: top center / =
+100% auto; margin: 0; padding-left: 10px; padding-right: 10px">
+							<div> <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+width=3D"100%" class=3D"c" style=3D"border-collapse: collapse">
+	<tr>
+		<td class=3D"e" style=3D"-premailer-align: center !important; height: px;=
+ padding-bottom: 20px; padding-left: 40px; padding-right: 40px; text-align:=
+ center; vertical-align: top !important" align=3D"center" valign=3D"top" =
+height=3D"0"> <div class=3D"fc" style=3D"color: #000000; display: =
+inline-block; font-family: Helvetica, Arial, Verdana, sans-serif; =
+font-size: 14px; text-align: left" align=3D"left"><p style=3D"font-family: =
+Helvetica, Arial, Verdana, sans-serif; font-size: 12px; font-weight: =
+normal; letter-spacing: 0px; line-height: 24px; margin: 0 0 5px; =
+text-align: center" class=3D"" align=3D"center"><span style=3D"color: =
+#000000; font-family: arial, helvetica, sans-serif; font-size: 16px" =
+class=3D""><span class=3D"">Tourn=C3=A9 vers le ciel, le =
+<strong>deuxi=C3=A8me tome de la Biblioth=C3=A8que =C3=89sot=C3=A9rique de =
+TASCHEN plonge dans la tr=C3=A9pidante histoire visuelle de =
+l=E2=80=99astrologie occidentale</strong>. De sa naissance comme petite =
+s=C5=93ur de la science astronomique =C3=A0 notre =C3=88re du Verseau, =
+l=E2=80=99=C3=A9volution de cette pratique ancestrale se raconte =C3=A0 =
+travers <strong>plus de 400 images</strong>, des temples =C3=A9gyptiens =
+=C3=A0 l=E2=80=99art contemporain, organis=C3=A9es de fa=C3=A7on =C3=A0 =
+refl=C3=A9ter la r=C3=A9volution des plan=C3=A8tes et la roue du zodiaque.=
+</span></span></p></div> </td>
+	</tr>
+</table>  <table border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" width=3D"100%" class=3D"d" =
+style=3D"border-collapse: collapse; display: none; font-size: 1px; =
+line-height: 0; max-height: 0; mso-hide: all; overflow: hidden; visibility:=
+ hidden">
+	<tr style=3D"mso-hide: all">
+		<td class=3D"b" =
+style=3D"-premailer-align: left !important; height: px; mso-hide: all; =
+padding-bottom: 20px; padding-left: 10px; text-align: left; vertical-align:=
+ top !important" align=3D"left" valign=3D"top" height=3D"0"> <div =
+class=3D"fc" style=3D"color: #000000; display: inline-block; font-family: =
+Helvetica, Arial, Verdana, sans-serif; font-size: 14px; mso-hide: all; =
+text-align: left" align=3D"left"><p style=3D"font-family: Helvetica, Arial,=
+ Verdana, sans-serif; font-size: 12px; font-weight: normal; letter-spacing:=
+ 0px; line-height: 24px; margin: 0 0 5px; mso-hide: all; text-align: left" =
+class=3D"" align=3D"left"><span style=3D"color: #000000; font-family: arial=
+, helvetica, sans-serif; font-size: 16px; mso-hide: all" class=3D""><span =
+class=3D"" style=3D"mso-hide: all">Tourn=C3=A9 vers le ciel, le <strong =
+style=3D"mso-hide: all">deuxi=C3=A8me tome de la Biblioth=C3=A8que =
+=C3=89sot=C3=A9rique de TASCHEN plonge dans la tr=C3=A9pidante histoire =
+visuelle de l=E2=80=99astrologie occidentale</strong>. De sa naissance =
+comme petite s=C5=93ur de la science astronomique =C3=A0 notre =C3=88re du =
+Verseau, l=E2=80=99=C3=A9volution de cette pratique ancestrale se raconte =
+=C3=A0 travers <strong style=3D"mso-hide: all">plus de 400 images</strong>,=
+ des temples =C3=A9gyptiens =C3=A0 l=E2=80=99art contemporain, =
+organis=C3=A9es de fa=C3=A7on =C3=A0 refl=C3=A9ter la r=C3=A9volution des =
+plan=C3=A8tes et la roue du zodiaque.</span></span></p></div> </td>
+	</tr>
+</table> </div>
+						</td>
+					</tr>
+				</table>
+
+				<!--[if (gte mso 9)|(IE)]>
+				</td>
+				</tr>
+				</table>
+				<![endif]-->
+			</div>
+		</td>
+	</tr>
+</table>  <table class=3D"" =
+width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+style=3D"border-collapse: collapse; border-spacing: 0; font-size: 0; =
+line-height: 0; margin: 0; width: 100%">
+    <tr>
+		<td align=3D"center" =
+class=3D"" style=3D"margin: 0 auto; padding: 0">
+			<div class=3D"" =
+data-mimetype-switch=3D"html" style=3D"display: none !important; font-size:=
+ 1px !important; line-height: 0px !important; mso-hide: all !important">
+				<a name=3D"" id=3D"" target=3D"_blank">&nbsp;</a>
+			</div>
+			<div class=3D"" style=3D"max-width: 756px">
+				<!--[if (gte mso =
+9)|(IE)]>
+				<table class=3D"" align=3D"center" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" style=3D"border-collapse: collapse; =
+border-spacing: 0; width: 756px" width=3D"756">
+					<tr>
+						<td class=3D"" style=3D"margin: 0">
+				<![endif]-->
+
+				<table class=3D"" width=3D"100%" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" style=3D"border-collapse: separate; border-spacing: 0; =
+max-width: 756px; width: 100%">
+					<tr>
+						<td valign=3D"top" =
+class=3D"" style=3D"background: top center / 100% auto; margin: 0">
+							<div> <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+width=3D"100%" class=3D"" style=3D"border-collapse: collapse">
+	<tr>
+		<td class=3D"e" style=3D"-premailer-align: center !important; height: px;=
+ padding-left: 20px; padding-right: 20px; text-align: center; =
+vertical-align: top !important" align=3D"center" valign=3D"top" =
+height=3D"0"> <a href=3D"https://engagement.juneapp.=
+com/campaigns/5fb6568adcbe3550907ade38/click/link/5fb7e47ef037571d5761acff/=
+5ea318d13df35a040f954084/NaN?utm_campaign=3Dva_esoterica_astrology&utm_sour=
+ce=3Dtas&utm_medium=3Dnl" class=3D"" width=3D"375" style=3D"display: =
+inline-block; vertical-align: top !important; width: auto !important" =
+target=3D"_blank" id=3D"5fb7e47ef037571d5761acff">
+    <img =
+src=3D"https://taschen-bf09.kxcdn.com/effb6e63bf655e416be522371b315a31.png"=
+ alt=3D"TASCHEN" width=3D"375" class=3D"" style=3D"max-width: 100%">
+</a> </td>
+	</tr>
+</table> </div>
+						</td>
+					</tr>
+				</table>
+
+				<!--[if (gte mso 9)|(IE)]>
+				</td>
+				</tr>
+				</table>
+				<![endif]-->
+			</div>
+		</td>
+	</tr>
+</table>  <table class=3D"" =
+width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+style=3D"border-collapse: collapse; border-spacing: 0; font-size: 0; =
+line-height: 0; margin: 0; width: 100%">
+    <tr>
+		<td align=3D"center" =
+class=3D"" style=3D"margin: 0 auto; padding: 0">
+			<div class=3D"" =
+data-mimetype-switch=3D"html" style=3D"display: none !important; font-size:=
+ 1px !important; line-height: 0px !important; mso-hide: all !important">
+				<a name=3D"" id=3D"" target=3D"_blank">&nbsp;</a>
+			</div>
+			<div class=3D"zd" style=3D"max-width: 756px">
+				<!--[if (gte mso =
+9)|(IE)]>
+				<table class=3D"" align=3D"center" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" style=3D"border-collapse: collapse; =
+border-spacing: 0; width: 756px" width=3D"756">
+					<tr>
+						<td class=3D"" style=3D"margin: 0">
+				<![endif]-->
+
+				<table class=3D"" width=3D"100%" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" style=3D"background-color: #FFFFFF !important; =
+border-collapse: separate; border-left-color: #ffffff; border-left-style: =
+solid; border-left-width: 4px; border-right-color: #ffffff; =
+border-right-style: solid; border-right-width: 4px; border-spacing: 0; =
+max-width: 752px; width: 100%" bgcolor=3D"#FFFFFF">
+					<tr>
+						<td valign=3D"top" class=3D"" style=3D"background: top center / 100% =
+auto; margin: 0">
+							<div> <div class=3D"fc" style=3D"color: #000000; =
+font-family: Helvetica, Arial, Verdana, sans-serif; font-size: 14px; =
+text-align: left" align=3D"left"><div style=3D"line-height: 18px; =
+text-align: center" class=3D"" align=3D"center"><span style=3D"font-size: =
+18px"><span style=3D"font-size: 18px"><strong>Astrology =
+</strong></span></span></div>
+<div style=3D"line-height: 18px; text-align: =
+center" class=3D"" align=3D"center"><span style=3D"font-size: 18px">&nbsp; =
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class=3D"">&nbsp; &nbsp; =
+&nbsp;</span></span></div>
+<div style=3D"line-height: 18px; text-align: =
+center" class=3D"" align=3D"center"><span style=3D"font-size: =
+18px"><strong><span class=3D"">=E2=82=AC 30</span></strong></span></div>
+<div style=3D"line-height: 18px; text-align: center" class=3D"" =
+align=3D"center"><span style=3D"font-size: 18px">&nbsp;&nbsp; =
+&nbsp;</span></div></div>  <table border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" class=3D"" style=3D"border-collapse: =
+collapse">
+	<tr>
+		<td class=3D"e" style=3D"-premailer-align: center !=
+important; height: px; text-align: center; vertical-align: top !important" =
+align=3D"center" valign=3D"top" height=3D"0"> <table class=3D"" =
+border=3D"0" cellpadding=3D"0" cellspacing=3D"0" style=3D"border-collapse: =
+collapse; border-spacing: 0; display: inline-table; width: 100%" =
+width=3D"100%"><tbody>
+<tr>
+	<td class=3D"e" style=3D"-premailer-align: =
+center !important; text-align: center" align=3D"center">
+	    <a href=3D"https://engagement.juneapp.com/campaigns/5fb6568adcbe355090=
+7ade38/click/link/5fb7e47ef037571d5761ad00/5ea318d13df35a040f954084/NaN?=
+action=3Daddtocart&crt_code=3D08004&utm_campaign=3Dva_esoterica_astrology&u=
+tm_source=3Dtas&utm_medium=3Dnl" class=3D"" style=3D"display: inline-block"=
+ target=3D"_blank" id=3D"5fb7e47ef037571d5761ad00">
+		<img class=3D"" border=3D"0" src=3D"https://taschen-bf09.kxcdn.=
+com/08e375dcea4d0905b3ec66cc1f597779.png" alt=3D"Buy now" width=3D"170" =
+style=3D"max-width: 100%">
+		</a>
+	</td>
+</tr>
+</tbody>
+</table> </td>
+	</tr>
+</table>  <table width=3D"100%" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" class=3D"" style=3D"border-collapse: collapse; =
+border-spacing: 0; width: 100%">
+	<tr>
+		<td class=3D"" style=3D"height: =
+40px; margin: 0" height=3D"40">
+			&nbsp;
+		</td>
+	</tr>
+</table> </div>
+						</td>
+					</tr>
+				</table>
+
+				<!--[if (gte mso 9)|(IE)]>
+				</td>
+				</tr>
+				</table>
+				<![endif]-->
+			</div>
+		</td>
+	</tr>
+</table>  <table class=3D"" width=3D"100%" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" style=3D"border-collapse: collapse; border-spacing: 0; =
+font-size: 0; line-height: 0; margin: 0; width: 100%">
+    <tr>
+		<td align=3D"center" class=3D"" style=3D"margin: 0 auto; padding: 0">
+			<div class=3D"" data-mimetype-switch=3D"html" style=3D"display: none !=
+important; font-size: 1px !important; line-height: 0px !important; =
+mso-hide: all !important">
+				<a name=3D"" id=3D"" =
+target=3D"_blank">&nbsp;</a>
+			</div>
+			<div class=3D"" =
+style=3D"max-width: 756px">
+				<!--[if (gte mso 9)|(IE)]>
+				<table class=3D"" align=3D"center" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" style=3D"border-collapse: collapse; border-spacing: 0; =
+width: 756px" width=3D"756">
+					<tr>
+						<td class=3D"" =
+style=3D"margin: 0">
+				<![endif]-->
+
+				<table class=3D"" width=3D"100%"=
+ border=3D"0" cellpadding=3D"0" cellspacing=3D"0" style=3D"border-collapse:=
+ separate; border-spacing: 0; max-width: 756px; width: 100%">
+					<tr>
+						<td valign=3D"top" class=3D"" style=3D"background: top center / 100% =
+auto; margin: 0">
+							<div> <table border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" class=3D"" style=3D"border-collapse: =
+collapse">
+	<tr>
+		<td class=3D"e" style=3D"-premailer-align: center !=
+important; height: px; text-align: center; vertical-align: top !important" =
+align=3D"center" valign=3D"top" height=3D"0"> <a href=3D"https://engagement=
+.juneapp.com/campaigns/5fb6568adcbe3550907ade38/click/link/5fb7e47ef037571d=
+5761ad01/5ea318d13df35a040f954084/NaN?utm_campaign=3Dva_esoterica_astrology=
+&utm_source=3Dtas&utm_medium=3Dnl" class=3D"" width=3D"660" =
+style=3D"display: inline-block; vertical-align: top !important; width: auto=
+ !important" target=3D"_blank" id=3D"5fb7e47ef037571d5761ad01">
+    <img src=3D"https://taschen-bf09.kxcdn.com/805cd282cbb0cbbfba34ebd76298=
+8318.jpeg" alt=3D"TASCHEN" width=3D"660" class=3D"" style=3D"max-width: =
+100%">
+</a> </td>
+	</tr>
+</table> </div>
+						</td>
+					</tr>
+				</table>
+
+				<!--[if (gte mso 9)|(IE)]>
+				</td>
+				</tr>
+				</table>
+				<![endif]-->
+			</div>
+		</td>
+	</tr>
+</table>  <table class=3D"" width=3D"100%" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" style=3D"border-collapse: collapse; border-spacing: 0; =
+font-size: 0; line-height: 0; margin: 0; width: 100%">
+    <tr>
+		<td align=3D"center" class=3D"" style=3D"margin: 0 auto; padding: 0">
+			<div class=3D"" data-mimetype-switch=3D"html" style=3D"display: none !=
+important; font-size: 1px !important; line-height: 0px !important; =
+mso-hide: all !important">
+				<a name=3D"" id=3D"" =
+target=3D"_blank">&nbsp;</a>
+			</div>
+			<div class=3D"" =
+style=3D"max-width: 756px">
+				<!--[if (gte mso 9)|(IE)]>
+				<table class=3D"" align=3D"center" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" style=3D"border-collapse: collapse; border-spacing: 0; =
+width: 756px" width=3D"756">
+					<tr>
+						<td class=3D"" =
+style=3D"margin: 0">
+				<![endif]-->
+
+				<table class=3D"" width=3D"100%"=
+ border=3D"0" cellpadding=3D"0" cellspacing=3D"0" style=3D"border-collapse:=
+ separate; border-spacing: 0; max-width: 756px; width: 100%">
+					<tr>
+						<td valign=3D"top" class=3D"" style=3D"background: top center / 100% =
+auto; margin: 0">
+							<div> <table border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" class=3D"d" style=3D"border-collapse: =
+collapse; display: none; font-size: 1px; line-height: 0; max-height: 0; =
+mso-hide: all; overflow: hidden; visibility: hidden">
+	<tr style=3D"mso-hide: all">
+		<td class=3D"b" style=3D"-premailer-align: =
+left !important; height: px; mso-hide: all; padding-bottom: 20px; =
+padding-left: 20px; padding-top: 50px; text-align: left; vertical-align: =
+top !important" align=3D"left" valign=3D"top" height=3D"0"> <div =
+class=3D"fc" style=3D"color: #000000; display: inline-block; font-family: =
+Helvetica, Arial, Verdana, sans-serif; font-size: 14px; mso-hide: all; =
+text-align: left" align=3D"left"><div style=3D"line-height: 18px; mso-hide:=
+ all; text-align: left" class=3D"" align=3D"left"><span style=3D"font-size:=
+ 18px; mso-hide: all"><span style=3D"font-size: 18px; mso-hide: =
+all"><strong style=3D"mso-hide: all">=C3=89galement =
+disponible:</strong></span></span></div></div> </td>
+	</tr>
+</table>  <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+width=3D"100%" class=3D"" style=3D"border-collapse: collapse">
+	<tr>
+		<td class=3D"e" style=3D"-premailer-align: center !important; height: px;=
+ padding-left: 20px; padding-right: 20px; text-align: center; =
+vertical-align: top !important" align=3D"center" valign=3D"top" =
+height=3D"0"> <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+width=3D"100%" class=3D"c" style=3D"border-collapse: collapse; display: =
+inline-table">
+	<tr>
+		<td class=3D"" style=3D"height: px; padding-bottom: =
+20px; padding-top: 50px; vertical-align: top !important" valign=3D"top" =
+height=3D"0"> <div class=3D"fc" style=3D"color: #000000; font-family: =
+Helvetica, Arial, Verdana, sans-serif; font-size: 14px; text-align: left" =
+align=3D"left"><div style=3D"line-height: 18px; text-align: center" =
+class=3D"" align=3D"center"><span style=3D"font-size: 18px"><span =
+style=3D"font-size: 18px"><strong>=C3=89galement disponible:</strong></span=
+></span></div></div> </td>
+	</tr>
+</table>  <a href=3D"https://engagement.=
+juneapp.com/campaigns/5fb6568adcbe3550907ade38/click/link/5fb7e47ef037571d5=
+761ad02/5ea318d13df35a040f954084/NaN?utm_campaign=3Dva_esoterica_astrology&=
+utm_source=3Dtas&utm_medium=3Dnl" class=3D"" width=3D"375" =
+style=3D"display: inline-block; vertical-align: top !important; width: auto=
+ !important" target=3D"_blank" id=3D"5fb7e47ef037571d5761ad02">
+    <img src=3D"https://taschen-bf09.kxcdn.com/00a5cc60f4262c63a8b004e61cf9=
+8977.png" alt=3D"TASCHEN" width=3D"375" class=3D"" style=3D"max-width: =
+100%">
+</a> </td>
+	</tr>
+</table> </div>
+						</td>
+					</tr>
+				</table>
+
+				<!--[if (gte mso 9)|(IE)]>
+				</td>
+				</tr>
+				</table>
+				<![endif]-->
+			</div>
+		</td>
+	</tr>
+</table>  <table class=3D"" width=3D"100%" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" style=3D"border-collapse: collapse; border-spacing: 0; =
+font-size: 0; line-height: 0; margin: 0; width: 100%">
+    <tr>
+		<td align=3D"center" class=3D"" style=3D"margin: 0 auto; padding: 0">
+			<div class=3D"" data-mimetype-switch=3D"html" style=3D"display: none !=
+important; font-size: 1px !important; line-height: 0px !important; =
+mso-hide: all !important">
+				<a name=3D"" id=3D"" =
+target=3D"_blank">&nbsp;</a>
+			</div>
+			<div class=3D"zd" =
+style=3D"max-width: 756px">
+				<!--[if (gte mso 9)|(IE)]>
+				<table class=3D"" align=3D"center" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" style=3D"border-collapse: collapse; border-spacing: 0; =
+width: 756px" width=3D"756">
+					<tr>
+						<td class=3D"" =
+style=3D"margin: 0">
+				<![endif]-->
+
+				<table class=3D"" width=3D"100%"=
+ border=3D"0" cellpadding=3D"0" cellspacing=3D"0" style=3D"background-color=
+: #FFFFFF !important; border-collapse: separate; border-left-color: =
+#ffffff; border-left-style: solid; border-left-width: 4px; =
+border-right-color: #ffffff; border-right-style: solid; border-right-width:=
+ 4px; border-spacing: 0; max-width: 752px; width: 100%" =
+bgcolor=3D"#FFFFFF">
+					<tr>
+						<td valign=3D"top" class=3D"" =
+style=3D"background: top center / 100% auto; margin: 0">
+							<div> <div class=3D"fc" style=3D"color: #000000; font-family: =
+Helvetica, Arial, Verdana, sans-serif; font-size: 14px; text-align: left" =
+align=3D"left"><div style=3D"line-height: 18px; text-align: center" =
+class=3D"" align=3D"center"><span style=3D"font-size: 18px"><span =
+style=3D"font-size: 18px"><strong>Tarot</strong></span></span></div>
+<div style=3D"line-height: 18px; text-align: center" class=3D"" =
+align=3D"center"><span style=3D"font-size: 18px">&nbsp; &nbsp; &nbsp; =
+&nbsp; &nbsp; &nbsp; &nbsp; <span class=3D"">&nbsp; &nbsp; =
+&nbsp;</span></span></div>
+<div style=3D"line-height: 18px; text-align: =
+center" class=3D"" align=3D"center"><span style=3D"font-size: =
+18px"><strong><span class=3D"">=E2=82=AC 30</span></strong></span></div>
+<div style=3D"line-height: 18px; text-align: center" class=3D"" =
+align=3D"center"><span style=3D"font-size: 18px">&nbsp;&nbsp; =
+&nbsp;</span></div></div>  <table border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" class=3D"" style=3D"border-collapse: =
+collapse">
+	<tr>
+		<td class=3D"e" style=3D"-premailer-align: center !=
+important; height: px; text-align: center; vertical-align: top !important" =
+align=3D"center" valign=3D"top" height=3D"0"> <table class=3D"" =
+border=3D"0" cellpadding=3D"0" cellspacing=3D"0" style=3D"border-collapse: =
+collapse; border-spacing: 0; display: inline-table; width: 100%" =
+width=3D"100%"><tbody>
+<tr>
+	<td class=3D"e" style=3D"-premailer-align: =
+center !important; text-align: center" align=3D"center">
+	    <a href=3D"https://engagement.juneapp.com/campaigns/5fb6568adcbe355090=
+7ade38/click/link/5fb7e47ef037571d5761ad03/5ea318d13df35a040f954084/NaN?=
+action=3Daddtocart&crt_code=3D08003&utm_campaign=3Dva_esoterica_astrology&u=
+tm_source=3Dtas&utm_medium=3Dnl" class=3D"" style=3D"display: inline-block"=
+ target=3D"_blank" id=3D"5fb7e47ef037571d5761ad03">
+		<img class=3D"" border=3D"0" src=3D"https://taschen-bf09.kxcdn.=
+com/0dbcec6b13f644d68ec5c05f2894aa51.png" alt=3D"Buy now" width=3D"170" =
+style=3D"max-width: 100%">
+		</a>
+	</td>
+</tr>
+</tbody>
+</table> </td>
+	</tr>
+</table> </div>
+						</td>
+					</tr>
+				</table>
+
+				<!--[if (gte mso 9)|(IE)]>
+				</td>
+				</tr>
+				</table>
+				<![endif]-->
+			</div>
+		</td>
+	</tr>
+</table>  <table class=3D"" =
+width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+style=3D"border-collapse: collapse; border-spacing: 0; font-size: 0; =
+line-height: 0; margin: 0; width: 100%">
+    <tr>
+		<td align=3D"center" =
+class=3D"" style=3D"margin: 0 auto; padding: 0">
+			<div class=3D"" =
+data-mimetype-switch=3D"html" style=3D"display: none !important; font-size:=
+ 1px !important; line-height: 0px !important; mso-hide: all !important">
+				<a name=3D"" id=3D"" target=3D"_blank">&nbsp;</a>
+			</div>
+			<div class=3D"" style=3D"max-width: 756px">
+				<!--[if (gte mso =
+9)|(IE)]>
+				<table class=3D"" align=3D"center" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" style=3D"border-collapse: collapse; =
+border-spacing: 0; width: 756px" width=3D"756">
+					<tr>
+						<td class=3D"" style=3D"margin: 0">
+				<![endif]-->
+
+				<table class=3D"" width=3D"100%" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" style=3D"border-collapse: separate; border-spacing: 0; =
+max-width: 756px; width: 100%">
+					<tr>
+						<td valign=3D"top" =
+class=3D"" style=3D"background: top center / 100% auto; margin: 0">
+							<div> <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+width=3D"100%" class=3D"d" style=3D"border-collapse: collapse; display: =
+none; font-size: 1px; line-height: 0; max-height: 0; mso-hide: all; =
+overflow: hidden; visibility: hidden">
+	<tr style=3D"mso-hide: all">
+		<td class=3D"b" style=3D"-premailer-align: left !important; height: px; =
+mso-hide: all; padding: 40px 40px 50px 20px; text-align: left; =
+vertical-align: top !important" align=3D"left" valign=3D"top" height=3D"0">=
+ <div class=3D"fc" style=3D"color: #000000; display: inline-block; =
+font-family: Helvetica, Arial, Verdana, sans-serif; font-size: 14px; =
+mso-hide: all; text-align: left" align=3D"left"><p style=3D"font-family: =
+Helvetica, Arial, Verdana, sans-serif; font-size: 12px; font-weight: =
+normal; letter-spacing: 0px; line-height: 22px; margin: 0 0 5px; mso-hide: =
+all; text-align: left" align=3D"left"><span style=3D"font-family: arial, =
+helvetica, sans-serif; font-size: 18px; mso-hide: all"><strong =
+style=3D"mso-hide: all"><span style=3D"color: #000000; mso-hide: =
+all">=C2=ABCe livre nous ram=C3=A8ne =C3=A0 notre =C3=A9ternelle et =
+universelle qu=C3=AAte de sens, de raison d=E2=80=99=C3=AAtre et de divin.=
+=C2=BB</span></strong></span></p>
+<p style=3D"font-family: Helvetica, Arial=
+, Verdana, sans-serif; font-size: 12px; font-weight: normal; =
+letter-spacing: 0px; line-height: 22px; margin: 0 0 5px; mso-hide: all; =
+text-align: left" align=3D"left"><span style=3D"color: #000000; =
+font-family: arial, helvetica, sans-serif; font-size: 16px; mso-hide: =
+all">=E2=80=94 <em style=3D"mso-hide: all">itsnicethat.=
+com</em>&nbsp;</span></p></div>  <table width=3D"100%" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" class=3D"" style=3D"border-collapse: =
+collapse; border-spacing: 0; display: inline-table; mso-hide: all; width: =
+100%">
+	<tr style=3D"mso-hide: all">
+		<td class=3D"" style=3D"height: =
+20px; margin: 0; mso-hide: all" height=3D"20">
+			&nbsp;
+		</td>
+	</tr>
+</table> </td>
+	</tr>
+</table> </div>
+						</td>
+					</tr>
+				</table>
+
+				<!--[if (gte mso 9)|(IE)]>
+				</td>
+				</tr>
+				</table>
+				<![endif]-->
+			</div>
+		</td>
+	</tr>
+</table>  <table class=3D"" =
+width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+style=3D"border-collapse: collapse; border-spacing: 0; font-size: 0; =
+line-height: 0; margin: 0; width: 100%">
+    <tr>
+		<td align=3D"center" =
+class=3D"" style=3D"margin: 0 auto; padding: 0">
+			<div class=3D"" =
+data-mimetype-switch=3D"html" style=3D"display: none !important; font-size:=
+ 1px !important; line-height: 0px !important; mso-hide: all !important">
+				<a name=3D"" id=3D"" target=3D"_blank">&nbsp;</a>
+			</div>
+			<div class=3D"" style=3D"max-width: 756px">
+				<!--[if (gte mso =
+9)|(IE)]>
+				<table class=3D"" align=3D"center" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" style=3D"border-collapse: collapse; =
+border-spacing: 0; width: 756px" width=3D"756">
+					<tr>
+						<td class=3D"" style=3D"margin: 0">
+				<![endif]-->
+
+				<table class=3D"" width=3D"100%" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" style=3D"border-collapse: separate; border-spacing: 0; =
+max-width: 756px; width: 100%">
+					<tr>
+						<td valign=3D"top" =
+class=3D"" style=3D"background: top center / 100% auto; margin: 0">
+							<div> <table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+width=3D"100%" class=3D"c" style=3D"border-collapse: collapse">
+	<tr>
+		<td class=3D"" style=3D"height: px; padding: 40px 100px 50px; =
+vertical-align: top !important" valign=3D"top" height=3D"0"> <div =
+class=3D"fc" style=3D"color: #000000; font-family: Helvetica, Arial, =
+Verdana, sans-serif; font-size: 14px; text-align: left" align=3D"left"><p =
+style=3D"font-family: Helvetica, Arial, Verdana, sans-serif; font-size: =
+12px; font-weight: normal; letter-spacing: 0px; line-height: 22px; margin: =
+0 0 5px; text-align: center" align=3D"center"><span style=3D"font-family: =
+arial, helvetica, sans-serif; font-size: 18px"><strong><span =
+style=3D"color: #000000">=C2=ABCe livre nous ram=C3=A8ne =C3=A0 notre =
+=C3=A9ternelle et universelle<br />qu=C3=AAte de sens, de raison =
+d=E2=80=99=C3=AAtre et de divin.=C2=BB</span></strong></span></p>
+<p style=3D"font-family: Helvetica, Arial, Verdana, sans-serif; font-size: =
+12px; font-weight: normal; letter-spacing: 0px; line-height: 22px; margin: =
+0 0 5px; text-align: center" align=3D"center"><span style=3D"color: =
+#000000; font-family: arial, helvetica, sans-serif; font-size: =
+16px">=E2=80=94 <em>itsnicethat.com</em>&nbsp;</span></p></div> </td>
+	</tr>
+</table> </div>
+						</td>
+					</tr>
+				</table>
+
+				<!--[if (gte mso 9)|(IE)]>
+				</td>
+				</tr>
+				</table>
+				<![endif]-->
+			</div>
+		</td>
+	</tr>
+</table>  <table class=3D"" =
+width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+style=3D"border-collapse: collapse; border-spacing: 0; font-size: 0; =
+line-height: 0; margin: 0; width: 100%">
+    <tr>
+		<td align=3D"center" =
+class=3D"" style=3D"margin: 0 auto; padding: 0">
+			<div class=3D"" =
+data-mimetype-switch=3D"html" style=3D"display: none !important; font-size:=
+ 1px !important; line-height: 0px !important; mso-hide: all !important">
+				<a name=3D"" id=3D"" target=3D"_blank">&nbsp;</a>
+			</div>
+			<div class=3D"" style=3D"max-width: 756px">
+				<!--[if (gte mso =
+9)|(IE)]>
+				<table class=3D"" align=3D"center" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" style=3D"border-collapse: collapse; =
+border-spacing: 0; width: 756px" width=3D"756">
+					<tr>
+						<td class=3D"" style=3D"margin: 0">
+				<![endif]-->
+
+				<table class=3D"" width=3D"100%" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" style=3D"border-collapse: separate; border-spacing: 0; =
+max-width: 756px; width: 100%">
+					<tr>
+						<td valign=3D"top" =
+class=3D"md" style=3D"background: top center / 100% auto; margin: 0; =
+padding-left: 20px; padding-right: 20px">
+							<div> <table class=3D"" =
+width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+style=3D"border-collapse: collapse; border-spacing: 0; max-width: 716px; =
+width: 100%">
+  <tbody>
+  <tr>
+    <td class=3D"" style=3D"font-size: 0px; =
+margin: 0; text-align: center" align=3D"center">
+<!--[if (gte mso 9)|(IE)]>
+      <table width=3D"100%" cellpadding=3D"0" cellspacing=3D"0" =
+border=3D"0" class=3D"" style=3D"border-collapse: collapse; border-spacing:=
+ 0">
+      <tr>
+        <td class=3D"" style=3D"margin: 0; vertical-align: =
+top !important; width: 358px" valign=3D"top">
+<![endif]-->
+        <div class=3D"lb" style=3D"display: inline-block; max-width: 358px;=
+ vertical-align: top !important; width: 100%">
+          <table class=3D"" =
+border=3D"0" cellpadding=3D"0" cellspacing=3D"0" width=3D"100%" =
+style=3D"border-collapse: collapse; font-size: 14px">
+            <tr>
+              <td class=3D"" style=3D"height: px; vertical-align: top !=
+important" valign=3D"top" height=3D"0"> <div class=3D"fc" style=3D"color: =
+#000000; font-family: Helvetica, Arial, Verdana, sans-serif; font-size: =
+14px; text-align: left" align=3D"left"><p style=3D"font-family: Helvetica, =
+Arial, Verdana, sans-serif; font-size: 12px; font-weight: normal; =
+letter-spacing: 0px; line-height: 20px; margin: 0 0 5px"><span =
+style=3D"font-size: 11px"> <span style=3D"color: #000000"> =C2=A9 2020 =
+=E2=80=93 TASCHEN</span></span></p>
+<p style=3D"font-family: Helvetica, =
+Arial, Verdana, sans-serif; font-size: 12px; font-weight: normal; =
+letter-spacing: 0px; line-height: 20px; margin: 0 0 5px"><span =
+style=3D"font-size: 11px"> <a href=3D"https://engagement.juneapp.=
+com/campaigns/5fb6568adcbe3550907ade38/click/link/5fb7e47ef037571d5761ad04/=
+5ea318d13df35a040f954084/0?utm_campaign=3Dva_esoterica_astrology&utm_source=
+=3Dtas&utm_medium=3Dnl" target=3D"_blank" rel=3D"noopener" style=3D"color: =
+#333; text-decoration: none" id=3D"5fb7e47ef037571d5761ad04"> <span =
+style=3D"color: #000000"> <u>www.taschen.com</u> </span> </a> </span> =
+|<span style=3D"font-size: 11px"> <a href=3D"https://engagement.juneapp.=
+com/campaigns/5fb6568adcbe3550907ade38/click/link/5fb7e47ef037571d5761ad05/=
+5ea318d13df35a040f954084/0?utm_campaign=3Dva_esoterica_astrology&utm_source=
+=3Dtas&utm_medium=3Dnl" target=3D"_blank" rel=3D"noopener" style=3D"color: =
+#333; text-decoration: none" id=3D"5fb7e47ef037571d5761ad05"><span =
+style=3D"color: #000000"> <span style=3D"text-decoration: underline"> =
+Retrouvez toutes nos coordonn=C3=A9es ici.</span></span></a> </span> <span =
+style=3D"color: #000000">&nbsp;</span> <br /><span style=3D"font-size: =
+11px"> <span style=3D"color: #000000"> <a href=3D"https://engagement.=
+juneapp.com/campaigns/5fb6568adcbe3550907ade38/click/link/5fb7e47ef037571d5=
+761ad06/5ea318d13df35a040f954084/0?utm_campaign=3Dva_esoterica_astrology&ut=
+m_source=3Dtas&utm_medium=3Dnl" rel=3D"noopener noreferrer" =
+target=3D"_blank" title=3D"" style=3D"color: #333; text-decoration: none" =
+id=3D"5fb7e47ef037571d5761ad06"><span style=3D"text-decoration: underline">=
+ Mentions l=C3=A9gales</span></a></span></span><span style=3D"color: =
+#000000">&nbsp;</span>|&nbsp;<span style=3D"color: #000000"> <a =
+href=3D"https://engagement.juneapp.com/campaigns/5fb6568adcbe3550907ade38/c=
+lick/link/5fb7e47ef037571d5761ad07/5ea318d13df35a040f954084/0?=
+email_unsubscribe=3Dq.u.i.n.e.x.i.s.t.e.p.a.s@gmail.com&chk=3D1f0373bff530165669f990=
+3af78e515c&utm_campaign=3Dva_esoterica_astrology&utm_source=3Dtas&utm_mediu=
+m=3Dnl" target=3D"_blank" rel=3D"noopener" style=3D"color: #333; =
+text-decoration: none" id=3D"5fb7e47ef037571d5761ad07"><span =
+style=3D"color: #000000"><span style=3D"font-size: 11px"><u>D=C3=A9sinscrip=
+tion de la newsletter.</u></span></span></a></span></p></div> </td>
+            </tr>
+          </table>
+        </div>
+<!--[if (gte mso 9)|(IE)]>
+        </td>
+        <td class=3D"" =
+style=3D"margin: 0; vertical-align: top !important; width: 358px" =
+valign=3D"top">
+<![endif]-->
+        <div class=3D"lb" style=3D"display: =
+inline-block; max-width: 358px; vertical-align: top !important; width: =
+100%">
+          <table class=3D"" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" style=3D"border-collapse: collapse; =
+font-size: 14px">
+            <tr>
+              <td class=3D"" =
+style=3D"height: px" height=3D"0"> <table border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" width=3D"100%" class=3D"" style=3D"border-collapse: =
+collapse">
+	<tr>
+		<td class=3D"h f" style=3D"-premailer-align: right !=
+important; height: px; text-align: right; vertical-align: top !important" =
+align=3D"right" valign=3D"top" height=3D"0"> <a href=3D"https://engagement.=
+juneapp.com/campaigns/5fb6568adcbe3550907ade38/click/link/5fb7e47ef037571d5=
+761ad08/5ea318d13df35a040f954084/NaN?utm_campaign=3Dva_esoterica_astrology&=
+utm_source=3Dtas&utm_medium=3Dnl" class=3D"" width=3D"" style=3D"display: =
+inline-block; vertical-align: top !important; width: auto !important" =
+target=3D"_blank" id=3D"5fb7e47ef037571d5761ad08">
+    <img =
+src=3D"https://taschen-bf09.kxcdn.com/8bbb1e45b2f33884eec8098d3d553757.png"=
+ alt=3D"facebook" width=3D"" class=3D"" style=3D"max-width: 100%">
+</a>  <a href=3D"https://engagement.juneapp.com/campaigns/5fb6568adcbe35509=
+07ade38/click/link/5fb7e47ef037571d5761ad09/5ea318d13df35a040f954084/NaN?=
+utm_campaign=3Dva_esoterica_astrology&utm_source=3Dtas&utm_medium=3Dnl" =
+class=3D"" width=3D"" style=3D"display: inline-block; vertical-align: top !=
+important; width: auto !important" target=3D"_blank" =
+id=3D"5fb7e47ef037571d5761ad09">
+    <img src=3D"https://taschen-bf09.kxcdn=
+.com/ad0dea8b5a2e67fbd7b5ccf40b74d73c.png" alt=3D"Youtube" width=3D"" =
+class=3D"" style=3D"max-width: 100%">
+</a>  <a href=3D"https://engagement.=
+juneapp.com/campaigns/5fb6568adcbe3550907ade38/click/link/5fb7e47ef037571d5=
+761ad0a/5ea318d13df35a040f954084/NaN?utm_campaign=3Dva_esoterica_astrology&=
+utm_source=3Dtas&utm_medium=3Dnl" class=3D"" width=3D"" style=3D"display: =
+inline-block; vertical-align: top !important; width: auto !important" =
+target=3D"_blank" id=3D"5fb7e47ef037571d5761ad0a">
+    <img =
+src=3D"https://taschen-bf09.kxcdn.com/8b4adc918d8bfafbc65e1e8604911c80.png"=
+ alt=3D"Instagram" width=3D"" class=3D"" style=3D"max-width: 100%">
+</a> </td>
+	</tr>
+</table> </td>
+            </tr>
+          </table>
+        </div>
+<!--[if (gte mso 9)|(IE)]>
+        </td>
+      </tr>
+      </table>
+<![endif]-->
+    </td>
+  </tr>
+  </tbody>
+</table>  <table width=3D"100%" border=3D"0" cellpadding=3D"0" =
+cellspacing=3D"0" class=3D"" style=3D"border-collapse: collapse; =
+border-spacing: 0; width: 100%">
+	<tr>
+		<td class=3D"" style=3D"height: =
+40px; margin: 0" height=3D"40">
+			&nbsp;
+		</td>
+	</tr>
+</table> </div>
+						</td>
+					</tr>
+				</table>
+
+				<!--[if (gte mso 9)|(IE)]>
+				</td>
+				</tr>
+				</table>
+				<![endif]-->
+			</div>
+		</td>
+	</tr>
+</table> </div>
+  <img style=3D"width: 1px; height: 1px;" =
+src=3D"https://engagement.juneapp.com/campaigns/5fb6568adcbe3550907ade38/op=
+en/5ea318d13df35a040f954084" /></body>
+</html>
+
+----_NmP-753a90bcb351e42c-Part_1--
